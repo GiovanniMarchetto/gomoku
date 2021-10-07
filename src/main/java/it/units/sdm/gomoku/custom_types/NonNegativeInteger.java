@@ -6,7 +6,6 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Target;
 
 import static java.lang.annotation.ElementType.*;
-import static java.lang.annotation.ElementType.LOCAL_VARIABLE;
 
 public class NonNegativeInteger extends Number implements Comparable<Number> {
 

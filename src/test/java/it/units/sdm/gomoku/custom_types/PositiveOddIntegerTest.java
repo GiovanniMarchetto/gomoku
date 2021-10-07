@@ -1,16 +1,15 @@
 package it.units.sdm.gomoku.custom_types;
 
+import it.units.sdm.gomoku.EnvVariables;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class PositiveOddIntegerTest {
 
-    private final static String INTS_PROVIDER_RESOURCE_LOCATION = "/ints.csv";
-
     @ParameterizedTest
-    @CsvFileSource(resources = INTS_PROVIDER_RESOURCE_LOCATION)
+    @CsvFileSource(resources = EnvVariables.INTS_PROVIDER_RESOURCE_LOCATION)
     void constructorTest(int value) {
         try {
             new PositiveOddInteger(value);
