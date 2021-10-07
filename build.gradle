@@ -12,7 +12,8 @@ repositories {
 }
 
 ext {
-    junitVersion = '5.6.2'
+    junitVersion = '5.8.1'
+    jetbrainsAnnotationVersion = '22.0.0'
 }
 
 sourceCompatibility = '16'
@@ -33,9 +34,9 @@ javafx {
 }
 
 dependencies {
-    implementation 'org.jetbrains:annotations:20.1.0'
+    implementation "org.jetbrains:annotations:${jetbrainsAnnotationVersion}"
     testImplementation(platform("org.junit:junit-bom:${junitVersion}"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.junit.jupiter:junit-jupiter:${junitVersion}")
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
 }
