@@ -16,9 +16,9 @@ class NonNegativeIntegerTest {
     @CsvFileSource(resources = EnvVariables.INTS_PROVIDER_RESOURCE_LOCATION)
     void constructorTest(int value) {
         try {
-            nonNegativeInteger1 = new NonNegativeInteger(value);
+            new NonNegativeInteger(value);
         } catch (Exception e) {
-            if(value>=0) {
+            if (value >= 0) {
                 fail(e);
             }
         }
@@ -68,7 +68,7 @@ class NonNegativeIntegerTest {
     void testEquals(int value1, int value2) {
         nonNegativeInteger1 = new NonNegativeInteger(value1);
         nonNegativeInteger2 = new NonNegativeInteger(value2);
-        assertEquals(value1==value2, nonNegativeInteger1.equals(nonNegativeInteger2));
+        assertEquals(value1 == value2, nonNegativeInteger1.equals(nonNegativeInteger2));
     }
 
     @ParameterizedTest
@@ -76,7 +76,7 @@ class NonNegativeIntegerTest {
     void testCompareTo(int value1, int value2) {
         nonNegativeInteger1 = new NonNegativeInteger(value1);
         nonNegativeInteger2 = new NonNegativeInteger(value2);
-        assertEquals(value1>=value2, nonNegativeInteger1.compareTo(nonNegativeInteger2)>=0);
+        assertEquals(value1 >= value2, nonNegativeInteger1.compareTo(nonNegativeInteger2) >= 0);
     }
 
 }
