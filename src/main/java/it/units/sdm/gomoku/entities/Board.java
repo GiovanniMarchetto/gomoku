@@ -45,10 +45,14 @@ public class Board {
     }
 
     private void setStoneAtCoordinates(@NotNull final Coordinates coordinates, @NotNull Stone stone) {
-        if (isCoordinatesInsideBoard(Objects.requireNonNull(coordinates)) && stone.isNone()) {
-            matrix[coordinates.getX()][coordinates.getY()] = stone;
+        if (!stone.isNone()) {
+            if (isCoordinatesInsideBoard(Objects.requireNonNull(coordinates))) {
+                matrix[coordinates.getX()][coordinates.getY()] = stone;
+            } else {
+                throw new IndexOutOfBoundsException("Coordinate " + coordinates + " not present in the board.");
+            }
         } else {
-            throw new IndexOutOfBoundsException("Coordinate " + coordinates + " not present in the board.");
+            throw new IllegalArgumentException("Stone color cannot be " + Stone.NONE);
         }
     }
 
