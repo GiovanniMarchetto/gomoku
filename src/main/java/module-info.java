@@ -2,6 +2,7 @@ module it.units.sdm.gomoku {
     requires javafx.controls;
     requires javafx.fxml;
     requires org.jetbrains.annotations;
+    requires java.logging;
 
 
     exports it.units.sdm.gomoku;
