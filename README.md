@@ -1,3 +1,5 @@
+[![Build Status](https://app.travis-ci.com/GiovanniMarchetto/gomoku.svg?token=zp6V5dbTEDGt116fLaVG&branch=main)](https://app.travis-ci.com/GiovanniMarchetto/gomoku)
+
 Gomoku
 ======
 
