@@ -16,14 +16,13 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static it.units.sdm.gomoku.EnvVariables.CSV_NEW_LINE;
+import static it.units.sdm.gomoku.EnvVariables.CSV_SEPARATOR;
 import static it.units.sdm.gomoku.utils.TestUtility.*;
 import static it.units.sdm.gomoku.utils.Predicates.isNonEmptyString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestUtility {
-
-    final static String CSVSeparator = ",";
-    final static String CSVNewLine = "\n";
 
     @NotNull
     static String createNxNRandomBoardToString(int N, int randomSeed) {
@@ -37,9 +36,9 @@ public class TestUtility {
                     default -> s.append(Board.Stone.NONE);
                 }
                 if (j < N - 1) {
-                    s.append(CSVSeparator);
+                    s.append(CSV_SEPARATOR);
                 } else if (i < N - 1) {
-                    s.append(CSVNewLine);
+                    s.append(CSV_NEW_LINE);
                 }
             }
         }
@@ -84,8 +83,8 @@ class TestUtilityTest {
                         .unordered().parallel()
                         .map(stoneType -> new AbstractMap.SimpleEntry<>(
                                         stoneType,
-                                        (int) Arrays.stream(boardAsString.split(CSVNewLine))
-                                                .flatMap(aLine -> Arrays.stream(aLine.split(CSVSeparator)))
+                                        (int) Arrays.stream(boardAsString.split(CSV_NEW_LINE))
+                                                .flatMap(aLine -> Arrays.stream(aLine.split(CSV_SEPARATOR)))
                                                 .filter(isNonEmptyString)
                                                 .map(Board.Stone::valueOf)
                                                 .filter(aCell -> aCell == stoneType)
@@ -100,7 +99,7 @@ class TestUtilityTest {
     @MethodSource("provideCoupleOfNonNegativeIntegersTill19Included")
     void createNxNRandomBoardToStringTest_assertMatrixToBeSquaredOfSizeN(int N, int randomSeed) {
         String boardAsString = createNxNRandomBoardToString(N, randomSeed);
-        List<String> lines = Arrays.stream(boardAsString.split(CSVNewLine))
+        List<String> lines = Arrays.stream(boardAsString.split(CSV_NEW_LINE))
                 .filter(isNonEmptyString)
                 .collect(Collectors.toList());
         assertEquals(lines.size(), N);

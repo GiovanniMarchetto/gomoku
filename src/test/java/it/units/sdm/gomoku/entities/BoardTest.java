@@ -19,6 +19,8 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static it.units.sdm.gomoku.EnvVariables.CSV_SEPARATOR;
+import static it.units.sdm.gomoku.utils.Predicates.isNonEmptyString;
 import static org.junit.jupiter.api.Assertions.*;
 
 class BoardTest {
@@ -28,11 +30,15 @@ class BoardTest {
     private static final Board board = new Board(BOARD_SIZE);
 
     static Board.Stone[][] readBoardStoneFromCSVFile(@NotNull String filePath) {
-        final String CSV_SEPARATOR = ",";
+
         try {
             List<String> lines = Files.readAllLines(Paths.get(Objects.requireNonNull(BoardTest.class.getResource(filePath)).toURI()))
                     .stream().sequential()
-                    .filter(aLine -> aLine.trim().charAt(0) != '#')   // avoid commented lines in CSV file
+                    .filter(aLine -> {
+                        String trimmedLine = aLine.trim();
+                        return isNonEmptyString.test(trimmedLine)
+                                && trimmedLine.charAt(0) != '#';    // avoid commented lines in CSV file
+                    })
                     .collect(Collectors.toList());
 
             return lines.stream().sequential()
