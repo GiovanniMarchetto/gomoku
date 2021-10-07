@@ -52,6 +52,14 @@ public class TestUtility {
         return createNxNRandomBoardToString(N, RANDOM_SEED);
     }
 
+    @NotNull
+    public static Stream<Arguments> provideCoupleOfNonNegativeIntegersTillNExcluded(int N) {
+        return IntStream.range(0, N)
+                .unordered().parallel()
+                .boxed()
+                .flatMap(i -> IntStream.range(0, N).mapToObj(j -> Arguments.of(i, j)));
+    }
+
 }
 
 class TestUtilityTest {
@@ -74,7 +82,7 @@ class TestUtilityTest {
     }
 
     @ParameterizedTest
-    @MethodSource("provideCoupleOfNonNegativeIntegersTill19Included")
+    @MethodSource("provideCoupleOfNonNegativeIntegersTill19Excluded")
     void createNxNRandomBoardToStringTest_assertHavingNxNStones(int N, int randomSeed) {
         final int expectedNumberOfStonesToBePresent = N * N;
         String boardAsString = createNxNRandomBoardToString(N, randomSeed);
@@ -96,7 +104,7 @@ class TestUtilityTest {
     }
 
     @ParameterizedTest
-    @MethodSource("provideCoupleOfNonNegativeIntegersTill19Included")
+    @MethodSource("provideCoupleOfNonNegativeIntegersTill19Excluded")
     void createNxNRandomBoardToStringTest_assertMatrixToBeSquaredOfSizeN(int N, int randomSeed) {
         String boardAsString = createNxNRandomBoardToString(N, randomSeed);
         List<String> lines = Arrays.stream(boardAsString.split(CSV_NEW_LINE))
@@ -105,11 +113,7 @@ class TestUtilityTest {
         assertEquals(lines.size(), N);
     }
 
-    private static Stream<?> provideCoupleOfNonNegativeIntegersTill19Included() {
-        final int N = 19;
-        return IntStream.range(0, N)
-                .unordered().parallel()
-                .boxed()
-                .flatMap(i -> IntStream.range(0, N).mapToObj(j -> Arguments.of(i, j)));
+    private static Stream<Arguments> provideCoupleOfNonNegativeIntegersTill19Excluded() {
+        return provideCoupleOfNonNegativeIntegersTillNExcluded(19);
     }
 }
