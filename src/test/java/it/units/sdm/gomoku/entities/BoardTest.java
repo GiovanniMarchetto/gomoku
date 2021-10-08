@@ -3,7 +3,6 @@ package it.units.sdm.gomoku.entities;
 import it.units.sdm.gomoku.EnvVariables;
 import it.units.sdm.gomoku.custom_types.Coordinates;
 import it.units.sdm.gomoku.utils.TestUtility;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -21,13 +20,17 @@ class BoardTest {
 
     private static Board board = null;
 
+    static IntStream range() {
+        return IntStream.range(0, EnvVariables.BOARD_SIZE);
+    }
+
+    private static Stream<Arguments> provideCoupleOfNonNegativeIntegersTillBOARD_SIZEExcluded() {
+        return provideCoupleOfNonNegativeIntegersTillNExcluded(EnvVariables.BOARD_SIZE);
+    }
+
     @BeforeEach
     void setup() {
         board = TestUtility.setBoardWithCsvBoardStone();
-    }
-
-    static IntStream range() {
-        return IntStream.range(0, EnvVariables.BOARD_SIZE);
     }
 
     @Test
@@ -96,9 +99,5 @@ class BoardTest {
                 fail();
             }
         }
-    }
-
-    private static Stream<Arguments> provideCoupleOfNonNegativeIntegersTillBOARD_SIZEExcluded() {
-        return provideCoupleOfNonNegativeIntegersTillNExcluded(EnvVariables.BOARD_SIZE);
     }
 }

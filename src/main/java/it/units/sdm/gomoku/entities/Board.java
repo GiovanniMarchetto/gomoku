@@ -2,25 +2,25 @@ package it.units.sdm.gomoku.entities;
 
 import it.units.sdm.gomoku.custom_types.Coordinates;
 import it.units.sdm.gomoku.custom_types.NonNegativeInteger;
-import it.units.sdm.gomoku.custom_types.PositiveOddInteger;
+import it.units.sdm.gomoku.custom_types.PositiveInteger;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.IntStream;
 
-import static it.units.sdm.gomoku.custom_types.PositiveOddInteger.PositiveOddIntegerType;
+import static it.units.sdm.gomoku.custom_types.PositiveInteger.PositiveIntegerType;
 
 public class Board {
 
     @NotNull
-    private final PositiveOddInteger size;
+    private final PositiveInteger size;
     @NotNull
     private final Stone[][] matrix;
     @NotNull
     private final NonNegativeInteger numberOfFilledPositionOnTheBoard;
 
-    public Board(@NotNull PositiveOddInteger size) {
+    public Board(@NotNull PositiveInteger size) {
         this.size = size;
         this.matrix = IntStream.range(0, size.intValue())
                 .unordered().parallel()
@@ -31,8 +31,8 @@ public class Board {
         this.numberOfFilledPositionOnTheBoard = new NonNegativeInteger(0);
     }
 
-    public Board(@PositiveOddIntegerType int size) {
-        this(new PositiveOddInteger(size));
+    public Board(@PositiveIntegerType int size) {
+        this(new PositiveInteger(size));
     }
 
     @NotNull
@@ -62,7 +62,7 @@ public class Board {
                 .toArray(Stone[][]::new);
     }
 
-    @PositiveOddIntegerType
+    @PositiveIntegerType
     public int getSize() {
         return size.intValue();
     }
