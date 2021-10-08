@@ -45,10 +45,9 @@ class BoardTest {
 
     @Test
     void getBoard() {
-        Board boardBasedOnCsv = TestUtility.setBoardWithCsvBoardStone();
         for (int x = 0; x < EnvVariables.BOARD_SIZE; x++) {
             for (int y = 0; y < EnvVariables.BOARD_SIZE; y++) {
-                assertEquals(EnvVariables.boardStone[x][y], boardBasedOnCsv.getBoard()[x][y]);
+                assertEquals(EnvVariables.boardStone[x][y], board.getBoard()[x][y]);
             }
         }
     }
