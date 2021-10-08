@@ -36,7 +36,7 @@ class BoardTest {
 
     @Test
     void getSize() {
-        assertEquals(EnvVariables.BOARD_SIZE, board.getSize());
+        assertEquals(EnvVariables.BOARD_SIZE.intValue(), board.getSize());
     }
 
     @ParameterizedTest
