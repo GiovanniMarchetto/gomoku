@@ -2,6 +2,9 @@ package it.units.sdm.gomoku.entities;
 
 import it.units.sdm.gomoku.EnvVariables;
 import it.units.sdm.gomoku.custom_types.Coordinates;
+import it.units.sdm.gomoku.utils.IOUtility;
+import it.units.sdm.gomoku.utils.Predicates;
+import it.units.sdm.gomoku.utils.TestUtility;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -12,17 +15,13 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static it.units.sdm.gomoku.EnvVariables.CSV_SEPARATOR;
-import static it.units.sdm.gomoku.utils.Predicates.isNonEmptyString;
 import static it.units.sdm.gomoku.utils.TestUtility.provideCoupleOfNonNegativeIntegersTillNExcluded;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -32,29 +31,6 @@ class BoardTest {
     private static final Board.Stone[][] boardStone = readBoardStoneFromCSVFile(EnvVariables.BOARD_19X19_PROVIDER_RESOURCE_LOCATION);
     private static final Board board = new Board(BOARD_SIZE);
 
-    static Board.Stone[][] readBoardStoneFromCSVFile(@NotNull String filePath) {
-
-        try {
-            List<String> lines = Files.readAllLines(Paths.get(Objects.requireNonNull(BoardTest.class.getResource(filePath)).toURI()))
-                    .stream().sequential()
-                    .filter(aLine -> {
-                        String trimmedLine = aLine.trim();
-                        return isNonEmptyString.test(trimmedLine)
-                                && trimmedLine.charAt(0) != '#';    // avoid commented lines in CSV file
-                    })
-                    .collect(Collectors.toList());
-
-            return lines.stream().sequential()
-                    .map(aLine -> Arrays.stream(aLine.split(CSV_SEPARATOR))
-                            .map(Board.Stone::valueOf)
-                            .toArray(Board.Stone[]::new))
-                    .toArray(Board.Stone[][]::new);
-
-        } catch (IOException | URISyntaxException e) {
-            fail(e);
-            return new Board.Stone[0][0];
-        }
-    }
 
     @BeforeAll
     static void setup() {
@@ -68,10 +44,6 @@ class BoardTest {
         } catch (Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
             System.err.println(e.getMessage());
         }
-    }
-
-    static IntStream range() {
-        return IntStream.range(0, BOARD_SIZE);
     }
 
     @Test
@@ -149,7 +121,55 @@ class BoardTest {
         }
     }
 
+
+    @NotNull
+    private static IntStream range() {
+        return IntStream.range(0, BOARD_SIZE);
+    }
+
+    @NotNull
     private static Stream<Arguments> provideCoupleOfNonNegativeIntegersTillBOARD_SIZEExcluded() {
         return provideCoupleOfNonNegativeIntegersTillNExcluded(BOARD_SIZE);
     }
+
+    @NotNull
+    static Board.Stone[][] readBoardStoneFromCSVFile(@NotNull String filePath) {
+
+        Function<String[][], Board.Stone[][]> convertStringMatrixToStoneMatrix = stringMatrix ->
+                Arrays.stream(stringMatrix).sequential()
+                        .map(aLine -> Arrays.stream(aLine)
+                                .map(Board.Stone::valueOf)
+                                .toArray(Board.Stone[]::new))
+                        .toArray(Board.Stone[][]::new);
+
+        try {
+            String[][] boardAsMatrixOfStrings = IOUtility.readFromCsvToStringMatrix(Objects.requireNonNull(filePath));
+            return convertStringMatrixToStoneMatrix.apply(boardAsMatrixOfStrings);
+        } catch (IOException | URISyntaxException e) {
+            fail(e);
+            return new Board.Stone[0][0];
+        }
+    }
+}
+
+class BoardTestTest {
+
+    @Test
+    void readBoardStoneFromCSVFile_testIfMatrixOfCorrectSizeWasRead() {
+        final int SIZE = 19;
+        Board.Stone[][] board = BoardTest.readBoardStoneFromCSVFile(EnvVariables.BOARD_19X19_PROVIDER_RESOURCE_LOCATION);
+        assertTrue(Predicates.isSquareMatrixOfGivenSize.test(board, SIZE));
+    }
+
+    @Test
+    void readBoardStoneFromCSVFile_testIfMatrixContainsOnlyStones() {
+        final int SIZE = 19;
+        String board = Arrays.stream(BoardTest.readBoardStoneFromCSVFile(EnvVariables.BOARD_19X19_PROVIDER_RESOURCE_LOCATION))
+                .map(aRow -> Arrays.stream(aRow).map(String::valueOf).collect(Collectors.joining(IOUtility.CSV_SEPARATOR)))
+                .collect(Collectors.joining(IOUtility.CSV_NEW_LINE));
+        int totalNumberOfValidStonesFound = TestUtility.getTotalNumberOfValidStoneInTheGivenBoarsAsStringInCSVFormat(board);
+        int expectedTotalNumberOfValidStones = SIZE*SIZE;
+        assertEquals(expectedTotalNumberOfValidStones,totalNumberOfValidStonesFound);
+    }
+
 }
