@@ -73,7 +73,7 @@ public class TestUtility {
             String json = Files.readString(Paths.get(Objects.requireNonNull(TestUtility.class.getResource(filePath)).toURI()));
             JSONObject jsonObject = new JSONObject(json);
 
-            return ((JSONArray) jsonObject.get("arguments")).toList()
+            return ((JSONArray) jsonObject.get("data")).toList()
                     .stream().unordered().parallel()
                     .map(argsForOneTest -> {
                         Map<?, ?> argsMap = (HashMap<?, ?>) argsForOneTest;
@@ -86,7 +86,7 @@ public class TestUtility {
                                         .toArray(Board.Stone[]::new))
                                 .toArray(Board.Stone[][]::new);
 
-                        List<Integer> ints = ((List<?>) argsMap.get("coords")).stream().map(x -> (int) x).collect(Collectors.toList());
+                        List<Integer> ints = ((List<?>) argsMap.get("coordinates")).stream().map(x -> (int) x).collect(Collectors.toList());
                         Coordinates coords = new Coordinates(ints.get(0), ints.get(1));
 
                         boolean expected = (boolean) argsMap.get("expected");

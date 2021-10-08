@@ -1,19 +1,135 @@
 {
-  "arguments": [
+  "data": [
     {
       "matrix": [
-        ["BLACK", "WHITE"],
-        ["NONE", "WHITE"]
+        [
+          "BLACK",
+          "BLACK",
+          "BLACK",
+          "WHITE",
+          "WHITE"
+        ],
+        [
+          "NONE",
+          "NONE",
+          "NONE",
+          "NONE",
+          "WHITE"
+        ],
+        [
+          "BLACK",
+          "BLACK",
+          "BLACK",
+          "WHITE",
+          "WHITE"
+        ],
+        [
+          "NONE",
+          "NONE",
+          "NONE",
+          "BLACK",
+          "WHITE"
+        ],
+        [
+          "NONE",
+          "NONE",
+          "NONE",
+          "NONE",
+          "WHITE"
+        ]
       ],
-      "coords": [0, 1],
+      "coordinates": [
+        4,
+        4
+      ],
       "expected": true
     },
     {
       "matrix": [
-        ["NONE", "NONE"],
-        ["NONE", "BLACK"]
+        [
+          "BLACK",
+          "WHITE",
+          "WHITE",
+          "WHITE",
+          "BLACK"
+        ],
+        [
+          "NONE",
+          "NONE",
+          "NONE",
+          "NONE",
+          "WHITE"
+        ],
+        [
+          "BLACK",
+          "BLACK",
+          "BLACK",
+          "BLACK",
+          "BLACK"
+        ],
+        [
+          "NONE",
+          "NONE",
+          "NONE",
+          "WHITE",
+          "WHITE"
+        ],
+        [
+          "NONE",
+          "NONE",
+          "NONE",
+          "NONE",
+          "WHITE"
+        ]
       ],
-      "coords": [1, 1],
+      "coordinates": [
+        2,
+        4
+      ],
+      "expected": true
+    },
+    {
+      "matrix": [
+        [
+          "BLACK",
+          "WHITE",
+          "WHITE",
+          "WHITE",
+          "BLACK"
+        ],
+        [
+          "NONE",
+          "NONE",
+          "NONE",
+          "NONE",
+          "WHITE"
+        ],
+        [
+          "BLACK",
+          "BLACK",
+          "BLACK",
+          "BLACK",
+          "BLACK"
+        ],
+        [
+          "NONE",
+          "NONE",
+          "NONE",
+          "WHITE",
+          "WHITE"
+        ],
+        [
+          "NONE",
+          "NONE",
+          "NONE",
+          "NONE",
+          "WHITE"
+        ]
+      ],
+      "coordinates": [
+        0,
+        0
+      ],
       "expected": false
     }
   ]
