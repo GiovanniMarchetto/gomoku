@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvFileSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -21,11 +22,11 @@ class BoardTest {
     private static Board board = null;
 
     static IntStream range() {
-        return IntStream.range(0, EnvVariables.BOARD_SIZE);
+        return IntStream.range(0, EnvVariables.BOARD_SIZE.intValue());
     }
 
     private static Stream<Arguments> provideCoupleOfNonNegativeIntegersTillBOARD_SIZEExcluded() {
-        return provideCoupleOfNonNegativeIntegersTillNExcluded(EnvVariables.BOARD_SIZE);
+        return provideCoupleOfNonNegativeIntegersTillNExcluded(EnvVariables.BOARD_SIZE.intValue());
     }
 
     @BeforeEach
@@ -41,25 +42,25 @@ class BoardTest {
     @ParameterizedTest
     @MethodSource("range")
     void getStoneAtCoordinates(int x) {
-        for (int y = 0; y < EnvVariables.BOARD_SIZE; y++) {
+        for (int y = 0; y < EnvVariables.BOARD_SIZE.intValue(); y++) {
             assertEquals(EnvVariables.boardStone[x][y], board.getStoneAtCoordinates(new Coordinates(x, y)));
         }
     }
 
     @Test
     void getBoard() {
-        for (int x = 0; x < EnvVariables.BOARD_SIZE; x++) {
-            for (int y = 0; y < EnvVariables.BOARD_SIZE; y++) {
+        for (int x = 0; x < EnvVariables.BOARD_SIZE.intValue(); x++) {
+            for (int y = 0; y < EnvVariables.BOARD_SIZE.intValue(); y++) {
                 assertEquals(EnvVariables.boardStone[x][y], board.getBoard()[x][y]);
             }
         }
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {0, EnvVariables.BOARD_SIZE / 2, EnvVariables.BOARD_SIZE, EnvVariables.BOARD_SIZE + 1})
+    @CsvFileSource(resources = EnvVariables.NON_NEGATIVE_INTS_PROVIDER_RESOURCE_LOCATION)
     void isCoordinatesInsideBoard(int value) {
         Coordinates coordinates = new Coordinates(value, value);
-        assertEquals(value < EnvVariables.BOARD_SIZE, board.isCoordinatesInsideBoard(coordinates));
+        assertEquals(value < EnvVariables.BOARD_SIZE.intValue(), board.isCoordinatesInsideBoard(coordinates));
     }
 
     @Test
@@ -70,8 +71,8 @@ class BoardTest {
     @Test
     void isAnyEmptyPositionOnTheBoard_TestWhenShouldBeFalse() {
         Board board2 = new Board(EnvVariables.BOARD_SIZE);
-        for (int x = 0; x < EnvVariables.BOARD_SIZE; x++) {
-            for (int y = 0; y < EnvVariables.BOARD_SIZE; y++) {
+        for (int x = 0; x < EnvVariables.BOARD_SIZE.intValue(); x++) {
+            for (int y = 0; y < EnvVariables.BOARD_SIZE.intValue(); y++) {
                 try {
                     board2.occupyPosition(Board.Stone.BLACK, new Coordinates(x, y));
                 } catch (Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {

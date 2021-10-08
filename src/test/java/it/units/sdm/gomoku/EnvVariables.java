@@ -1,5 +1,6 @@
 package it.units.sdm.gomoku;
 
+import it.units.sdm.gomoku.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.entities.Board;
 import it.units.sdm.gomoku.utils.TestUtility;
 
@@ -13,5 +14,6 @@ public class EnvVariables {
 
     public final static String CSV_SEPARATOR = ",";
     public final static String CSV_NEW_LINE = "\n";
-    public static final int BOARD_SIZE = 19;
+    public static final PositiveInteger BOARD_SIZE = new PositiveInteger(19);
+    public static final int INT_NUMBER_REPETITIONS_TEST = 40;
 }

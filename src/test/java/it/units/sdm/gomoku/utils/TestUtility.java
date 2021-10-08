@@ -94,8 +94,8 @@ public class TestUtility {
     public static Board setBoardWithCsvBoardStone(){
         Board board = new Board(EnvVariables.BOARD_SIZE);
         try {
-            for (int x = 0; x < EnvVariables.BOARD_SIZE; x++) {
-                for (int y = 0; y < EnvVariables.BOARD_SIZE; y++) {
+            for (int x = 0; x < EnvVariables.BOARD_SIZE.intValue(); x++) {
+                for (int y = 0; y < EnvVariables.BOARD_SIZE.intValue(); y++) {
                     if (!EnvVariables.boardStone[x][y].isNone())
                         board.occupyPosition(EnvVariables.boardStone[x][y], new Coordinates(x, y));
                 }
