@@ -1,0 +1,7 @@
+# Sample file to test I/O utilities for CSV
+1, 2,
+3,  4
+    # Comment in the middle
+5,6 , 7
+
+  # empty lines
