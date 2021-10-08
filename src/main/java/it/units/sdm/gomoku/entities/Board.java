@@ -190,10 +190,6 @@ public class Board {
         BLACK,
         WHITE;
 
-        public boolean isNone() {
-            return this == NONE;
-        }
-
         private static boolean listContainsNConsecutiveStones(
                 @NotNull final List<@NotNull Stone> list,
                 NonNegativeInteger N, @NotNull final Board.Stone stone) {
@@ -210,6 +206,10 @@ public class Board {
                             .mapToInt(y -> y == stone ? 1 : 0/*type conversion*/)
                             .sum())
                     .anyMatch(aSum -> aSum >= n);
+        }
+
+        public boolean isNone() {
+            return this == NONE;
         }
     }
 

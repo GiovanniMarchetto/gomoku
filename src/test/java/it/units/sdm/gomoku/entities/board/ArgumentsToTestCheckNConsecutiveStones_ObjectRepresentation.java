@@ -12,6 +12,53 @@ import java.util.stream.Collectors;
 public class ArgumentsToTestCheckNConsecutiveStones_ObjectRepresentation {
     // TODO : refactoring needed
 
+    @SuppressWarnings("FieldCanBeLocal")    // used for JSON de/serialization
+    private Board.Stone[][] matrix = null;
+    @SuppressWarnings("FieldCanBeLocal")
+    private Coordinates coordinates = null;
+    @SuppressWarnings("FieldCanBeLocal")
+    private boolean expected = false;
+    private ArgumentsToTestCheckNConsecutiveStones_ObjectRepresentation() {
+    }
+    public ArgumentsToTestCheckNConsecutiveStones_ObjectRepresentation(@NotNull Board.Stone[][] matrix, @NotNull Coordinates coordinates, boolean expected) {
+        if (Predicates.isSquareMatrixOfGivenSize.test(matrix, matrix.length)) {
+            this.matrix = matrix;
+            this.coordinates = coordinates;
+            this.expected = expected;
+        } else {
+            throw new IllegalArgumentException("Given matrix is not square but it should.");
+        }
+    }
+
+    public ArgumentsToTestCheckNConsecutiveStones_ObjectRepresentation(@NotNull String[][] matrixOfStonesAsString,
+                                                                       @NonNegativeInteger.NonNegativeIntegerType int cordX,
+                                                                       @NonNegativeInteger.NonNegativeIntegerType int cordY,
+                                                                       boolean expected) {
+        if (Predicates.isSquareMatrixOfGivenSize.test(matrixOfStonesAsString, matrixOfStonesAsString.length)) {
+
+            Map<Character, Board.Stone> correspondence_firstChar_Stone = Arrays.stream(Board.Stone.values())
+                    .map(enumValue -> new AbstractMap.SimpleEntry<>(enumValue.toString().charAt(0), enumValue))
+                    .collect(Collectors.toConcurrentMap(Map.Entry::getKey, Map.Entry::getValue));
+
+            try {
+                this.matrix = Arrays.stream(matrixOfStonesAsString)
+                        .map(aRow -> Arrays.stream(aRow)
+                                .map(aCell -> correspondence_firstChar_Stone.get(aCell.charAt(0)))
+                                .toArray(Board.Stone[]::new)
+                        )
+                        .toArray(Board.Stone[][]::new);
+
+                this.coordinates = new Coordinates(cordX, cordY);
+                this.expected = expected;
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Invalid arguments: " + e.getMessage());
+            }
+
+        } else {
+            throw new IllegalArgumentException("Given matrix is not square but it should.");
+        }
+    }
+
     public static void main(String[] args) {
         // Used to create JSON representation of instances of the class to use in tests
 
@@ -59,56 +106,6 @@ public class ArgumentsToTestCheckNConsecutiveStones_ObjectRepresentation {
                 }, 0, 0, false).toJson());
 
         return data;
-    }
-
-
-    @SuppressWarnings("FieldCanBeLocal")    // used for JSON de/serialization
-    private Board.Stone[][] matrix = null;
-    @SuppressWarnings("FieldCanBeLocal")
-    private Coordinates coordinates = null;
-    @SuppressWarnings("FieldCanBeLocal")
-    private boolean expected = false;
-
-    private ArgumentsToTestCheckNConsecutiveStones_ObjectRepresentation() {
-    }
-
-    public ArgumentsToTestCheckNConsecutiveStones_ObjectRepresentation(@NotNull Board.Stone[][] matrix, @NotNull Coordinates coordinates, boolean expected) {
-        if (Predicates.isSquareMatrixOfGivenSize.test(matrix, matrix.length)) {
-            this.matrix = matrix;
-            this.coordinates = coordinates;
-            this.expected = expected;
-        } else {
-            throw new IllegalArgumentException("Given matrix is not square but it should.");
-        }
-    }
-
-    public ArgumentsToTestCheckNConsecutiveStones_ObjectRepresentation(@NotNull String[][] matrixOfStonesAsString,
-                                                                       @NonNegativeInteger.NonNegativeIntegerType int cordX,
-                                                                       @NonNegativeInteger.NonNegativeIntegerType int cordY,
-                                                                       boolean expected) {
-        if (Predicates.isSquareMatrixOfGivenSize.test(matrixOfStonesAsString, matrixOfStonesAsString.length)) {
-
-            Map<Character, Board.Stone> correspondence_firstChar_Stone = Arrays.stream(Board.Stone.values())
-                    .map(enumValue -> new AbstractMap.SimpleEntry<>(enumValue.toString().charAt(0), enumValue))
-                    .collect(Collectors.toConcurrentMap(Map.Entry::getKey, Map.Entry::getValue));
-
-            try {
-                this.matrix = Arrays.stream(matrixOfStonesAsString)
-                        .map(aRow -> Arrays.stream(aRow)
-                                .map(aCell -> correspondence_firstChar_Stone.get(aCell.charAt(0)))
-                                .toArray(Board.Stone[]::new)
-                        )
-                        .toArray(Board.Stone[][]::new);
-
-                this.coordinates = new Coordinates(cordX, cordY);
-                this.expected = expected;
-            } catch (Exception e) {
-                throw new IllegalArgumentException("Invalid arguments: " + e.getMessage());
-            }
-
-        } else {
-            throw new IllegalArgumentException("Given matrix is not square but it should.");
-        }
     }
 
     @NotNull

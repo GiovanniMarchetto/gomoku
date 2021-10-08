@@ -2,8 +2,8 @@ package it.units.sdm.gomoku.entities.board;
 
 import it.units.sdm.gomoku.EnvVariables;
 import it.units.sdm.gomoku.custom_types.Coordinates;
-import it.units.sdm.gomoku.entities.Board;
 import it.units.sdm.gomoku.custom_types.NonNegativeInteger;
+import it.units.sdm.gomoku.entities.Board;
 import it.units.sdm.gomoku.utils.IOUtility;
 import it.units.sdm.gomoku.utils.Predicates;
 import it.units.sdm.gomoku.utils.TestUtility;
