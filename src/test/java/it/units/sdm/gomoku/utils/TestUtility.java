@@ -120,30 +120,6 @@ public class TestUtility {
                 .collect(Collectors.toConcurrentMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    public static Board.Stone[][] readBoardStoneFromCSVFile(@NotNull String filePath) {
-
-        try {
-            List<String> lines = Files.readAllLines(Paths.get(Objects.requireNonNull(TestUtility.class.getResource(filePath)).toURI()))
-                    .stream().sequential()
-                    .filter(aLine -> {
-                        String trimmedLine = aLine.trim();
-                        return isNonEmptyString.test(trimmedLine)
-                                && trimmedLine.charAt(0) != '#';    // avoid commented lines in CSV file
-                    })
-                    .collect(Collectors.toList());
-
-            return lines.stream().sequential()
-                    .map(aLine -> Arrays.stream(aLine.split(CSV_SEPARATOR))
-                            .map(Board.Stone::valueOf)
-                            .toArray(Board.Stone[]::new))
-                    .toArray(Board.Stone[][]::new);
-
-        } catch (IOException | URISyntaxException e) {
-            fail(e);
-            return new Board.Stone[0][0];
-        }
-    }
-
     @NotNull
     static Stream<Stream<String>> getRowsAsStreamOfStringFromBoarsProvidedAsStringRepresentingTheMatrixInCSVFormat(@NotNull final String boardAsStringInCSVFormat) {
         return Arrays.stream(Objects.requireNonNull(boardAsStringInCSVFormat).split(CSV_NEW_LINE))
