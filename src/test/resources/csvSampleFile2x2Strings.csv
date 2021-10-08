@@ -1,0 +1,7 @@
+# Sample file to test I/O utilities for CSV with a Matrix of Strings
+A, B,
+C,  "D
+    # Comment in the middle
+"EF G","H" , 'I
+
+  # empty lines

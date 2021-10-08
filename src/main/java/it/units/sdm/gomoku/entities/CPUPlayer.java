@@ -38,8 +38,8 @@ public class CPUPlayer extends Player {
                 return coordinates;
 
             y = (y == (boardSize - 1)) ? 0 : y + 1;
-            if ((totalCases % boardSize) == 0){
-                x=x+1;
+            if ((totalCases % boardSize) == 0) {
+                x = x + 1;
             }
 
             totalCases++;
