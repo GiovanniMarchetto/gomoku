@@ -1,0 +1,20 @@
+{
+  "arguments": [
+    {
+      "matrix": [
+        ["BLACK", "WHITE"],
+        ["NONE", "WHITE"]
+      ],
+      "coords": [0, 1],
+      "expected": true
+    },
+    {
+      "matrix": [
+        ["NONE", "NONE"],
+        ["NONE", "BLACK"]
+      ],
+      "coords": [1, 1],
+      "expected": false
+    }
+  ]
+}

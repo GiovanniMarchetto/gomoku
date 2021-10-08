@@ -5,9 +5,13 @@ import it.units.sdm.gomoku.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.custom_types.PositiveInteger;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static it.units.sdm.gomoku.custom_types.PositiveInteger.PositiveIntegerType;
 
@@ -125,6 +129,62 @@ public class Board {
         return s.toString();
     }
 
+    public boolean checkNConsecutiveStones(@NotNull final Coordinates coords, NonNegativeInteger N) {
+        Stone stone = getStoneAtCoordinates(Objects.requireNonNull(coords));
+        if (stone.isNone()) {
+            throw new IllegalArgumentException("Given coordinates cannot refer to Stone." + stone);
+        }
+        return Stream.of(rowToList(coords), columnToList(coords), fwdDiagonalToList(coords), bckDiagonalToList(coords))
+                .unordered().parallel()
+                .anyMatch(stones -> Stone.listContainsNConsecutiveStones(stones, N, stone));
+    }
+
+    @NotNull
+    private List<Stone> fwdDiagonalToList(@NotNull final Coordinates coords) {
+        // TODO : very similar to bckDiagonalToList (refactoring?)
+        int S = getSize();
+        int diagN = Objects.requireNonNull(coords).getX() + coords.getY();
+        int x = diagN < S ? diagN : S - 1;
+        int y = diagN < S ? 0 : diagN - (S - 1);
+        ArrayList<Stone> arr = new ArrayList<>();
+        while (y < S && x >= 0) {
+            arr.add(matrix[x][y]);
+            x--;
+            y++;
+        }
+        return arr;
+    }
+
+    @NotNull
+    private ArrayList<Stone> bckDiagonalToList(@NotNull final Coordinates coords) {
+        int S = getSize();
+        int diagN = Objects.requireNonNull(coords).getX() - coords.getY();
+        int x = Math.max(diagN, 0);
+        int y = -Math.min(diagN, 0);
+        ArrayList<Stone> arr = new ArrayList<>();
+        while (x < S && y < S) {
+            arr.add(matrix[x][y]);
+            x++;
+            y++;
+        }
+        return arr;
+    }
+
+    @NotNull
+    private List<Stone> columnToList(@NotNull final Coordinates coords) {
+        Objects.requireNonNull(coords);
+        return IntStream
+                .range(0, getSize())
+                .sequential()
+                .mapToObj(x -> matrix[x][coords.getY()])
+                .collect(Collectors.toList());
+    }
+
+    @NotNull
+    private List<Stone> rowToList(@NotNull final Coordinates coords) {
+        return new ArrayList<>(Arrays.asList(matrix[Objects.requireNonNull(coords).getX()]));
+    }
+
     public enum Stone {
         NONE,
         BLACK,
@@ -132,6 +192,24 @@ public class Board {
 
         public boolean isNone() {
             return this == NONE;
+        }
+
+        private static boolean listContainsNConsecutiveStones(
+                @NotNull final List<@NotNull Stone> list,
+                NonNegativeInteger N, @NotNull final Board.Stone stone) {
+
+            int n = N.intValue();
+
+            if (list.size() < n)
+                return false;
+
+            return IntStream.range(0, list.size() - n + 1)
+                    .unordered()
+                    .map(x -> list.subList(x, x + n)
+                            .stream()
+                            .mapToInt(y -> y == stone ? 1 : 0/*type conversion*/)
+                            .sum())
+                    .anyMatch(aSum -> aSum >= n);
         }
     }
 

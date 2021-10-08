@@ -3,6 +3,7 @@ module it.units.sdm.gomoku {
     requires javafx.fxml;
     requires org.jetbrains.annotations;
     requires java.logging;
+    requires org.json;
 
 
     exports it.units.sdm.gomoku;

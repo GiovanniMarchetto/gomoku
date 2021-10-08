@@ -10,6 +10,7 @@ public class EnvVariables {
     public final static String COUPLE_OF_NON_NEGATIVE_INTS_PROVIDER_RESOURCE_LOCATION = "/coupleInts.csv";
     public final static String PLAYERS_NAME_PROVIDER_RESOURCE_LOCATION = "/names.csv";
     public final static String BOARD_19X19_PROVIDER_RESOURCE_LOCATION = "/boardExample19x19.csv";
+    public final static String END_GAMES = "/endGames.json";
     public static final Board.Stone[][] boardStone = TestUtility.readBoardStoneFromCSVFile(BOARD_19X19_PROVIDER_RESOURCE_LOCATION);
 
     public final static String CSV_SEPARATOR = ",";

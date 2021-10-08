@@ -2,6 +2,7 @@ package it.units.sdm.gomoku.entities;
 
 import it.units.sdm.gomoku.EnvVariables;
 import it.units.sdm.gomoku.custom_types.Coordinates;
+import it.units.sdm.gomoku.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.utils.TestUtility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static it.units.sdm.gomoku.utils.TestUtility.provideCoupleOfNonNegativeIntegersTillNExcluded;
+import static it.units.sdm.gomoku.utils.TestUtility.readBoardsWithWinCoordsAndResultsFromCSV;
 import static org.junit.jupiter.api.Assertions.*;
 
 class BoardTest {
@@ -27,6 +29,10 @@ class BoardTest {
 
     private static Stream<Arguments> provideCoupleOfNonNegativeIntegersTillBOARD_SIZEExcluded() {
         return provideCoupleOfNonNegativeIntegersTillNExcluded(EnvVariables.BOARD_SIZE.intValue());
+    }
+
+    private static Stream<Arguments> readBoardsWithWinCoordsAndResultsFromSampleCSV() {
+        return readBoardsWithWinCoordsAndResultsFromCSV(EnvVariables.END_GAMES);
     }
 
     @BeforeEach
@@ -100,5 +106,25 @@ class BoardTest {
                 fail();
             }
         }
+    }
+
+    @ParameterizedTest
+    @MethodSource("readBoardsWithWinCoordsAndResultsFromSampleCSV")
+    void checkNConsecutiveStones(Board.Stone[][] matrix, Coordinates coordinates, boolean expected) {
+        Board b = new Board(matrix.length);
+        try {
+            for (int i = 0; i < matrix.length; i++)
+                for (int j = 0; j < matrix[i].length; j++)
+                    if (!matrix[i][j].isNone())
+                        b.occupyPosition(matrix[i][j], new Coordinates(i, j));
+        } catch (IllegalArgumentException e) {
+            if (!matrix[coordinates.getX()][coordinates.getY()].isNone()) {
+                fail(e);
+            }
+        } catch (Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
+            fail(e);
+        }
+        NonNegativeInteger N = new NonNegativeInteger(2);
+        assertEquals(expected, b.checkNConsecutiveStones(coordinates, N));
     }
 }

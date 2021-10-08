@@ -35,6 +35,7 @@ javafx {
 
 dependencies {
     implementation "org.jetbrains:annotations:${jetbrainsAnnotationVersion}"
+    implementation("org.json:json:20210307")
     testImplementation(platform("org.junit:junit-bom:${junitVersion}"))
     testImplementation("org.junit.jupiter:junit-jupiter:${junitVersion}")
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")

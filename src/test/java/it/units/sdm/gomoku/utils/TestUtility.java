@@ -4,6 +4,8 @@ import it.units.sdm.gomoku.EnvVariables;
 import it.units.sdm.gomoku.custom_types.Coordinates;
 import it.units.sdm.gomoku.entities.Board;
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -66,6 +68,38 @@ public class TestUtility {
                 .flatMap(i -> IntStream.range(0, N).mapToObj(j -> Arguments.of(i, j)));
     }
 
+    @NotNull
+    public static Stream<Arguments> readBoardsWithWinCoordsAndResultsFromCSV(@NotNull String filePath) {
+        try {
+            String json = Files.readString(Paths.get(Objects.requireNonNull(TestUtility.class.getResource(filePath)).toURI()));
+            JSONObject jsonObject = new JSONObject(json);
+
+            return ((JSONArray) jsonObject.get("arguments")).toList()
+                    .stream().unordered().parallel()
+                    .map(argsForOneTest -> {
+                        Map<?, ?> argsMap = (HashMap<?, ?>) argsForOneTest;
+
+                        Board.Stone[][] matrix = ((List<?>) (argsMap).get("matrix"))
+                                .stream().sequential()
+                                .map(row -> ((List<?>) row)
+                                        .stream()
+                                        .map(cell -> Board.Stone.valueOf((String) cell))
+                                        .toArray(Board.Stone[]::new))
+                                .toArray(Board.Stone[][]::new);
+
+                        List<Integer> ints = ((List<?>) argsMap.get("coords")).stream().map(x -> (int) x).collect(Collectors.toList());
+                        Coordinates coords = new Coordinates(ints.get(0), ints.get(1));
+
+                        boolean expected = (boolean) argsMap.get("expected");
+
+                        return Arguments.of(matrix, coords, expected);
+                    });
+        } catch (IOException | URISyntaxException e) {
+            fail(e);
+            return Stream.empty();
+        }
+    }
+
     public static Board.Stone[][] readBoardStoneFromCSVFile(@NotNull String filePath) {
 
         try {
@@ -91,7 +125,7 @@ public class TestUtility {
     }
 
     @NotNull
-    public static Board setBoardWithCsvBoardStone(){
+    public static Board setBoardWithCsvBoardStone() {
         Board board = new Board(EnvVariables.BOARD_SIZE);
         try {
             for (int x = 0; x < EnvVariables.BOARD_SIZE.intValue(); x++) {
@@ -109,7 +143,7 @@ public class TestUtility {
 
 class TestUtilityTest {
 
-    private final static int LIMIT_VALUE_FOR_N = 200; // avoid to create too big boards
+    private final static int LIMIT_VALUE_FOR_N = 200; // avoid create too big boards
 
     @ParameterizedTest
     @CsvFileSource(resources = EnvVariables.INTS_PROVIDER_RESOURCE_LOCATION)
