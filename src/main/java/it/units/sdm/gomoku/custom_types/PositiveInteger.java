@@ -5,29 +5,28 @@ import java.lang.annotation.Target;
 
 import static java.lang.annotation.ElementType.*;
 
-public class PositiveOddInteger extends PositiveInteger {
-
+public class PositiveInteger extends NonNegativeInteger {
     /**
      * Initialize the number to 1.
      */
-    public PositiveOddInteger() {
+    public PositiveInteger() {
         super(1);
     }
 
-    public PositiveOddInteger(@PositiveOddIntegerType int value) {
+    public PositiveInteger(@PositiveIntegerType int value) {
         super(value);
-        if (value % 2 == 0) {
-            throw new IllegalArgumentException("The value must be odd");
+        if (value <= 0) {
+            throw new IllegalArgumentException("The value must be positive");
         }
     }
 
     /**
      * This annotation is used to indicate that the value must be a
-     * positive (&gt;0) and odd integer, suitable for an instance of
-     * {@link PositiveOddInteger}.
+     * positive (&gt;0) integer, suitable for an instance of
+     * {@link PositiveInteger}.
      */
     @Documented
     @Target({METHOD, FIELD, PARAMETER, LOCAL_VARIABLE})
-    public @interface PositiveOddIntegerType {
+    public @interface PositiveIntegerType {
     }
 }

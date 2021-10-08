@@ -95,6 +95,11 @@ class TestUtilityTest {
 
     private final static int LIMIT_VALUE_FOR_N = 200; // avoid creating too big boards
 
+    @NotNull
+    static Stream<Arguments> provideCoupleOfNonNegativeIntegersTill19Excluded() {
+        return TestUtility.provideCoupleOfNonNegativeIntegersTillNExcluded(19);
+    }
+
     @ParameterizedTest
     @CsvFileSource(resources = EnvVariables.INTS_PROVIDER_RESOURCE_LOCATION)
     void createNxNRandomBoardToStringTest_testMethodWithoutSeedParam(int N, TestInfo testInfo) {
@@ -127,10 +132,5 @@ class TestUtilityTest {
         String boardAsCSVString = createNxNRandomBoardToStringInCSVFormat(N, randomSeed);
         int totalNumberOfValidStones = TestUtility.getTotalNumberOfValidStoneInTheGivenBoarsAsStringInCSVFormat(boardAsCSVString);
         assertEquals(expectedNumberOfStonesToBePresent, totalNumberOfValidStones);
-    }
-
-    @NotNull
-    static Stream<Arguments> provideCoupleOfNonNegativeIntegersTill19Excluded() {
-        return TestUtility.provideCoupleOfNonNegativeIntegersTillNExcluded(19);
     }
 }

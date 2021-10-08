@@ -1,5 +1,7 @@
 package it.units.sdm.gomoku;
 
+import it.units.sdm.gomoku.custom_types.PositiveInteger;
+
 public class EnvVariables {
     public final static String INTS_PROVIDER_RESOURCE_LOCATION = "/ints.csv";
     public final static String NON_NEGATIVE_INTS_PROVIDER_RESOURCE_LOCATION = "/nonNegativeInts.csv";
@@ -9,4 +11,6 @@ public class EnvVariables {
     public final static String CSV_SAMPLE_FILE_2X2_INT_MATRIX_PROVIDER_RESOURCE_LOCATION = "/csvSampleFile2x2Ints.csv";
     public final static String CSV_SAMPLE_FILE_2X2_STRING_MATRIX_PROVIDER_RESOURCE_LOCATION = "/csvSampleFile2x2Strings.csv";
 
+    public static final PositiveInteger BOARD_SIZE = new PositiveInteger(19);
+    public static final int INT_NUMBER_REPETITIONS_TEST = 40;
 }

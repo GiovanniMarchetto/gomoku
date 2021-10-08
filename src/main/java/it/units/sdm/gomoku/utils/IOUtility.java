@@ -39,11 +39,11 @@ public class IOUtility {
                 .map(aLine -> Arrays.stream(aLine.split(CSV_SEPARATOR))
                         .map(String::trim)
                         .map(trimmedCell -> {
-                            if( trimmedCell.length()>=2 ) {
+                            if (trimmedCell.length() >= 2) {
                                 char firstCharacter = trimmedCell.charAt(0);
-                                char lastCharacter = trimmedCell.charAt(trimmedCell.length()-1);
-                                if (firstCharacter == '"' && lastCharacter==firstCharacter) {
-                                    trimmedCell = trimmedCell.substring(1,trimmedCell.length()-1);
+                                char lastCharacter = trimmedCell.charAt(trimmedCell.length() - 1);
+                                if (firstCharacter == '"' && lastCharacter == firstCharacter) {
+                                    trimmedCell = trimmedCell.substring(1, trimmedCell.length() - 1);
                                 }
                             }
                             return trimmedCell;
