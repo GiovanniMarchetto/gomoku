@@ -45,17 +45,11 @@ class BoardTest {
 
     @Test
     void getBoard() {
-        Board boardBasedOnCsv = new Board(EnvVariables.BOARD_SIZE);
-        try {
-            for (int x = 0; x < EnvVariables.BOARD_SIZE; x++) {
-                for (int y = 0; y < EnvVariables.BOARD_SIZE; y++) {
-                    if (!EnvVariables.boardStone[x][y].isNone())
-                        boardBasedOnCsv.occupyPosition(EnvVariables.boardStone[x][y], new Coordinates(x, y));
-                    assertEquals(EnvVariables.boardStone[x][y], boardBasedOnCsv.getBoard()[x][y]);
-                }
+        Board boardBasedOnCsv = TestUtility.setBoardWithCsvBoardStone();
+        for (int x = 0; x < EnvVariables.BOARD_SIZE; x++) {
+            for (int y = 0; y < EnvVariables.BOARD_SIZE; y++) {
+                assertEquals(EnvVariables.boardStone[x][y], boardBasedOnCsv.getBoard()[x][y]);
             }
-        } catch (Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
-            System.err.println(e.getMessage());
         }
     }
 
