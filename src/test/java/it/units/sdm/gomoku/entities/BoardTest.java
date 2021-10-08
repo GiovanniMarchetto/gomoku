@@ -9,7 +9,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvFileSource;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -40,20 +39,16 @@ class BoardTest {
     }
 
     @ParameterizedTest
-    @MethodSource("range")
-    void getStoneAtCoordinates(int x) {
-        for (int y = 0; y < EnvVariables.BOARD_SIZE.intValue(); y++) {
-            assertEquals(EnvVariables.boardStone[x][y], board.getStoneAtCoordinates(new Coordinates(x, y)));
-        }
+    @MethodSource("provideCoupleOfNonNegativeIntegersTillBOARD_SIZEExcluded")
+    void getStoneAtCoordinates(int x, int y) {
+        assertEquals(EnvVariables.boardStone[x][y], board.getStoneAtCoordinates(new Coordinates(x, y)));
+
     }
 
-    @Test
-    void getBoard() {
-        for (int x = 0; x < EnvVariables.BOARD_SIZE.intValue(); x++) {
-            for (int y = 0; y < EnvVariables.BOARD_SIZE.intValue(); y++) {
-                assertEquals(EnvVariables.boardStone[x][y], board.getBoard()[x][y]);
-            }
-        }
+    @ParameterizedTest
+    @MethodSource("provideCoupleOfNonNegativeIntegersTillBOARD_SIZEExcluded")
+    void getBoard(int x, int y) {
+        assertEquals(EnvVariables.boardStone[x][y], board.getBoard()[x][y]);
     }
 
     @ParameterizedTest
@@ -92,9 +87,8 @@ class BoardTest {
             assertTrue(EnvVariables.boardStone[x][y].isNone());
             assertEquals(Board.Stone.BLACK, board.getStoneAtCoordinates(coordinates));
         } catch (Board.NoMoreEmptyPositionAvailableException e) {
-            if (x != 18 && y != 17) {
-                fail();
-            }
+            Coordinates firstCoordinateAfterFillBoard = new Coordinates(18, 17);
+            assertEquals(firstCoordinateAfterFillBoard, coordinates);
         } catch (Board.PositionAlreadyOccupiedException e) {
             if (EnvVariables.boardStone[x][y].isNone()) {
                 fail();
