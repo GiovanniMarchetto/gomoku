@@ -1,7 +1,8 @@
-package it.units.sdm.gomoku.entities;
+package it.units.sdm.gomoku.entities.board;
 
 import it.units.sdm.gomoku.EnvVariables;
 import it.units.sdm.gomoku.custom_types.Coordinates;
+import it.units.sdm.gomoku.entities.Board;
 import it.units.sdm.gomoku.utils.IOUtility;
 import it.units.sdm.gomoku.utils.Predicates;
 import it.units.sdm.gomoku.utils.TestUtility;
@@ -24,7 +25,7 @@ import java.util.stream.Stream;
 import static it.units.sdm.gomoku.utils.TestUtility.provideCoupleOfNonNegativeIntegersTillNExcluded;
 import static org.junit.jupiter.api.Assertions.*;
 
-class BoardTest {
+public class BoardTest {
 
     public static final Board.Stone[][] boardStone = readBoardStoneFromCSVFile(EnvVariables.BOARD_19X19_PROVIDER_RESOURCE_LOCATION);
     private static Board board = null;
