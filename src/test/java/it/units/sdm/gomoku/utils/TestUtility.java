@@ -1,15 +1,22 @@
 package it.units.sdm.gomoku.utils;
 
 import it.units.sdm.gomoku.EnvVariables;
+import it.units.sdm.gomoku.custom_types.Coordinates;
 import it.units.sdm.gomoku.entities.Board;
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvFileSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -20,8 +27,7 @@ import static it.units.sdm.gomoku.utils.IOUtility.CSV_NEW_LINE;
 import static it.units.sdm.gomoku.utils.IOUtility.CSV_SEPARATOR;
 import static it.units.sdm.gomoku.utils.Predicates.isNonEmptyString;
 import static it.units.sdm.gomoku.utils.TestUtility.createNxNRandomBoardToStringInCSVFormat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestUtility {
 
@@ -59,6 +65,38 @@ public class TestUtility {
                 .unordered().parallel()
                 .boxed()
                 .flatMap(i -> IntStream.range(0, N).mapToObj(j -> Arguments.of(i, j)));
+    }
+
+    @NotNull
+    public static Stream<Arguments> readBoardsWithWinCoordsAndResultsFromCSV(@NotNull String filePath) {
+        try {
+            String json = Files.readString(Paths.get(Objects.requireNonNull(TestUtility.class.getResource(filePath)).toURI()));
+            JSONObject jsonObject = new JSONObject(json);
+
+            return ((JSONArray) jsonObject.get("arguments")).toList()
+                    .stream().unordered().parallel()
+                    .map(argsForOneTest -> {
+                        Map<?, ?> argsMap = (HashMap<?, ?>) argsForOneTest;
+
+                        Board.Stone[][] matrix = ((List<?>) (argsMap).get("matrix"))
+                                .stream().sequential()
+                                .map(row -> ((List<?>) row)
+                                        .stream()
+                                        .map(cell -> Board.Stone.valueOf((String) cell))
+                                        .toArray(Board.Stone[]::new))
+                                .toArray(Board.Stone[][]::new);
+
+                        List<Integer> ints = ((List<?>) argsMap.get("coords")).stream().map(x -> (int) x).collect(Collectors.toList());
+                        Coordinates coords = new Coordinates(ints.get(0), ints.get(1));
+
+                        boolean expected = (boolean) argsMap.get("expected");
+
+                        return Arguments.of(matrix, coords, expected);
+                    });
+        } catch (IOException | URISyntaxException e) {
+            fail(e);
+            return Stream.empty();
+        }
     }
 
     public static int getTotalNumberOfValidStoneInTheGivenBoarsAsStringInCSVFormat(@NotNull final String boardAsCSVString) {

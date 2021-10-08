@@ -3,6 +3,7 @@ package it.units.sdm.gomoku.entities.board;
 import it.units.sdm.gomoku.EnvVariables;
 import it.units.sdm.gomoku.custom_types.Coordinates;
 import it.units.sdm.gomoku.entities.Board;
+import it.units.sdm.gomoku.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.utils.IOUtility;
 import it.units.sdm.gomoku.utils.Predicates;
 import it.units.sdm.gomoku.utils.TestUtility;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static it.units.sdm.gomoku.utils.TestUtility.provideCoupleOfNonNegativeIntegersTillNExcluded;
+import static it.units.sdm.gomoku.utils.TestUtility.readBoardsWithWinCoordsAndResultsFromCSV;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class BoardTest {
@@ -68,6 +70,10 @@ public class BoardTest {
 
     private static Stream<Arguments> provideCoupleOfNonNegativeIntegersTillBOARD_SIZEExcluded() {
         return provideCoupleOfNonNegativeIntegersTillNExcluded(EnvVariables.BOARD_SIZE.intValue());
+    }
+
+    private static Stream<Arguments> readBoardsWithWinCoordsAndResultsFromSampleCSV() {
+        return readBoardsWithWinCoordsAndResultsFromCSV(EnvVariables.END_GAMES);
     }
 
     @BeforeEach
@@ -136,6 +142,26 @@ public class BoardTest {
                 fail();
             }
         }
+    }
+
+    @ParameterizedTest
+    @MethodSource("readBoardsWithWinCoordsAndResultsFromSampleCSV")
+    void checkNConsecutiveStones(Board.Stone[][] matrix, Coordinates coordinates, boolean expected) {
+        Board b = new Board(matrix.length);
+        try {
+            for (int i = 0; i < matrix.length; i++)
+                for (int j = 0; j < matrix[i].length; j++)
+                    if (!matrix[i][j].isNone())
+                        b.occupyPosition(matrix[i][j], new Coordinates(i, j));
+        } catch (IllegalArgumentException e) {
+            if (!matrix[coordinates.getX()][coordinates.getY()].isNone()) {
+                fail(e);
+            }
+        } catch (Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
+            fail(e);
+        }
+        NonNegativeInteger N = new NonNegativeInteger(2);
+        assertEquals(expected, b.checkNConsecutiveStones(coordinates, N));
     }
 }
 
