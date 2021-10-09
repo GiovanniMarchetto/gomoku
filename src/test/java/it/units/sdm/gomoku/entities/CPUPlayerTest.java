@@ -3,32 +3,21 @@ package it.units.sdm.gomoku.entities;
 import it.units.sdm.gomoku.EnvVariables;
 import it.units.sdm.gomoku.custom_types.Coordinates;
 import it.units.sdm.gomoku.utils.TestUtility;
-import it.units.sdm.gomoku.entities.board.BoardTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
-import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class CPUPlayerTest {
 
-    Board board = new Board(EnvVariables.BOARD_SIZE);
-    CPUPlayer cpuPlayer = new CPUPlayer("cpuPlayer");
-    Board.Stone cpuStone = Board.Stone.BLACK;
+    private static Board board = null;
+    private final CPUPlayer cpuPlayer = new CPUPlayer("cpuPlayer");
+    private final Board.Stone cpuStone = Board.Stone.BLACK;
 
     @BeforeEach
     void setup() {
-        try {
-            for (int x = 0; x < EnvVariables.BOARD_SIZE.intValue(); x++) {
-                for (int y = 0; y < EnvVariables.BOARD_SIZE.intValue(); y++) {
-                    if (!TestUtility.boardStone[x][y].isNone())
-                        board.occupyPosition(TestUtility.boardStone[x][y], new Coordinates(x, y));
-                }
-            }
-        } catch (Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
-            System.err.println(e.getMessage());
-        }
+        board = TestUtility.setBoardWithCsvBoardStone();
     }
 
     @RepeatedTest(EnvVariables.INT_NUMBER_REPETITIONS_TEST)
