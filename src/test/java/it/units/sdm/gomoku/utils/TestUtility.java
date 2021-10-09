@@ -2,6 +2,7 @@ package it.units.sdm.gomoku.utils;
 
 import it.units.sdm.gomoku.EnvVariables;
 import it.units.sdm.gomoku.custom_types.Coordinates;
+import it.units.sdm.gomoku.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.entities.Board;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -33,14 +34,19 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestUtility {
 
-    public static final Board.Stone[][] boardStone = TestUtility.readBoardStoneFromCSVFile(EnvVariables.BOARD_19X19_PROVIDER_RESOURCE_LOCATION);
+    public static final Board.Stone[][] boardStoneFromCsv = TestUtility.readBoardStoneFromCSVFile(EnvVariables.BOARD_19X19_PROVIDER_RESOURCE_LOCATION);
 
     @NotNull
-    public static Board setBoardWithCsvBoardStone() {
-        Board board = new Board(EnvVariables.BOARD_SIZE);
+    public static Board createBoardWithCsvBoardStone() {
+        return createBoardFromBoardStone(boardStoneFromCsv, EnvVariables.BOARD_SIZE);
+    }
+
+    @NotNull
+    public static Board createBoardFromBoardStone(Board.Stone[][] boardStone, PositiveInteger boardSize) {
+        Board board = new Board(boardSize);
         try {
-            for (int x = 0; x < EnvVariables.BOARD_SIZE.intValue(); x++) {
-                for (int y = 0; y < EnvVariables.BOARD_SIZE.intValue(); y++) {
+            for (int x = 0; x < boardSize.intValue(); x++) {
+                for (int y = 0; y < boardSize.intValue(); y++) {
                     if (!boardStone[x][y].isNone())
                         board.occupyPosition(boardStone[x][y], new Coordinates(x, y));
                 }
@@ -49,6 +55,11 @@ public class TestUtility {
             System.err.println(e.getMessage());
         }
         return board;
+    }
+
+    @NotNull
+    public static Board createBoardFromBoardStone(Board.Stone[][] boardStone, int boardSize) {
+        return createBoardFromBoardStone(boardStone, new PositiveInteger(boardSize));
     }
 
     @NotNull

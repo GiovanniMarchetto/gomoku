@@ -17,7 +17,7 @@ class CPUPlayerTest {
 
     @BeforeEach
     void setup() {
-        board = TestUtility.setBoardWithCsvBoardStone();
+        board = TestUtility.createBoardWithCsvBoardStone();
     }
 
     @RepeatedTest(EnvVariables.INT_NUMBER_REPETITIONS_TEST)

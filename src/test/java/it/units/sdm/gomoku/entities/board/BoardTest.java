@@ -32,7 +32,7 @@ public class BoardTest {
 
     @BeforeEach
     void setup() {
-        board = TestUtility.setBoardWithCsvBoardStone();
+        board = TestUtility.createBoardWithCsvBoardStone();
     }
 
     @Test
@@ -43,14 +43,14 @@ public class BoardTest {
     @ParameterizedTest
     @MethodSource("provideCoupleOfNonNegativeIntegersTillBOARD_SIZEExcluded")
     void getStoneAtCoordinates(int x, int y) {
-        assertEquals(TestUtility.boardStone[x][y], board.getStoneAtCoordinates(new Coordinates(x, y)));
+        assertEquals(TestUtility.boardStoneFromCsv[x][y], board.getStoneAtCoordinates(new Coordinates(x, y)));
 
     }
 
     @ParameterizedTest
     @MethodSource("provideCoupleOfNonNegativeIntegersTillBOARD_SIZEExcluded")
     void getBoard(int x, int y) {
-        assertEquals(TestUtility.boardStone[x][y], board.getBoard()[x][y]);
+        assertEquals(TestUtility.boardStoneFromCsv[x][y], board.getBoard()[x][y]);
     }
 
     @ParameterizedTest
@@ -86,13 +86,13 @@ public class BoardTest {
         Coordinates coordinates = new Coordinates(x, y);
         try {
             board.occupyPosition(Board.Stone.BLACK, coordinates);
-            assertTrue(TestUtility.boardStone[x][y].isNone());
+            assertTrue(TestUtility.boardStoneFromCsv[x][y].isNone());
             assertEquals(Board.Stone.BLACK, board.getStoneAtCoordinates(coordinates));
         } catch (Board.NoMoreEmptyPositionAvailableException e) {
             Coordinates firstCoordinateAfterFillBoard = new Coordinates(18, 17);
             assertEquals(firstCoordinateAfterFillBoard, coordinates);
         } catch (Board.PositionAlreadyOccupiedException e) {
-            if (TestUtility.boardStone[x][y].isNone()) {
+            if (TestUtility.boardStoneFromCsv[x][y].isNone()) {
                 fail();
             }
         }
