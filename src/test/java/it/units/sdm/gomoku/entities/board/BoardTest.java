@@ -121,29 +121,37 @@ public class BoardTest {
 
     @Test
     void testEquals() throws Board.NoMoreEmptyPositionAvailableException, Board.PositionAlreadyOccupiedException {
-        Board expected = new Board(board.getSize() + 1);
-        assertNotEquals(expected, board);
+        assertEquals(board, board);
+        Board b2 = TestUtility.createBoardWithCsvBoardStone();
+        assertEquals(board, b2);
 
-        expected = TestUtility.createBoardWithCsvBoardStone();
-        assertEquals(expected, board);
-        assertEquals(expected, expected);
-
-//        expected = new Board(board.getSize());
-//        for (int x = 0; x < expected.getSize(); x++) {
-//            for (int y = 0; y < expected.getSize(); y++) {
-//                Coordinates coordinates = new Coordinates(x, y);
-//                if (expected.getStoneAtCoordinates(coordinates).isNone()) {
-//                    expected.occupyPosition(Board.Stone.BLACK, coordinates);
-//                    break;
-//                }
-//            }
-//        }
-//        assertNotEquals(expected,board);
+        assertNotEquals(board, new Object());
+        assertNotEquals(board, new Board(board.getSize() + 1));
+        assertNotEquals(board, new Board(board.getSize()));
+        Board b3 = TestUtility.createBoardWithCsvBoardStone();
+        int found = 0;
+        for (int x = 0; x < board.getSize() && found < 2; x++) {
+            for (int y = 0; y < board.getSize() && found < 2; y++) {
+                Coordinates coordinates = new Coordinates(x, y);
+                if (b2.getStoneAtCoordinates(coordinates).isNone() || b3.getStoneAtCoordinates(coordinates).isNone()) {
+                    switch (found) {
+                        case 0 -> b2.occupyPosition(Board.Stone.BLACK, coordinates);
+                        case 1 -> b3.occupyPosition(Board.Stone.BLACK, coordinates);
+                        default -> {
+                        }
+                    }
+                    found++;
+                }
+            }
+        }
+        assertNotEquals(b2, b3);
     }
 
     @Test
     void testHashCode() {
-        Board expected = TestUtility.createBoardWithCsvBoardStone();
-        assertEquals(expected.hashCode(), board.hashCode());
+        assertEquals(board.hashCode(), board.hashCode());
+        Board b2 = TestUtility.createBoardWithCsvBoardStone();
+        assertEquals(board.hashCode(), b2.hashCode());
+        assertNotEquals(board.hashCode(), (new Board(board.getSize())).hashCode());
     }
 }
