@@ -117,4 +117,33 @@ public class BoardTest {
         NonNegativeInteger N = new NonNegativeInteger(2);
         assertEquals(expected, b.checkNConsecutiveStones(coordinates, N));
     }
+
+
+    @Test
+    void testEquals() throws Board.NoMoreEmptyPositionAvailableException, Board.PositionAlreadyOccupiedException {
+        Board expected = new Board(board.getSize() + 1);
+        assertNotEquals(expected, board);
+
+        expected = TestUtility.createBoardWithCsvBoardStone();
+        assertEquals(expected, board);
+        assertEquals(expected, expected);
+
+//        expected = new Board(board.getSize());
+//        for (int x = 0; x < expected.getSize(); x++) {
+//            for (int y = 0; y < expected.getSize(); y++) {
+//                Coordinates coordinates = new Coordinates(x, y);
+//                if (expected.getStoneAtCoordinates(coordinates).isNone()) {
+//                    expected.occupyPosition(Board.Stone.BLACK, coordinates);
+//                    break;
+//                }
+//            }
+//        }
+//        assertNotEquals(expected,board);
+    }
+
+    @Test
+    void testHashCode() {
+        Board expected = TestUtility.createBoardWithCsvBoardStone();
+        assertEquals(expected.hashCode(), board.hashCode());
+    }
 }

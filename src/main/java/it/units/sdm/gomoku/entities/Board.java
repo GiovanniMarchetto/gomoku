@@ -100,6 +100,23 @@ public class Board {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Board board = (Board) o;
+        return size.equals(board.size)
+                && numberOfFilledPositionOnTheBoard.equals(board.numberOfFilledPositionOnTheBoard)
+                && Arrays.deepEquals(matrix, board.matrix);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(size, numberOfFilledPositionOnTheBoard);
+        result = 31 * result + Arrays.deepHashCode(matrix);
+        return result;
+    }
+
+    @Override
     public String toString() {
         //TODO: re-implement toString()
         StringBuilder s = new StringBuilder();
