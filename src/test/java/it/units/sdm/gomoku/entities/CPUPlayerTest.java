@@ -2,9 +2,11 @@ package it.units.sdm.gomoku.entities;
 
 import it.units.sdm.gomoku.EnvVariables;
 import it.units.sdm.gomoku.custom_types.Coordinates;
+import it.units.sdm.gomoku.utils.TestUtility;
 import it.units.sdm.gomoku.entities.board.BoardTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -20,8 +22,8 @@ class CPUPlayerTest {
         try {
             for (int x = 0; x < EnvVariables.BOARD_SIZE.intValue(); x++) {
                 for (int y = 0; y < EnvVariables.BOARD_SIZE.intValue(); y++) {
-                    if (!BoardTest.boardStone[x][y].isNone())
-                        board.occupyPosition(BoardTest.boardStone[x][y], new Coordinates(x, y));
+                    if (!TestUtility.boardStone[x][y].isNone())
+                        board.occupyPosition(TestUtility.boardStone[x][y], new Coordinates(x, y));
                 }
             }
         } catch (Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
