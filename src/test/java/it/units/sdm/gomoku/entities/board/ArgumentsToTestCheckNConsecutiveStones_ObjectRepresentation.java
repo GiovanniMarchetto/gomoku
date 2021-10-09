@@ -100,7 +100,7 @@ public class ArgumentsToTestCheckNConsecutiveStones_ObjectRepresentation {
                 new String[][]{
                         new String[]{"B", "W", "W", "W", "B"},
                         new String[]{"N", "N", "N", "N", "W"},
-                        new String[]{"B", "B", "B", "B", "B"},
+                        new String[]{"B", "B", "N", "B", "B"},
                         new String[]{"N", "N", "N", "W", "W"},
                         new String[]{"N", "N", "N", "N", "W"}
                 }, 0, 0, false).toJson());

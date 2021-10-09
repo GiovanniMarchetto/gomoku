@@ -2,134 +2,35 @@
   "data": [
     {
       "matrix": [
-        [
-          "BLACK",
-          "BLACK",
-          "BLACK",
-          "WHITE",
-          "WHITE"
-        ],
-        [
-          "NONE",
-          "NONE",
-          "NONE",
-          "NONE",
-          "WHITE"
-        ],
-        [
-          "BLACK",
-          "BLACK",
-          "BLACK",
-          "WHITE",
-          "WHITE"
-        ],
-        [
-          "NONE",
-          "NONE",
-          "NONE",
-          "BLACK",
-          "WHITE"
-        ],
-        [
-          "NONE",
-          "NONE",
-          "NONE",
-          "NONE",
-          "WHITE"
-        ]
+        ["BLACK","BLACK","BLACK","WHITE","WHITE"],
+        ["NONE","NONE","NONE","NONE","WHITE"],
+        ["BLACK","BLACK","BLACK","WHITE","WHITE"],
+        ["NONE","NONE","NONE","BLACK","WHITE"],
+        ["NONE","NONE","NONE","NONE","WHITE"]
       ],
-      "coordinates": [
-        4,
-        4
-      ],
+      "coordinates": [4,4],
       "expected": true
     },
     {
       "matrix": [
-        [
-          "BLACK",
-          "WHITE",
-          "WHITE",
-          "WHITE",
-          "BLACK"
-        ],
-        [
-          "NONE",
-          "NONE",
-          "NONE",
-          "NONE",
-          "WHITE"
-        ],
-        [
-          "BLACK",
-          "BLACK",
-          "BLACK",
-          "BLACK",
-          "BLACK"
-        ],
-        [
-          "NONE",
-          "NONE",
-          "NONE",
-          "WHITE",
-          "WHITE"
-        ],
-        [
-          "NONE",
-          "NONE",
-          "NONE",
-          "NONE",
-          "WHITE"
-        ]
+        ["BLACK","WHITE","WHITE","WHITE","BLACK"],
+        ["NONE","NONE","NONE","NONE","WHITE"],
+        ["BLACK","BLACK","BLACK","BLACK","BLACK"],
+        ["NONE","NONE","NONE","WHITE","WHITE"],
+        ["NONE","NONE","NONE","NONE","WHITE"]
       ],
-      "coordinates": [
-        2,
-        4
-      ],
+      "coordinates": [2,4],
       "expected": true
     },
     {
       "matrix": [
-        [
-          "BLACK",
-          "WHITE",
-          "WHITE",
-          "WHITE",
-          "BLACK"
-        ],
-        [
-          "NONE",
-          "NONE",
-          "NONE",
-          "NONE",
-          "WHITE"
-        ],
-        [
-          "BLACK",
-          "BLACK",
-          "BLACK",
-          "BLACK",
-          "BLACK"
-        ],
-        [
-          "NONE",
-          "NONE",
-          "NONE",
-          "WHITE",
-          "WHITE"
-        ],
-        [
-          "NONE",
-          "NONE",
-          "NONE",
-          "NONE",
-          "WHITE"
-        ]
+        ["BLACK","WHITE","WHITE","WHITE","BLACK"],
+        ["NONE","NONE","NONE","NONE","WHITE"],
+        ["BLACK","BLACK","NONE","BLACK","BLACK"],
+        ["NONE","NONE","NONE","WHITE","WHITE"],
+        ["NONE","NONE","NONE","NONE","WHITE"]
       ],
-      "coordinates": [
-        0,
-        0
-      ],
+      "coordinates": [0,0],
       "expected": false
     }
   ]
