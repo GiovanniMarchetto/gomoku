@@ -22,7 +22,7 @@ class CPUPlayerTest {
 
     @RepeatedTest(EnvVariables.INT_NUMBER_REPETITIONS_TEST)
     void chooseRandomCoordinates() {
-        Coordinates coordinates = cpuPlayer.chooseRandomCoordinates(board, cpuStone);
+        Coordinates coordinates = cpuPlayer.chooseRandomCoordinates(board);
         try {
             board.occupyPosition(cpuStone, coordinates);
         } catch (Board.NoMoreEmptyPositionAvailableException e) {
