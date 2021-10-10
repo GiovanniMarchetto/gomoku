@@ -12,12 +12,12 @@ public class CPUPlayer extends Player {
     }
 
     @NotNull
-    public Coordinates chooseRandomCoordinates(@NotNull Board board, @NotNull Board.Stone stoneOfCPU) {
+    public Coordinates chooseRandomCoordinates(@NotNull Board currentBoard) {
 
         Random rand = new Random();
 
         final int MAX_ITERATION = 1_000;
-        int boardSize = board.getSize();
+        int boardSize = currentBoard.getSize();
         int x, y;
         Coordinates coordinates = null;
 
@@ -25,16 +25,16 @@ public class CPUPlayer extends Player {
             x = rand.nextInt(boardSize);
             y = rand.nextInt(boardSize);
             coordinates = new Coordinates(x, y);
-            if (board.getStoneAtCoordinates(coordinates).isNone())
+            if (currentBoard.getStoneAtCoordinates(coordinates).isNone())
                 return coordinates;
         }
 
         int totalCases = 1;
         x = 0;
         y = 0;
-        while (totalCases <= (boardSize ^ 2)) {
+        while (totalCases <= (Math.pow(boardSize,2))) {
             coordinates = new Coordinates(x, y);
-            if (board.getStoneAtCoordinates(coordinates).isNone())
+            if (currentBoard.getStoneAtCoordinates(coordinates).isNone())
                 return coordinates;
 
             y = (y == (boardSize - 1)) ? 0 : y + 1;
