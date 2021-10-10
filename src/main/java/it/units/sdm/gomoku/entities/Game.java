@@ -78,6 +78,16 @@ public class Game implements Comparable<Game> {
         // if there are empty positions on the board it can't be a draw
     }
 
+    @NotNull
+    public Player getBlackPlayer() {
+        return playerToStoneColorsMap.entrySet()
+                .stream().unordered()
+                .filter(entry->entry.getValue()== Board.Stone.BLACK)
+                .map(Map.Entry::getKey)
+                .findAny()
+                .orElseThrow();
+    }
+
     @Override
     public int compareTo(@NotNull Game other) {
         return this.start.compareTo(other.start);
