@@ -33,34 +33,34 @@ public class Match {
     private Player currentBlackPlayer,
             currentWhitePlayer;
 
-    public Match(@NotNull final Pair<@NotNull Player, @NotNull Player> players, @NotNull final PositiveInteger boardSize, @NotNull final PositiveInteger howManyGames) {
-        this.players = Objects.requireNonNull(players);
-        Objects.requireNonNull(players.getKey());
-        Objects.requireNonNull(players.getValue());
+    public Match(@NotNull final Player player1, @NotNull final Player player2,
+                 @NotNull final PositiveInteger boardSize, @NotNull final PositiveInteger howManyGames) {
+        this.currentBlackPlayer = Objects.requireNonNull(player2);
+        this.currentWhitePlayer = Objects.requireNonNull(player1);
         this.gameList = new ArrayList<>();
         this.boardSize = Objects.requireNonNull(boardSize);
         this.howManyGames = Objects.requireNonNull(howManyGames);
-        this.currentBlackPlayer = players.getKey();
-        this.currentWhitePlayer = players.getValue();
     }
 
-    public Match(@NotNull final Player player1, @NotNull final Player player2, @PositiveIntegerType int boardSize, @PositiveIntegerType int howManyGames) {
-        this(new Pair<>(player1, player2), new PositiveInteger(boardSize), new PositiveInteger(howManyGames));
+    public Match(@NotNull final Player player1, @NotNull final Player player2,
+                 @PositiveIntegerType int boardSize, @PositiveIntegerType int howManyGames) {
+        this(player1, player2, new PositiveInteger(boardSize), new PositiveInteger(howManyGames));
     }
 
-    public Match(@NotNull final Player player1, @NotNull final Player player2, @PositiveIntegerType int boardSize) {
+    public Match(@NotNull final Player player1, @NotNull final Player player2,
+                 @PositiveIntegerType int boardSize) {
         this(player1, player2, boardSize, DEFAULT_MAXIMUM_GAMES.intValue());
     }
 
     @NotNull
-    private Game startNewGame() {
-        invertCurrentBlackWhitePlayersOrInitialize();
+    public Game startNewGame() {
+        invertCurrentPlayersColors();
         Game newGame = new Game(boardSize, currentBlackPlayer, currentWhitePlayer);
         gameList.add(newGame);
         return newGame;
     }
 
-    private void invertCurrentBlackWhitePlayersOrInitialize() {
+    private void invertCurrentPlayersColors() {
         Player oldWhitePlayer = currentWhitePlayer;
         currentWhitePlayer = currentBlackPlayer;
         currentBlackPlayer = oldWhitePlayer;
@@ -69,10 +69,8 @@ public class Match {
     @NotNull
     public Map<Player, NonNegativeInteger> getScore() {
         Map<Player, NonNegativeInteger> score = new HashMap<>(2);
-        Player player1 = players.getKey(),
-                player2 = players.getValue();
-        score.put(player1, getScoreOfPlayer(player1));
-        score.put(player2, getScoreOfPlayer(player2));
+        score.put(currentBlackPlayer, getScoreOfPlayer(currentBlackPlayer));
+        score.put(currentWhitePlayer, getScoreOfPlayer(currentWhitePlayer));
         return score;
     }
 
