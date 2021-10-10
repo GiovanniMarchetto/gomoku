@@ -5,7 +5,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -24,21 +26,25 @@ class MatchTest {
     @Test
     void startNewGame() {
         try {
-            Field fieldGameList = match.getClass().getField("gameList");
+            Field fieldGameList = match.getClass().getDeclaredField("gameList");
             fieldGameList.setAccessible(true);
-            List<Game> gameList = (List<Game>) fieldGameList.get(match);
+            Object gameListFromField = fieldGameList.get(match);
+            assert gameListFromField instanceof List<?>;
+            assert ((List<?>) gameListFromField).stream().filter(aGame -> aGame instanceof Game).count()==0L;
+            @SuppressWarnings("unchecked")  // casting just checked elementwise
+            List<Game> gameList = (List<Game>)gameListFromField;
             assertTrue(gameList.isEmpty());
 
             Game gameProvided = match.startNewGame();
             assertEquals(gameList.get(0), gameProvided);
 
-            Field fieldBlackPlayer = match.getClass().getField("currentBlackPlayer");
+            Field fieldBlackPlayer = match.getClass().getDeclaredField("currentBlackPlayer");
             fieldBlackPlayer.setAccessible(true);
             Player currentBlackPlayer = (Player) fieldBlackPlayer.get(match);
 
             assertEquals(cpu1, currentBlackPlayer);
 
-            Field fieldWhitePlayer = match.getClass().getField("currentWhitePlayer");
+            Field fieldWhitePlayer = match.getClass().getDeclaredField("currentWhitePlayer");
             fieldWhitePlayer.setAccessible(true);
             Player currentWhitePlayer = (Player) fieldWhitePlayer.get(match);
             assertEquals(cpu2, currentWhitePlayer);
@@ -84,10 +90,6 @@ class MatchTest {
             }
         } catch (Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
             e.printStackTrace();
-        }
-
-        if (match.getScore().get(cpu2).intValue() == 2 || match.getScore().get(cpu1).intValue() == 2) {
-            System.out.println(board);
         }
 
         assertCpusScore(score1, score2);

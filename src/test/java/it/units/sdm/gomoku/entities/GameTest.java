@@ -89,10 +89,9 @@ class GameTest {
 
     @ParameterizedTest
     @MethodSource("readBoardsWithWinCoordsAndResultsFromSampleCSV")
-    void isThisGameEnded(Board.Stone[][] matrix, Coordinates coordinates, boolean finishedGame) {
+    void isThisGameEnded(Board.Stone[][] matrix, Coordinates ignored, boolean finishedGame) {
         game = new Game(matrix.length, cpuBlack, cpuWhite);
         setGameFromCsv(game, matrix);
-        System.out.println(game.getBoard());
         assertEquals(finishedGame,game.isThisGameEnded());
     }
 
