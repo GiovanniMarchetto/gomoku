@@ -169,13 +169,7 @@ public class Board {
 
         int partLeft = getNumberOfConsecutiveSameColoreStones(board, coordinates, numberOfConsecutiveStoneForWinning, stoneColor, factors[2], factors[3]); //down-left
 
-        if ((partRight + partLeft + 1) >= numberOfConsecutiveStoneForWinning.intValue()) {
-            System.out.println("Last move: " + coordinates);
-            System.out.println("Part right: " + partRight + " - Part left: " + partLeft);
-            return true;
-        } else {
-            return false;
-        }
+        return (partRight + partLeft + 1) >= numberOfConsecutiveStoneForWinning.intValue();
     }
 
     private static int getNumberOfConsecutiveSameColoreStones(Board board, Coordinates coordinates, PositiveInteger numberOfConsecutiveStoneForWinning, Board.Stone stoneColor, int factorX, int factorY) {
