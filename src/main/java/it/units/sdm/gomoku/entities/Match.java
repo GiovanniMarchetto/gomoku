@@ -3,7 +3,6 @@ package it.units.sdm.gomoku.entities;
 import it.units.sdm.gomoku.custom_types.Coordinates;
 import it.units.sdm.gomoku.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.custom_types.PositiveInteger;
-import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,9 +18,6 @@ public class Match {
 
     @NotNull
     private final List<Game> gameList;
-
-    @NotNull
-    private final Pair<Player, Player> players;
 
     @NotNull
     private final PositiveInteger boardSize;
@@ -160,8 +156,7 @@ public class Match {
             throws Board.NoMoreEmptyPositionAvailableException, Board.PositionAlreadyOccupiedException {
 
         if (player instanceof CPUPlayer) {  // TODO : refactor to avoid coupling?
-            Board.Stone cpuStone = game.getBlackPlayer().equals(player) ? Board.Stone.BLACK : Board.Stone.WHITE;
-            coordinatesOfTheMove = ((CPUPlayer) player).chooseRandomCoordinates(game.getBoard());
+            coordinatesOfTheMove = ((CPUPlayer) player).chooseRandomEmptyCoordinates(game.getBoard());
         }
 
         assert coordinatesOfTheMove != null;

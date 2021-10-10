@@ -1,10 +1,7 @@
 package it.units.sdm.gomoku;
 
 import it.units.sdm.gomoku.custom_types.NonNegativeInteger;
-import it.units.sdm.gomoku.entities.CPUPlayer;
-import it.units.sdm.gomoku.entities.Game;
-import it.units.sdm.gomoku.entities.Match;
-import it.units.sdm.gomoku.entities.Player;
+import it.units.sdm.gomoku.entities.*;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -22,25 +19,22 @@ public class Main {
 
         Match.BufferCoordinates bufferCoordinates = new Match.BufferCoordinates();
         Thread boardOccupier = new Thread(() -> {
-            while (true) {
-                while (true) {
+            while (true) {  // infinite loop
+                try {
+                    int gameIndex = 0;
                     try {
-                        int gameIndex = 0;
-                        try {
-                            Field field = match.getClass().getDeclaredField("gameList");
-                            field.setAccessible(true);
-                            @SuppressWarnings("unchecked") List<Game> game = (List<Game>) field.get(match);
-                            gameIndex = game.size() - 1;
-                        } catch (IllegalAccessException | NoSuchFieldException e) {
-                            e.printStackTrace();
-                        }
-                        bufferCoordinates.insert(cpu.chooseRandomCoordinates(match.getBoardOfNthGame(new NonNegativeInteger(gameIndex))));
-                        break;
-                    } catch (IllegalArgumentException ignored) {
+                        Field field = match.getClass().getDeclaredField("gameList");
+                        field.setAccessible(true);
+                        @SuppressWarnings("unchecked") List<Game> game = (List<Game>) field.get(match);
+                        gameIndex = game.size() - 1;
+                    } catch (IllegalAccessException | NoSuchFieldException e) {
+                        e.printStackTrace();
                     }
+                    bufferCoordinates.insert(cpu.chooseRandomEmptyCoordinates(match.getBoardOfNthGame(new NonNegativeInteger(gameIndex))));
+                } catch (IllegalArgumentException | Board.NoMoreEmptyPositionAvailableException ignored) {
                 }
             }
-        });                                                                 // TODO : this will be done by the real human which has to choose the position and the entire class BoardOccupier should go away
+        });                                                                                                             // TODO : this will be done by the real human which has to choose the position and the entire class BoardOccupier should go away
 
         boardOccupier.start();
         match.disputeMatch(bufferCoordinates);
