@@ -12,7 +12,20 @@ public class CPUPlayer extends Player {
     }
 
     @NotNull
-    public Coordinates chooseRandomCoordinates(@NotNull Board board, @NotNull Board.Stone stoneOfCPU) {
+    public Coordinates chooseNextEmptyCoordinates(@NotNull Board board) throws Board.NoMoreEmptyPositionAvailableException {
+        if (board.isAnyEmptyPositionOnTheBoard()) {
+            for (int i = 0; i < board.getSize(); i++) {
+                for (int j = 0; j < board.getSize(); j++) {
+                    var coords = new Coordinates(i, j);
+                    if (board.getStoneAtCoordinates(coords) == Board.Stone.NONE) return coords;
+                }
+            }
+        }
+        throw new Board.NoMoreEmptyPositionAvailableException();
+    }
+
+    @NotNull
+    public Coordinates chooseRandomCoordinates(@NotNull Board board) {
 
         Random rand = new Random();
 
