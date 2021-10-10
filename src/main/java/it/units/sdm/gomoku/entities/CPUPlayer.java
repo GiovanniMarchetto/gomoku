@@ -1,11 +1,16 @@
 package it.units.sdm.gomoku.entities;
 
 import it.units.sdm.gomoku.custom_types.Coordinates;
+import it.units.sdm.gomoku.custom_types.PositiveInteger;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
 
 public class CPUPlayer extends Player {
+
+    private final int MAX_RANDOM_ITERATION = 500;
+
+    private final Random rand = new Random();
 
     public CPUPlayer(@NotNull String name) {
         super(name);
@@ -25,40 +30,20 @@ public class CPUPlayer extends Player {
     }
 
     @NotNull
-    public Coordinates chooseRandomCoordinates(@NotNull Board board) {
-
-        Random rand = new Random();
-
-        final int MAX_ITERATION = 1_000;
-        int boardSize = board.getSize();
-        int x, y;
-        Coordinates coordinates = null;
-
-        for (int i = 0; i < MAX_ITERATION; i++) {
-            x = rand.nextInt(boardSize);
-            y = rand.nextInt(boardSize);
-            coordinates = new Coordinates(x, y);
-            if (board.getStoneAtCoordinates(coordinates).isNone())
-                return coordinates;
-        }
-
-        int totalCases = 1;
-        x = 0;
-        y = 0;
-        while (totalCases <= (boardSize ^ 2)) {
-            coordinates = new Coordinates(x, y);
-            if (board.getStoneAtCoordinates(coordinates).isNone())
-                return coordinates;
-
-            y = (y == (boardSize - 1)) ? 0 : y + 1;
-            if ((totalCases % boardSize) == 0) {
-                x = x + 1;
+    public Coordinates chooseRandomEmptyCoordinates(@NotNull Board board) throws Board.NoMoreEmptyPositionAvailableException {
+        if (board.isAnyEmptyPositionOnTheBoard()) {
+            for (int i = 0; i < MAX_RANDOM_ITERATION; i++) {
+                Coordinates coordinates = generateRandomCoordinates(board.getSize());
+                if (board.getStoneAtCoordinates(coordinates).isNone())
+                    return coordinates;
             }
-
-            totalCases++;
         }
+        return chooseNextEmptyCoordinates(board);
+    }
 
-        return coordinates;
+    @NotNull
+    public Coordinates generateRandomCoordinates(@PositiveInteger.PositiveIntegerType int boardSize) {
+        return new Coordinates(rand.nextInt(boardSize), rand.nextInt(boardSize));
     }
 
 }

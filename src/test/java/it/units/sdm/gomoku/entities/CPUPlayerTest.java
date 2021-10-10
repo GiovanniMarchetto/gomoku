@@ -21,14 +21,16 @@ class CPUPlayerTest {
     }
 
     @RepeatedTest(EnvVariables.INT_NUMBER_REPETITIONS_TEST)
-    void chooseRandomCoordinates() {
-        Coordinates coordinates = cpuPlayer.chooseRandomCoordinates(board);
+    void chooseRandomEmptyCoordinates() {
         try {
+            Coordinates coordinates = cpuPlayer.chooseRandomEmptyCoordinates(board);
             board.occupyPosition(cpuStone, coordinates);
         } catch (Board.NoMoreEmptyPositionAvailableException e) {
-            assertEquals(new Coordinates(EnvVariables.BOARD_SIZE.intValue() - 1, EnvVariables.BOARD_SIZE.intValue() - 1), coordinates);
+            if (board.isAnyEmptyPositionOnTheBoard()) {
+                fail(e);
+            }
         } catch (Board.PositionAlreadyOccupiedException e) {
-            fail();
+            fail(e);
         }
     }
 }
