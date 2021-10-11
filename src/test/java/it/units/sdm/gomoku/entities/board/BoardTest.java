@@ -45,7 +45,6 @@ public class BoardTest {
     @MethodSource("provideCoupleOfNonNegativeIntegersTillBOARD_SIZEExcluded")
     void getStoneAtCoordinates(int x, int y) {
         assertEquals(TestUtility.boardStoneFromCsv[x][y], board.getStoneAtCoordinates(new Coordinates(x, y)));
-
     }
 
     @ParameterizedTest
@@ -116,7 +115,7 @@ public class BoardTest {
             fail(e);
         }
         PositiveInteger N = new PositiveInteger(2);
-        assertEquals(expected, Board.checkNConsecutiveStonesNaive(b,coordinates, N));
+        assertEquals(expected, Board.checkNConsecutiveStonesNaive(b, coordinates, N));
     }
 
     @ParameterizedTest
@@ -141,38 +140,70 @@ public class BoardTest {
 
 
     @Test
-    void testEquals() throws Board.NoMoreEmptyPositionAvailableException, Board.PositionAlreadyOccupiedException {
+    void testEqualsItself() {
         assertEquals(board, board);
-        Board b2 = TestUtility.createBoardWithCsvBoardStone();
-        assertEquals(board, b2);
+    }
 
+    @Test
+    void testNotEqualsNewObject() {
         assertNotEquals(board, new Object());
+    }
+
+    @Test
+    void testNotEqualsDifferentSize() {
         assertNotEquals(board, new Board(board.getSize() + 1));
+    }
+
+    @Test
+    void testNotEqualsEmptyBoard() {
         assertNotEquals(board, new Board(board.getSize()));
-        Board b3 = TestUtility.createBoardWithCsvBoardStone();
+    }
+
+    @Test
+    void testEqualsNewBoard() {
+        Board newBoard = TestUtility.createBoardWithCsvBoardStone();
+        assertEquals(board, newBoard);
+    }
+
+    @Test
+    void testEqualsAfterSomeChanges() {
+        Board expectedBoard = TestUtility.createBoardWithCsvBoardStone();
         int found = 0;
-        for (int x = 0; x < board.getSize() && found < 2; x++) {
-            for (int y = 0; y < board.getSize() && found < 2; y++) {
+        for (int x = 0; x < BoardTest.board.getSize() && found < 2; x++) {
+            for (int y = 0; y < BoardTest.board.getSize() && found < 2; y++) {
                 Coordinates coordinates = new Coordinates(x, y);
-                if (b2.getStoneAtCoordinates(coordinates).isNone() || b3.getStoneAtCoordinates(coordinates).isNone()) {
-                    switch (found) {
-                        case 0 -> b2.occupyPosition(Board.Stone.BLACK, coordinates);
-                        case 1 -> b3.occupyPosition(Board.Stone.BLACK, coordinates);
-                        default -> {
+                if (expectedBoard.getStoneAtCoordinates(coordinates).isNone() || board.getStoneAtCoordinates(coordinates).isNone()) {
+                    try {
+                        switch (found) {
+                            case 0 -> expectedBoard.occupyPosition(Board.Stone.BLACK, coordinates);
+                            case 1 -> board.occupyPosition(Board.Stone.BLACK, coordinates);
+                            default -> {
+                            }
                         }
+                    } catch (Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
+                        e.printStackTrace();
                     }
+
                     found++;
                 }
             }
         }
-        assertNotEquals(b2, b3);
+        assertNotEquals(expectedBoard, board);
+    }
+
+    @Test
+    void testHashCodeItself() {
+        assertEquals(board.hashCode(), board.hashCode());
     }
 
     @Test
     void testHashCode() {
-        assertEquals(board.hashCode(), board.hashCode());
         Board b2 = TestUtility.createBoardWithCsvBoardStone();
         assertEquals(board.hashCode(), b2.hashCode());
+    }
+
+    @Test
+    void testHashCodeInvert() {
         assertNotEquals(board.hashCode(), (new Board(board.getSize())).hashCode());
     }
 }
