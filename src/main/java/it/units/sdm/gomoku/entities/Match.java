@@ -48,6 +48,17 @@ public class Match {
         this(player1, player2, boardSize, DEFAULT_MAXIMUM_GAMES.intValue());
     }
 
+    private static void executeMoveOfPlayerInGame(@NotNull Player player, @NotNull Game game, @Nullable Coordinates coordinatesOfTheMove)
+            throws Board.NoMoreEmptyPositionAvailableException, Board.PositionAlreadyOccupiedException {
+
+        if (player instanceof CPUPlayer) {  // TODO : refactor to avoid coupling?
+            coordinatesOfTheMove = ((CPUPlayer) player).chooseRandomEmptyCoordinates(game.getBoard());
+        }
+
+        assert coordinatesOfTheMove != null;
+        game.placeStone(player, coordinatesOfTheMove);
+    }
+
     @NotNull
     public Game startNewGame() {
         invertCurrentPlayersColors();
@@ -83,6 +94,35 @@ public class Match {
                         })
                         .count()
         );
+    }
+
+    public void disputeMatch(@NotNull final BufferCoordinates bufferCoordinates) {
+        MatchDisputer matchDisputer = new MatchDisputer(bufferCoordinates, this);
+        matchDisputer.start();
+        try {
+            matchDisputer.join();                                                                                       // TODO : try-catch or throws in method signature?
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            bufferCoordinates.clear();
+        }
+    }
+
+    @NotNull
+    public Board getBoardOfNthGame(@NotNull NonNegativeInteger nOfGame_from0ToNOfDisputedGamesTillNow) {
+        int indexOfGame = Objects.requireNonNull(nOfGame_from0ToNOfDisputedGamesTillNow).intValue();
+        int numberOfCurrentlyDisputedMatch = gameList.size();   // TODO : concurrency problems?
+        if (indexOfGame < numberOfCurrentlyDisputedMatch) {
+            return gameList.get(indexOfGame).getBoard();
+        } else {
+            throw new IllegalArgumentException(
+                    "Till now, " + numberOfCurrentlyDisputedMatch + " games were disputed" +
+                            (numberOfCurrentlyDisputedMatch > 0 ?
+                                    (", hence the parameter for this method must be between " + 0 + " (inclusive) and " +
+                                            (numberOfCurrentlyDisputedMatch - 1) + " (inclusive), but ") :
+                                    ". ")
+                            + indexOfGame + " was provided.");
+        }
     }
 
     public static class BufferCoordinates {
@@ -122,47 +162,6 @@ public class Match {
             return coord;
         }
     }
-
-    public void disputeMatch(@NotNull final BufferCoordinates bufferCoordinates) {
-        MatchDisputer matchDisputer = new MatchDisputer(bufferCoordinates, this);
-        matchDisputer.start();
-        try {
-            matchDisputer.join();                                                                                       // TODO : try-catch or throws in method signature?
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } finally {
-            bufferCoordinates.clear();
-        }
-    }
-
-    @NotNull
-    public Board getBoardOfNthGame(@NotNull NonNegativeInteger nOfGame_from0ToNOfDisputedGamesTillNow) {
-        int indexOfGame = Objects.requireNonNull(nOfGame_from0ToNOfDisputedGamesTillNow).intValue();
-        int numberOfCurrentlyDisputedMatch = gameList.size();   // TODO : concurrency problems?
-        if (indexOfGame < numberOfCurrentlyDisputedMatch) {
-            return gameList.get(indexOfGame).getBoard();
-        } else {
-            throw new IllegalArgumentException(
-                    "Till now, " + numberOfCurrentlyDisputedMatch + " games were disputed" +
-                            (numberOfCurrentlyDisputedMatch > 0 ?
-                                    (", hence the parameter for this method must be between " + 0 + " (inclusive) and " +
-                                            (numberOfCurrentlyDisputedMatch - 1) + " (inclusive), but ") :
-                                    ". ")
-                            + indexOfGame + " was provided.");
-        }
-    }
-
-    private static void executeMoveOfPlayerInGame(@NotNull Player player, @NotNull Game game, @Nullable Coordinates coordinatesOfTheMove)
-            throws Board.NoMoreEmptyPositionAvailableException, Board.PositionAlreadyOccupiedException {
-
-        if (player instanceof CPUPlayer) {  // TODO : refactor to avoid coupling?
-            coordinatesOfTheMove = ((CPUPlayer) player).chooseRandomEmptyCoordinates(game.getBoard());
-        }
-
-        assert coordinatesOfTheMove != null;
-        game.placeStone(player, coordinatesOfTheMove);
-    }
-
 
     private static class MatchDisputer extends Thread {
         private final BufferCoordinates buffer;

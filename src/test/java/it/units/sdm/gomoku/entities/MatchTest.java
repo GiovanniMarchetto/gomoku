@@ -1,26 +1,25 @@
 package it.units.sdm.gomoku.entities;
 
-import it.units.sdm.gomoku.custom_types.Coordinates;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MatchTest {
 
+    private final int boardSizeTest = 19;
     CPUPlayer cpu1 = new CPUPlayer("First Captain Gomoku");
     CPUPlayer cpu2 = new CPUPlayer("Second Iron Keroro");
     Match match;
+    Game currentGame;
 
     @BeforeEach
     void setup() {
-        match = new Match(cpu1, cpu2, 5, 3);
+        match = new Match(cpu1, cpu2, boardSizeTest, 3);
     }
 
     @Test
@@ -30,9 +29,9 @@ class MatchTest {
             fieldGameList.setAccessible(true);
             Object gameListFromField = fieldGameList.get(match);
             assert gameListFromField instanceof List<?>;
-            assert ((List<?>) gameListFromField).stream().filter(aGame -> aGame instanceof Game).count()==0L;
+            assert ((List<?>) gameListFromField).stream().filter(aGame -> aGame instanceof Game).count() == 0L;
             @SuppressWarnings("unchecked")  // casting just checked elementwise
-            List<Game> gameList = (List<Game>)gameListFromField;
+            List<Game> gameList = (List<Game>) gameListFromField;
             assertTrue(gameList.isEmpty());
 
             Game gameProvided = match.startNewGame();
@@ -55,44 +54,68 @@ class MatchTest {
     }
 
     @Test
-    void getScore() {
+    void getScoreBeforeStart() {
         assertCpusScore(0, 0);
-
-        Game currentGame = match.startNewGame();
-        assertCpusScore(0, 0);
-
-        disputeGameTest(cpu1, 1, 0);
-
-        disputeGameTest(cpu2, 1, 1);
-
-        disputeGameTest(null, 1, 1);
-
     }
 
-    private void disputeGameTest(CPUPlayer cpuPlayer, int score1, int score2) {
-        Game currentGame = match.startNewGame();
-        Board board = currentGame.getBoard();
-        try {
-            if (cpuPlayer != null) {
-                for (int i = 0; i < 5; i++) {
-                    currentGame.placeStone(cpuPlayer, cpuPlayer.chooseNextEmptyCoordinates(board));
+    @Test
+    void getScoreAfterStart() {
+        match.startNewGame();
+        assertCpusScore(0, 0);
+    }
+
+    @Test
+    void getScorePlayer1Win() {
+        playerWinGameAndAssertFinalScore(cpu1, 1, 0);
+    }
+
+    @Test
+    void getScorePlayer2Win() {
+        playerWinGameAndAssertFinalScore(cpu2, 0, 1);
+    }
+
+    @Test
+    void getScoreTwoPlays() {
+        getScorePlayer1Win();
+        playerWinGameAndAssertFinalScore(cpu2, 1, 1);
+    }
+
+    private void playerWinGameAndAssertFinalScore(CPUPlayer cpuPlayer, int score1, int score2) {
+        currentGame = match.startNewGame();
+        for (int i = 0; i < 5; i++) {
+            cpuPlaceStoneNextEmptyCoordinates(cpuPlayer);
+        }
+        assertCpusScore(score1, score2);
+    }
+
+    @Test
+    void getScoreWithDraw() {
+        currentGame = match.startNewGame();
+        CPUPlayer cpuPlayer;
+        int rowRest, colRest;
+
+        for (int row = 0; row < boardSizeTest; row++) {
+            rowRest = row % 4;
+            for (int col = 0; col < boardSizeTest; col++) {
+                colRest = col % 2;
+                if (rowRest == 0 || rowRest == 1) {
+                    cpuPlayer = colRest == 0 ? cpu1 : cpu2;
+                } else {
+                    cpuPlayer = colRest == 0 ? cpu2 : cpu1;
                 }
-            } else {
-                currentGame.placeStone(cpu1, new Coordinates(0, 0));
-                currentGame.placeStone(cpu1, new Coordinates(1, 1));
-                currentGame.placeStone(cpu1, new Coordinates(2, 2));
-                currentGame.placeStone(cpu1, new Coordinates(3, 3));
-                currentGame.placeStone(cpu1, new Coordinates(3, 4));
-                currentGame.placeStone(cpu1, new Coordinates(4, 3));
-                for (int i = 0; i < ((int) Math.pow(board.getSize(), 2)) - 6; i++) {
-                    currentGame.placeStone(cpu2, cpu2.chooseNextEmptyCoordinates(currentGame.getBoard()));
-                }
+                cpuPlaceStoneNextEmptyCoordinates(cpuPlayer);
             }
+        }
+
+        assertCpusScore(0, 0);
+    }
+
+    private void cpuPlaceStoneNextEmptyCoordinates(CPUPlayer cpuPlayer) {
+        try {
+            currentGame.placeStone(cpuPlayer, cpu1.chooseNextEmptyCoordinates(currentGame.getBoard()));
         } catch (Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
             e.printStackTrace();
         }
-
-        assertCpusScore(score1, score2);
     }
 
     private void assertCpusScore(int n1, int n2) {
