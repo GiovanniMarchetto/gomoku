@@ -1,13 +1,14 @@
 package it.units.sdm.gomoku.model.entities;
 
+import it.units.sdm.gomoku.Main;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
+import it.units.sdm.gomoku.model.utils.BufferCoordinates;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.function.BiFunction;
 
 import static it.units.sdm.gomoku.model.custom_types.PositiveInteger.PositiveIntegerType;
 
@@ -23,7 +24,7 @@ public class Match {
     private final PositiveInteger boardSize;
 
     @NotNull
-    private PositiveInteger howManyGames;
+    private final PositiveInteger howManyGames;
 
     @NotNull
     private Player currentBlackPlayer,
@@ -48,7 +49,7 @@ public class Match {
         this(player1, player2, boardSize, DEFAULT_MAXIMUM_GAMES.intValue());
     }
 
-    private static void executeMoveOfPlayerInGame(@NotNull Player player, @NotNull Game game, @Nullable Coordinates coordinatesOfTheMove)
+    public static void executeMoveOfPlayerInGame(@NotNull Player player, @NotNull Game game, @Nullable Coordinates coordinatesOfTheMove)
             throws Board.NoMoreEmptyPositionAvailableException, Board.PositionAlreadyOccupiedException {
 
         if (player instanceof CPUPlayer) {  // TODO : refactor to avoid coupling?
@@ -97,7 +98,7 @@ public class Match {
     }
 
     public void disputeMatch(@NotNull final BufferCoordinates bufferCoordinates) {
-        MatchDisputer matchDisputer = new MatchDisputer(bufferCoordinates, this);
+        Main.MatchDisputer matchDisputer = new Main.MatchDisputer(bufferCoordinates, this);
         matchDisputer.start();
         try {
             matchDisputer.join();                                                                                       // TODO : try-catch or throws in method signature?
@@ -125,98 +126,18 @@ public class Match {
         }
     }
 
-    public static class BufferCoordinates {
-        private Coordinates bufferCoordinate;
-
-        private boolean isPresent() {
-            return bufferCoordinate != null;
-        }
-
-        private void clear() {
-            bufferCoordinate = null;
-        }
-
-        private void wait_() {
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                System.err.println("Interrupted");  // TODO : better to use try-catch or throws in method signature?
-            }
-        }
-
-        public synchronized void insert(@NotNull Coordinates coordinates) {
-            while (isPresent()) {                          // TODO : waste time?
-                wait_();
-            }
-            this.bufferCoordinate = coordinates;
-            notify();
-        }
-
-        public synchronized Coordinates getAndRemove() {
-            while (!isPresent()) {                          // TODO : waste time?
-                wait_();
-            }
-            Coordinates coord = bufferCoordinate;
-            clear();
-            notify();
-            return coord;
-        }
+    public int getHowManyGames() {
+        return howManyGames.intValue();
     }
 
-    private static class MatchDisputer extends Thread {
-        private final BufferCoordinates buffer;
-        private final Match matchToDispute;
+    @NotNull
+    public Player getCurrentBlackPlayer() {
+        return currentBlackPlayer;
+    }
 
-        public MatchDisputer(@NotNull BufferCoordinates buffer, @NotNull Match matchToDispute) {
-            this.buffer = Objects.requireNonNull(buffer);
-            this.matchToDispute = Objects.requireNonNull(matchToDispute);
-        }
-
-        @Override
-        public void run() {
-            BiFunction<Game, BufferCoordinates, Coordinates> waitForAValidMoveOfAPlayerAndGet = (game, buffer) -> {     // TODO : better to use a static method? Refactor?
-                Coordinates coordOfMoveOfPlayer;
-                do {
-                    coordOfMoveOfPlayer = buffer.getAndRemove();
-                } while (!game.getBoard().getStoneAtCoordinates(coordOfMoveOfPlayer).isNone());  // TODO : message chain code smell
-                return coordOfMoveOfPlayer;
-            };
-
-            for (int nGame = 1; nGame <= matchToDispute.howManyGames.intValue(); nGame++) {
-
-                Game currentGame = matchToDispute.startNewGame();
-                System.out.println("New game!");                                                                        // TODO : delete this
-                while (!currentGame.isThisGameEnded()) {
-                    try {
-                        executeMoveOfPlayerInGame(matchToDispute.currentBlackPlayer, currentGame, waitForAValidMoveOfAPlayerAndGet.apply(currentGame, buffer));
-                        executeMoveOfPlayerInGame(matchToDispute.currentWhitePlayer, currentGame, waitForAValidMoveOfAPlayerAndGet.apply(currentGame, buffer));
-                    } catch (Board.PositionAlreadyOccupiedException e) {
-                        System.out.println("Choose an unoccupied position!");                                           // TODO : delete this
-                    } catch (Board.NoMoreEmptyPositionAvailableException ignored) {
-                    }
-                }
-                System.out.println(currentGame.getBoard());                                                             // TODO : delete this
-                System.out.print("Game ended! ");                                                                       // TODO : delete this
-                try {
-                    System.out.println(currentGame.getWinner() + " won!");                                              // TODO : delete this
-                } catch (Game.NotEndedGameException e) {
-                    System.out.println("It's a draw!");                                                                 // TODO : delete this
-                }
-
-                // TODO : draw not handled yet (players may decide to dispute a spare game)
-//                if (nGame == matchToDispute.howManyGames.intValue()) {
-//                    if (matchToDispute.getScoreOfPlayer(matchToDispute.currentBlackPlayer)
-//                            .equals(matchToDispute.getScoreOfPlayer(matchToDispute.currentWhitePlayer))) {
-//                        System.out.println("It's a draw!\n" +
-//                                "Would you like to play an additional game? (Y/N)");
-//                        char response = scanner.nextLine().charAt(0);
-//                        if (response == 'Y' || response == 'y') {
-//                            howManyGames = new PositiveInteger(howManyGames.intValue() + 1);
-//                        }
-//                    }
-//                }
-            }
-        }
+    @NotNull
+    public Player getCurrentWhitePlayer() {
+        return currentWhitePlayer;
     }
 
 }

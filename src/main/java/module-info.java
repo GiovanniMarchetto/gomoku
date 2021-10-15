@@ -12,4 +12,8 @@ module it.units.sdm.gomoku {
     opens it.units.sdm.gomoku.ui.gui.controllers to javafx.fxml;
     exports it.units.sdm.gomoku.ui.gui.views;
     opens it.units.sdm.gomoku.ui.gui.views to javafx.fxml;
+    exports it.units.sdm.gomoku.ui.cli;
+    exports it.units.sdm.gomoku.model.utils;
+    exports it.units.sdm.gomoku.model.entities;
+    exports it.units.sdm.gomoku.model.custom_types;
 }
