@@ -1,6 +1,6 @@
 package it.units.sdm.gomoku;
 
-import it.units.sdm.gomoku.custom_types.PositiveInteger;
+import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 
 public class EnvVariables {
     public final static String INTS_PROVIDER_RESOURCE_LOCATION = "/ints.csv";

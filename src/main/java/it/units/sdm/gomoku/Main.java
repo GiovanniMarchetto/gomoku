@@ -1,7 +1,7 @@
 package it.units.sdm.gomoku;
 
-import it.units.sdm.gomoku.custom_types.NonNegativeInteger;
-import it.units.sdm.gomoku.entities.*;
+import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
+import it.units.sdm.gomoku.model.entities.*;
 
 import java.lang.reflect.Field;
 import java.util.List;

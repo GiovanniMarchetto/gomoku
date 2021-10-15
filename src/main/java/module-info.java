@@ -8,8 +8,8 @@ module it.units.sdm.gomoku {
 
     exports it.units.sdm.gomoku;
     opens it.units.sdm.gomoku to javafx.fxml;
-    exports it.units.sdm.gomoku.controllers;
-    opens it.units.sdm.gomoku.controllers to javafx.fxml;
-    exports it.units.sdm.gomoku.views;
-    opens it.units.sdm.gomoku.views to javafx.fxml;
+    exports it.units.sdm.gomoku.ui.gui.controllers;
+    opens it.units.sdm.gomoku.ui.gui.controllers to javafx.fxml;
+    exports it.units.sdm.gomoku.ui.gui.views;
+    opens it.units.sdm.gomoku.ui.gui.views to javafx.fxml;
 }
