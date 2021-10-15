@@ -30,6 +30,23 @@ public class CPUPlayer extends Player {
     }
 
     @NotNull
+    public Coordinates chooseNextEmptyCoordinatesFromCenter(@NotNull Board board) throws Board.NoMoreEmptyPositionAvailableException {
+        int s = board.getSize();
+        int n = (int) Math.ceil(s / 2.0) - 1;
+        if (board.isAnyEmptyPositionOnTheBoard()) {
+            for (int i = n; i >= 0; i--) {
+                for (int x = i; x < s - i; x++) {
+                    for (int y = i; y < s - i; y++) {
+                        var coords = new Coordinates(x, y);
+                        if (board.getStoneAtCoordinates(coords) == Board.Stone.NONE) return coords;
+                    }
+                }
+            }
+        }
+        throw new Board.NoMoreEmptyPositionAvailableException();
+    }
+
+    @NotNull
     public Coordinates chooseRandomEmptyCoordinates(@NotNull Board board) throws Board.NoMoreEmptyPositionAvailableException {
         if (board.isAnyEmptyPositionOnTheBoard()) {
             for (int i = 0; i < MAX_RANDOM_ITERATION; i++) {
