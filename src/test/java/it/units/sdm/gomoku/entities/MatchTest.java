@@ -12,10 +12,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class MatchTest {
 
     private final int boardSizeTest = 19;
-    CPUPlayer cpu1 = new CPUPlayer("First Captain Gomoku");
-    CPUPlayer cpu2 = new CPUPlayer("Second Iron Keroro");
-    Match match;
-    Game currentGame;
+    private final CPUPlayer cpu1 = new CPUPlayer("First Captain Gomoku");
+    private final CPUPlayer cpu2 = new CPUPlayer("Second Iron Keroro");
+    private Match match;
+    private Game currentGame;
 
     @BeforeEach
     void setup() {
@@ -34,8 +34,8 @@ class MatchTest {
             List<Game> gameList = (List<Game>) gameListFromField;
             assertTrue(gameList.isEmpty());
 
-            Game gameProvided = match.startNewGame();
-            assertEquals(gameList.get(0), gameProvided);
+            currentGame = match.startNewGame();
+            assertEquals(gameList.get(0), currentGame);
 
             Field fieldBlackPlayer = match.getClass().getDeclaredField("currentBlackPlayer");
             fieldBlackPlayer.setAccessible(true);

@@ -6,7 +6,6 @@ import it.units.sdm.gomoku.utils.TestUtility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class CPUPlayerTest {
