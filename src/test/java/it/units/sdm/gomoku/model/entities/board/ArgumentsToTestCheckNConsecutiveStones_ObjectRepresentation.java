@@ -18,8 +18,10 @@ public class ArgumentsToTestCheckNConsecutiveStones_ObjectRepresentation {
     private Coordinates coordinates = null;
     @SuppressWarnings("FieldCanBeLocal")
     private boolean expected = false;
+
     private ArgumentsToTestCheckNConsecutiveStones_ObjectRepresentation() {
     }
+
     public ArgumentsToTestCheckNConsecutiveStones_ObjectRepresentation(@NotNull Board.Stone[][] matrix, @NotNull Coordinates coordinates, boolean expected) {
         if (Predicates.isSquareMatrixOfGivenSize.test(matrix, matrix.length)) {
             this.matrix = matrix;

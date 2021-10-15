@@ -73,11 +73,11 @@ class GameTest {
     void getWinner(Board.Stone[][] matrix, Coordinates coordinates, boolean finishedGame) {
         game = new Game(matrix.length, cpuBlack, cpuWhite);
         setGameFromCsv(game, matrix);
-        try{
+        try {
             Player winner = game.getWinner();
-            if(game.getBoard().isAnyEmptyPositionOnTheBoard()){
+            if (game.getBoard().isAnyEmptyPositionOnTheBoard()) {
                 assertNotNull(winner);
-            }else {
+            } else {
                 assertNull(winner);
             }
         } catch (Game.NotEndedGameException e) {
@@ -90,7 +90,7 @@ class GameTest {
     void isThisGameEnded(Board.Stone[][] matrix, Coordinates ignored, boolean finishedGame) {
         game = new Game(matrix.length, cpuBlack, cpuWhite);
         setGameFromCsv(game, matrix);
-        assertEquals(finishedGame,game.isThisGameEnded());
+        assertEquals(finishedGame, game.isThisGameEnded());
     }
 
     @Test
@@ -98,6 +98,6 @@ class GameTest {
         game = new Game(5, cpuBlack, cpuWhite);
         Thread.sleep(1);
         Game otherGame = new Game(5, cpuBlack, cpuWhite);
-        assertTrue(game.compareTo(otherGame)<0);
+        assertTrue(game.compareTo(otherGame) < 0);
     }
 }

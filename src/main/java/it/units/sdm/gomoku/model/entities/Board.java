@@ -39,6 +39,53 @@ public class Board {
         this(new PositiveInteger(size));
     }
 
+    public static boolean checkNConsecutiveStonesNaive(Board board, Coordinates coordinates, PositiveInteger numberOfConsecutiveStoneForWinning) {
+
+        int[] factorsCols = new int[]{0, 1, 0, -1};
+        if (verifyDirection(board, coordinates, numberOfConsecutiveStoneForWinning, factorsCols)) return true;
+
+        int[] factorsRows = new int[]{1, 0, -1, 0};
+        if (verifyDirection(board, coordinates, numberOfConsecutiveStoneForWinning, factorsRows)) return true;
+
+        int[] factorsRightDiag = new int[]{1, 1, -1, -1};
+        if (verifyDirection(board, coordinates, numberOfConsecutiveStoneForWinning, factorsRightDiag)) return true;
+
+        int[] factorsLeftDiag = new int[]{1, -1, -1, 1};
+        return verifyDirection(board, coordinates, numberOfConsecutiveStoneForWinning, factorsLeftDiag);
+    }
+
+    private static boolean verifyDirection(Board board, Coordinates coordinates, PositiveInteger numberOfConsecutiveStoneForWinning, int[] factors) {
+
+        Board.Stone stoneColor = board.getStoneAtCoordinates(coordinates);
+
+        int partRight = getNumberOfConsecutiveSameColoreStones(board, coordinates, numberOfConsecutiveStoneForWinning, stoneColor, factors[0], factors[1]); //up-right
+
+        int partLeft = getNumberOfConsecutiveSameColoreStones(board, coordinates, numberOfConsecutiveStoneForWinning, stoneColor, factors[2], factors[3]); //down-left
+
+        return (partRight + partLeft + 1) >= numberOfConsecutiveStoneForWinning.intValue();
+    }
+
+    private static int getNumberOfConsecutiveSameColoreStones(Board board, Coordinates coordinates, PositiveInteger numberOfConsecutiveStoneForWinning, Board.Stone stoneColor, int factorX, int factorY) {
+        int consecutive = 0;
+
+        for (int i = 1; i < numberOfConsecutiveStoneForWinning.intValue(); i++) {
+            int x = coordinates.getX() + i * factorX;
+            int y = coordinates.getY() + i * factorY;
+            if (x >= 0 && y >= 0) {
+                Coordinates currentCoordinates = new Coordinates(x, y);
+                if (board.isCoordinatesInsideBoard(currentCoordinates) &&
+                        stoneColor == board.getStoneAtCoordinates(currentCoordinates)) {
+                    consecutive += 1;
+                } else {
+                    break;
+                }
+            } else {
+                break;
+            }
+        }
+        return consecutive;
+    }
+
     @NotNull
     public Board.Stone getStoneAtCoordinates(@NotNull final Coordinates coordinates) {
         if (isCoordinatesInsideBoard(Objects.requireNonNull(coordinates))) {
@@ -145,54 +192,6 @@ public class Board {
         s.insert(0, indCol);
         return s.toString();
     }
-
-    public static boolean checkNConsecutiveStonesNaive(Board board, Coordinates coordinates, PositiveInteger numberOfConsecutiveStoneForWinning) {
-
-        int[] factorsCols = new int[]{0, 1, 0, -1};
-        if (verifyDirection(board, coordinates, numberOfConsecutiveStoneForWinning, factorsCols)) return true;
-
-        int[] factorsRows = new int[]{1, 0, -1, 0};
-        if (verifyDirection(board, coordinates, numberOfConsecutiveStoneForWinning, factorsRows)) return true;
-
-        int[] factorsRightDiag = new int[]{1, 1, -1, -1};
-        if (verifyDirection(board, coordinates, numberOfConsecutiveStoneForWinning, factorsRightDiag)) return true;
-
-        int[] factorsLeftDiag = new int[]{1, -1, -1, 1};
-        return verifyDirection(board, coordinates, numberOfConsecutiveStoneForWinning, factorsLeftDiag);
-    }
-
-    private static boolean verifyDirection(Board board, Coordinates coordinates, PositiveInteger numberOfConsecutiveStoneForWinning, int[] factors) {
-
-        Board.Stone stoneColor = board.getStoneAtCoordinates(coordinates);
-
-        int partRight = getNumberOfConsecutiveSameColoreStones(board, coordinates, numberOfConsecutiveStoneForWinning, stoneColor, factors[0], factors[1]); //up-right
-
-        int partLeft = getNumberOfConsecutiveSameColoreStones(board, coordinates, numberOfConsecutiveStoneForWinning, stoneColor, factors[2], factors[3]); //down-left
-
-        return (partRight + partLeft + 1) >= numberOfConsecutiveStoneForWinning.intValue();
-    }
-
-    private static int getNumberOfConsecutiveSameColoreStones(Board board, Coordinates coordinates, PositiveInteger numberOfConsecutiveStoneForWinning, Board.Stone stoneColor, int factorX, int factorY) {
-        int consecutive = 0;
-
-        for (int i = 1; i < numberOfConsecutiveStoneForWinning.intValue(); i++) {
-            int x = coordinates.getX() + i * factorX;
-            int y = coordinates.getY() + i * factorY;
-            if (x >= 0 && y >= 0) {
-                Coordinates currentCoordinates = new Coordinates(x, y);
-                if (board.isCoordinatesInsideBoard(currentCoordinates) &&
-                        stoneColor == board.getStoneAtCoordinates(currentCoordinates)) {
-                    consecutive += 1;
-                } else {
-                    break;
-                }
-            } else {
-                break;
-            }
-        }
-        return consecutive;
-    }
-
 
     public boolean checkNConsecutiveStones(@NotNull final Coordinates coords, NonNegativeInteger N) {
         Stone stone = getStoneAtCoordinates(Objects.requireNonNull(coords));

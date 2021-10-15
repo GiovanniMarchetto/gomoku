@@ -82,7 +82,7 @@ public class Game implements Comparable<Game> {
     public Player getBlackPlayer() {
         return playerToStoneColorsMap.entrySet()
                 .stream().unordered()
-                .filter(entry->entry.getValue()== Board.Stone.BLACK)
+                .filter(entry -> entry.getValue() == Board.Stone.BLACK)
                 .map(Map.Entry::getKey)
                 .findAny()
                 .orElseThrow();

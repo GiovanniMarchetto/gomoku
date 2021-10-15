@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class BoardTest {
 
-    private static Board board = null;
+    private static Board board;
 
     private static Stream<Arguments> provideCoupleOfNonNegativeIntegersTillBOARD_SIZEExcluded() {
         return provideCoupleOfNonNegativeIntegersTillNExcluded(EnvVariables.BOARD_SIZE.intValue());
