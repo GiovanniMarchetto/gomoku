@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiFunction;
@@ -16,7 +17,7 @@ import java.util.logging.Logger;
 
 public class Main {
 
-    public static OutputPrinter out = new OutputPrinter();
+    public static OutputPrinter out = OutputPrinter.getPrinter(Charset.defaultCharset());
 
     public static void main(String[] args) throws IOException {
 
