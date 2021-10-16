@@ -1,7 +1,9 @@
 package it.units.sdm.gomoku.model.custom_types;
 
+import it.units.sdm.gomoku.Length;
 import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Range;
 
 import java.util.Objects;
 
@@ -19,8 +21,21 @@ public class Coordinates extends Pair<NonNegativeInteger, NonNegativeInteger> {
         super(Objects.requireNonNull(x), Objects.requireNonNull(y));
     }
 
+    public Coordinates(@NotNull @Range(from = 2, to = 2) final NonNegativeInteger... coordinates) {
+        this(validateCoordsFromVarargs(coordinates)[0], coordinates[1]);
+    }
+
     public Coordinates(@NonNegativeIntegerType int x, @NonNegativeIntegerType int y) {
         this(new NonNegativeInteger(x), new NonNegativeInteger(y));
+    }
+
+    @NotNull
+    @Length(length = 2)
+    private static NonNegativeInteger[] validateCoordsFromVarargs(@NotNull final NonNegativeInteger[] coordinates) {
+        if (Objects.requireNonNull(coordinates).length != 2) {
+            throw new IllegalArgumentException("2 coordinates expected but " + coordinates.length + " found.");
+        }
+        return coordinates;
     }
 
     @NonNegativeIntegerType
