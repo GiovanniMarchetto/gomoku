@@ -1,12 +1,12 @@
 package it.units.sdm.gomoku.model.entities;
 
-import it.units.sdm.gomoku.Main;
+import it.units.sdm.gomoku.Length;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
-import it.units.sdm.gomoku.model.utils.BufferCoordinates;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Range;
 
 import java.util.*;
 
@@ -30,6 +30,12 @@ public class Match {
     private Player currentBlackPlayer,
             currentWhitePlayer;
 
+    public Match(@NotNull final PositiveInteger boardSize, @NotNull final PositiveInteger howManyGames,
+                 @NotNull @Range(from = 2, to = 2) final Player... players) {
+        this(validatePlayersFromVarargs(players)[0], players[1],
+                Objects.requireNonNull(boardSize), Objects.requireNonNull(howManyGames));
+    }
+
     public Match(@NotNull final Player player1, @NotNull final Player player2,
                  @NotNull final PositiveInteger boardSize, @NotNull final PositiveInteger howManyGames) {
         this.currentBlackPlayer = Objects.requireNonNull(player2);
@@ -49,6 +55,15 @@ public class Match {
         this(player1, player2, boardSize, DEFAULT_MAXIMUM_GAMES.intValue());
     }
 
+    @NotNull
+    @Length(length = 2)
+    private static Player[] validatePlayersFromVarargs(@NotNull final Player[] players) {
+        if (Objects.requireNonNull(players).length != 2) {
+            throw new IllegalArgumentException("2 players expected but " + players.length + " found.");
+        }
+        return players;
+    }
+
     public static void executeMoveOfPlayerInGame(@NotNull Player player, @NotNull Game game, @Nullable Coordinates coordinatesOfTheMove)
             throws Board.NoMoreEmptyPositionAvailableException, Board.PositionAlreadyOccupiedException {
 
@@ -58,6 +73,15 @@ public class Match {
 
         assert coordinatesOfTheMove != null;
         game.placeStone(player, coordinatesOfTheMove);
+    }
+
+    public void addAGame() {
+        howManyGames.incrementAndGet();
+    }
+
+    public boolean isEndedWithADraft() {
+        return getScoreOfPlayer(getCurrentBlackPlayer())
+                .equals(getScoreOfPlayer(getCurrentWhitePlayer()));
     }
 
     @NotNull
@@ -83,7 +107,7 @@ public class Match {
     }
 
     @NotNull
-    private NonNegativeInteger getScoreOfPlayer(@NotNull Player player) {
+    public NonNegativeInteger getScoreOfPlayer(@NotNull Player player) {
         return new NonNegativeInteger(
                 (int) gameList.stream()
                         .filter(aGame -> {
@@ -95,35 +119,6 @@ public class Match {
                         })
                         .count()
         );
-    }
-
-    public void disputeMatch(@NotNull final BufferCoordinates bufferCoordinates) {
-        Main.MatchDisputer matchDisputer = new Main.MatchDisputer(bufferCoordinates, this);
-        matchDisputer.start();
-        try {
-            matchDisputer.join();                                                                                       // TODO : try-catch or throws in method signature?
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } finally {
-            bufferCoordinates.clear();
-        }
-    }
-
-    @NotNull
-    public Board getBoardOfNthGame(@NotNull NonNegativeInteger nOfGame_from0ToNOfDisputedGamesTillNow) {
-        int indexOfGame = Objects.requireNonNull(nOfGame_from0ToNOfDisputedGamesTillNow).intValue();
-        int numberOfCurrentlyDisputedMatch = gameList.size();   // TODO : concurrency problems?
-        if (indexOfGame < numberOfCurrentlyDisputedMatch) {
-            return gameList.get(indexOfGame).getBoard();
-        } else {
-            throw new IllegalArgumentException(
-                    "Till now, " + numberOfCurrentlyDisputedMatch + " games were disputed" +
-                            (numberOfCurrentlyDisputedMatch > 0 ?
-                                    (", hence the parameter for this method must be between " + 0 + " (inclusive) and " +
-                                            (numberOfCurrentlyDisputedMatch - 1) + " (inclusive), but ") :
-                                    ". ")
-                            + indexOfGame + " was provided.");
-        }
     }
 
     public int getHowManyGames() {
