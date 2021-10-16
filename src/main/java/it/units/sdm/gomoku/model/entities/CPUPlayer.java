@@ -1,6 +1,7 @@
 package it.units.sdm.gomoku.model.entities;
 
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
+import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import org.jetbrains.annotations.NotNull;
 
@@ -8,12 +9,17 @@ import java.util.Random;
 
 public class CPUPlayer extends Player {
 
+    private final static String CPU_DEFAULT_NAME = "CPU";
+    private final static NonNegativeInteger numberOfCpuPlayers = new NonNegativeInteger();
     private final int MAX_RANDOM_ITERATION = 500;
-
     private final Random rand = new Random();
 
     public CPUPlayer(@NotNull String name) {
         super(name);
+    }
+
+    public CPUPlayer() {
+        super(CPU_DEFAULT_NAME + numberOfCpuPlayers.incrementAndGet());
     }
 
     @NotNull
