@@ -36,7 +36,7 @@ public class OutputPrinter extends OutputStream {        // TODO : to be tested
         this.totalNumberOfPrintedBytes = 0;
     }
 
-    public static OutputPrinter getPrinter(@NotNull final Charset outputCharset) {
+    public static OutputPrinter getInstance(@NotNull final Charset outputCharset) {
         if (singleInstance == null) {
             singleInstance = new OutputPrinter(Objects.requireNonNull(outputCharset));
         }
