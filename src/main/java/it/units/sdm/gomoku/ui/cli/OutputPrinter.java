@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.util.List;
@@ -15,29 +16,31 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class OutputPrinter {        // TODO : to be tested
+public class OutputPrinter extends OutputStream {        // TODO : to be tested
 
     private final static ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    private final static Charset DEFAULT_CHARSET = Charset.defaultCharset();
     private final static String ANSI_CURSOR_ONE_LINE_UP = "\u001B[A";
     private final static String ANSI_CURSOR_ONE_CHAR_RIGHT = "\u001B[C";
+    private static OutputPrinter singleInstance;
     private final Charset outputCharset;
     private final PrintStream standardOutput;
     private final List<Integer> numberOfPrintedBytesInSection;
     private final List<Integer> newLinePositions;
     private int totalNumberOfPrintedBytes;
 
-
-    public OutputPrinter() {
-        this(DEFAULT_CHARSET);
-    }
-
-    public OutputPrinter(@NotNull final Charset outputCharset) {
+    private OutputPrinter(@NotNull final Charset outputCharset) {
         this.outputCharset = Objects.requireNonNull(outputCharset);
         this.numberOfPrintedBytesInSection = new CopyOnWriteArrayList<>();
         this.newLinePositions = new CopyOnWriteArrayList<>();
         this.standardOutput = System.out;
         this.totalNumberOfPrintedBytes = 0;
+    }
+
+    public static OutputPrinter getInstance(@NotNull final Charset outputCharset) {
+        if (singleInstance == null) {
+            singleInstance = new OutputPrinter(Objects.requireNonNull(outputCharset));
+        }
+        return singleInstance;
     }
 
     private static <T> void removeLastItemOf(@NotNull final List<T> list) {
@@ -150,4 +153,8 @@ public class OutputPrinter {        // TODO : to be tested
         return numberOfPrintedBytesInSection.get(getLastIndexOf(numberOfPrintedBytesInSection));
     }
 
+    @Override
+    public void write(int b) throws IOException {
+        print(b);
+    }
 }
