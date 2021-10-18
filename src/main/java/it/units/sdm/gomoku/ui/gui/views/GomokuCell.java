@@ -3,6 +3,7 @@ package it.units.sdm.gomoku.ui.gui.views;
 import it.units.sdm.gomoku.model.Observer;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.Board;
+import it.units.sdm.gomoku.ui.gui.viewmodels.MainViewmodel;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.scene.Group;
@@ -17,6 +18,7 @@ import java.beans.PropertyChangeEvent;
 public class GomokuCell implements Observer {
 
     private final int boardSize;
+    private final MainViewmodel vm;
     private final Coordinates coordinates;
     private double radius;
 
@@ -29,12 +31,13 @@ public class GomokuCell implements Observer {
 
     private Group group;
 
-    public GomokuCell(Coordinates coordinates, double initialRadius, int boardSize) {
+    public GomokuCell(MainViewmodel vm, Coordinates coordinates, double initialRadius, int boardSize) {
+        this.vm = vm;
         this.coordinates = coordinates;
         this.radius = initialRadius;
         this.boardSize = boardSize;
-        this.stone = Board.Stone.NONE;
         initializeGroup();
+        vm.addPropertyChangeListener(this);
     }
 
     private double getRadius() {
@@ -72,6 +75,17 @@ public class GomokuCell implements Observer {
 
     public Group getGroup() {
         return group;
+    }
+
+    private void setStone(Board.Stone stone) {
+        this.stone = stone;
+        if (!stone.isNone()) {
+            circle.setOpacity(1);
+            circle.setFill(stone == Board.Stone.BLACK ? Color.BLACK : Color.WHITE);
+        } else {
+            circle.setOpacity(0);
+            circle.setFill(Color.AQUAMARINE);
+        }
     }
 
 
@@ -148,8 +162,7 @@ public class GomokuCell implements Observer {
 
     private void initializeCircle() {
         circle = new Circle(getRadius());
-        circle.setFill(Color.AQUAMARINE);
-        circle.setOpacity(0);
+        setStone(Board.Stone.NONE);
         group.getChildren().add(circle);
     }
 
@@ -179,9 +192,10 @@ public class GomokuCell implements Observer {
                 //TODO: call bind method
                 // stone = method to call in the viewModel();
                 // switch(stone){ caseB:circle.setFill(stone)... }
-                circle.setOpacity(1);
-                circle.setFill(Color.DARKRED);
-                stone = Board.Stone.BLACK;
+                vm.placeStone(coordinates);
+//                circle.setOpacity(1);
+//                circle.setFill(Color.DARKRED);
+//                stone = Board.Stone.BLACK;
             }
         });
     }
@@ -191,9 +205,13 @@ public class GomokuCell implements Observer {
     public void propertyChange(PropertyChangeEvent evt) {
         String radiusPropertyName = "radius";
         if (evt.getPropertyName().equals(radiusPropertyName)) {
-            //TODO: something
             setRadius((double) evt.getNewValue());
             resizeAllItemsOfCell();
+        } else if (evt.getPropertyName().equals(Board.BoardMatrixPropertyName)) {
+            Board.ChangedCell cell = (Board.ChangedCell) evt.getNewValue();
+            if (cell.getCoordinates().equals(coordinates)) {
+                setStone(cell.getNewStone());
+            }
         }
     }
 }

@@ -2,6 +2,7 @@ package it.units.sdm.gomoku.ui.gui.views;
 
 import it.units.sdm.gomoku.EnvVariables;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
+import it.units.sdm.gomoku.ui.gui.viewmodels.MainViewmodel;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
@@ -23,7 +24,7 @@ class GomokuCellTest {
     private GomokuCell gomokuCell;
 
     void setUpGomokuCell(int x, int y) {
-        gomokuCell = new GomokuCell(new Coordinates(x, y), radius, boardSize);
+        gomokuCell = new GomokuCell(new MainViewmodel(), new Coordinates(x, y), radius, boardSize);
     }
 
     @Test

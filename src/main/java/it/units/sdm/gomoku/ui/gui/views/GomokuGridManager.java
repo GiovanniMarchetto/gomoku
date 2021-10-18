@@ -1,7 +1,9 @@
 package it.units.sdm.gomoku.ui.gui.views;
 
 import it.units.sdm.gomoku.model.Observable;
+import it.units.sdm.gomoku.model.Observer;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
+import it.units.sdm.gomoku.ui.gui.viewmodels.MainViewmodel;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
@@ -11,10 +13,12 @@ import javafx.scene.Node;
 import javafx.scene.layout.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.beans.PropertyChangeEvent;
 import java.util.stream.IntStream;
 
 public class GomokuGridManager implements Observable {
 
+    private final MainViewmodel vm;
     private final int boardSize;
     private final GridPane gridPane;
     private final Pane parentPane;
@@ -22,16 +26,16 @@ public class GomokuGridManager implements Observable {
     private final double discardHeight;
     private double radius;
 
-    public GomokuGridManager(int boardSize, Pane parentPane, double discardWidth, double discardHeight) {
-        this.boardSize = boardSize;
-//        this.radius = 10;
+    public GomokuGridManager(MainViewmodel vm, Pane parentPane, double discardWidth, double discardHeight) {
+        this.vm = vm;
+        this.boardSize = vm.getBoardSize();
         this.parentPane = parentPane;
         this.discardWidth = discardWidth;
         this.discardHeight = discardHeight;
         gridPane = new GridPane();
 
-        parentPane.heightProperty().addListener(onChangeDimensionOfWindow());
-        parentPane.widthProperty().addListener(onChangeDimensionOfWindow());
+        parentPane.heightProperty().addListener(onPaneSizeChange());
+        parentPane.widthProperty().addListener(onPaneSizeChange());
 
 
         IntStream.range(0, boardSize)
@@ -66,7 +70,7 @@ public class GomokuGridManager implements Observable {
     }
 
     @NotNull
-    private ChangeListener<Number> onChangeDimensionOfWindow() {
+    private ChangeListener<Number> onPaneSizeChange() {
         return (observable, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
                 setRadiusAfterResize();
@@ -75,7 +79,7 @@ public class GomokuGridManager implements Observable {
     }
 
     private void addCell(int row, int col) {
-        GomokuCell gc = new GomokuCell(new Coordinates(row, col), radius, boardSize);
+        GomokuCell gc = new GomokuCell(vm, new Coordinates(row, col), radius, boardSize);
         this.addPropertyChangeListener(gc);
         ObservableList<Node> children = gc.getGroup().getChildren();
 
