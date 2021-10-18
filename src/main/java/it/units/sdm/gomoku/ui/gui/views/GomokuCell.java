@@ -189,13 +189,7 @@ public class GomokuCell implements Observer {
 
         rectangle.setOnMousePressed(event -> {
             if (stone.isNone() && event.isPrimaryButtonDown()) {
-                //TODO: call bind method
-                // stone = method to call in the viewModel();
-                // switch(stone){ caseB:circle.setFill(stone)... }
                 vm.placeStone(coordinates);
-//                circle.setOpacity(1);
-//                circle.setFill(Color.DARKRED);
-//                stone = Board.Stone.BLACK;
             }
         });
     }
