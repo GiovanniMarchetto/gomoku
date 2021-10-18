@@ -5,6 +5,7 @@ import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.entities.Game;
 import it.units.sdm.gomoku.model.entities.Match;
 import it.units.sdm.gomoku.model.entities.Player;
+import it.units.sdm.gomoku.mvvm_library.viewmodels.Viewmodel;
 
 import java.beans.PropertyChangeEvent;
 

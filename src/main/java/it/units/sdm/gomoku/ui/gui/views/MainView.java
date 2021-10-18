@@ -1,9 +1,7 @@
 package it.units.sdm.gomoku.ui.gui.views;
 
-import it.units.sdm.gomoku.model.custom_types.Coordinates;
-import it.units.sdm.gomoku.model.entities.Board;
+import it.units.sdm.gomoku.mvvm_library.views.View;
 import it.units.sdm.gomoku.ui.gui.viewmodels.MainViewmodel;
-import it.units.sdm.gomoku.ui.gui.viewmodels.Viewmodel;
 import javafx.fxml.FXML;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
@@ -40,5 +38,6 @@ public class MainView extends View {
         centerGridPane.getChildren().add(baseGridPane);
 
     }
+
 
 }

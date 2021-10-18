@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+<GridPane xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="it.units.sdm.gomoku.ui.gui.views.StartView"
+          fx:id="startGridPane"
+          alignment="CENTER" hgap="5" vgap="10"
+          style="-fx-background-color: lightgreen;">
+
+    <!--TODO: CHANGE COLORS-->
+
+    <Text text="Choose players"
+          style="-fx-font-size: 15; -fx-font-weight: bold"
+          GridPane.columnIndex="0" GridPane.rowIndex="0"
+          GridPane.columnSpan="2"/>
+
+    <Label text="Player One:"
+           GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+
+    <TextField fx:id="player1" text="One"
+               GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+    <CheckBox fx:id="cpu1CheckBox" text="CPU"
+              GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+
+
+    <Label text="Player Two:"
+           GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+
+    <TextField fx:id="player2" text="Two"
+               GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+
+    <CheckBox fx:id="cpu2CheckBox" text="CPU"
+              GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+
+
+    <Label text="Board size:"
+           GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+
+    <ChoiceBox fx:id="boardSizeList"
+               GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+
+
+    <Label text="How many games:"
+           GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+
+    <TextField fx:id="howManyGames" text="1"
+               GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+
+
+    <HBox fx:id="boxForButton"
+          GridPane.columnIndex="2" GridPane.rowIndex="6"
+    />
+
+</GridPane>
