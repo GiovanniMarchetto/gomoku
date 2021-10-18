@@ -11,6 +11,7 @@ import it.units.sdm.gomoku.ui.gui.viewmodels.MainViewmodel;
 import it.units.sdm.gomoku.ui.support.BoardSizes;
 import it.units.sdm.gomoku.ui.support.PlayerTypes;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
@@ -22,6 +23,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static it.units.sdm.gomoku.ui.gui.Main.mainViewmodel;
 import static it.units.sdm.gomoku.ui.support.Setup.setupCompletedPropertyName;
 
 public class StartView extends View {
@@ -45,9 +47,11 @@ public class StartView extends View {
     @FXML
     private HBox boxForButton;
 
+    private Button confirmButton;
+
 
     public StartView() {
-        super(new MainViewmodel());
+        super(mainViewmodel);
     }
 
     private CommanderButton getButtonFirePropertyChange() {
@@ -86,17 +90,29 @@ public class StartView extends View {
     private void initialize() {
 
         CommanderButton commanderButton = getButtonFirePropertyChange();
-
-        boxForButton.getChildren().add(commanderButton.getGUIItem());
+        confirmButton = commanderButton.getGUIItem();
+        boxForButton.getChildren().add(confirmButton);
 
         String[] boardSizeStringList = Arrays.stream(BoardSizes.values()).map(BoardSizes::toString).toArray(String[]::new);
         boardSizeList.getItems().addAll(boardSizeStringList);
         boardSizeList.setValue(boardSizeStringList[2]);
 
+        CheckFieldsAndEnableButton();
+        player1.textProperty().addListener((observable, oldValue, newValue) ->{
+            CheckFieldsAndEnableButton();
+        });
+        player2.textProperty().addListener((observable, oldValue, newValue) ->{
+            CheckFieldsAndEnableButton();
+        });
         howManyGames.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*")) {
                 howManyGames.setText(newValue.replaceAll("[^\\d]", ""));
             }
+            CheckFieldsAndEnableButton();
         });
+    }
+
+    private void CheckFieldsAndEnableButton() {
+        confirmButton.setDisable(player1.getText().isEmpty() || player2.getText().isEmpty() || howManyGames.getText().isEmpty());
     }
 }

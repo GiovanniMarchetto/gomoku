@@ -1,5 +1,6 @@
 package it.units.sdm.gomoku.ui.gui;
 
+import it.units.sdm.gomoku.ui.gui.viewmodels.MainViewmodel;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -8,6 +9,8 @@ import java.io.IOException;
 public class Main extends Application {
 
     private static final String FXML_LOCATION_PATH = "views/";
+
+    public static final MainViewmodel mainViewmodel = new MainViewmodel();
 
     private final static int initialSceneWidthInPx = 630;
     private final static int initialSceneHeightInPx = 580;

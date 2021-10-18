@@ -23,4 +23,5 @@ module it.units.sdm.gomoku {
     exports it.units.sdm.gomoku.mvvm_library.viewmodels;
     exports it.units.sdm.gomoku.ui.gui;
     opens it.units.sdm.gomoku.ui.gui to javafx.fxml;
+    exports it.units.sdm.gomoku.ui.gui.viewmodels;
 }
