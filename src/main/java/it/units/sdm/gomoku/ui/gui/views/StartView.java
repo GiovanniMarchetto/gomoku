@@ -20,7 +20,6 @@ import javafx.util.Pair;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import static it.units.sdm.gomoku.ui.support.Setup.setupCompletedPropertyName;
@@ -51,9 +50,13 @@ public class StartView extends View {
         super(new MainViewmodel());
     }
 
-    private CommanderButton getButtonFirePropertyChange(){
-        return new CommanderButton(this, getViewmodelAssociatedWithView(),
-                clickEvent -> {
+    private CommanderButton getButtonFirePropertyChange() {
+        return new CommanderButton(
+                "Start Match!",
+                this,
+                getViewmodelAssociatedWithView(),
+                setupCompletedPropertyName,
+                () -> {
                     Map<Player, PlayerTypes> players = Arrays.stream(
                                     new Pair[]{
                                             new Pair<>(cpu1CheckBox, player1),
@@ -75,7 +78,7 @@ public class StartView extends View {
                     PositiveInteger numberOfGames = new PositiveInteger(Integer.parseInt(howManyGames.getText()));
                     PositiveOddInteger boardSize = BoardSizes.fromString(boardSizeList.getValue()).getBoardSize();
 
-                    firePropertyChange(setupCompletedPropertyName, null, new GUISetup(players, numberOfGames, boardSize));
+                    return new GUISetup(players, numberOfGames, boardSize);
                 });
     }
 
