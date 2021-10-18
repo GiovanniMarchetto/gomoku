@@ -49,8 +49,8 @@ public class BoardTest {
 
     @ParameterizedTest
     @MethodSource("provideCoupleOfNonNegativeIntegersTillBOARD_SIZEExcluded")
-    void getBoard(int x, int y) {
-        assertEquals(TestUtility.boardStoneFromCsv[x][y], board.getBoard()[x][y]);
+    void getBoardMatrixCopy(int x, int y) {
+        assertEquals(TestUtility.boardStoneFromCsv[x][y], board.getBoardMatrixCopy()[x][y]);
     }
 
     @ParameterizedTest
