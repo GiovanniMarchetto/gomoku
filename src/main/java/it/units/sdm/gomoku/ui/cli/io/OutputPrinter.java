@@ -1,4 +1,4 @@
-package it.units.sdm.gomoku.ui.cli;
+package it.units.sdm.gomoku.ui.cli.io;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -21,6 +21,7 @@ public class OutputPrinter extends OutputStream {        // TODO : to be tested
     private final static ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     private final static String ANSI_CURSOR_ONE_LINE_UP = "\u001B[A";
     private final static String ANSI_CURSOR_ONE_CHAR_RIGHT = "\u001B[C";
+    private static final Charset DEFAULT_OUTPUT_CHARSET = Charset.defaultCharset();
     private static OutputPrinter singleInstance;
     private final Charset outputCharset;
     private final PrintStream standardOutput;
@@ -28,17 +29,17 @@ public class OutputPrinter extends OutputStream {        // TODO : to be tested
     private final List<Integer> newLinePositions;
     private int totalNumberOfPrintedBytes;
 
-    private OutputPrinter(@NotNull final Charset outputCharset) {
-        this.outputCharset = Objects.requireNonNull(outputCharset);
+    private OutputPrinter() {
+        this.outputCharset = DEFAULT_OUTPUT_CHARSET;
         this.numberOfPrintedBytesInSection = new CopyOnWriteArrayList<>();
         this.newLinePositions = new CopyOnWriteArrayList<>();
         this.standardOutput = System.out;
         this.totalNumberOfPrintedBytes = 0;
     }
 
-    public static OutputPrinter getInstance(@NotNull final Charset outputCharset) {
+    public static OutputPrinter getInstance() {
         if (singleInstance == null) {
-            singleInstance = new OutputPrinter(Objects.requireNonNull(outputCharset));
+            singleInstance = new OutputPrinter();
         }
         return singleInstance;
     }

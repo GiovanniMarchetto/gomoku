@@ -16,4 +16,7 @@ module it.units.sdm.gomoku {
     exports it.units.sdm.gomoku.model.utils;
     exports it.units.sdm.gomoku.model.entities;
     exports it.units.sdm.gomoku.model.custom_types;
+    exports it.units.sdm.gomoku.ui.support;
+    opens it.units.sdm.gomoku.ui.support to javafx.fxml;
+    exports it.units.sdm.gomoku.ui.cli.io;
 }
