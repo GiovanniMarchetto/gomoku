@@ -98,8 +98,8 @@ public class Main { // TODO : to be tested
                 }
 
             } catch (IOException e) {
-                Logger.getLogger(it.units.sdm.gomoku.Main.class.getCanonicalName())
-                        .severe("Exception in class " + it.units.sdm.gomoku.Main.class.getCanonicalName() + ": " + e);
+                Logger.getLogger(Main.class.getCanonicalName())
+                        .severe("Exception in class " + Main.class.getCanonicalName() + ": " + e);
             }
         }
     }
@@ -146,7 +146,7 @@ public class Main { // TODO : to be tested
                                     "Insert a valid coordinate: "
                             );
                         } catch (IOException e) {
-                            Logger.getLogger(it.units.sdm.gomoku.Main.class.getCanonicalName())
+                            Logger.getLogger(Main.class.getCanonicalName())
                                     .severe("Exception: " + e);                             // TODO : refactor: move all duplications of Logger.getLogger() in a single utility function in utils package
                         }
                     }

@@ -6,12 +6,14 @@ import it.units.sdm.gomoku.model.entities.Game;
 import it.units.sdm.gomoku.model.entities.Match;
 import it.units.sdm.gomoku.model.entities.Player;
 import it.units.sdm.gomoku.mvvm_library.viewmodels.Viewmodel;
+import it.units.sdm.gomoku.ui.gui.SceneController;
+import it.units.sdm.gomoku.ui.support.Setup;
 
 import java.beans.PropertyChangeEvent;
 
 public class MainViewmodel extends Viewmodel {
 
-    private Match match;
+    private final Match match;
 
     private Game currentGame;
 
@@ -66,6 +68,9 @@ public class MainViewmodel extends Viewmodel {
             // Propagate event, note that the (Game) Board changes during the Match
             Board.ChangedCell cell = (Board.ChangedCell) evt.getNewValue();
             firePropertyChange(Board.BoardMatrixPropertyName, null, cell);
+        }
+        if (evt.getPropertyName().equals(Setup.setupCompletedPropertyName)) {
+            SceneController.passToNextScene();
         }
     }
 }

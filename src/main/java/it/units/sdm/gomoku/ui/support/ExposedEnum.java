@@ -1,6 +1,5 @@
 package it.units.sdm.gomoku.ui.support;
 
-import it.units.sdm.gomoku.Main;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,7 +39,7 @@ public interface ExposedEnum { // TODO : to be tested
                 throw new ClassCastException();
             }
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException | ClassCastException e) {
-            Logger.getLogger(Main.class.getCanonicalName()).severe("Exception: " + e);
+            Logger.getLogger(ExposedEnum.class.getCanonicalName()).severe("Exception: " + e);
             return new ArrayList<>(0);
         }
     }
