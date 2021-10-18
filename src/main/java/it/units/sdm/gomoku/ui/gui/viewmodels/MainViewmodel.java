@@ -6,27 +6,22 @@ import it.units.sdm.gomoku.model.entities.Game;
 import it.units.sdm.gomoku.model.entities.Match;
 import it.units.sdm.gomoku.model.entities.Player;
 import it.units.sdm.gomoku.mvvm_library.viewmodels.Viewmodel;
+import it.units.sdm.gomoku.ui.support.Setup;
 
 import java.beans.PropertyChangeEvent;
 
 public class MainViewmodel extends Viewmodel {
 
-    private final Match match;
+    private Match match;
 
     private Game currentGame;
 
     private Board currentBoard;
 
-    private int boardSize = 19;
-
     private Player currentPlayer;
 
     public MainViewmodel() {
-        Player p1 = new Player("Mario");
-        Player p2 = new Player("Luigi");
-        currentPlayer = p1;
-        match = new Match(p1, p2, boardSize, 3);
-        startNewGame();
+
     }
 
     public void startNewGame() {
@@ -55,11 +50,7 @@ public class MainViewmodel extends Viewmodel {
     }
 
     public int getBoardSize() {
-        return boardSize;
-    }
-
-    public void setBoardSize(int boardSize) {
-        this.boardSize = boardSize;
+        return currentBoard.getSize();
     }
 
     @Override
@@ -68,6 +59,11 @@ public class MainViewmodel extends Viewmodel {
             // Propagate event, note that the (Game) Board changes during the Match
             Board.ChangedCell cell = (Board.ChangedCell) evt.getNewValue();
             firePropertyChange(Board.BoardMatrixPropertyName, null, cell);
+        } else if (evt.getPropertyName().equals(Setup.setupCompletedPropertyName)) {
+            var setup = (Setup) evt.getNewValue();
+            currentPlayer = setup.getPlayers()[0];
+            match = new Match(setup.getBoardSizeValue(), setup.getNumberOfGames(), setup.getPlayers());
+            startNewGame();
         }
     }
 }

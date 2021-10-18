@@ -1,5 +1,6 @@
 package it.units.sdm.gomoku;
 
+import it.units.sdm.gomoku.ui.gui.viewmodels.MainViewmodel;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -10,6 +11,7 @@ import java.io.IOException;
 public class MainApplication extends Application {
 
     private static final String FXML_LOCATION_PATH = "ui/gui/views/";
+    public static final MainViewmodel mainViewmodel = new MainViewmodel();
 
     public static void main(String[] args) {
         launch();
@@ -21,14 +23,12 @@ public class MainApplication extends Application {
         Scene startScene = new Scene(startFxmlLoader.load());
 
         FXMLLoader mainFxmlLoader = new FXMLLoader(MainApplication.class.getResource(FXML_LOCATION_PATH + "main-view.fxml"));
-        Scene mainScene = new Scene(mainFxmlLoader.load(), 630, 580);
+        //Scene mainScene = new Scene(mainFxmlLoader.load(), 630, 580);
 
 
         stage.setMinHeight(550);
         stage.setMinWidth(580);
         stage.setTitle("Gomoku!");
-
-//        startScene.setOnMouseClicked(event -> stage.setScene(mainScene));
 
         stage.setScene(startScene);
         stage.show();

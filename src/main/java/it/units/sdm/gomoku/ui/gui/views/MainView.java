@@ -6,6 +6,8 @@ import javafx.fxml.FXML;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 
+import static it.units.sdm.gomoku.MainApplication.mainViewmodel;
+
 public class MainView extends View {
 
     @FXML
@@ -18,7 +20,7 @@ public class MainView extends View {
     private GridPane rightGridPane;
 
     public MainView() {
-        super(new MainViewmodel());
+        super(mainViewmodel);
     }
 
     @FXML
