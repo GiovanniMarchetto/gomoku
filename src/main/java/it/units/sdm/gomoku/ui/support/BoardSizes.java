@@ -33,7 +33,10 @@ public enum BoardSizes implements ExposedEnum { // TODO : to be tested
 
     @Override
     public String toString() {
-        return
-                name().replaceAll("_", " ");
+        return name().replaceAll("_", " ");
+    }
+
+    public static BoardSizes fromString(@NotNull final String valueAsString) {
+        return BoardSizes.valueOf(valueAsString.replaceAll(" ", "_"));
     }
 }

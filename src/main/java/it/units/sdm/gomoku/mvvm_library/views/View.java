@@ -1,7 +1,7 @@
-package it.units.sdm.gomoku.ui.gui.views;
+package it.units.sdm.gomoku.mvvm_library.views;
 
 import it.units.sdm.gomoku.model.Observable;
-import it.units.sdm.gomoku.ui.gui.viewmodels.Viewmodel;
+import it.units.sdm.gomoku.mvvm_library.viewmodels.Viewmodel;
 
 public abstract class View implements Observable {
 

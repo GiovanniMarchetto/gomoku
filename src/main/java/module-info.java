@@ -18,4 +18,7 @@ module it.units.sdm.gomoku {
     exports it.units.sdm.gomoku.ui.support;
     opens it.units.sdm.gomoku.ui.support to javafx.fxml;
     exports it.units.sdm.gomoku.ui.cli.io;
+    exports it.units.sdm.gomoku.mvvm_library.views;
+    opens it.units.sdm.gomoku.mvvm_library.views to javafx.fxml;
+    exports it.units.sdm.gomoku.mvvm_library.viewmodels;
 }
