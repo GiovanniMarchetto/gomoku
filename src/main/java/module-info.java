@@ -4,6 +4,7 @@ module it.units.sdm.gomoku {
     requires org.jetbrains.annotations;
     requires java.logging;
     requires org.json;
+    requires java.desktop;
 
 
     exports it.units.sdm.gomoku;

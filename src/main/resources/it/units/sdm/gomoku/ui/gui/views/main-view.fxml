@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.*?>
+<AnchorPane fx:id="mainAnchorPane" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="it.units.sdm.gomoku.ui.gui.views.MainView"
+            style="-fx-background-color: black;">
+
+<!--TODO: CHANGE COLORS-->
+
+    <GridPane fx:id="mainGridPane" alignment="CENTER"
+              style="-fx-background-color: green;"
+              AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+              AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"
+    >
+
+        <GridPane fx:id="topGridPane" alignment="CENTER"
+                  style="-fx-background-color: whitesmoke;"
+                  GridPane.columnIndex="0" GridPane.hgrow="NEVER" GridPane.columnSpan="3"
+                  GridPane.rowIndex="0" GridPane.vgrow="NEVER"
+                  prefHeight="50"
+        >
+            <Label fx:id="titleLabel"
+                   text="GOMOKU TIME!"
+                   style="-fx-font-size: 30"
+            />
+        </GridPane>
+
+        <GridPane fx:id="centerGridPane" alignment="CENTER"
+                  style="-fx-background-color: orange;"
+                  GridPane.vgrow="ALWAYS" GridPane.hgrow="ALWAYS"
+                  AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"
+                  GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+        <GridPane fx:id="rightGridPane" style="-fx-background-color: pink;"
+                  GridPane.columnIndex="2" GridPane.hgrow="NEVER"
+                  GridPane.rowIndex="1" GridPane.vgrow="NEVER"
+                  prefWidth="100"/>
+
+    </GridPane>
+
+</AnchorPane>
