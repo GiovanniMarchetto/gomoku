@@ -197,12 +197,6 @@ public class BoardTest {
     }
 
     @Test
-    void testHashCode() {
-        Board b2 = TestUtility.createBoardWithCsvBoardStone();
-        assertEquals(board.hashCode(), b2.hashCode());
-    }
-
-    @Test
     void testHashCodeInvert() {
         assertNotEquals(board.hashCode(), (new Board(board.getSize())).hashCode());
     }
