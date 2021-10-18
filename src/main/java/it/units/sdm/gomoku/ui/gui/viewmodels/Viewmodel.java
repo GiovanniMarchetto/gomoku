@@ -22,4 +22,8 @@ public abstract class Viewmodel implements
     public void observe(Observable observable) {
         observable.addPropertyChangeListener(this);
     }
+
+    public void stopObserving(Observable observable) {
+        observable.removePropertyChangeListener(this);
+    }
 }
