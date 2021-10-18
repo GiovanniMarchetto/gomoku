@@ -108,9 +108,7 @@ public class Board {
     }
 
     public Stone[][] getBoard() {
-        return Arrays.stream(matrix)
-                .map(Stone[]::clone)
-                .toArray(Stone[][]::new);
+        return matrix;
     }
 
     @PositiveIntegerType
