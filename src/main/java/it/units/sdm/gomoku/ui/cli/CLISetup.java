@@ -14,12 +14,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class CLISupport extends Setup { // TODO : to be tested
+public class CLISetup extends Setup { // TODO : to be tested
 
     private final static OutputPrinter out = OutputPrinter.getInstance();
     private final static InputReader in = InputReader.getInstance();
 
-    public CLISupport() throws IOException {
+    public CLISetup() throws IOException {
         super(
                 askAndGetPlayersOfThisMatch(askAndGetNumberOfPlayers()),
                 askAndGetNumberOfGames(),

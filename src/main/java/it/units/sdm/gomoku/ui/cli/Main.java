@@ -20,12 +20,15 @@ public class Main { // TODO : to be tested
 
 
     public static void main(String[] args) throws IOException {
-
         OutputPrinter out = OutputPrinter.getInstance();
         InputReader in = InputReader.getInstance();
 
-        Setup setup = new CLISupport();
-        Match matchToDispute = new Match(setup.getBoardSizeValue(), setup.getNumberOfGames(), setup.getPlayers());
+        Setup setup = new CLISetup();
+        Match matchToDispute = new Match(
+                setup.getBoardSizeValue(),
+                setup.getNumberOfGames(),
+                setup.getPlayers()
+        );
 
         disputeMatch(out, in, setup, matchToDispute);
     }

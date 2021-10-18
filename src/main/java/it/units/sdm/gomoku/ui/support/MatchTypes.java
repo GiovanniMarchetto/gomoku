@@ -19,8 +19,7 @@ public enum MatchTypes implements ExposedEnum { // TODO : to be tested
 
     @Override
     public String toString() {
-        return
-                name().replaceAll("_", " ");
+        return name().replaceAll("_", " ");
     }
 
     @Override

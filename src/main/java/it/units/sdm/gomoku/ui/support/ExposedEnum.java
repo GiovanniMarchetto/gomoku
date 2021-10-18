@@ -14,14 +14,17 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public interface ExposedEnum { // TODO : to be tested
-    static <S extends ExposedEnum> boolean isValidExposedValueOf(@NotNull final Class<S> enumClazz, String exposedValueToCheck) {
+
+    static <S extends ExposedEnum> boolean
+    isValidExposedValueOf(@NotNull final Class<S> enumClazz, String exposedValueToCheck) {
         return getValuesOfEnum(Objects.requireNonNull(enumClazz))
                 .stream()
                 .anyMatch(doesExposedValueCorrespondToThisEnumValue(exposedValueToCheck));
     }
 
     @SuppressWarnings("unchecked")  // correct type checked before casting
-    private static <T extends ExposedEnum> List<T> getValuesOfEnum(@NotNull final Class<T> enumClazz) {
+    private static <T extends ExposedEnum> List<T>
+    getValuesOfEnum(@NotNull final Class<T> enumClazz) {
         try {
             Object valuesAsObj;
             Object[] valuesAsObjArray;
@@ -43,7 +46,8 @@ public interface ExposedEnum { // TODO : to be tested
     }
 
     @NotNull
-    static <T extends ExposedEnum> String getEnumDescriptionOf(@NotNull final Class<T> enumClazz) {
+    static <T extends ExposedEnum> String
+    getEnumDescriptionOf(@NotNull final Class<T> enumClazz) {
         return getValuesOfEnum(enumClazz)
                 .stream()
                 .map(enumVal -> enumVal.getExposedValueOf() + " for " + enumVal)
@@ -51,12 +55,14 @@ public interface ExposedEnum { // TODO : to be tested
     }
 
     @NotNull
-    private static <S extends ExposedEnum> Predicate<S> doesExposedValueCorrespondToThisEnumValue(String exposedValueToCheck) {
+    private static <S extends ExposedEnum> Predicate<S>
+    doesExposedValueCorrespondToThisEnumValue(String exposedValueToCheck) {
         return enumVal -> enumVal.getExposedValueOf().equals(exposedValueToCheck);
     }
 
     @Nullable
-    static <S extends ExposedEnum> S getEnumValueFromExposedValueOrNull(@NotNull final Class<S> enumClazz, String exposedValue) {
+    static <S extends ExposedEnum> S
+    getEnumValueFromExposedValueOrNull(@NotNull final Class<S> enumClazz, String exposedValue) {
         if (isValidExposedValueOf(Objects.requireNonNull(enumClazz), exposedValue)) {
             return getValuesOfEnum(enumClazz)
                     .stream().unordered().parallel()
