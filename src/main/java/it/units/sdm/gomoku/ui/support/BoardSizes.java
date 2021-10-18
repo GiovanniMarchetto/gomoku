@@ -21,6 +21,10 @@ public enum BoardSizes implements ExposedEnum { // TODO : to be tested
         this.ordinalValueOfThisEnum = ordinalValueOfThisEnum;
     }
 
+    public static BoardSizes fromString(@NotNull final String valueAsString) {
+        return BoardSizes.valueOf(valueAsString.replaceAll(" ", "_"));
+    }
+
     @NotNull
     public PositiveOddInteger getBoardSize() {
         return boardSize;
@@ -34,9 +38,5 @@ public enum BoardSizes implements ExposedEnum { // TODO : to be tested
     @Override
     public String toString() {
         return name().replaceAll("_", " ");
-    }
-
-    public static BoardSizes fromString(@NotNull final String valueAsString) {
-        return BoardSizes.valueOf(valueAsString.replaceAll(" ", "_"));
     }
 }

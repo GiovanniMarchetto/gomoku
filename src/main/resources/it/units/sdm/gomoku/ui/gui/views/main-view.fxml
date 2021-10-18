@@ -2,11 +2,11 @@
 
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.*?>
-<AnchorPane fx:id="mainAnchorPane" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1"
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="mainAnchorPane" xmlns="http://javafx.com/javafx/11.0.2"
             fx:controller="it.units.sdm.gomoku.ui.gui.views.MainView"
             style="-fx-background-color: black;">
 
-<!--TODO: CHANGE COLORS-->
+    <!--TODO: CHANGE COLORS-->
 
     <GridPane fx:id="mainGridPane" alignment="CENTER"
               style="-fx-background-color: green;"

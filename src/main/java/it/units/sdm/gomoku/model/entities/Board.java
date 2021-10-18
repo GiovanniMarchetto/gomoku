@@ -6,7 +6,6 @@ import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import org.jetbrains.annotations.NotNull;
 
-import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -19,11 +18,11 @@ import static it.units.sdm.gomoku.model.custom_types.PositiveInteger.PositiveInt
 
 public class Board implements Observable {
 
+    public static final String BoardMatrixPropertyName = "matrix";
     @NotNull
     private final PositiveInteger size;
     @NotNull
     private final Stone[][] matrix;
-    public static final String BoardMatrixPropertyName = "matrix";
     @NotNull
     private final NonNegativeInteger numberOfFilledPositionOnTheBoard;
 
@@ -42,16 +41,6 @@ public class Board implements Observable {
         this(new PositiveInteger(size));
     }
 
-    public boolean checkNConsecutiveStones(@NotNull final Coordinates coords, NonNegativeInteger N) {
-        Stone stone = getStoneAtCoordinates(Objects.requireNonNull(coords));
-        if (stone.isNone()) {
-            throw new IllegalArgumentException("Given coordinates cannot refer to Stone." + stone);
-        }
-        return Stream.of(rowToList(coords), columnToList(coords), fwdDiagonalToList(coords), bckDiagonalToList(coords))
-                .unordered().parallel()
-                .anyMatch(stones -> Stone.listContainsNConsecutiveStones(stones, N, stone));
-    }
-
     public static boolean checkNConsecutiveStonesNaive(Board board, Coordinates coordinates, PositiveInteger numberOfConsecutiveStoneForWinning) {
 
         int[] factorsCols = new int[]{0, 1, 0, -1};
@@ -65,6 +54,48 @@ public class Board implements Observable {
 
         int[] factorsLeftDiag = new int[]{1, -1, -1, 1};
         return verifyDirection(board, coordinates, numberOfConsecutiveStoneForWinning, factorsLeftDiag);
+    }
+
+    private static boolean verifyDirection(Board board, Coordinates coordinates, PositiveInteger numberOfConsecutiveStoneForWinning, int[] factors) {
+
+        Board.Stone stoneColor = board.getStoneAtCoordinates(coordinates);
+
+        int partRight = getNumberOfConsecutiveSameColoreStones(board, coordinates, numberOfConsecutiveStoneForWinning, stoneColor, factors[0], factors[1]); //up-right
+
+        int partLeft = getNumberOfConsecutiveSameColoreStones(board, coordinates, numberOfConsecutiveStoneForWinning, stoneColor, factors[2], factors[3]); //down-left
+
+        return (partRight + partLeft + 1) >= numberOfConsecutiveStoneForWinning.intValue();
+    }
+
+    private static int getNumberOfConsecutiveSameColoreStones(Board board, Coordinates coordinates, PositiveInteger numberOfConsecutiveStoneForWinning, Board.Stone stoneColor, int factorX, int factorY) {
+        int consecutive = 0;
+
+        for (int i = 1; i < numberOfConsecutiveStoneForWinning.intValue(); i++) {
+            int x = coordinates.getX() + i * factorX;
+            int y = coordinates.getY() + i * factorY;
+            if (x >= 0 && y >= 0) {
+                Coordinates currentCoordinates = new Coordinates(x, y);
+                if (board.isCoordinatesInsideBoard(currentCoordinates) &&
+                        stoneColor == board.getStoneAtCoordinates(currentCoordinates)) {
+                    consecutive += 1;
+                } else {
+                    break;
+                }
+            } else {
+                break;
+            }
+        }
+        return consecutive;
+    }
+
+    public boolean checkNConsecutiveStones(@NotNull final Coordinates coords, NonNegativeInteger N) {
+        Stone stone = getStoneAtCoordinates(Objects.requireNonNull(coords));
+        if (stone.isNone()) {
+            throw new IllegalArgumentException("Given coordinates cannot refer to Stone." + stone);
+        }
+        return Stream.of(rowToList(coords), columnToList(coords), fwdDiagonalToList(coords), bckDiagonalToList(coords))
+                .unordered().parallel()
+                .anyMatch(stones -> Stone.listContainsNConsecutiveStones(stones, N, stone));
     }
 
     @NotNull
@@ -130,38 +161,6 @@ public class Board implements Observable {
         } else {
             throw new IllegalArgumentException("Stone color cannot be " + Stone.NONE);
         }
-    }
-
-    private static boolean verifyDirection(Board board, Coordinates coordinates, PositiveInteger numberOfConsecutiveStoneForWinning, int[] factors) {
-
-        Board.Stone stoneColor = board.getStoneAtCoordinates(coordinates);
-
-        int partRight = getNumberOfConsecutiveSameColoreStones(board, coordinates, numberOfConsecutiveStoneForWinning, stoneColor, factors[0], factors[1]); //up-right
-
-        int partLeft = getNumberOfConsecutiveSameColoreStones(board, coordinates, numberOfConsecutiveStoneForWinning, stoneColor, factors[2], factors[3]); //down-left
-
-        return (partRight + partLeft + 1) >= numberOfConsecutiveStoneForWinning.intValue();
-    }
-
-    private static int getNumberOfConsecutiveSameColoreStones(Board board, Coordinates coordinates, PositiveInteger numberOfConsecutiveStoneForWinning, Board.Stone stoneColor, int factorX, int factorY) {
-        int consecutive = 0;
-
-        for (int i = 1; i < numberOfConsecutiveStoneForWinning.intValue(); i++) {
-            int x = coordinates.getX() + i * factorX;
-            int y = coordinates.getY() + i * factorY;
-            if (x >= 0 && y >= 0) {
-                Coordinates currentCoordinates = new Coordinates(x, y);
-                if (board.isCoordinatesInsideBoard(currentCoordinates) &&
-                        stoneColor == board.getStoneAtCoordinates(currentCoordinates)) {
-                    consecutive += 1;
-                } else {
-                    break;
-                }
-            } else {
-                break;
-            }
-        }
-        return consecutive;
     }
 
     @Override
@@ -278,6 +277,18 @@ public class Board implements Observable {
         }
     }
 
+    public static class NoMoreEmptyPositionAvailableException extends Exception {
+        public NoMoreEmptyPositionAvailableException() {
+            super("The board is entirely filled. No more space available.");
+        }
+    }
+
+    public static class PositionAlreadyOccupiedException extends Exception {
+        public PositionAlreadyOccupiedException(@NotNull final Coordinates coordinates) {
+            super(Objects.requireNonNull(coordinates) + " already occupied.");
+        }
+    }
+
     public class ChangedCell {
         private final Coordinates coordinates;
         private final Stone newStone;
@@ -309,18 +320,6 @@ public class Board implements Observable {
 
         public Board getBoard() {
             return board;
-        }
-    }
-
-    public static class NoMoreEmptyPositionAvailableException extends Exception {
-        public NoMoreEmptyPositionAvailableException() {
-            super("The board is entirely filled. No more space available.");
-        }
-    }
-
-    public static class PositionAlreadyOccupiedException extends Exception {
-        public PositionAlreadyOccupiedException(@NotNull final Coordinates coordinates) {
-            super(Objects.requireNonNull(coordinates) + " already occupied.");
         }
     }
 

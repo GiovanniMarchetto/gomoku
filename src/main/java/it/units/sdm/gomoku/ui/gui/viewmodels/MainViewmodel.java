@@ -42,7 +42,7 @@ public class MainViewmodel extends Viewmodel {
         stopObserving(currentBoard);
     }
 
-    public void placeStone(Coordinates coordinates){
+    public void placeStone(Coordinates coordinates) {
         // TODO: re-do this
         currStone = currStone == Board.Stone.BLACK ? Board.Stone.WHITE : Board.Stone.BLACK;
         try {

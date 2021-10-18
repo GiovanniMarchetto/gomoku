@@ -17,11 +17,11 @@ public class MainApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader startFxmlLoader = new FXMLLoader(MainApplication.class.getResource(FXML_LOCATION_PATH +"start-view.fxml"));
+        FXMLLoader startFxmlLoader = new FXMLLoader(MainApplication.class.getResource(FXML_LOCATION_PATH + "start-view.fxml"));
         Scene startScene = new Scene(startFxmlLoader.load());
 
-        FXMLLoader mainFxmlLoader = new FXMLLoader(MainApplication.class.getResource(FXML_LOCATION_PATH +"main-view.fxml"));
-        Scene mainScene = new Scene(mainFxmlLoader.load(),630,580);
+        FXMLLoader mainFxmlLoader = new FXMLLoader(MainApplication.class.getResource(FXML_LOCATION_PATH + "main-view.fxml"));
+        Scene mainScene = new Scene(mainFxmlLoader.load(), 630, 580);
 
 
         stage.setMinHeight(550);
