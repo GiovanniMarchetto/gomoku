@@ -11,21 +11,20 @@ import java.beans.PropertyChangeEvent;
 
 public class MainViewmodel extends Viewmodel {
 
-    private Match match;
+    private final Match match;
 
     private Game currentGame;
 
     private Board currentBoard;
 
-    private Board.Stone[][] currentMatrix;
-
     private int boardSize = 19;
 
-    private Board.Stone currStone = Board.Stone.WHITE;
+    private Player currentPlayer;
 
     public MainViewmodel() {
         Player p1 = new Player("Mario");
         Player p2 = new Player("Luigi");
+        currentPlayer = p1;
         match = new Match(p1, p2, boardSize, 3);
         startNewGame();
     }
@@ -33,7 +32,6 @@ public class MainViewmodel extends Viewmodel {
     public void startNewGame() {
         currentGame = match.startNewGame();
         currentBoard = currentGame.getBoard();
-        currentMatrix = currentBoard.getBoardMatrix();
         observe(currentBoard);
     }
 
@@ -42,11 +40,15 @@ public class MainViewmodel extends Viewmodel {
         stopObserving(currentBoard);
     }
 
+    private void changeTurn() {
+        currentPlayer = currentPlayer == match.getCurrentBlackPlayer() ? match.getCurrentWhitePlayer() : match.getCurrentBlackPlayer();
+    }
+
     public void placeStone(Coordinates coordinates) {
         // TODO: re-do this
-        currStone = currStone == Board.Stone.BLACK ? Board.Stone.WHITE : Board.Stone.BLACK;
         try {
-            currentBoard.occupyPosition(currStone, coordinates);
+            Match.executeMoveOfPlayerInGame(currentPlayer, currentGame, coordinates);
+            changeTurn();
         } catch (Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
             e.printStackTrace();
         }
