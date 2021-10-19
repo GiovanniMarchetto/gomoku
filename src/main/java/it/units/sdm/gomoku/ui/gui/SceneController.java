@@ -1,11 +1,9 @@
 package it.units.sdm.gomoku.ui.gui;
 
-import it.units.sdm.gomoku.Length;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Range;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -27,7 +25,7 @@ public class SceneController {
         this.stage = Objects.requireNonNull(stage);
         this.sceneArray = Arrays.stream(Objects.requireNonNull(fxmlFilePaths)).sequential()
                 .map(fxmlFilePath -> new FXMLLoader(getClass().getResource(fxmlFilePath)))
-                .map(fxmlLoader -> (Supplier<Scene>)(() -> {
+                .map(fxmlLoader -> (Supplier<Scene>) (() -> {
                     try {
                         return new Scene(fxmlLoader.load(), sceneWidthInPx, sceneHeightInPx);
                     } catch (IOException e) {
