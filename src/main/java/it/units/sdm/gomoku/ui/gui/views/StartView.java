@@ -7,7 +7,6 @@ import it.units.sdm.gomoku.model.entities.Player;
 import it.units.sdm.gomoku.mvvm_library.views.View;
 import it.units.sdm.gomoku.mvvm_library.views.gui_items.CommanderButton;
 import it.units.sdm.gomoku.ui.gui.GUISetup;
-import it.units.sdm.gomoku.ui.gui.viewmodels.MainViewmodel;
 import it.units.sdm.gomoku.ui.support.BoardSizes;
 import it.units.sdm.gomoku.ui.support.PlayerTypes;
 import javafx.fxml.FXML;
@@ -96,10 +95,10 @@ public class StartView extends View {
         boardSizeList.setValue(boardSizeStringList[2]);
 
         CheckFieldsAndEnableButton();
-        player1.textProperty().addListener((observable, oldValue, newValue) ->{
+        player1.textProperty().addListener((observable, oldValue, newValue) -> {
             CheckFieldsAndEnableButton();
         });
-        player2.textProperty().addListener((observable, oldValue, newValue) ->{
+        player2.textProperty().addListener((observable, oldValue, newValue) -> {
             CheckFieldsAndEnableButton();
         });
 

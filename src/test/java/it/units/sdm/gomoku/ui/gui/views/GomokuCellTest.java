@@ -20,7 +20,7 @@ class GomokuCellTest {
     private final int boardSize = 19;
     private final double rectSideLength = radius * 2.5;
     private final double lineIntLength = rectSideLength + 1;
-    private final double lineExtLength = rectSideLength/2;
+    private final double lineExtLength = rectSideLength / 2;
     private GomokuCell gomokuCell;
 
     void setUpGomokuCell(int x, int y) {
@@ -29,31 +29,31 @@ class GomokuCellTest {
 
     @Test
     void getGroupSize() {
-        setUpGomokuCell(0,0);
+        setUpGomokuCell(0, 0);
         assertEquals(4, gomokuCell.getGroup().getChildren().size());
     }
 
     @Test
     void getGroupFirstChildTypes() {
-        setUpGomokuCell(0,0);
+        setUpGomokuCell(0, 0);
         assertEquals(Line.class, gomokuCell.getGroup().getChildren().get(0).getClass());
     }
 
     @Test
     void getGroupSecondChildTypes() {
-        setUpGomokuCell(0,0);
+        setUpGomokuCell(0, 0);
         assertEquals(Line.class, gomokuCell.getGroup().getChildren().get(1).getClass());
     }
 
     @Test
     void getGroupThirdChildTypes() {
-        setUpGomokuCell(0,0);
+        setUpGomokuCell(0, 0);
         assertEquals(Circle.class, gomokuCell.getGroup().getChildren().get(2).getClass());
     }
 
     @Test
     void getGroupFourthChildTypes() {
-        setUpGomokuCell(0,0);
+        setUpGomokuCell(0, 0);
         assertEquals(Rectangle.class, gomokuCell.getGroup().getChildren().get(3).getClass());
     }
 
@@ -89,7 +89,6 @@ class GomokuCellTest {
                 }
         );
     }
-
 
 
     @Test

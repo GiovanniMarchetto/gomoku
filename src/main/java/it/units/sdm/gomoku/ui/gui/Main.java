@@ -8,10 +8,8 @@ import java.io.IOException;
 
 public class Main extends Application {
 
-    private static final String FXML_LOCATION_PATH = "views/";
-
     public static final MainViewmodel mainViewmodel = new MainViewmodel();
-
+    private static final String FXML_LOCATION_PATH = "views/";
     private final static int initialSceneWidthInPx = 630;
     private final static int initialSceneHeightInPx = 580;
     private final static int stageMinWidth = 550;
@@ -23,7 +21,7 @@ public class Main extends Application {
     }
 
     @Override
-    public void start(Stage stage) throws IOException {
+    public void start(Stage stage) {
         SceneController.initialize(stage, stageTitle, initialSceneWidthInPx, initialSceneHeightInPx,
                 stageMinWidth, stageMinHeight,
                 FXML_LOCATION_PATH + "start-view.fxml", FXML_LOCATION_PATH + "main-view.fxml");

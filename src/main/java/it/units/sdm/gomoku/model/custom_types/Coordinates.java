@@ -3,7 +3,6 @@ package it.units.sdm.gomoku.model.custom_types;
 import it.units.sdm.gomoku.Length;
 import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Range;
 
 import java.util.Objects;
 
