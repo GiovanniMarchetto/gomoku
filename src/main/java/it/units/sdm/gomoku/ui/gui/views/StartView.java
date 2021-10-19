@@ -51,6 +51,28 @@ public class StartView extends View {
         super(mainViewmodel);
     }
 
+    @FXML
+    private void initialize() {
+
+        CommanderButton commanderButton = getButtonFirePropertyChange();
+        confirmButton = commanderButton.getGUIItem();
+        boxForButton.getChildren().add(confirmButton);
+
+        String[] boardSizeStringList = Arrays.stream(BoardSizes.values()).map(BoardSizes::toString).toArray(String[]::new);
+        boardSizeList.getItems().addAll(boardSizeStringList);
+        boardSizeList.setValue(boardSizeStringList[2]);
+
+        CheckFieldsAndEnableButton();
+        player1.textProperty().addListener((observable, oldValue, newValue) -> {
+            CheckFieldsAndEnableButton();
+        });
+        player2.textProperty().addListener((observable, oldValue, newValue) -> {
+            CheckFieldsAndEnableButton();
+        });
+
+        onlyNumberInHowManyGamesTextField();
+    }
+
     private CommanderButton getButtonFirePropertyChange() {
         return new CommanderButton(
                 "Start Match!",
@@ -81,28 +103,6 @@ public class StartView extends View {
 
                     return new GUISetup(players, numberOfGames, boardSize);
                 });
-    }
-
-    @FXML
-    private void initialize() {
-
-        CommanderButton commanderButton = getButtonFirePropertyChange();
-        confirmButton = commanderButton.getGUIItem();
-        boxForButton.getChildren().add(confirmButton);
-
-        String[] boardSizeStringList = Arrays.stream(BoardSizes.values()).map(BoardSizes::toString).toArray(String[]::new);
-        boardSizeList.getItems().addAll(boardSizeStringList);
-        boardSizeList.setValue(boardSizeStringList[2]);
-
-        CheckFieldsAndEnableButton();
-        player1.textProperty().addListener((observable, oldValue, newValue) -> {
-            CheckFieldsAndEnableButton();
-        });
-        player2.textProperty().addListener((observable, oldValue, newValue) -> {
-            CheckFieldsAndEnableButton();
-        });
-
-        onlyNumberInHowManyGamesTextField();
     }
 
     private void onlyNumberInHowManyGamesTextField() {

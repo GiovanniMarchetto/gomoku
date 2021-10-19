@@ -1,5 +1,6 @@
 package it.units.sdm.gomoku.model.entities;
 
+import it.units.sdm.gomoku.model.Observable;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveOddInteger;
@@ -11,10 +12,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Game implements Comparable<Game> {
+public class Game implements Comparable<Game>, Observable {
 
     @NotNull
     public static final PositiveInteger NUMBER_OF_CONSECUTIVE_STONE_FOR_WINNING = new PositiveOddInteger(5);
+    @NotNull
+    public static final String gameEndedPropertyName = "gameEnded";
     @NotNull
     private final Board board;
     @NotNull
@@ -49,6 +52,10 @@ public class Game implements Comparable<Game> {
                 Objects.requireNonNull(coordinates)
         );
         setWinnerIfPlayerWon(player, coordinates);
+
+        if (isThisGameEnded()) {
+            firePropertyChange(gameEndedPropertyName, false, true);
+        }
     }
 
     private void setWinnerIfPlayerWon(@NotNull Player player, @NotNull Coordinates coordinates) {

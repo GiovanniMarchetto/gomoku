@@ -79,6 +79,7 @@ public class Main { // TODO : to be tested
                         out.clearLastSection();
                     }
                 }
+                //TODO: print the final board
                 out.print("Game ended! ");
                 try {
                     out.println(currentGame.getWinner() + " won!");
