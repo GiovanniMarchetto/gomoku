@@ -28,7 +28,6 @@ public class MainView extends View {
 
         MainViewmodel vm = (MainViewmodel) getViewmodelAssociatedWithView();
 
-        int boardSize = 19;
         double discardSafeMisure = 50;
         double discardHeight = topGridPane.getPrefHeight();// 50;
         double discardWidth = rightGridPane.getPrefWidth();// 100;

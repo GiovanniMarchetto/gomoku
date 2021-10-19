@@ -17,16 +17,9 @@ import java.util.stream.Collectors;
 
 public class SceneController {
 
-    public enum Views {
-        START_VIEW,
-        MAIN_VIEW
-    }
-
     private static SceneController singleInstance;
-
     private final Map<Views, Supplier<Scene>> scenes;
     private final Stage stage;
-
     @SafeVarargs
     private SceneController(@NotNull final Stage stage, @NotNull final String firstStageTitle,
                             int sceneWidthInPx, int sceneHeightInPx,
@@ -97,5 +90,10 @@ public class SceneController {
 
     private void passToScene_(@NotNull final Views viewEnum) {
         stage.setScene(scenes.get(Objects.requireNonNull(viewEnum)).get());
+    }
+
+    public enum Views {
+        START_VIEW,
+        MAIN_VIEW
     }
 }

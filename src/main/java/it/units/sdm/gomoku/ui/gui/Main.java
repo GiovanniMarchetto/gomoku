@@ -4,11 +4,9 @@ import it.units.sdm.gomoku.ui.gui.viewmodels.MainViewmodel;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.util.Pair;
-import org.jetbrains.annotations.NotNull;
 
-import java.nio.file.Path;
-
-import static it.units.sdm.gomoku.ui.gui.SceneController.Views.*;
+import static it.units.sdm.gomoku.ui.gui.SceneController.Views.MAIN_VIEW;
+import static it.units.sdm.gomoku.ui.gui.SceneController.Views.START_VIEW;
 
 public class Main extends Application {
 
