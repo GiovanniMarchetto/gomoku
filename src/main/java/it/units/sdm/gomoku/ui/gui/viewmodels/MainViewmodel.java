@@ -24,19 +24,46 @@ public class MainViewmodel extends Viewmodel {
     public MainViewmodel() {
     }
 
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        switch (evt.getPropertyName()) {
+            case Board.BoardMatrixPropertyName -> {
+                Board.ChangedCell cell = (Board.ChangedCell) evt.getNewValue();
+                firePropertyChange(Board.BoardMatrixPropertyName, null, cell);
+            }
+            case Setup.setupCompletedPropertyName -> {
+                Setup setup = (Setup) evt.getNewValue();
+                currentPlayer = setup.getPlayers()[0];
+                match = new Match(setup.getBoardSizeValue(), setup.getNumberOfGames(), setup.getPlayers());
+                SceneController.passToNextScene();
+                startNewGame();
+            }
+            case Game.gameEndedPropertyName -> {
+                endGame();
+            }
+            default -> throw new IllegalArgumentException("Property name " + evt.getPropertyName() + " not found!");
+        }
+    }
+
     public void startNewGame() {
         currentGame = match.startNewGame();
         currentBoard = currentGame.getBoard();
+        observe(currentGame);
         observe(currentBoard);
     }
 
     public void endGame() {
         // *Avengers theme plays*
+        stopObserving(currentGame);
         stopObserving(currentBoard);
     }
 
     private void changeTurn() {
-        currentPlayer = currentPlayer == match.getCurrentBlackPlayer() ? match.getCurrentWhitePlayer() : match.getCurrentBlackPlayer();
+        currentPlayer =
+                currentPlayer == match.getCurrentBlackPlayer()
+                        ? match.getCurrentWhitePlayer()
+                        : match.getCurrentBlackPlayer();
     }
 
     public void placeStone(Coordinates coordinates) {
@@ -53,18 +80,5 @@ public class MainViewmodel extends Viewmodel {
         return currentBoard.getSize();
     }
 
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(Board.BoardMatrixPropertyName)) {
-            // Propagate event, note that the (Game) Board changes during the Match
-            Board.ChangedCell cell = (Board.ChangedCell) evt.getNewValue();
-            firePropertyChange(Board.BoardMatrixPropertyName, null, cell);
-        } else if (evt.getPropertyName().equals(Setup.setupCompletedPropertyName)) {
-            Setup setup = (Setup) evt.getNewValue();
-            currentPlayer = setup.getPlayers()[0];
-            match = new Match(setup.getBoardSizeValue(), setup.getNumberOfGames(), setup.getPlayers());
-            startNewGame();
-            SceneController.passToNextScene();
-        }
-    }
+
 }
