@@ -55,7 +55,7 @@ public class SceneController {
         stage.setTitle(Objects.requireNonNull(firstStageTitle));
         stage.setMinWidth(stageMinWidth);
         stage.setMinHeight(stageMinHeight);
-        passToScene_(ViewName.START_VIEW);
+        passToNewScene_(ViewName.START_VIEW);
         singleInstance = this;
     }
 
@@ -89,11 +89,11 @@ public class SceneController {
         return singleInstance != null;
     }
 
-    public static void passToScene(@NotNull final SceneController.ViewName viewEnum) {
-        getInstance().passToScene_(Objects.requireNonNull(viewEnum));
+    public static void passToNewScene(@NotNull final SceneController.ViewName viewEnum) {
+        getInstance().passToNewScene_(Objects.requireNonNull(viewEnum));
     }
 
-    private void passToScene_(@NotNull final SceneController.ViewName viewEnum) {
+    private void passToNewScene_(@NotNull final SceneController.ViewName viewEnum) {
         stage.setScene(scenes.get(Objects.requireNonNull(viewEnum)).get());
     }
 

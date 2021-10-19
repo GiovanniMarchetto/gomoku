@@ -42,15 +42,15 @@ public class MainViewmodel extends Viewmodel {
                 currentPlayer = setup.getPlayers()[0];
                 match = new Match(setup.getBoardSizeValue(), setup.getNumberOfGames(), setup.getPlayers());
                 startNewGame();
-                SceneController.passToScene(SceneController.ViewName.MAIN_VIEW);
+                SceneController.passToNewScene(SceneController.ViewName.MAIN_VIEW);
             }
             case Game.gameEndedPropertyName -> {
                 endGame();
-                SceneController.passToScene(SceneController.ViewName.SUMMARY_VIEW);
+                SceneController.passToNewScene(SceneController.ViewName.SUMMARY_VIEW);
             }
             case SummaryView.continueAfterSummaryPropertyName -> {
                 startNewGame();
-                SceneController.passToScene(SceneController.ViewName.MAIN_VIEW);
+                SceneController.passToNewScene(SceneController.ViewName.MAIN_VIEW);
             }
             default -> throw new IllegalArgumentException("Property name " + evt.getPropertyName() + " not found!");
         }
