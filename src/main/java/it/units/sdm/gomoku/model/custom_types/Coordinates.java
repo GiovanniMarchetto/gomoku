@@ -21,7 +21,7 @@ public class Coordinates extends Pair<NonNegativeInteger, NonNegativeInteger> {
         super(Objects.requireNonNull(x), Objects.requireNonNull(y));
     }
 
-    public Coordinates(@NotNull @Range(from = 2, to = 2) final NonNegativeInteger... coordinates) {
+    public Coordinates(@NotNull @Length(length = 2) final NonNegativeInteger... coordinates) {
         this(validateCoordsFromVarargs(coordinates)[0], coordinates[1]);
     }
 

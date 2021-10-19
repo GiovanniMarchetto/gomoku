@@ -31,7 +31,7 @@ public class Match {
             currentWhitePlayer;
 
     public Match(@NotNull final PositiveInteger boardSize, @NotNull final PositiveInteger howManyGames,
-                 @NotNull @Range(from = 2, to = 2) final Player... players) {
+                 @NotNull @Length(length = 2) final Player... players) {
         this(validatePlayersFromVarargs(players)[0], players[1],
                 Objects.requireNonNull(boardSize), Objects.requireNonNull(howManyGames));
     }

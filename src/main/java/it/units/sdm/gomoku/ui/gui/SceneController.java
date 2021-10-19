@@ -1,5 +1,6 @@
 package it.units.sdm.gomoku.ui.gui;
 
+import it.units.sdm.gomoku.Length;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -22,7 +23,7 @@ public class SceneController {
     private SceneController(@NotNull final Stage stage, @NotNull final String firstStageTitle,
                             int sceneWidthInPx, int sceneHeightInPx,
                             int stageMinWidth, int stageMinHeight,
-                            @NotNull @Range(from = 0, to = Integer.MAX_VALUE) final String... fxmlFilePaths) {
+                            @NotNull final String... fxmlFilePaths) {
         this.stage = Objects.requireNonNull(stage);
         this.sceneArray = Arrays.stream(Objects.requireNonNull(fxmlFilePaths)).sequential()
                 .map(fxmlFilePath -> new FXMLLoader(getClass().getResource(fxmlFilePath)))
@@ -47,7 +48,7 @@ public class SceneController {
     public static void initialize(@NotNull final Stage stage, @NotNull final String firstStageTitle,
                                   int initialSceneWidthInPx, int initialSceneHeightInPx,
                                   int stageMinWidth, int stageMinHeight,
-                                  @NotNull @Range(from = 0, to = Integer.MAX_VALUE) final String... fxmlFilePaths) {
+                                  @NotNull final String... fxmlFilePaths) {
         if (wasAlreadyInstantiated()) {
             throw new IllegalStateException(SceneController.class.getCanonicalName() + " already instantiated.");
         } else {
