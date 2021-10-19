@@ -18,29 +18,34 @@ import java.util.stream.Collectors;
 public class SceneController {
 
     private static SceneController singleInstance;
-    private final Map<Views, Supplier<Scene>> scenes;
+    private final Map<ViewName, Supplier<Scene>> scenes;
     private final Stage stage;
+
     @SafeVarargs
     private SceneController(@NotNull final Stage stage, @NotNull final String firstStageTitle,
                             int sceneWidthInPx, int sceneHeightInPx,
                             int stageMinWidth, int stageMinHeight,
-                            @NotNull final Pair<@NotNull Views, @NotNull String>... fxmlFilePaths) {
+                            @NotNull final Pair<@NotNull ViewName, @NotNull String>... fxmlFilePaths) {
         this.stage = Objects.requireNonNull(stage);
         this.scenes = Arrays.stream(Objects.requireNonNull(fxmlFilePaths))
-                .map(aView -> {
-                    Views viewEnum = Objects.requireNonNull(aView.getKey());
-                    String fxmlFilePath = Objects.requireNonNull(aView.getValue());
-                    return new AbstractMap.SimpleEntry<>(viewEnum, new FXMLLoader(getClass().getResource(fxmlFilePath)));
+                .map(pair -> {
+                    ViewName name = Objects.requireNonNull(pair.getKey());
+                    String fxmlFilePath = Objects.requireNonNull(pair.getValue());
+                    return new AbstractMap.SimpleEntry<>(name, getClass().getResource(fxmlFilePath));
                 })
-                .map(aViewEntry -> {
-                    Views view = aViewEntry.getKey();
-                    FXMLLoader fxmlLoader = aViewEntry.getValue();
-                    return new AbstractMap.SimpleEntry<Views, Supplier<Scene>>(view, () -> {
+                .map(viewEntry -> {
+                    ViewName view = viewEntry.getKey();
+                    return new AbstractMap.SimpleEntry<ViewName, Supplier<Scene>>(view, () -> {
                         try {
+                            FXMLLoader fxmlLoader = new FXMLLoader(viewEntry.getValue());
                             return new Scene(fxmlLoader.load(), sceneWidthInPx, sceneHeightInPx);
                         } catch (IOException e) {
                             Logger.getLogger(getClass().getCanonicalName())
-                                    .severe("I/O Exception in " + getClass().getCanonicalName() + " when creating the scene.");
+                                    .severe("I/O Exception in " + getClass().getCanonicalName() +
+                                            " when creating the scene.\n\t" +
+                                            Arrays.stream(e.getStackTrace())
+                                                    .map(StackTraceElement::toString)
+                                                    .collect(Collectors.joining("\n\t")));
                             return null;
                         }
                     });
@@ -50,7 +55,7 @@ public class SceneController {
         stage.setTitle(Objects.requireNonNull(firstStageTitle));
         stage.setMinWidth(stageMinWidth);
         stage.setMinHeight(stageMinHeight);
-        passToScene_(Views.START_VIEW);
+        passToScene_(ViewName.START_VIEW);
         singleInstance = this;
     }
 
@@ -58,7 +63,7 @@ public class SceneController {
     public static void initialize(@NotNull final Stage stage, @NotNull final String firstStageTitle,
                                   int initialSceneWidthInPx, int initialSceneHeightInPx,
                                   int stageMinWidth, int stageMinHeight,
-                                  @NotNull final Pair<@NotNull Views, @NotNull String>... fxmlFilePaths) {
+                                  @NotNull final Pair<@NotNull ViewName, @NotNull String>... fxmlFilePaths) {
         if (wasAlreadyInstantiated()) {
             throw new IllegalStateException(SceneController.class.getCanonicalName() + " already instantiated.");
         } else {
@@ -84,16 +89,17 @@ public class SceneController {
         return singleInstance != null;
     }
 
-    public static void passToScene(@NotNull final Views viewEnum) {
+    public static void passToScene(@NotNull final SceneController.ViewName viewEnum) {
         getInstance().passToScene_(Objects.requireNonNull(viewEnum));
     }
 
-    private void passToScene_(@NotNull final Views viewEnum) {
+    private void passToScene_(@NotNull final SceneController.ViewName viewEnum) {
         stage.setScene(scenes.get(Objects.requireNonNull(viewEnum)).get());
     }
 
-    public enum Views {
+    public enum ViewName {
         START_VIEW,
-        MAIN_VIEW
+        MAIN_VIEW,
+        SUMMARY_VIEW
     }
 }

@@ -7,6 +7,7 @@ import it.units.sdm.gomoku.model.entities.Match;
 import it.units.sdm.gomoku.model.entities.Player;
 import it.units.sdm.gomoku.mvvm_library.viewmodels.Viewmodel;
 import it.units.sdm.gomoku.ui.gui.SceneController;
+import it.units.sdm.gomoku.ui.gui.views.SummaryView;
 import it.units.sdm.gomoku.ui.support.Setup;
 
 import java.beans.PropertyChangeEvent;
@@ -41,10 +42,15 @@ public class MainViewmodel extends Viewmodel {
                 currentPlayer = setup.getPlayers()[0];
                 match = new Match(setup.getBoardSizeValue(), setup.getNumberOfGames(), setup.getPlayers());
                 startNewGame();
-                SceneController.passToScene(SceneController.Views.MAIN_VIEW);
+                SceneController.passToScene(SceneController.ViewName.MAIN_VIEW);
             }
             case Game.gameEndedPropertyName -> {
                 endGame();
+                SceneController.passToScene(SceneController.ViewName.SUMMARY_VIEW);
+            }
+            case SummaryView.continueAfterSummaryPropertyName -> {
+                startNewGame();
+                SceneController.passToScene(SceneController.ViewName.MAIN_VIEW);
             }
             default -> throw new IllegalArgumentException("Property name " + evt.getPropertyName() + " not found!");
         }

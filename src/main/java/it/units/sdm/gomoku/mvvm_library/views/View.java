@@ -7,7 +7,7 @@ public abstract class View implements Observable {
 
     private final Viewmodel viewmodelAssociatedWithView;
 
-    protected View(Viewmodel viewmodelAssociatedWithView) {
+    public View(Viewmodel viewmodelAssociatedWithView) {
         this.viewmodelAssociatedWithView = viewmodelAssociatedWithView;
         getViewmodelAssociatedWithView().observe(this);                // bind viewModel -> view
     }
