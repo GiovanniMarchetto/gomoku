@@ -3,8 +3,12 @@ package it.units.sdm.gomoku.ui.gui;
 import it.units.sdm.gomoku.ui.gui.viewmodels.MainViewmodel;
 import javafx.application.Application;
 import javafx.stage.Stage;
+import javafx.util.Pair;
+import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
+import java.nio.file.Path;
+
+import static it.units.sdm.gomoku.ui.gui.SceneController.Views.*;
 
 public class Main extends Application {
 
@@ -24,7 +28,9 @@ public class Main extends Application {
     public void start(Stage stage) {
         SceneController.initialize(stage, stageTitle, initialSceneWidthInPx, initialSceneHeightInPx,
                 stageMinWidth, stageMinHeight,
-                FXML_LOCATION_PATH + "start-view.fxml", FXML_LOCATION_PATH + "main-view.fxml");
+                new Pair<>(START_VIEW, FXML_LOCATION_PATH + "start-view.fxml"),
+                new Pair<>(MAIN_VIEW, FXML_LOCATION_PATH + "main-view.fxml")
+        );
         stage.show();
     }
 }

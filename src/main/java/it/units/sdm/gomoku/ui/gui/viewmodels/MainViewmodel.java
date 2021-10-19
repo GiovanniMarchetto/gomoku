@@ -64,7 +64,7 @@ public class MainViewmodel extends Viewmodel {
             currentPlayer = setup.getPlayers()[0];
             match = new Match(setup.getBoardSizeValue(), setup.getNumberOfGames(), setup.getPlayers());
             startNewGame();
-            SceneController.passToNextScene();
+            SceneController.passToScene(SceneController.Views.MAIN_VIEW);
         }
     }
 }

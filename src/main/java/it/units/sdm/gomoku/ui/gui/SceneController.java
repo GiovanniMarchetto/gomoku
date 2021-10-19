@@ -3,50 +3,69 @@ package it.units.sdm.gomoku.ui.gui;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.AbstractMap;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class SceneController {
+
+    public enum Views {
+        START_VIEW,
+        MAIN_VIEW
+    }
+
     private static SceneController singleInstance;
 
-    private final Supplier<?>[] sceneArray;
+    private final Map<Views, Supplier<Scene>> scenes;
     private final Stage stage;
-    private int currentSceneIndex;
 
+    @SafeVarargs
     private SceneController(@NotNull final Stage stage, @NotNull final String firstStageTitle,
                             int sceneWidthInPx, int sceneHeightInPx,
                             int stageMinWidth, int stageMinHeight,
-                            @NotNull final String... fxmlFilePaths) {
+                            @NotNull final Pair<@NotNull Views, @NotNull String>... fxmlFilePaths) {
         this.stage = Objects.requireNonNull(stage);
-        this.sceneArray = Arrays.stream(Objects.requireNonNull(fxmlFilePaths)).sequential()
-                .map(fxmlFilePath -> new FXMLLoader(getClass().getResource(fxmlFilePath)))
-                .map(fxmlLoader -> (Supplier<Scene>) (() -> {
-                    try {
-                        return new Scene(fxmlLoader.load(), sceneWidthInPx, sceneHeightInPx);
-                    } catch (IOException e) {
-                        Logger.getLogger(getClass().getCanonicalName())
-                                .severe("I/O Exception in " + getClass().getCanonicalName() + " when creating the scene.");
-                        return null;
-                    }
-                }))
-                .toArray(Supplier<?>[]::new);
+        this.scenes = Arrays.stream(Objects.requireNonNull(fxmlFilePaths))
+                .map(aView -> {
+                    Views viewEnum = Objects.requireNonNull(aView.getKey());
+                    String fxmlFilePath = Objects.requireNonNull(aView.getValue());
+                    return new AbstractMap.SimpleEntry<>(viewEnum, new FXMLLoader(getClass().getResource(fxmlFilePath)));
+                })
+                .map(aViewEntry -> {
+                    Views view = aViewEntry.getKey();
+                    FXMLLoader fxmlLoader = aViewEntry.getValue();
+                    return new AbstractMap.SimpleEntry<Views, Supplier<Scene>>(view, () -> {
+                        try {
+                            return new Scene(fxmlLoader.load(), sceneWidthInPx, sceneHeightInPx);
+                        } catch (IOException e) {
+                            Logger.getLogger(getClass().getCanonicalName())
+                                    .severe("I/O Exception in " + getClass().getCanonicalName() + " when creating the scene.");
+                            return null;
+                        }
+                    });
+                })
+                .collect(Collectors.toConcurrentMap(Map.Entry::getKey, Map.Entry::getValue));
+
         stage.setTitle(Objects.requireNonNull(firstStageTitle));
         stage.setMinWidth(stageMinWidth);
         stage.setMinHeight(stageMinHeight);
-        this.currentSceneIndex = 0;
-        passToNextScene_();
+        passToScene_(Views.START_VIEW);
         singleInstance = this;
     }
 
+    @SafeVarargs
     public static void initialize(@NotNull final Stage stage, @NotNull final String firstStageTitle,
                                   int initialSceneWidthInPx, int initialSceneHeightInPx,
                                   int stageMinWidth, int stageMinHeight,
-                                  @NotNull final String... fxmlFilePaths) {
+                                  @NotNull final Pair<@NotNull Views, @NotNull String>... fxmlFilePaths) {
         if (wasAlreadyInstantiated()) {
             throw new IllegalStateException(SceneController.class.getCanonicalName() + " already instantiated.");
         } else {
@@ -72,15 +91,11 @@ public class SceneController {
         return singleInstance != null;
     }
 
-    public static void passToNextScene() {
-        getInstance().passToNextScene_();
+    public static void passToScene(@NotNull final Views viewEnum) {
+        getInstance().passToScene_(Objects.requireNonNull(viewEnum));
     }
 
-    private void passToNextScene_() {
-        if (currentSceneIndex < sceneArray.length) {
-            stage.setScene((Scene) sceneArray[currentSceneIndex++].get());
-        } else {
-            throw new IndexOutOfBoundsException("No more scenes available.");
-        }
+    private void passToScene_(@NotNull final Views viewEnum) {
+        stage.setScene(scenes.get(Objects.requireNonNull(viewEnum)).get());
     }
 }

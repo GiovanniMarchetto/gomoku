@@ -36,7 +36,7 @@ public class Main { // TODO : to be tested
     private static void disputeMatch(@NotNull final OutputPrinter out,
                                      @NotNull final InputReader in,
                                      @NotNull final Setup setup,
-                                     @NotNull final Match matchToDispute) {
+                                     @NotNull final Match matchToDispute) { // TODO : to be uniformed with methods in GUI
         for (int nGame = 1; nGame <= Objects.requireNonNull(matchToDispute).getHowManyGames(); nGame++) {
             Objects.requireNonNull(out).createNewSection();
 
