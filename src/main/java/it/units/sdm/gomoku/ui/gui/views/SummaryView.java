@@ -6,7 +6,7 @@ import it.units.sdm.gomoku.ui.gui.viewmodels.MainViewmodel;
 import javafx.fxml.FXML;
 import javafx.scene.layout.VBox;
 
-import static it.units.sdm.gomoku.ui.gui.Main.mainViewmodel;
+import static it.units.sdm.gomoku.ui.gui.GUIMain.mainViewmodel;
 
 public class SummaryView extends View {
 

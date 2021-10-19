@@ -22,7 +22,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static it.units.sdm.gomoku.ui.gui.Main.mainViewmodel;
+import static it.units.sdm.gomoku.ui.gui.GUIMain.mainViewmodel;
 import static it.units.sdm.gomoku.ui.support.Setup.setupCompletedPropertyName;
 
 public class StartView extends View {

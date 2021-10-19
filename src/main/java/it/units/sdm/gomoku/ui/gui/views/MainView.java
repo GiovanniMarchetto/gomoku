@@ -6,7 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 
-import static it.units.sdm.gomoku.ui.gui.Main.mainViewmodel;
+import static it.units.sdm.gomoku.ui.gui.GUIMain.mainViewmodel;
 
 public class MainView extends View {
 

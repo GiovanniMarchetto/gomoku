@@ -16,7 +16,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.logging.Logger;
 
-public class Main { // TODO : to be tested
+public class CLIMain { // TODO : to be tested
 
 
     public static void main(String[] args) throws IOException {
@@ -99,8 +99,8 @@ public class Main { // TODO : to be tested
                 }
 
             } catch (IOException | Match.MatchEndedException e) {
-                Logger.getLogger(Main.class.getCanonicalName())
-                        .severe("Exception in class " + Main.class.getCanonicalName() + ": " + e);
+                Logger.getLogger(CLIMain.class.getCanonicalName())
+                        .severe("Exception in class " + CLIMain.class.getCanonicalName() + ": " + e);
             }
         }
     }
@@ -147,7 +147,7 @@ public class Main { // TODO : to be tested
                                     "Insert a valid coordinate: "
                             );
                         } catch (IOException e) {
-                            Logger.getLogger(Main.class.getCanonicalName())
+                            Logger.getLogger(CLIMain.class.getCanonicalName())
                                     .severe("Exception: " + e);                             // TODO : refactor: move all duplications of Logger.getLogger() in a single utility function in utils package
                         }
                     }

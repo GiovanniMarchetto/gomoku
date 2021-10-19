@@ -7,7 +7,7 @@ import javafx.util.Pair;
 
 import static it.units.sdm.gomoku.ui.gui.SceneController.ViewName.*;
 
-public class Main extends Application {
+public class GUIMain extends Application {
 
     public static final MainViewmodel mainViewmodel = new MainViewmodel();
     private static final String FXML_LOCATION_PATH = "views/";
