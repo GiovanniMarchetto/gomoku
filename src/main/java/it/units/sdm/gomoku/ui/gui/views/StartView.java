@@ -40,13 +40,11 @@ public class StartView extends View {
 
     @FXML
     private ChoiceBox<String> boardSizeList;
-
     @FXML
     private TextField howManyGames;
 
     @FXML
     private HBox boxForButton;
-
     private Button confirmButton;
 
 
@@ -104,6 +102,11 @@ public class StartView extends View {
         player2.textProperty().addListener((observable, oldValue, newValue) ->{
             CheckFieldsAndEnableButton();
         });
+
+        onlyNumberInHowManyGamesTextField();
+    }
+
+    private void onlyNumberInHowManyGamesTextField() {
         howManyGames.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*")) {
                 howManyGames.setText(newValue.replaceAll("[^\\d]", ""));
