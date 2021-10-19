@@ -57,10 +57,14 @@ public class MainViewmodel extends Viewmodel {
     }
 
     public void startNewGame() {
-        currentGame = match.startNewGame();
-        currentBoard = currentGame.getBoard();
-        observe(currentGame);
-        observe(currentBoard);
+        try {
+            currentGame = match.startNewGame();
+            currentBoard = currentGame.getBoard();
+            observe(currentGame);
+            observe(currentBoard);
+        } catch (Match.MatchEndedException e) {
+            e.printStackTrace();
+        }
     }
 
     public void endGame() {
@@ -97,6 +101,10 @@ public class MainViewmodel extends Viewmodel {
                                     .collect(Collectors.joining("\n\t")));
             throw e;
         }
+    }
+
+    public boolean isMatchEnded(){
+        return match.isEnded();
     }
 
 }

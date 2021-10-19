@@ -23,30 +23,30 @@ public class Match {
     private final PositiveInteger boardSize;
 
     @NotNull
-    private final PositiveInteger howManyGames;
+    private final PositiveInteger numberOfGames;
 
     @NotNull
     private Player currentBlackPlayer,
             currentWhitePlayer;
 
-    public Match(@NotNull final PositiveInteger boardSize, @NotNull final PositiveInteger howManyGames,
+    public Match(@NotNull final PositiveInteger boardSize, @NotNull final PositiveInteger numberOfGames,
                  @NotNull @Length(length = 2) final Player... players) {
         this(validatePlayersFromVarargs(players)[0], players[1],
-                Objects.requireNonNull(boardSize), Objects.requireNonNull(howManyGames));
+                Objects.requireNonNull(boardSize), Objects.requireNonNull(numberOfGames));
     }
 
     public Match(@NotNull final Player player1, @NotNull final Player player2,
-                 @NotNull final PositiveInteger boardSize, @NotNull final PositiveInteger howManyGames) {
+                 @NotNull final PositiveInteger boardSize, @NotNull final PositiveInteger numberOfGames) {
         this.currentBlackPlayer = Objects.requireNonNull(player2);
         this.currentWhitePlayer = Objects.requireNonNull(player1);
         this.gameList = new ArrayList<>();
         this.boardSize = Objects.requireNonNull(boardSize);
-        this.howManyGames = Objects.requireNonNull(howManyGames);
+        this.numberOfGames = Objects.requireNonNull(numberOfGames);
     }
 
     public Match(@NotNull final Player player1, @NotNull final Player player2,
-                 @PositiveIntegerType int boardSize, @PositiveIntegerType int howManyGames) {
-        this(player1, player2, new PositiveInteger(boardSize), new PositiveInteger(howManyGames));
+                 @PositiveIntegerType int boardSize, @PositiveIntegerType int numberOfGames) {
+        this(player1, player2, new PositiveInteger(boardSize), new PositiveInteger(numberOfGames));
     }
 
     public Match(@NotNull final Player player1, @NotNull final Player player2,
@@ -74,8 +74,8 @@ public class Match {
         game.placeStone(player, coordinatesOfTheMove);
     }
 
-    public void addAGame() {
-        howManyGames.incrementAndGet();
+    public void addAnExtraGame() {
+        numberOfGames.incrementAndGet();
     }
 
     public boolean isEndedWithADraft() {
@@ -84,11 +84,15 @@ public class Match {
     }
 
     @NotNull
-    public Game startNewGame() {
-        invertCurrentPlayersColors();
-        Game newGame = new Game(boardSize, currentBlackPlayer, currentWhitePlayer);
-        gameList.add(newGame);
-        return newGame;
+    public Game startNewGame() throws MatchEndedException {
+        if (!isEnded()) {
+            invertCurrentPlayersColors();
+            Game newGame = new Game(boardSize, currentBlackPlayer, currentWhitePlayer);
+            gameList.add(newGame);
+            return newGame;
+        } else {
+            throw new MatchEndedException();
+        }
     }
 
     private void invertCurrentPlayersColors() {
@@ -120,8 +124,9 @@ public class Match {
         );
     }
 
-    public int getHowManyGames() {
-        return howManyGames.intValue();
+    @PositiveIntegerType
+    public int getNumberOfGames() {
+        return numberOfGames.intValue();
     }
 
     @NotNull
@@ -134,4 +139,14 @@ public class Match {
         return currentWhitePlayer;
     }
 
+    public boolean isEnded() {
+        int numberOfGamesPlayed = gameList.size();
+        if (numberOfGamesPlayed == 0) return false;
+        return
+                gameList.get(numberOfGamesPlayed - 1).isThisGameEnded()
+                        && numberOfGamesPlayed >= getNumberOfGames();
+    }
+
+    public static class MatchEndedException extends Exception {
+    }
 }

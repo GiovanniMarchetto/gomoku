@@ -6,8 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.lang.reflect.Field;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class MatchTest {
 
@@ -48,9 +47,14 @@ class MatchTest {
             Player currentWhitePlayer = (Player) fieldWhitePlayer.get(match);
             assertEquals(cpu2, currentWhitePlayer);
 
-        } catch (NoSuchFieldException | IllegalAccessException e) {
+        } catch (NoSuchFieldException | IllegalAccessException | Match.MatchEndedException e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    void matchEndedException() {
+        //TODO: start a new game when match is finished
     }
 
     @Test
@@ -60,7 +64,11 @@ class MatchTest {
 
     @Test
     void getScoreAfterStart() {
-        match.startNewGame();
+        try {
+            match.startNewGame();
+        } catch (Match.MatchEndedException e) {
+            fail(e);
+        }
         assertCpusScore(0, 0);
     }
 
@@ -81,7 +89,11 @@ class MatchTest {
     }
 
     private void playerWinGameAndAssertFinalScore(CPUPlayer cpuPlayer, int score1, int score2) {
-        currentGame = match.startNewGame();
+        try {
+            currentGame = match.startNewGame();
+        } catch (Match.MatchEndedException e) {
+            fail(e);
+        }
         for (int i = 0; i < 5; i++) {
             cpuPlaceStoneNextEmptyCoordinates(cpuPlayer);
         }
@@ -90,7 +102,11 @@ class MatchTest {
 
     @Test
     void getScoreWithDraw() {
-        currentGame = match.startNewGame();
+        try {
+            currentGame = match.startNewGame();
+        } catch (Match.MatchEndedException e) {
+            fail(e);
+        }
         CPUPlayer cpuPlayer;
         int rowRest, colRest;
 

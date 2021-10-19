@@ -37,7 +37,7 @@ public class Main { // TODO : to be tested
                                      @NotNull final InputReader in,
                                      @NotNull final Setup setup,
                                      @NotNull final Match matchToDispute) { // TODO : to be uniformed with methods in GUI
-        for (int nGame = 1; nGame <= Objects.requireNonNull(matchToDispute).getHowManyGames(); nGame++) {
+        for (int nGame = 1; nGame <= Objects.requireNonNull(matchToDispute).getNumberOfGames(); nGame++) {
             Objects.requireNonNull(out).createNewSection();
 
             try {
@@ -89,7 +89,7 @@ public class Main { // TODO : to be tested
 
                 handleADrawIfIsLastGame(matchToDispute, out, Objects.requireNonNull(in));
 
-                if (nGame < matchToDispute.getHowManyGames()) {
+                if (nGame < matchToDispute.getNumberOfGames()) {
                     out.print("Press enter to start the new game");
                     in.nextLine();
                     out.clearLastSection();
@@ -98,7 +98,7 @@ public class Main { // TODO : to be tested
                     out.println("Score: " + matchToDispute.getScore());
                 }
 
-            } catch (IOException e) {
+            } catch (IOException | Match.MatchEndedException e) {
                 Logger.getLogger(Main.class.getCanonicalName())
                         .severe("Exception in class " + Main.class.getCanonicalName() + ": " + e);
             }
@@ -120,7 +120,7 @@ public class Main { // TODO : to be tested
             );
             if (Objects.requireNonNull(ExposedEnum.getEnumValueFromExposedValueOrNull(BooleanAnswers.class, String.valueOf(response)))
                     == BooleanAnswers.YES) {
-                matchToDispute.addAGame();
+                matchToDispute.addAnExtraGame();
             }
         }
     }
