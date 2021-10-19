@@ -21,7 +21,7 @@ public class Main extends Application {
     }
 
     @Override
-    public void start(Stage stage) throws IOException {
+    public void start(Stage stage) {
         SceneController.initialize(stage, stageTitle, initialSceneWidthInPx, initialSceneHeightInPx,
                 stageMinWidth, stageMinHeight,
                 FXML_LOCATION_PATH + "start-view.fxml", FXML_LOCATION_PATH + "main-view.fxml");
