@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
-
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1"
-            xmlns="http://javafx.com/javafx/11.0.2"
-            fx:controller="it.units.sdm.gomoku.ui.gui.views.SummaryView">
-    <VBox fx:id="mainVBox"/>
-</AnchorPane>
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+      xmlns="http://javafx.com/javafx/11.0.2"
+      fx:controller="it.units.sdm.gomoku.ui.gui.views.SummaryView"
+      fx:id="mainVBox"
+      alignment="CENTER"
+/>
