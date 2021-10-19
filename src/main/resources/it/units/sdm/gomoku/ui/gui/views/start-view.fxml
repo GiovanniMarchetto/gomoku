@@ -46,7 +46,7 @@
     <Label text="How many games:"
            GridPane.columnIndex="0" GridPane.rowIndex="4"/>
 
-    <TextField fx:id="howManyGames" text="1"
+    <TextField fx:id="numberOfGames" text="1"
                GridPane.columnIndex="1" GridPane.rowIndex="4"/>
 
 

@@ -40,7 +40,7 @@ public class StartView extends View {
     @FXML
     private ChoiceBox<String> boardSizeList;
     @FXML
-    private TextField howManyGames;
+    private TextField numberOfGames;
 
     @FXML
     private HBox boxForButton;
@@ -70,7 +70,7 @@ public class StartView extends View {
             CheckFieldsAndEnableButton();
         });
 
-        onlyNumberInHowManyGamesTextField();
+        allowOnlyNumberInNumberOfGamesTextField();
     }
 
     private CommanderButton getButtonFirePropertyChange() {
@@ -98,23 +98,23 @@ public class StartView extends View {
                             })
                             .collect(Collectors.toConcurrentMap(Map.Entry::getKey, Map.Entry::getValue));
 
-                    PositiveInteger numberOfGames = new PositiveInteger(Integer.parseInt(howManyGames.getText()));
+                    PositiveInteger numberOfGames = new PositiveInteger(Integer.parseInt(this.numberOfGames.getText()));
                     PositiveOddInteger boardSize = BoardSizes.fromString(boardSizeList.getValue()).getBoardSize();
 
                     return new GUISetup(players, numberOfGames, boardSize);
                 });
     }
 
-    private void onlyNumberInHowManyGamesTextField() {
-        howManyGames.textProperty().addListener((observable, oldValue, newValue) -> {
+    private void allowOnlyNumberInNumberOfGamesTextField() {
+        numberOfGames.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*")) {
-                howManyGames.setText(newValue.replaceAll("[^\\d]", ""));
+                numberOfGames.setText(newValue.replaceAll("[^\\d]", ""));
             }
             CheckFieldsAndEnableButton();
         });
     }
 
     private void CheckFieldsAndEnableButton() {
-        confirmButton.setDisable(player1.getText().isEmpty() || player2.getText().isEmpty() || howManyGames.getText().isEmpty());
+        confirmButton.setDisable(player1.getText().isEmpty() || player2.getText().isEmpty() || numberOfGames.getText().isEmpty());
     }
 }
