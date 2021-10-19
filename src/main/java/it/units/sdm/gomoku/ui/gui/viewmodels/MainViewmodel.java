@@ -10,6 +10,10 @@ import it.units.sdm.gomoku.ui.gui.SceneController;
 import it.units.sdm.gomoku.ui.support.Setup;
 
 import java.beans.PropertyChangeEvent;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class MainViewmodel extends Viewmodel {
 
@@ -36,8 +40,8 @@ public class MainViewmodel extends Viewmodel {
                 Setup setup = (Setup) evt.getNewValue();
                 currentPlayer = setup.getPlayers()[0];
                 match = new Match(setup.getBoardSizeValue(), setup.getNumberOfGames(), setup.getPlayers());
-                SceneController.passToScene(SceneController.Views.MAIN_VIEW);
                 startNewGame();
+                SceneController.passToScene(SceneController.Views.MAIN_VIEW);
             }
             case Game.gameEndedPropertyName -> {
                 endGame();
@@ -77,7 +81,16 @@ public class MainViewmodel extends Viewmodel {
     }
 
     public int getBoardSize() {
-        return currentBoard.getSize();
+        try {
+            return Objects.requireNonNull(currentBoard).getSize();
+        } catch (NullPointerException e) {
+            Logger.getLogger(getClass().getCanonicalName())
+                    .severe("The board is null but should not.\n\t" +
+                            Arrays.stream(e.getStackTrace())
+                                    .map(StackTraceElement::toString)
+                                    .collect(Collectors.joining("\n\t")));
+            throw e;
+        }
     }
 
 }
