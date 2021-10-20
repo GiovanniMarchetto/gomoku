@@ -36,15 +36,14 @@ public class Game implements Comparable<Game>, Observable {
         this.start = Instant.now();
     }
 
-    @NotNull
-    public  Player getCurrentPlayer() {
-        return currentPlayer;
-    }
-
     public Game(int boardSize, @NotNull Player blackPlayer, @NotNull Player whitePlayer) {
         this(new PositiveInteger(boardSize), blackPlayer, whitePlayer);
     }
 
+    @NotNull
+    public Player getCurrentPlayer() {
+        return currentPlayer;
+    }
 
     @NotNull
     public Board getBoard() {
@@ -59,7 +58,7 @@ public class Game implements Comparable<Game>, Observable {
     public void placeNextStone(@NotNull final Coordinates coordinates)
             throws Board.NoMoreEmptyPositionAvailableException, Board.PositionAlreadyOccupiedException {
 
-        placeStone(currentPlayer,coordinates);
+        placeStone(currentPlayer, coordinates);
         changeTurn();
     }
 
@@ -75,8 +74,8 @@ public class Game implements Comparable<Game>, Observable {
         }
     }
 
-    private void changeTurn(){
-        currentPlayer= currentPlayer==blackPlayer ? whitePlayer : blackPlayer;
+    private void changeTurn() {
+        currentPlayer = currentPlayer == blackPlayer ? whitePlayer : blackPlayer;
     }
 
     private void setWinnerIfPlayerWon(@NotNull Player player, @NotNull Coordinates coordinates) {
