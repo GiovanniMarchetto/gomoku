@@ -56,7 +56,7 @@ public class CLIMain { // TODO : to be tested
                                     Match.executeMoveOfPlayerInGame(
                                             player,
                                             currentGame,
-                                            player instanceof CPUPlayer ? null : waitForAValidMoveOfAPlayerAndGet(
+                                            player instanceof CPUPlayer ? ((CPUPlayer) player).chooseRandomEmptyCoordinates(currentGame.getBoard()) : waitForAValidMoveOfAPlayerAndGet(
                                                     currentGame,
                                                     Objects.requireNonNull(setup).getBoardSizeValue()
                                             )

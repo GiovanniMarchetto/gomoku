@@ -66,10 +66,6 @@ public class Match {
     public static void executeMoveOfPlayerInGame(@NotNull Player player, @NotNull Game game, @Nullable Coordinates coordinatesOfTheMove)
             throws Board.NoMoreEmptyPositionAvailableException, Board.PositionAlreadyOccupiedException {
 
-        if (player instanceof CPUPlayer) {  // TODO : refactor to avoid coupling?
-            coordinatesOfTheMove = ((CPUPlayer) player).chooseNextEmptyCoordinatesFromCenter(game.getBoard());
-        }
-
         assert coordinatesOfTheMove != null;
         game.placeStone(player, coordinatesOfTheMove);
     }

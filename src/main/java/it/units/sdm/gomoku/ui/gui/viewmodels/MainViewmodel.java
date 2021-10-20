@@ -1,10 +1,7 @@
 package it.units.sdm.gomoku.ui.gui.viewmodels;
 
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
-import it.units.sdm.gomoku.model.entities.Board;
-import it.units.sdm.gomoku.model.entities.Game;
-import it.units.sdm.gomoku.model.entities.Match;
-import it.units.sdm.gomoku.model.entities.Player;
+import it.units.sdm.gomoku.model.entities.*;
 import it.units.sdm.gomoku.mvvm_library.viewmodels.Viewmodel;
 import it.units.sdm.gomoku.ui.gui.SceneController;
 import it.units.sdm.gomoku.ui.gui.views.SummaryView;
@@ -91,9 +88,10 @@ public class MainViewmodel extends Viewmodel {
     }
 
     public void placeStone(Coordinates coordinates) {
-        // TODO: re-do this
         try {
-            Match.executeMoveOfPlayerInGame(currentPlayer, currentGame, coordinates);
+            Match.executeMoveOfPlayerInGame(currentPlayer, currentGame,
+                    currentPlayer instanceof CPUPlayer ?
+                            ((CPUPlayer) currentPlayer).chooseRandomEmptyCoordinates(currentBoard) : coordinates);
             changeTurn();
         } catch (Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
             e.printStackTrace();
