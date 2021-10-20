@@ -9,6 +9,7 @@ import it.units.sdm.gomoku.mvvm_library.viewmodels.Viewmodel;
 import it.units.sdm.gomoku.ui.gui.SceneController;
 import it.units.sdm.gomoku.ui.gui.views.SummaryView;
 import it.units.sdm.gomoku.ui.support.Setup;
+import org.jetbrains.annotations.Nullable;
 
 import java.beans.PropertyChangeEvent;
 import java.util.Arrays;
@@ -103,8 +104,17 @@ public class MainViewmodel extends Viewmodel {
         }
     }
 
-    public boolean isMatchEnded(){
+    public boolean isMatchEnded() {
         return match.isEnded();
     }
 
+    @Nullable
+    public Player getWinnerOfTheMatch() throws Match.MatchEndedException {
+        return match.getWinner();
+    }
+
+    @Nullable
+    public Player getWinnerOfTheGame() throws Game.NotEndedGameException {
+        return currentGame.getWinner();
+    }
 }
