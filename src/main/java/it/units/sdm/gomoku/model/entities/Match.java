@@ -67,7 +67,7 @@ public class Match {
             throws Board.NoMoreEmptyPositionAvailableException, Board.PositionAlreadyOccupiedException {
 
         if (player instanceof CPUPlayer) {  // TODO : refactor to avoid coupling?
-            coordinatesOfTheMove = ((CPUPlayer) player).chooseRandomEmptyCoordinates(game.getBoard());
+            coordinatesOfTheMove = ((CPUPlayer) player).chooseNextEmptyCoordinatesFromCenter(game.getBoard());
         }
 
         assert coordinatesOfTheMove != null;
