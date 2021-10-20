@@ -1,6 +1,6 @@
 package it.units.sdm.gomoku.mvvm_library.views.gui_items;
 
-import it.units.sdm.gomoku.model.Observer;
+import it.units.sdm.gomoku.mvvm_library.Observer;
 import it.units.sdm.gomoku.mvvm_library.viewmodels.Viewmodel;
 import javafx.scene.Node;
 
