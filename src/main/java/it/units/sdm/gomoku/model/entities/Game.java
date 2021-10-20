@@ -23,6 +23,8 @@ public class Game implements Comparable<Game>, Observable {
     private final Instant start;
     @NotNull
     private final Player blackPlayer, whitePlayer;
+    @NotNull
+    private Player currentPlayer;
     @Nullable
     private Player winner;  // available after the end of the game
 
@@ -30,7 +32,13 @@ public class Game implements Comparable<Game>, Observable {
         this.board = new Board(Objects.requireNonNull(boardSize));
         this.blackPlayer = blackPlayer;
         this.whitePlayer = whitePlayer;
+        this.currentPlayer = blackPlayer;
         this.start = Instant.now();
+    }
+
+    @NotNull
+    public  Player getCurrentPlayer() {
+        return currentPlayer;
     }
 
     public Game(int boardSize, @NotNull Player blackPlayer, @NotNull Player whitePlayer) {
@@ -48,7 +56,14 @@ public class Game implements Comparable<Game>, Observable {
         return player.equals(blackPlayer) ? Board.Stone.BLACK : Board.Stone.WHITE;
     }
 
-    public void placeStone(@NotNull final Player player, @NotNull final Coordinates coordinates)
+    public void placeNextStone(@NotNull final Coordinates coordinates)
+            throws Board.NoMoreEmptyPositionAvailableException, Board.PositionAlreadyOccupiedException {
+
+        placeStone(currentPlayer,coordinates);
+        changeTurn();
+    }
+
+    private void placeStone(@NotNull final Player player, @NotNull final Coordinates coordinates)
             throws Board.NoMoreEmptyPositionAvailableException, Board.PositionAlreadyOccupiedException {
 
         board.occupyPosition(getStoneOfPlayer(Objects.requireNonNull(player)), Objects.requireNonNull(coordinates));
@@ -58,6 +73,10 @@ public class Game implements Comparable<Game>, Observable {
         if (isThisGameEnded()) {
             firePropertyChange(gameEndedPropertyName, false, true);
         }
+    }
+
+    private void changeTurn(){
+        currentPlayer= currentPlayer==blackPlayer ? whitePlayer : blackPlayer;
     }
 
     private void setWinnerIfPlayerWon(@NotNull Player player, @NotNull Coordinates coordinates) {
@@ -70,6 +89,7 @@ public class Game implements Comparable<Game>, Observable {
         return Board.checkNConsecutiveStonesNaive(board, lastMove, NUMBER_OF_CONSECUTIVE_STONE_FOR_WINNING);
     }
 
+    @Nullable
     public Player getWinner() throws NotEndedGameException {
         if (isThisGameEnded()) {
             return winner;

@@ -1,9 +1,12 @@
 package it.units.sdm.gomoku.model.entities;
 
+import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -128,8 +131,10 @@ class MatchTest {
 
     private void cpuPlaceStoneNextEmptyCoordinates(CPUPlayer cpuPlayer) {
         try {
-            currentGame.placeStone(cpuPlayer, cpu1.chooseNextEmptyCoordinates(currentGame.getBoard()));
-        } catch (Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
+            Method placeStoneMethod = currentGame.getClass().getDeclaredMethod("placeStone",Player.class, Coordinates.class);
+            placeStoneMethod.setAccessible(true);
+            placeStoneMethod.invoke(currentGame,cpuPlayer, cpu1.chooseNextEmptyCoordinates(currentGame.getBoard()));
+        } catch (Board.NoMoreEmptyPositionAvailableException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
             e.printStackTrace();
         }
     }

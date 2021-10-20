@@ -9,6 +9,8 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.stream.Stream;
 
 import static it.units.sdm.gomoku.model.utils.TestUtility.readBoardsWithWinCoordsAndResultsFromCSV;
@@ -27,16 +29,18 @@ class GameTest {
         for (int x = 0; x < boardStone.length; x++) {
             for (int y = 0; y < boardStone.length; y++) {
                 if (!boardStone[x][y].isNone()) {
-                    Player currentPlayer;
+                    Player playerFoundInBoard;
                     if (boardStone[x][y] == Board.Stone.BLACK) {
-                        currentPlayer = cpuBlack;
+                        playerFoundInBoard = cpuBlack;
                     } else {
-                        currentPlayer = cpuWhite;
+                        playerFoundInBoard = cpuWhite;
                     }
                     try {
-                        voidGame.placeStone(currentPlayer, new Coordinates(x, y));
-                    } catch (Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException ignored) {
-
+                        Method placeStoneMethod = voidGame.getClass().getDeclaredMethod("placeStone",Player.class,Coordinates.class);
+                        placeStoneMethod.setAccessible(true);
+                        placeStoneMethod.invoke(voidGame,playerFoundInBoard,new Coordinates(x, y));
+                    } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+                        e.printStackTrace();
                     }
                 }
             }

@@ -22,10 +22,6 @@ class GomokuGridManagerTest {
         int boardSize = 19, numberOfGames = 3;
 
         try {
-            Field currentPlayerField = vm.getClass().getDeclaredField("currentPlayer");
-            currentPlayerField.setAccessible(true);
-            currentPlayerField.set(vm, p1);
-
             Field matchField = vm.getClass().getDeclaredField("match");
             matchField.setAccessible(true);
             matchField.set(vm, new Match(p1, p2, boardSize, numberOfGames));

@@ -63,11 +63,11 @@ public class Match {
         return players;
     }
 
-    public static void executeMoveOfPlayerInGame(@NotNull Player player, @NotNull Game game, @Nullable Coordinates coordinatesOfTheMove)
+    public static void executeMoveOfPlayerInGame(@NotNull Game game, @Nullable Coordinates coordinatesOfTheMove)
             throws Board.NoMoreEmptyPositionAvailableException, Board.PositionAlreadyOccupiedException {
 
         assert coordinatesOfTheMove != null;
-        game.placeStone(player, coordinatesOfTheMove);
+        game.placeNextStone(coordinatesOfTheMove);
     }
 
     public void addAnExtraGame() {

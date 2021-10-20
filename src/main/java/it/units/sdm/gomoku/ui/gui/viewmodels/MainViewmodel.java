@@ -22,8 +22,6 @@ public class MainViewmodel extends Viewmodel {
 
     private Board currentBoard;
 
-    private Player currentPlayer;
-
     public MainViewmodel() {
     }
 
@@ -37,7 +35,6 @@ public class MainViewmodel extends Viewmodel {
             }
             case Setup.setupCompletedPropertyName -> {
                 Setup setup = (Setup) evt.getNewValue();
-                currentPlayer = setup.getPlayers()[0];
                 match = new Match(setup.getBoardSizeValue(), setup.getNumberOfGames(), setup.getPlayers());
                 startNewGame();
                 SceneController.passToNewScene(SceneController.ViewName.MAIN_VIEW);
@@ -66,7 +63,6 @@ public class MainViewmodel extends Viewmodel {
         try {
             currentGame = match.startNewGame();
             currentBoard = currentGame.getBoard();
-            currentPlayer = match.getCurrentBlackPlayer();
             observe(currentGame);
             observe(currentBoard);
         } catch (Match.MatchEndedException e) {
@@ -80,19 +76,12 @@ public class MainViewmodel extends Viewmodel {
         stopObserving(currentBoard);
     }
 
-    private void changeTurn() {
-        currentPlayer =
-                currentPlayer == match.getCurrentBlackPlayer()
-                        ? match.getCurrentWhitePlayer()
-                        : match.getCurrentBlackPlayer();
-    }
-
     public void placeStone(Coordinates coordinates) {
         try {
-            Match.executeMoveOfPlayerInGame(currentPlayer, currentGame,
+            Player currentPlayer = currentGame.getCurrentPlayer();
+            Match.executeMoveOfPlayerInGame(currentGame,
                     currentPlayer instanceof CPUPlayer ?
                             ((CPUPlayer) currentPlayer).chooseRandomEmptyCoordinates(currentBoard) : coordinates);
-            changeTurn();
         } catch (Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
             e.printStackTrace();
         }
