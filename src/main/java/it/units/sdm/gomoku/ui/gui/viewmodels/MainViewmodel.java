@@ -136,7 +136,7 @@ public class MainViewmodel extends Viewmodel {
     }
 
     @Nullable
-    public Player getWinnerOfTheGame() throws Game.NotEndedGameException {
+    public Player getWinnerOfTheGame() throws Game.GameNotEndedException {
         return currentGame.getWinner();
     }
 }

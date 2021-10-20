@@ -89,11 +89,11 @@ public class Game implements Comparable<Game>, Observable {
     }
 
     @Nullable
-    public Player getWinner() throws NotEndedGameException {
+    public Player getWinner() throws GameNotEndedException {
         if (isThisGameEnded()) {
             return winner;
         } else {
-            throw new NotEndedGameException();
+            throw new GameNotEndedException();
         }
     }
 
@@ -120,8 +120,8 @@ public class Game implements Comparable<Game>, Observable {
                 board;
     }
 
-    public static class NotEndedGameException extends Exception {
-        public NotEndedGameException() {
+    public static class GameNotEndedException extends Exception {
+        public GameNotEndedException() {
             super("The game is not over.");
         }
     }
