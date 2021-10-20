@@ -8,9 +8,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Instant;
-import java.util.Map;
+import java.time.ZoneId;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class Game implements Comparable<Game>, Observable {
 
@@ -23,15 +22,14 @@ public class Game implements Comparable<Game>, Observable {
     @NotNull
     private final Instant start;
     @NotNull
-    private final Map<Player, Board.Stone> playerToStoneColorsMap;
+    private final Player blackPlayer, whitePlayer;
     @Nullable
     private Player winner;  // available after the end of the game
 
     public Game(@NotNull PositiveInteger boardSize, @NotNull Player blackPlayer, @NotNull Player whitePlayer) {
         this.board = new Board(Objects.requireNonNull(boardSize));
-        playerToStoneColorsMap = new ConcurrentHashMap<>();
-        playerToStoneColorsMap.put(Objects.requireNonNull(blackPlayer), Board.Stone.BLACK);
-        playerToStoneColorsMap.put(Objects.requireNonNull(whitePlayer), Board.Stone.WHITE);
+        this.blackPlayer = blackPlayer;
+        this.whitePlayer = whitePlayer;
         this.start = Instant.now();
     }
 
@@ -45,12 +43,16 @@ public class Game implements Comparable<Game>, Observable {
         return board;
     }
 
+    @NotNull
+    private Board.Stone getStoneOfPlayer(@NotNull final Player player) {
+        return player.equals(blackPlayer) ? Board.Stone.BLACK : Board.Stone.WHITE;
+    }
+
     public void placeStone(@NotNull final Player player, @NotNull final Coordinates coordinates)
             throws Board.NoMoreEmptyPositionAvailableException, Board.PositionAlreadyOccupiedException {
-        board.occupyPosition(
-                playerToStoneColorsMap.get(Objects.requireNonNull(player)),
-                Objects.requireNonNull(coordinates)
-        );
+
+        board.occupyPosition(getStoneOfPlayer(Objects.requireNonNull(player)), Objects.requireNonNull(coordinates));
+
         setWinnerIfPlayerWon(player, coordinates);
 
         if (isThisGameEnded()) {
@@ -85,16 +87,6 @@ public class Game implements Comparable<Game>, Observable {
         // if there are empty positions on the board it can't be a draw
     }
 
-    @NotNull
-    public Player getBlackPlayer() {
-        return playerToStoneColorsMap.entrySet()
-                .stream().unordered()
-                .filter(entry -> entry.getValue() == Board.Stone.BLACK)
-                .map(Map.Entry::getKey)
-                .findAny()
-                .orElseThrow();
-    }
-
     @Override
     public int compareTo(@NotNull Game other) {
         return this.start.compareTo(other.start);
@@ -102,8 +94,9 @@ public class Game implements Comparable<Game>, Observable {
 
     @Override
     public String toString() {
-        return "Game started at " + start + "\n" +
-                playerToStoneColorsMap + "\n" +
+        return "Game started at " + start.atZone(ZoneId.systemDefault()) + "\n" +
+                blackPlayer + " -> BLACK, " +
+                whitePlayer + " -> WHITE" + "\n" +
                 "Winner: " + winner + "\n" +
                 board;
     }
