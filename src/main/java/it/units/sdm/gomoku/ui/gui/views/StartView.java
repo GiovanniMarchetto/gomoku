@@ -17,9 +17,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.util.Pair;
 
-import java.util.AbstractMap;
-import java.util.Arrays;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static it.units.sdm.gomoku.ui.gui.GUIMain.mainViewmodel;
@@ -80,7 +78,7 @@ public class StartView extends View {
                 getViewmodelAssociatedWithView(),
                 setupCompletedPropertyName,
                 () -> {
-                    Map<Player, PlayerTypes> players = Arrays.stream(
+                    Map<Player, PlayerTypes> players = Collections.synchronizedMap(Arrays.stream(
                                     new Pair[]{
                                             new Pair<>(cpu1CheckBox, player1),
                                             new Pair<>(cpu2CheckBox, player2)
@@ -96,7 +94,7 @@ public class StartView extends View {
                                     return new AbstractMap.SimpleEntry<>(new Player(playerName), PlayerTypes.PERSON);
                                 }
                             })
-                            .collect(Collectors.toConcurrentMap(Map.Entry::getKey, Map.Entry::getValue));
+                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> b, LinkedHashMap::new)));
 
                     PositiveInteger numberOfGames = new PositiveInteger(Integer.parseInt(this.numberOfGames.getText()));
                     PositiveOddInteger boardSize = BoardSizes.fromString(boardSizeList.getValue()).getBoardSize();
