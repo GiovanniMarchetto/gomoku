@@ -4,6 +4,7 @@ import it.units.sdm.gomoku.model.Observer;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.ui.gui.viewmodels.MainViewmodel;
+import javafx.application.Platform;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.scene.Group;
@@ -204,7 +205,7 @@ public class GomokuCell implements Observer {
         } else if (evt.getPropertyName().equals(Board.BoardMatrixPropertyName)) {
             Board.ChangedCell cell = (Board.ChangedCell) evt.getNewValue();
             if (cell.getCoordinates().equals(coordinates)) {
-                setStone(cell.getNewStone());
+                Platform.runLater(() -> setStone(cell.getNewStone()));
             }
         }
     }

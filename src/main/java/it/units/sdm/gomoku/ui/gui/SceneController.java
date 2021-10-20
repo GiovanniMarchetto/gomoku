@@ -1,5 +1,6 @@
 package it.units.sdm.gomoku.ui.gui;
 
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -94,7 +95,7 @@ public class SceneController {
     }
 
     private void passToNewScene_(@NotNull final SceneController.ViewName viewEnum) {
-        stage.setScene(scenes.get(Objects.requireNonNull(viewEnum)).get());
+        Platform.runLater(() -> stage.setScene(scenes.get(Objects.requireNonNull(viewEnum)).get()));
     }
 
     public enum ViewName {
