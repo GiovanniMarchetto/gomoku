@@ -1,4 +1,4 @@
-package it.units.sdm.gomoku.model;
+package it.units.sdm.gomoku.mvvm_library;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;

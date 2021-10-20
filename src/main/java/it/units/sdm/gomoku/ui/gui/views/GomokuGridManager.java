@@ -1,6 +1,6 @@
 package it.units.sdm.gomoku.ui.gui.views;
 
-import it.units.sdm.gomoku.model.Observable;
+import it.units.sdm.gomoku.mvvm_library.Observable;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.ui.gui.viewmodels.MainViewmodel;
 import javafx.beans.value.ChangeListener;
