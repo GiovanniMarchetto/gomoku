@@ -79,13 +79,13 @@ public class CLIMain { // TODO : to be tested
                         out.clearLastSection();
                     }
                 }
-                //TODO: print the final board
-                out.print("Game ended! ");
+                out.println("Game ended! ");
                 try {
                     out.println(currentGame.getWinner() + " won!");
                 } catch (Game.NotEndedGameException e) {
                     out.println("It's a draw!");
                 }
+                out.println(currentGame.getBoard());
 
                 handleADrawIfIsLastGame(matchToDispute, out, Objects.requireNonNull(in));
 
