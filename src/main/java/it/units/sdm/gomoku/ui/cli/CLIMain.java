@@ -81,7 +81,7 @@ public class CLIMain { // TODO : to be tested
                 out.println("Game ended! ");
                 try {
                     out.println(currentGame.getWinner() + " won!");
-                } catch (Game.NotEndedGameException e) {
+                } catch (Game.GameNotEndedException e) {
                     out.println("It's a draw!");
                 }
                 out.println(currentGame.getBoard());

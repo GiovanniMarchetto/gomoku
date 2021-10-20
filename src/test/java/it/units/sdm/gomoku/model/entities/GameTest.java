@@ -66,7 +66,7 @@ class GameTest {
                 } else {
                     assertNull(game.getWinner());
                 }
-            } catch (Game.NotEndedGameException e) {
+            } catch (Game.GameNotEndedException e) {
                 e.printStackTrace();
             }
         }
@@ -84,7 +84,7 @@ class GameTest {
             } else {
                 assertNull(winner);
             }
-        } catch (Game.NotEndedGameException e) {
+        } catch (Game.GameNotEndedException e) {
             assertFalse(finishedGame);
         }
     }

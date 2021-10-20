@@ -45,7 +45,7 @@ public class SummaryView extends View {
         try {
             Player winnerValue = vm.getWinnerOfTheGame();
             winnerOfGame = winnerValue != null ? winnerValue + " WIN" : "a draw";
-        } catch (Game.NotEndedGameException e) {
+        } catch (Game.GameNotEndedException e) {
             e.printStackTrace();
         }
         this.winnerOfGame.setText("This game is ended with: " + winnerOfGame);

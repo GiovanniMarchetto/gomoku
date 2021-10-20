@@ -36,15 +36,14 @@ public class Game implements Comparable<Game>, Observable {
         this.start = Instant.now();
     }
 
-    @NotNull
-    public  Player getCurrentPlayer() {
-        return currentPlayer;
-    }
-
     public Game(int boardSize, @NotNull Player blackPlayer, @NotNull Player whitePlayer) {
         this(new PositiveInteger(boardSize), blackPlayer, whitePlayer);
     }
 
+    @NotNull
+    public Player getCurrentPlayer() {
+        return currentPlayer;
+    }
 
     @NotNull
     public Board getBoard() {
@@ -58,25 +57,21 @@ public class Game implements Comparable<Game>, Observable {
 
     public void placeNextStone(@NotNull final Coordinates coordinates)
             throws Board.NoMoreEmptyPositionAvailableException, Board.PositionAlreadyOccupiedException {
-
-        placeStone(currentPlayer,coordinates);
+        placeStone(currentPlayer, coordinates);
         changeTurn();
     }
 
     private void placeStone(@NotNull final Player player, @NotNull final Coordinates coordinates)
             throws Board.NoMoreEmptyPositionAvailableException, Board.PositionAlreadyOccupiedException {
-
         board.occupyPosition(getStoneOfPlayer(Objects.requireNonNull(player)), Objects.requireNonNull(coordinates));
-
         setWinnerIfPlayerWon(player, coordinates);
-
         if (isThisGameEnded()) {
             firePropertyChange(gameEndedPropertyName, false, true);
         }
     }
 
-    private void changeTurn(){
-        currentPlayer= currentPlayer==blackPlayer ? whitePlayer : blackPlayer;
+    private void changeTurn() {
+        currentPlayer = currentPlayer == blackPlayer ? whitePlayer : blackPlayer;
     }
 
     private void setWinnerIfPlayerWon(@NotNull Player player, @NotNull Coordinates coordinates) {
@@ -90,11 +85,11 @@ public class Game implements Comparable<Game>, Observable {
     }
 
     @Nullable
-    public Player getWinner() throws NotEndedGameException {
+    public Player getWinner() throws GameNotEndedException {
         if (isThisGameEnded()) {
             return winner;
         } else {
-            throw new NotEndedGameException();
+            throw new GameNotEndedException();
         }
     }
 
@@ -121,8 +116,8 @@ public class Game implements Comparable<Game>, Observable {
                 board;
     }
 
-    public static class NotEndedGameException extends Exception {
-        public NotEndedGameException() {
+    public static class GameNotEndedException extends Exception {
+        public GameNotEndedException() {
             super("The game is not over.");
         }
     }

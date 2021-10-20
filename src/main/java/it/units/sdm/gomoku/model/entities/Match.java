@@ -107,14 +107,9 @@ public class Match {
             if (isEndedWithADraft()) {
                 return null;
             } else {
-                int scoreOfCurrentBlackPlayer = getScoreOfPlayer(currentBlackPlayer).intValue();
-                int scoreOfCurrentWhitePlayer = getScoreOfPlayer(currentWhitePlayer).intValue();
-
-                if (scoreOfCurrentBlackPlayer > scoreOfCurrentWhitePlayer) {
-                    return currentBlackPlayer;
-                } else {
-                    return currentWhitePlayer;
-                }
+                return getScoreOfPlayer(currentBlackPlayer).compareTo(getScoreOfPlayer(currentWhitePlayer)) > 0
+                        ? currentBlackPlayer
+                        : currentWhitePlayer;
             }
         } else {
             throw new MatchEndedException();
@@ -128,7 +123,7 @@ public class Match {
                         .filter(aGame -> {
                             try {
                                 return aGame.getWinner() == Objects.requireNonNull(player);
-                            } catch (Game.NotEndedGameException e) {
+                            } catch (Game.GameNotEndedException e) {
                                 return false;
                             }
                         })
