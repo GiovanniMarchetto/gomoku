@@ -69,7 +69,7 @@ public class SummaryView extends View {
                 e.printStackTrace();
             }
 
-            this.winnerOfGame.setText("The match is ended with: " + winnerOfMatch);
+            this.winnerOfMatch.setText("The match is ended with: " + winnerOfMatch);
 
             CommanderButton newMatchButton = getNewMatchCommanderButton();
             buttonHBox.getChildren().add(newMatchButton.getGUIItem());
