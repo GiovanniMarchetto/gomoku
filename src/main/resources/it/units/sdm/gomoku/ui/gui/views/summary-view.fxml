@@ -1,9 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.VBox?>
-<VBox xmlns:fx="http://javafx.com/fxml/1"
-      xmlns="http://javafx.com/javafx/11.0.2"
-      fx:controller="it.units.sdm.gomoku.ui.gui.views.SummaryView"
-      fx:id="mainVBox"
-      alignment="CENTER"
-/>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.*?>
+<GridPane xmlns:fx="http://javafx.com/fxml/1"
+          xmlns="http://javafx.com/javafx/11.0.2"
+          fx:controller="it.units.sdm.gomoku.ui.gui.views.SummaryView"
+          alignment="CENTER"
+>
+    <Label fx:id="titleOfSummary" alignment="CENTER"
+           GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+
+    <Label fx:id="winnerOfGame"
+           GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+    <Label fx:id="winnerOfMatch"
+           GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+
+    <HBox fx:id="buttonHBox"
+          GridPane.rowIndex="4" GridPane.columnIndex="1">
+
+    </HBox>
+</GridPane>

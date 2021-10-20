@@ -53,6 +53,14 @@ public class MainViewmodel extends Viewmodel {
                 startNewGame();
                 SceneController.passToNewScene(SceneController.ViewName.MAIN_VIEW);
             }
+            case SummaryView.newMatchAfterSummaryPropertyName -> {
+                SceneController.passToNewScene(SceneController.ViewName.START_VIEW);
+            }
+            case SummaryView.extraGameAfterSummaryPropertyName -> {
+                match.addAnExtraGame();
+                startNewGame();
+                SceneController.passToNewScene(SceneController.ViewName.MAIN_VIEW);
+            }
             default -> throw new IllegalArgumentException("Property name " + evt.getPropertyName() + " not found!");
         }
     }
@@ -61,6 +69,7 @@ public class MainViewmodel extends Viewmodel {
         try {
             currentGame = match.startNewGame();
             currentBoard = currentGame.getBoard();
+            currentPlayer = match.getCurrentBlackPlayer();
             observe(currentGame);
             observe(currentBoard);
         } catch (Match.MatchEndedException e) {
