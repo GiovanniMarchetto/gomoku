@@ -78,10 +78,6 @@ public class Match {
         numberOfGames.incrementAndGet();
     }
 
-    public boolean isEndedWithADraft() {
-        return getScoreOfPlayer(getCurrentBlackPlayer())
-                .equals(getScoreOfPlayer(getCurrentWhitePlayer()));
-    }
 
     @NotNull
     public Game startNewGame() throws MatchEndedException {
@@ -107,6 +103,26 @@ public class Match {
         score.put(currentBlackPlayer, getScoreOfPlayer(currentBlackPlayer));
         score.put(currentWhitePlayer, getScoreOfPlayer(currentWhitePlayer));
         return score;
+    }
+
+    @Nullable
+    public Player getWinner() throws MatchEndedException {
+        if (isEnded()) {
+            if (isEndedWithADraft()) {
+                return null;
+            } else {
+                int scoreOfCurrentBlackPlayer = getScoreOfPlayer(currentBlackPlayer).intValue();
+                int scoreOfCurrentWhitePlayer = getScoreOfPlayer(currentWhitePlayer).intValue();
+
+                if (scoreOfCurrentBlackPlayer > scoreOfCurrentWhitePlayer) {
+                    return currentBlackPlayer;
+                } else {
+                    return currentWhitePlayer;
+                }
+            }
+        } else {
+            throw new MatchEndedException();
+        }
     }
 
     @NotNull
@@ -137,6 +153,11 @@ public class Match {
     @NotNull
     public Player getCurrentWhitePlayer() {
         return currentWhitePlayer;
+    }
+
+    public boolean isEndedWithADraft() {
+        return getScoreOfPlayer(getCurrentBlackPlayer())
+                .equals(getScoreOfPlayer(getCurrentWhitePlayer()));
     }
 
     public boolean isEnded() {
