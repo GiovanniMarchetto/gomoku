@@ -11,6 +11,8 @@ import org.jetbrains.annotations.Nullable;
 import java.beans.PropertyChangeEvent;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -21,6 +23,8 @@ public class MainViewmodel extends Viewmodel {
     private Game currentGame;
 
     private Board currentBoard;
+
+    private boolean userCanPlace = true;
 
     public MainViewmodel() {
     }
@@ -36,27 +40,30 @@ public class MainViewmodel extends Viewmodel {
             case Setup.setupCompletedPropertyName -> {
                 Setup setup = (Setup) evt.getNewValue();
                 match = new Match(setup.getBoardSizeValue(), setup.getNumberOfGames(), setup.getPlayers());
-                startNewGame();
-                SceneController.passToNewScene(SceneController.ViewName.MAIN_VIEW);
+                startNewGameAndPassToMainView();
             }
             case Game.gameEndedPropertyName -> {
                 endGame();
                 SceneController.passToNewScene(SceneController.ViewName.SUMMARY_VIEW);
             }
             case SummaryView.continueAfterSummaryPropertyName -> {
-                startNewGame();
-                SceneController.passToNewScene(SceneController.ViewName.MAIN_VIEW);
+                startNewGameAndPassToMainView();
             }
             case SummaryView.newMatchAfterSummaryPropertyName -> {
                 SceneController.passToNewScene(SceneController.ViewName.START_VIEW);
             }
             case SummaryView.extraGameAfterSummaryPropertyName -> {
                 match.addAnExtraGame();
-                startNewGame();
-                SceneController.passToNewScene(SceneController.ViewName.MAIN_VIEW);
+                startNewGameAndPassToMainView();
             }
             default -> throw new IllegalArgumentException("Property name " + evt.getPropertyName() + " not found!");
         }
+    }
+
+    private void startNewGameAndPassToMainView() {
+        startNewGame();
+        SceneController.passToNewScene(SceneController.ViewName.MAIN_VIEW);
+        ifIsCpuPlaceStoneWithDelay(500);
     }
 
     public void startNewGame() {
@@ -79,11 +86,30 @@ public class MainViewmodel extends Viewmodel {
     public void placeStone(Coordinates coordinates) {
         try {
             Player currentPlayer = currentGame.getCurrentPlayer();
-            Match.executeMoveOfPlayerInGame(currentGame,
-                    currentPlayer instanceof CPUPlayer ?
-                            ((CPUPlayer) currentPlayer).chooseRandomEmptyCoordinates(currentBoard) : coordinates);
+            if (currentPlayer instanceof CPUPlayer || userCanPlace) {
+                Match.executeMoveOfPlayerInGame(currentGame,
+                        currentPlayer instanceof CPUPlayer ?
+                                ((CPUPlayer) currentPlayer).chooseRandomEmptyCoordinates(currentBoard) : coordinates);
+                ifIsCpuPlaceStoneWithDelay(200);
+            }
         } catch (Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void ifIsCpuPlaceStoneWithDelay(long delay) {
+        if (!currentGame.isThisGameEnded() && currentGame.getCurrentPlayer() instanceof CPUPlayer) {
+            userCanPlace = false;
+            Timer timer = new Timer();
+            TimerTask task = new TimerTask() {
+                @Override
+                public void run() {
+                    placeStone(null);
+                    userCanPlace = true;
+                    timer.cancel();
+                }
+            };
+            timer.schedule(task, delay);
         }
     }
 
