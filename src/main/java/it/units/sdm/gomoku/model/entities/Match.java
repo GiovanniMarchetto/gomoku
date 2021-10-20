@@ -37,8 +37,8 @@ public class Match {
 
     public Match(@NotNull final Player player1, @NotNull final Player player2,
                  @NotNull final PositiveInteger boardSize, @NotNull final PositiveInteger numberOfGames) {
-        this.currentBlackPlayer = Objects.requireNonNull(player2);
-        this.currentWhitePlayer = Objects.requireNonNull(player1);
+        this.currentBlackPlayer = Objects.requireNonNull(player1);
+        this.currentWhitePlayer = Objects.requireNonNull(player2);
         this.gameList = new ArrayList<>();
         this.boardSize = Objects.requireNonNull(boardSize);
         this.numberOfGames = Objects.requireNonNull(numberOfGames);
@@ -78,7 +78,9 @@ public class Match {
     @NotNull
     public Game startNewGame() throws MatchEndedException {
         if (!isEnded()) {
-            invertCurrentPlayersColors();
+            if (gameList.size() > 0) {
+                invertCurrentPlayersColors();
+            }
             Game newGame = new Game(boardSize, currentBlackPlayer, currentWhitePlayer);
             gameList.add(newGame);
             return newGame;
