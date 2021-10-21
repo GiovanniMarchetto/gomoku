@@ -1,6 +1,7 @@
 package it.units.sdm.gomoku.ui.gui.viewmodels;
 
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
+import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.entities.*;
 import it.units.sdm.gomoku.mvvm_library.viewmodels.Viewmodel;
 import it.units.sdm.gomoku.ui.gui.SceneController;
@@ -9,10 +10,8 @@ import it.units.sdm.gomoku.ui.support.Setup;
 import org.jetbrains.annotations.Nullable;
 
 import java.beans.PropertyChangeEvent;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.time.ZonedDateTime;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -130,6 +129,18 @@ public class MainViewmodel extends Viewmodel {
         return match.isEnded();
     }
 
+    public Map<Player, NonNegativeInteger> getScoreOfMatch(){
+        return match.getScore();
+    }
+
+    public Player getCurrentBlackPlayer(){
+        return match.getCurrentBlackPlayer();
+    }
+
+    public Player getCurrentWhitePlayer(){
+        return match.getCurrentWhitePlayer();
+    }
+
     @Nullable
     public Player getWinnerOfTheMatch() throws Match.MatchEndedException {
         return match.getWinner();
@@ -138,5 +149,9 @@ public class MainViewmodel extends Viewmodel {
     @Nullable
     public Player getWinnerOfTheGame() throws Game.GameNotEndedException {
         return currentGame.getWinner();
+    }
+
+    public ZonedDateTime getGameStartTime(){
+        return currentGame.getStart();
     }
 }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Label?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="mainAnchorPane" xmlns="http://javafx.com/javafx/11.0.2"
             fx:controller="it.units.sdm.gomoku.ui.gui.views.MainView"
@@ -32,10 +33,31 @@
                   AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"
                   GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 
-        <GridPane fx:id="rightGridPane" style="-fx-background-color: pink;"
-                  GridPane.columnIndex="2" GridPane.hgrow="NEVER"
-                  GridPane.rowIndex="1" GridPane.vgrow="NEVER"
-                  prefWidth="100"/>
+        <VBox fx:id="rightGridPane" style="-fx-background-color: pink;"
+              GridPane.columnIndex="2" GridPane.hgrow="NEVER"
+              GridPane.rowIndex="1" GridPane.vgrow="NEVER"
+              prefWidth="100" spacing="10">
+            <padding>
+                <Insets left="5"/>
+            </padding>
+            <VBox style="-fx-border-width: 2">
+                <Label text="BLACK" style="-fx-text-fill: black; -fx-font-weight: bold"/>
+                <Label fx:id="blackPlayer"/>
+            </VBox>
+            <VBox style="-fx-border-width: 2">
+                <Label text="WHITE" style="-fx-text-fill: white; -fx-font-weight: bold"/>
+                <Label fx:id="whitePlayer"/>
+            </VBox>
+            <VBox>
+
+            </VBox>
+            <VBox>
+                <padding>
+                    <Insets top="10"/>
+                </padding>
+                <Label fx:id="startTime"/>
+            </VBox>
+        </VBox>
 
     </GridPane>
 

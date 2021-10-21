@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.time.Instant;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 
 public class Game implements Comparable<Game>, Observable {
@@ -126,4 +127,7 @@ public class Game implements Comparable<Game>, Observable {
         }
     }
 
+    public ZonedDateTime getStart() {
+        return start.atZone(ZoneId.systemDefault());
+    }
 }
