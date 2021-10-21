@@ -66,6 +66,7 @@ public class SceneController {
                                   int initialSceneWidthInPx, int initialSceneHeightInPx,
                                   int stageMinWidth, int stageMinHeight,
                                   @NotNull final Pair<@NotNull ViewName, @NotNull String>... fxmlFilePaths) {
+        if (!isJavaFxRunning()) return;
         if (wasAlreadyInstantiated()) {
             throw new IllegalStateException(SceneController.class.getCanonicalName() + " already instantiated.");
         } else {
@@ -92,11 +93,12 @@ public class SceneController {
     }
 
     public static void passToNewScene(@NotNull final SceneController.ViewName viewEnum) {
+        if (!isJavaFxRunning()) return;
         getInstance().passToNewScene_(Objects.requireNonNull(viewEnum));
     }
 
     private void passToNewScene_(@NotNull final SceneController.ViewName viewEnum) {
-        Platform.runLater(() -> stage.setScene(scenes.get(Objects.requireNonNull(viewEnum)).get()));
+        executeOnJavaFxUiThread(() -> stage.setScene(scenes.get(Objects.requireNonNull(viewEnum)).get()));
     }
 
     public static boolean isJavaFxRunning() {
@@ -109,6 +111,18 @@ public class SceneController {
             }
         }
         return javaFxRunning;
+    }
+
+    public static void executeOnJavaFxUiThread(Runnable runnable) {
+        if (isJavaFxRunning()) {
+            if (Platform.isFxApplicationThread()) {
+                runnable.run();
+            } else {
+                Platform.runLater(runnable);
+            }
+        } else {
+            throw new IllegalCallerException("Cannot invoke this method from a non-JavaFX application! (JavaFX is not running)");
+        }
     }
 
     public enum ViewName {
