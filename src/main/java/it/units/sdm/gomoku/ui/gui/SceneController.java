@@ -22,11 +22,13 @@ public class SceneController {
     private final Map<ViewName, Supplier<Scene>> scenes;
     private final Stage stage;
     private static Boolean javaFxRunning = null;
+    private double sceneWidth = 0;
+    private double sceneHeight = 0;
 
     @SafeVarargs
     private SceneController(@NotNull final Stage stage, @NotNull final String firstStageTitle,
-                            int sceneWidthInPx, int sceneHeightInPx,
-                            int stageMinWidth, int stageMinHeight,
+                            double initialSceneWidth, double initialSceneHeight,
+                            double stageMinWidth, double stageMinHeight,
                             @NotNull final Pair<@NotNull ViewName, @NotNull String>... fxmlFilePaths) {
         this.stage = Objects.requireNonNull(stage);
         this.scenes = Arrays.stream(Objects.requireNonNull(fxmlFilePaths))
@@ -40,7 +42,9 @@ public class SceneController {
                     return new AbstractMap.SimpleEntry<ViewName, Supplier<Scene>>(view, () -> {
                         try {
                             FXMLLoader fxmlLoader = new FXMLLoader(viewEntry.getValue());
-                            return new Scene(fxmlLoader.load(), sceneWidthInPx, sceneHeightInPx);
+                            sceneWidth = sceneWidth != 0 ? stage.getScene().getWidth() : initialSceneWidth;
+                            sceneHeight = sceneHeight != 0 ? stage.getScene().getHeight() : initialSceneHeight;
+                            return new Scene(fxmlLoader.load(), sceneWidth, sceneHeight);
                         } catch (IOException e) {
                             Logger.getLogger(getClass().getCanonicalName())
                                     .severe("I/O Exception in " + getClass().getCanonicalName() +
