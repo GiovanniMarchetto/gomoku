@@ -9,6 +9,7 @@ import it.units.sdm.gomoku.ui.gui.viewmodels.MainViewmodel;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 import static it.units.sdm.gomoku.ui.gui.GUIMain.mainViewmodel;
 
@@ -20,13 +21,15 @@ public class SummaryView extends View {
 
     @FXML
     private HBox buttonHBox;
-
     @FXML
-    private Label titleOfSummary;
+    private VBox endMatchVBox;
+
     @FXML
     private Label winnerOfGame;
     @FXML
     private Label winnerOfMatch;
+    @FXML
+    private Label scoreOfMatch;
 
     public SummaryView() {
         super(mainViewmodel);
@@ -36,32 +39,33 @@ public class SummaryView extends View {
     private void initialize() {
         var vm = (MainViewmodel) getViewmodelAssociatedWithView();
 
-        String whatEnded = vm.isMatchEnded() ? "MATCH" : "GAME";
-        titleOfSummary.setText(whatEnded + " ENDED");
-        titleOfSummary.setStyle("-fx-font-size: 20; -fx-font-weight: bold");
-
-
-        String winnerOfGame = null;
         try {
             Player winnerValue = vm.getWinnerOfTheGame();
-            winnerOfGame = winnerValue != null ? winnerValue + " WIN" : "a draw";
+            this.winnerOfGame.setText(winnerValue != null
+                    ? "WIN OF " + winnerValue
+                    : "DRAW");
         } catch (Game.GameNotEndedException e) {
             e.printStackTrace();
         }
-        this.winnerOfGame.setText("This game is ended with: " + winnerOfGame);
 
+        this.scoreOfMatch.setText(vm.getScoreOfMatch().toString()
+                .replace(", ", "\n\t")
+                .replace("{","\t")
+                .replace("}","")
+                .replace("="," = "));
 
         if (!vm.isMatchEnded()) {
             CommanderButton continueButton = getContinueCommanderButton();
             buttonHBox.getChildren().add(continueButton.getGUIItem());
         } else {
-            String winnerOfMatch = null;
+            endMatchVBox.setVisible(true);
             try {
                 Player winnerValue = vm.getWinnerOfTheMatch();
-                winnerOfMatch = winnerValue != null ? winnerValue + " WIN" : "a draw";
+                this.winnerOfMatch.setText(winnerValue != null
+                        ? "WIN OF " + winnerValue
+                        : "DRAW");
 
                 if (vm.getWinnerOfTheMatch() == null) {
-                    System.out.println("generate");
                     CommanderButton extraGameButton = getExtraGameCommanderButton();
                     buttonHBox.getChildren().add(extraGameButton.getGUIItem());
                 }
@@ -69,7 +73,6 @@ public class SummaryView extends View {
                 e.printStackTrace();
             }
 
-            this.winnerOfMatch.setText("The match is ended with: " + winnerOfMatch);
 
             CommanderButton newMatchButton = getNewMatchCommanderButton();
             buttonHBox.getChildren().add(newMatchButton.getGUIItem());

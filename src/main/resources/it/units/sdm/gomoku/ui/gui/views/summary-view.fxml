@@ -5,15 +5,35 @@
 <GridPane xmlns:fx="http://javafx.com/fxml/1"
           xmlns="http://javafx.com/javafx/11.0.2"
           fx:controller="it.units.sdm.gomoku.ui.gui.views.SummaryView"
-          alignment="CENTER"
+          alignment="CENTER" vgap="10" hgap="10"
+          style="-fx-background-color: #b27a47; -fx-background-radius: 5"
 >
-    <Label fx:id="titleOfSummary" alignment="CENTER"
-           GridPane.rowIndex="0" GridPane.columnIndex="0"/>
 
-    <Label fx:id="winnerOfGame"
-           GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-    <Label fx:id="winnerOfMatch"
-           GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+    <VBox fx:id="endMatchVBox" visible="false"
+          GridPane.rowIndex="0" GridPane.columnIndex="0">
+        <Label text="MATCH ENDED" alignment="CENTER"
+               GridPane.columnSpan="3" GridPane.halignment="CENTER"
+               style="-fx-font-size: 20; -fx-font-weight: bold"/>
+        <Label text="The match is ended with:"/>
+        <Label fx:id="winnerOfMatch" style="-fx-font-weight: bold"/>
+    </VBox>
+
+<!--TODO find a method to have a "class" for the same style properties-->
+
+    <VBox GridPane.rowIndex="1" GridPane.columnIndex="0">
+        <Label text="GAME ENDED" alignment="CENTER"
+               GridPane.columnSpan="3" GridPane.halignment="CENTER"
+               style="-fx-font-size: 20; -fx-font-weight: bold"/>
+        <Label text="This game is ended with:"/>
+        <Label fx:id="winnerOfGame" style="-fx-font-weight: bold"/>
+    </VBox>
+
+
+
+    <VBox GridPane.rowIndex="3" GridPane.columnIndex="0">
+        <Label text="Match current score:" style="-fx-font-weight: bold"/>
+        <Label fx:id="scoreOfMatch"/>
+    </VBox>
 
     <HBox fx:id="buttonHBox"
           GridPane.rowIndex="4" GridPane.columnIndex="1">
