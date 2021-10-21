@@ -21,6 +21,7 @@ public class SceneController {
     private static SceneController singleInstance;
     private final Map<ViewName, Supplier<Scene>> scenes;
     private final Stage stage;
+    private static Boolean javaFxRunning = null;
 
     @SafeVarargs
     private SceneController(@NotNull final Stage stage, @NotNull final String firstStageTitle,
@@ -96,6 +97,18 @@ public class SceneController {
 
     private void passToNewScene_(@NotNull final SceneController.ViewName viewEnum) {
         Platform.runLater(() -> stage.setScene(scenes.get(Objects.requireNonNull(viewEnum)).get()));
+    }
+
+    public static boolean isJavaFxRunning() {
+        if (javaFxRunning == null) {
+            try {
+                Platform.runLater(() -> {});
+                javaFxRunning = true;
+            } catch (Exception ignored) {
+                javaFxRunning = false;
+            }
+        }
+        return javaFxRunning;
     }
 
     public enum ViewName {
