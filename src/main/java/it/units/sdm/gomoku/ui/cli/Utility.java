@@ -6,4 +6,8 @@ public class Utility {
         return insertedByTheUser=='Y';
     }
 
+    public static boolean isValidCharInserted(char insertedByTheUser, char validChar) {
+        return insertedByTheUser==validChar;
+    }
+
 }

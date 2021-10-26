@@ -10,4 +10,12 @@ class UtilityTest {
     void isY() {
         assertTrue(Utility.isY('Y'));
     }
+
+    @Test
+    void isValidCharInserted() {
+        char insertedInput = 'Y';
+        char validInput = 'Y';
+        assertEquals(insertedInput==validInput,
+                Utility.isValidCharInserted(insertedInput,validInput));
+    }
 }
