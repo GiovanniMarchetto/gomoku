@@ -63,7 +63,7 @@ public class CommanderButton extends AbstractCommanderGUIItemWrapper<Button> {
             View containerView,
             Viewmodel vm,
             String propertyNameOfTheEventToFireWhenClicked,
-            Supplier<T> observedObjectOnClickSupplier,
+            Supplier<T> observedObjectOnClickSupplierToGetTheNewValue,
             ActionOnObservedPropertyChange... actionsOnObserveds) {
 
         this(textOfButton, containerView, vm, actionsOnObserveds);
@@ -71,7 +71,7 @@ public class CommanderButton extends AbstractCommanderGUIItemWrapper<Button> {
         // Notify Viewmodel when the button is clicked
         addActionOnEvent(
                 MouseEvent.MOUSE_RELEASED,
-                e -> makeTheViewToFirePropertyChange(propertyNameOfTheEventToFireWhenClicked, null, observedObjectOnClickSupplier.get())
+                e -> makeTheViewToFirePropertyChange(propertyNameOfTheEventToFireWhenClicked, null, observedObjectOnClickSupplierToGetTheNewValue.get())
         );
     }
 
