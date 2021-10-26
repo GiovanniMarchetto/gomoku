@@ -41,6 +41,12 @@ public class Board implements Observable {
         this(new PositiveInteger(size));
     }
 
+    public Board(@NotNull Board board) {
+        this.size = new PositiveInteger(board.size);
+        this.matrix = board.getBoardMatrixCopy();
+        this.numberOfFilledPositionOnTheBoard = new NonNegativeInteger(board.numberOfFilledPositionOnTheBoard);
+    }
+
     public static boolean checkNConsecutiveStonesNaive(Board board, Coordinates coordinates, PositiveInteger numberOfConsecutiveStoneForWinning) {
 
         int[] factorsCols = new int[]{0, 1, 0, -1};
@@ -203,13 +209,17 @@ public class Board implements Observable {
         return s.toString();
     }
 
+    public Board clone() {
+        return new Board(this);
+    }
+
     @NotNull
     private List<Stone> fwdDiagonalToList(@NotNull final Coordinates coords) {
         // TODO : very similar to bckDiagonalToList (refactoring?)
         int S = getSize();
         int diagN = Objects.requireNonNull(coords).getX() + coords.getY();
-        int x = diagN < S ? diagN : S - 1;
-        int y = diagN < S ? 0 : diagN - (S - 1);
+        int x = Math.min(diagN, S - 1);
+        int y = Math.max(diagN - (S - 1), 0);
         ArrayList<Stone> arr = new ArrayList<>();
         while (y < S && x >= 0) {
             arr.add(matrix[x][y]);
