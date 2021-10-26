@@ -50,9 +50,9 @@ public class SummaryView extends View {
 
         this.scoreOfMatch.setText(vm.getScoreOfMatch().toString()
                 .replace(", ", "\n\t")
-                .replace("{","\t")
-                .replace("}","")
-                .replace("="," = "));
+                .replace("{", "\t")
+                .replace("}", "")
+                .replace("=", " = "));
 
         if (!vm.isMatchEnded()) {
             CommanderButton continueButton = getContinueCommanderButton();

@@ -1,9 +1,9 @@
 package it.units.sdm.gomoku.model.entities;
 
-import it.units.sdm.gomoku.mvvm_library.Observable;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveOddInteger;
+import it.units.sdm.gomoku.mvvm_library.Observable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -121,13 +121,13 @@ public class Game implements Comparable<Game>, Observable {
                 board;
     }
 
+    public ZonedDateTime getStart() {
+        return start.atZone(ZoneId.systemDefault());
+    }
+
     public static class GameNotEndedException extends Exception {
         public GameNotEndedException() {
             super("The game is not over.");
         }
-    }
-
-    public ZonedDateTime getStart() {
-        return start.atZone(ZoneId.systemDefault());
     }
 }

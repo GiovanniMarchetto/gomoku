@@ -19,9 +19,9 @@ import java.util.stream.Collectors;
 public class SceneController {
 
     private static SceneController singleInstance;
+    private static Boolean javaFxRunning = null;
     private final Map<ViewName, Supplier<Scene>> scenes;
     private final Stage stage;
-    private static Boolean javaFxRunning = null;
     private double sceneWidth = 0;
     private double sceneHeight = 0;
 
@@ -101,14 +101,11 @@ public class SceneController {
         getInstance().passToNewScene_(Objects.requireNonNull(viewEnum));
     }
 
-    private void passToNewScene_(@NotNull final SceneController.ViewName viewEnum) {
-        executeOnJavaFxUiThread(() -> stage.setScene(scenes.get(Objects.requireNonNull(viewEnum)).get()));
-    }
-
     public static boolean isJavaFxRunning() {
         if (javaFxRunning == null) {
             try {
-                Platform.runLater(() -> {});
+                Platform.runLater(() -> {
+                });
                 javaFxRunning = true;
             } catch (Exception ignored) {
                 javaFxRunning = false;
@@ -127,6 +124,10 @@ public class SceneController {
         } else {
             throw new IllegalCallerException("Cannot invoke this method from a non-JavaFX application! (JavaFX is not running)");
         }
+    }
+
+    private void passToNewScene_(@NotNull final SceneController.ViewName viewEnum) {
+        executeOnJavaFxUiThread(() -> stage.setScene(scenes.get(Objects.requireNonNull(viewEnum)).get()));
     }
 
     public enum ViewName {

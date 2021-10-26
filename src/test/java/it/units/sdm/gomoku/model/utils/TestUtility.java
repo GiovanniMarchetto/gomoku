@@ -7,21 +7,14 @@ import it.units.sdm.gomoku.model.entities.Board;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInfo;
-import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.CsvFileSource;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Function;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -29,8 +22,7 @@ import java.util.stream.Stream;
 import static it.units.sdm.gomoku.model.utils.IOUtility.CSV_NEW_LINE;
 import static it.units.sdm.gomoku.model.utils.IOUtility.CSV_SEPARATOR;
 import static it.units.sdm.gomoku.model.utils.Predicates.isNonEmptyString;
-import static it.units.sdm.gomoku.model.utils.TestUtility.createNxNRandomBoardToStringInCSVFormat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class TestUtility {
 

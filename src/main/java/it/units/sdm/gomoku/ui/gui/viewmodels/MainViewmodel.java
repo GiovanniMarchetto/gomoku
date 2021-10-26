@@ -129,15 +129,15 @@ public class MainViewmodel extends Viewmodel {
         return match.isEnded();
     }
 
-    public Map<Player, NonNegativeInteger> getScoreOfMatch(){
+    public Map<Player, NonNegativeInteger> getScoreOfMatch() {
         return match.getScore();
     }
 
-    public Player getCurrentBlackPlayer(){
+    public Player getCurrentBlackPlayer() {
         return match.getCurrentBlackPlayer();
     }
 
-    public Player getCurrentWhitePlayer(){
+    public Player getCurrentWhitePlayer() {
         return match.getCurrentWhitePlayer();
     }
 
@@ -151,7 +151,7 @@ public class MainViewmodel extends Viewmodel {
         return currentGame.getWinner();
     }
 
-    public ZonedDateTime getGameStartTime(){
+    public ZonedDateTime getGameStartTime() {
         return currentGame.getStart();
     }
 }

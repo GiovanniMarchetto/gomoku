@@ -36,9 +36,9 @@ class GameTest {
                         playerFoundInBoard = cpuWhite;
                     }
                     try {
-                        Method placeStoneMethod = voidGame.getClass().getDeclaredMethod("placeStone",Player.class,Coordinates.class);
+                        Method placeStoneMethod = voidGame.getClass().getDeclaredMethod("placeStone", Player.class, Coordinates.class);
                         placeStoneMethod.setAccessible(true);
-                        placeStoneMethod.invoke(voidGame,playerFoundInBoard,new Coordinates(x, y));
+                        placeStoneMethod.invoke(voidGame, playerFoundInBoard, new Coordinates(x, y));
                     } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
                         e.printStackTrace();
                     }

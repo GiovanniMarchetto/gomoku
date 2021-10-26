@@ -131,9 +131,9 @@ class MatchTest {
 
     private void cpuPlaceStoneNextEmptyCoordinates(CPUPlayer cpuPlayer) {
         try {
-            Method placeStoneMethod = currentGame.getClass().getDeclaredMethod("placeStone",Player.class, Coordinates.class);
+            Method placeStoneMethod = currentGame.getClass().getDeclaredMethod("placeStone", Player.class, Coordinates.class);
             placeStoneMethod.setAccessible(true);
-            placeStoneMethod.invoke(currentGame,cpuPlayer, cpu1.chooseNextEmptyCoordinates(currentGame.getBoard()));
+            placeStoneMethod.invoke(currentGame, cpuPlayer, cpu1.chooseNextEmptyCoordinates(currentGame.getBoard()));
         } catch (Board.NoMoreEmptyPositionAvailableException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
             e.printStackTrace();
         }
