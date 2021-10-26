@@ -27,4 +27,15 @@ class UtilityTest {
             e.printStackTrace();
         }
     }
+
+    @ParameterizedTest
+    @CsvSource({"true, a, a", "false, a, b", "true, a,A"})
+    void isValidCharInsertedFromStdIn(boolean expected, char insertedInput, char validInput) {
+        try (ByteArrayInputStream fakeStdIn = new ByteArrayInputStream(new byte[]{(byte) insertedInput})) {
+            System.setIn(fakeStdIn);
+            assertEquals(expected, Utility.isValidCharInsertedFromStdIn(validInput));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
