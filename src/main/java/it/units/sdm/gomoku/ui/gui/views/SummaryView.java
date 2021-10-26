@@ -86,7 +86,7 @@ public class SummaryView extends View {
                 this,
                 getViewmodelAssociatedWithView(),
                 continueAfterSummaryPropertyName,
-                () -> null);
+                () -> true);
     }
 
     private CommanderButton getNewMatchCommanderButton() {
@@ -95,7 +95,7 @@ public class SummaryView extends View {
                 this,
                 getViewmodelAssociatedWithView(),
                 newMatchAfterSummaryPropertyName,
-                () -> null);
+                () -> true);
     }
 
     private CommanderButton getExtraGameCommanderButton() {
@@ -104,6 +104,6 @@ public class SummaryView extends View {
                 this,
                 getViewmodelAssociatedWithView(),
                 extraGameAfterSummaryPropertyName,
-                () -> null);
+                () -> true);
     }
 }
