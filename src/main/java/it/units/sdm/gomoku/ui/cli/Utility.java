@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class Utility {
 
-    public static boolean isValidCharInsertedFromStdIn(char validChar) {
+    public static boolean isValidCharInsertedFromStdInCaseInsensitive(char validChar) {
         try (Scanner userInput = new Scanner(System.in)) {
             try {
                 char inserted = userInput.nextLine().toLowerCase().charAt(0);

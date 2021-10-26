@@ -15,7 +15,7 @@ class UtilityTest {
     void isValidCharInsertedFromStdIn(boolean expected, char insertedInput, char validInput) {
         try (ByteArrayInputStream fakeStdIn = new ByteArrayInputStream(new byte[]{(byte) insertedInput})) {
             System.setIn(fakeStdIn);
-            assertEquals(expected, Utility.isValidCharInsertedFromStdIn(validInput));
+            assertEquals(expected, Utility.isValidCharInsertedFromStdInCaseInsensitive(validInput));
         } catch (IOException e) {
             e.printStackTrace();
         }
