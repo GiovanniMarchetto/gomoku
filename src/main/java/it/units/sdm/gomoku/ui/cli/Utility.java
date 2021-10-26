@@ -10,4 +10,8 @@ public class Utility {
         return insertedByTheUser==validChar;
     }
 
+    public static boolean isValidCharInsertedCaseInsensitive(char insertedByTheUser, char validChar) {
+        return isValidCharInserted(Character.toLowerCase(insertedByTheUser),Character.toLowerCase(validChar));
+    }
+
 }

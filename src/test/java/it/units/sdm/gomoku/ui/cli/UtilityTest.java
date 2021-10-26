@@ -14,8 +14,14 @@ class UtilityTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"true, a, a", "false, a, b", "false, a,C"})
+    @CsvSource({"true, a, a", "false, a, b", "false, a,A"})
     void isValidCharInserted(boolean expected, char insertedInput, char validInput) {
         assertEquals(expected, Utility.isValidCharInserted(insertedInput,validInput));
+    }
+
+    @ParameterizedTest
+    @CsvSource({"true, a, a", "false, a, b", "true, a,A"})
+    void isValidCharInsertedCaseInsensitive(boolean expected, char insertedInput, char validInput) {
+        assertEquals(expected, Utility.isValidCharInsertedCaseInsensitive(insertedInput,validInput));
     }
 }
