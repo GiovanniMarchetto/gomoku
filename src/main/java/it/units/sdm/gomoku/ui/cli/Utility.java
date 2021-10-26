@@ -4,19 +4,19 @@ import java.util.Scanner;
 
 public class Utility {
 
-    public static boolean isValidCharInsertedFromStdInCaseInsensitive(char...validChars) {
+    public static char getLowercaseCharIfValidLowerCaseOr0(char... validChars) {
         try (Scanner userInput = new Scanner(System.in)) {
             //noinspection CatchMayIgnoreException
             try {
                 char inserted = userInput.nextLine().toLowerCase().charAt(0);
-                for(char validChar : validChars) {
-                    if(Character.toLowerCase(inserted) == Character.toLowerCase(validChar)) {
-                        return true;
+                for (char validChar : validChars) {
+                    if (Character.toLowerCase(inserted) == Character.toLowerCase(validChar)) {
+                        return Character.toLowerCase(validChar);
                     }
                 }
             } catch (Exception invalidInputException) {
             }
-            return false;
+            return 0;
         }
     }
 

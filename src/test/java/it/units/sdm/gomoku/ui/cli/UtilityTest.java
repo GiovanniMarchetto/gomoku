@@ -11,8 +11,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class UtilityTest {
 
     @ParameterizedTest
-    @CsvSource({"true, a, a", "false, a, b", "true, a, A", "true, a, b#a#c","true, a, b#A#c", "false, a, b#d#c"})
-    void isValidCharInsertedFromStdIn(boolean expected, char insertedInput, String validInputs) {
+    @CsvSource({"a, a, a", "_, a, b", "a, a, A", "a, a, b#a#c","a, a, b#A#c", "_, a, b#d#c"})
+    void getLowercaseCharIfValidLowerCaseOr0(char expected, char insertedInput, String validInputs) {
+        if(expected=='_') {
+            expected = 0;
+        }
         String[] validInputStringArray = validInputs.split("#");
         char[] validInputCharArray = new char[validInputStringArray.length];
         for (int i = 0; i < validInputStringArray.length; i++) {
@@ -21,7 +24,7 @@ class UtilityTest {
 
         try (ByteArrayInputStream fakeStdIn = new ByteArrayInputStream(new byte[]{(byte) insertedInput})) {
             System.setIn(fakeStdIn);
-            assertEquals(expected, Utility.isValidCharInsertedFromStdInCaseInsensitive(validInputCharArray));
+            assertEquals(expected, Utility.getLowercaseCharIfValidLowerCaseOr0(validInputCharArray));
         } catch (IOException e) {
             e.printStackTrace();
         }
