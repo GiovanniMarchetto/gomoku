@@ -26,7 +26,7 @@ public class Utility {
         boolean validInputInserted = false;
         do {
             try {
-                if (fromUser.hasNext()) {
+                if (fromUser.hasNextLine()) {
                     aInt = Integer.parseInt(fromUser.nextLine().trim());
                     validInputInserted = true;
                 } else {
@@ -38,6 +38,7 @@ public class Utility {
                 return 0;
             } catch (Exception e) {
                 System.err.print("Integer value expected. Try again: ");
+                System.err.flush();
             }
         } while (!validInputInserted);
         return aInt;

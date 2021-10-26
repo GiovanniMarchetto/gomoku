@@ -33,7 +33,7 @@ class UtilityTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"1,1", "2,2", "4, dfs fds 3# 4"})
+    @CsvSource({"1,1", "2,2", "4, dfs fds 3# 4", "5,### # 5"})
     void getAIntFromStdIn(int expected, String inserted) {
         inserted = inserted.replaceAll("#", System.lineSeparator());
         try (ByteArrayInputStream fakeStdIn = new ByteArrayInputStream(inserted.getBytes())) {
