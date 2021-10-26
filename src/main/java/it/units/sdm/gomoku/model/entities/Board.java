@@ -128,11 +128,11 @@ public class Board implements Observable {
         return x < size.intValue() && y < size.intValue();
     }
 
-    public boolean isAnyEmptyPositionOnTheBoard() {
-        return numberOfFilledPositionOnTheBoard.intValue() < size.intValue() * size.intValue();
+    public synchronized boolean isAnyEmptyPositionOnTheBoard() {
+        return numberOfFilledPositionOnTheBoard.intValue() < Math.pow(size.intValue(),2);
     }
 
-    public void occupyPosition(@NotNull Board.Stone stone, @NotNull Coordinates coordinates)
+    public synchronized void occupyPosition(@NotNull Board.Stone stone, @NotNull Coordinates coordinates)
             throws NoMoreEmptyPositionAvailableException, PositionAlreadyOccupiedException {
         if (isAnyEmptyPositionOnTheBoard()) {
             if (isCoordinatesEmpty(Objects.requireNonNull(coordinates))) {
@@ -289,7 +289,7 @@ public class Board implements Observable {
         }
     }
 
-    public class ChangedCell {
+    public static class ChangedCell {
         private final Coordinates coordinates;
         private final Stone newStone;
         private final Stone oldStone;
