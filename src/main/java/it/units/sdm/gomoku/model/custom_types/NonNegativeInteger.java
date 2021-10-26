@@ -19,6 +19,10 @@ public class NonNegativeInteger extends Number implements Comparable<Number> {
         }
     }
 
+    public NonNegativeInteger(NonNegativeInteger nonNegativeInteger){
+        this(nonNegativeInteger.intValue());
+    }
+
     public NonNegativeInteger() {
         this(0);
     }
