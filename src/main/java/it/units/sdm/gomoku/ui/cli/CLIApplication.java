@@ -29,6 +29,24 @@ class CLIApplication {
         this.cliViewmodel = ((CLIMainViewModel) cliView.getViewmodelAssociatedWithView());
     }
 
+    public static void launch() {
+        boolean newMatch;
+        do {
+            try {
+                new CLIApplication().disputeMatch();
+            } catch (IOException e) {
+                Logger.getLogger(CLIApplication.class.getCanonicalName())
+                        .log(Level.SEVERE, "Unable to setup CLI application", e);
+            }
+            System.out.print("Another match? Y/N: ");
+            newMatch = Utility.getLowercaseCharIfValidCaseInsensitiveOr0('y', 'n') == 'y';
+        } while (newMatch);
+    }
+    //
+//    private static boolean newMatch(@NotNull final View mainCLIView) {
+//
+//    }
+
     private void disputeMatch() {   // TODO : move to CLIMainViewModel
         while (!cliViewmodel.isMatchEnded()) {
             System.out.println("\n\nNew game!");
@@ -46,24 +64,6 @@ class CLIApplication {
             // TODO : i) summary of game/match not printed, ii) draw not handled, iii) "another match?" not handled
 
         }
-    }
-    //
-//    private static boolean newMatch(@NotNull final View mainCLIView) {
-//
-//    }
-
-    public static void launch() {
-        boolean newMatch;
-        do {
-            try {
-                new CLIApplication().disputeMatch();
-            } catch (IOException e) {
-                Logger.getLogger(CLIApplication.class.getCanonicalName())
-                        .log(Level.SEVERE, "Unable to setup CLI application", e);
-            }
-            System.out.print("Another match? Y/N: ");
-            newMatch = Utility.getLowercaseCharIfValidCaseInsensitiveOr0('y', 'n') == 'y';
-        } while (newMatch);
     }
 }
 

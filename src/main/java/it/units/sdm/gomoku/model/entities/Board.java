@@ -129,7 +129,7 @@ public class Board implements Observable {
     }
 
     public synchronized boolean isAnyEmptyPositionOnTheBoard() {
-        return numberOfFilledPositionOnTheBoard.intValue() < Math.pow(size.intValue(),2);
+        return numberOfFilledPositionOnTheBoard.intValue() < Math.pow(size.intValue(), 2);
     }
 
     public synchronized void occupyPosition(@NotNull Board.Stone stone, @NotNull Coordinates coordinates)

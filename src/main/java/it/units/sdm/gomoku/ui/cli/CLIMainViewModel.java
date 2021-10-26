@@ -36,7 +36,7 @@ public class CLIMainViewModel extends AbstractMainViewmodel {
     }
 
     public void waitForAValidMoveOfAPlayerAndPlaceStone() {        // TODO : not tested and may need refactor (long method)
-        if( getCurrentPlayer() instanceof CPUPlayer) {
+        if (getCurrentPlayer() instanceof CPUPlayer) {
             try {
                 placeStone(null);   // TODO : is this the best way to handle CPUPlayer?
             } catch (Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
@@ -72,7 +72,7 @@ public class CLIMainViewModel extends AbstractMainViewmodel {
                     System.err.println();
                     System.err.flush();
                 }
-            } while(!validMove);
+            } while (!validMove);
         }
     }
 }
