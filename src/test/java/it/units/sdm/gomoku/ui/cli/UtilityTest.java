@@ -1,12 +1,10 @@
 package it.units.sdm.gomoku.ui.cli;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.Scanner;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -14,9 +12,9 @@ import static org.junit.jupiter.api.Assertions.fail;
 class UtilityTest {
 
     @ParameterizedTest
-    @CsvSource({"a, a, a", "_, a, b", "a, a, A", "a, a, b#a#c","a, a, b#A#c", "_, a, b#d#c"})
+    @CsvSource({"a, a, a", "_, a, b", "a, a, A", "a, a, b#a#c", "a, a, b#A#c", "_, a, b#d#c"})
     void getLowercaseCharIfValidLowerCaseOr0(char expected, char insertedInput, String validInputs) {
-        if(expected=='_') {
+        if (expected == '_') {
             expected = 0;
         }
         String[] validInputStringArray = validInputs.split("#");
@@ -28,6 +26,19 @@ class UtilityTest {
         try (ByteArrayInputStream fakeStdIn = new ByteArrayInputStream(new byte[]{(byte) insertedInput})) {
             System.setIn(fakeStdIn);
             assertEquals(expected, Utility.getLowercaseCharIfValidCaseInsensitiveOr0(validInputCharArray));
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail();
+        }
+    }
+
+    @ParameterizedTest
+    @CsvSource({"1,1", "2,2", "4, dfs fds 3# 4"})
+    void getAIntFromStdIn(int expected, String inserted) {
+        inserted = inserted.replaceAll("#", System.lineSeparator());
+        try (ByteArrayInputStream fakeStdIn = new ByteArrayInputStream(inserted.getBytes())) {
+            System.setIn(fakeStdIn);
+            assertEquals(expected, Utility.getAIntFromStdIn());
         } catch (IOException e) {
             e.printStackTrace();
             fail();
