@@ -86,7 +86,7 @@ public class Game implements Comparable<Game>, Observable {
     }
 
     private boolean hasThePlayerWonThisGame(@NotNull final Coordinates lastMove) {
-        return Board.checkNConsecutiveStonesNaive(board, lastMove, NUMBER_OF_CONSECUTIVE_STONE_FOR_WINNING);
+        return board.checkNConsecutiveStones(lastMove, NUMBER_OF_CONSECUTIVE_STONE_FOR_WINNING);
     }
 
     @Nullable
