@@ -102,7 +102,7 @@ public class Game implements Comparable<Game>, Observable {
         this.winner = Objects.requireNonNull(winner);
     }
 
-    public boolean isThisGameEnded() {
+    public synchronized boolean isThisGameEnded() {
         return winner != null || !board.isAnyEmptyPositionOnTheBoard();
         // if there are empty positions on the board it can't be a draw
     }
