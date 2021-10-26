@@ -1,12 +1,15 @@
 package it.units.sdm.gomoku.ui.cli;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Scanner;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class UtilityTest {
 
@@ -27,6 +30,8 @@ class UtilityTest {
             assertEquals(expected, Utility.getLowercaseCharIfValidCaseInsensitiveOr0(validInputCharArray));
         } catch (IOException e) {
             e.printStackTrace();
+            fail();
         }
     }
+
 }
