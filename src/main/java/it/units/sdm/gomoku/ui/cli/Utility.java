@@ -5,19 +5,16 @@ import java.util.Scanner;
 public class Utility {
 
     public static char getLowercaseCharIfValidLowerCaseOr0(char... validChars) {
+        //noinspection CatchMayIgnoreException
         try (Scanner userInput = new Scanner(System.in)) {
-            //noinspection CatchMayIgnoreException
-            try {
-                char inserted = userInput.nextLine().toLowerCase().charAt(0);
-                for (char validChar : validChars) {
-                    if (Character.toLowerCase(inserted) == Character.toLowerCase(validChar)) {
-                        return Character.toLowerCase(validChar);
-                    }
+            char inserted = userInput.nextLine().toLowerCase().charAt(0);
+            for (char validChar : validChars) {
+                if (Character.toLowerCase(inserted) == Character.toLowerCase(validChar)) {
+                    return Character.toLowerCase(validChar);
                 }
-            } catch (Exception invalidInputException) {
             }
-            return 0;
+        } catch (Exception invalidInputException) {
         }
+        return 0;
     }
-
 }
