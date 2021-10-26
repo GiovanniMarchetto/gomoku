@@ -3,8 +3,7 @@ package it.units.sdm.gomoku.ui.cli;
 import java.util.Scanner;
 
 public class Utility {
-
-    public static char getLowercaseCharIfValidLowerCaseOr0(char... validChars) {
+    public static char getLowercaseCharIfValidCaseInsensitiveOr0(char... validChars) {
         //noinspection CatchMayIgnoreException
         try (Scanner userInput = new Scanner(System.in)) {
             char inserted = userInput.nextLine().toLowerCase().charAt(0);

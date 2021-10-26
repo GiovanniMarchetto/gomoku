@@ -24,7 +24,7 @@ class UtilityTest {
 
         try (ByteArrayInputStream fakeStdIn = new ByteArrayInputStream(new byte[]{(byte) insertedInput})) {
             System.setIn(fakeStdIn);
-            assertEquals(expected, Utility.getLowercaseCharIfValidLowerCaseOr0(validInputCharArray));
+            assertEquals(expected, Utility.getLowercaseCharIfValidCaseInsensitiveOr0(validInputCharArray));
         } catch (IOException e) {
             e.printStackTrace();
         }
