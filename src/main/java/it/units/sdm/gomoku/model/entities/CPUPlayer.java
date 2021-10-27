@@ -6,6 +6,7 @@ import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -35,12 +36,12 @@ public class CPUPlayer extends Player {
         }
 
         Stone[] stoneColors = new Stone[]{Stone.WHITE, Stone.BLACK};
-        List<Coordinates> coordinatesList;
+        Optional<Coordinates> optionalCoordinates;
         for (int i = 5; i > 2; i--) {
             for (Stone stoneColor : stoneColors) {
-                coordinatesList = findCoordinates(board, stoneColor, i);
-                if (coordinatesList.size() != 0) {
-                    return coordinatesList.get(0);
+                optionalCoordinates = findCoordinates(board, stoneColor, i);
+                if (optionalCoordinates.isPresent()) {
+                    return optionalCoordinates.get();
                 }
             }
         }
@@ -49,14 +50,13 @@ public class CPUPlayer extends Player {
 
     }
 
-    private List<Coordinates> findCoordinates(@NotNull Board board, Stone stoneColor, int i) {
+    private Optional<Coordinates> findCoordinates(@NotNull Board board, Stone stoneColor, int i) {
         return IntStream.range(0, board.getSize()).boxed()
                 .flatMap(x -> IntStream.range(0, board.getSize())
                         .mapToObj(y -> new Coordinates(x, y)))
                 .filter(c -> board.getStoneAtCoordinates(c).isNone())
                 .filter(c -> isHeadOfAChainOfStones(board, c, stoneColor, new PositiveInteger(i)))
-                .limit(1)
-                .collect(Collectors.toList());
+                .findAny();
     }
 
 
