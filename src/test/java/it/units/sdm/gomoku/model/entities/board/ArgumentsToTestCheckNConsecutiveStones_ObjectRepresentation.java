@@ -113,7 +113,7 @@ public class ArgumentsToTestCheckNConsecutiveStones_ObjectRepresentation {
     @NotNull
     public String toJson() {
         StringBuilder sb = new StringBuilder();
-        sb.append("{\n\t");
+        sb.append("\t{\n\t");
 
         sb.append("\t\"matrix\": [\n\t\t\t");
         if (matrix != null) {
