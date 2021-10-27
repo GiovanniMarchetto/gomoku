@@ -5,9 +5,12 @@ import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import static it.units.sdm.gomoku.model.entities.Board.*;
 
 public class CPUPlayer extends Player {
 
@@ -22,110 +25,137 @@ public class CPUPlayer extends Player {
     public CPUPlayer() {
         super(CPU_DEFAULT_NAME + numberOfCpuPlayers.incrementAndGet());
     }
+//
+//    private static boolean isHeadOfAChainOfStones(Board board, Coordinates coordinates,
+//                                                  Board.Stone stoneColor,
+//                                                  int factorX, int factorY,
+//                                                  NonNegativeInteger numberOfConsecutive) {
+//        for (int i = 1; i < numberOfConsecutive.intValue(); i++) {
+//            int x = coordinates.getX() + i * factorX;
+//            int y = coordinates.getY() + i * factorY;
+//            if (x >= 0 && y >= 0) {
+//                Coordinates currentCoordinates = new Coordinates(x, y);
+//                if (!board.isCoordinatesInsideBoard(currentCoordinates) ||
+//                        stoneColor != board.getStoneAtCoordinates(currentCoordinates)) {
+//                    return false;
+//                }
+//            } else {
+//                return false;
+//            }
+//        }
+//        return true;
+//    }
+//
+//
+//    private boolean findCorrectCoordinates(@NotNull Board board, AtomicReference<Coordinates> finalC, int i2) {
+//        Board.Stone[] stoneColors = new Board.Stone[]{Board.Stone.WHITE, Board.Stone.BLACK};
+//        int[] factorXs = {0, 0, 1, -1, 1, -1, 1, -1};
+//        int[] factorYs = {1, -1, 0, 0, 1, -1, -1, 1};
+//
+//
+//        for (Board.Stone stoneColor : stoneColors) {
+//            IntStream.range(0, factorXs.length).forEach(i -> {
+//                List<Coordinates> coordinatesList =
+//                        IntStream.range(0, board.getSize()).boxed()
+//                                .flatMap(x -> IntStream.range(0, board.getSize())
+//                                        .mapToObj(y -> new Coordinates(x, y)))
+//                                .filter(c -> board.getStoneAtCoordinates(c).isNone())
+//                                .filter(c -> isHeadOfAChainOfStones(board, c, stoneColor, factorXs[i], factorYs[i], new NonNegativeInteger(i2)))
+//                                .limit(1)
+//                                .collect(Collectors.toList());
+//                if (coordinatesList.size() != 0) {
+//                    finalC.set(coordinatesList.get(0));
+//                }
+//            });
+//            if (finalC.get() != null) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 
-    private static boolean isHeadOfAChainOfStones(Board board, Coordinates coordinates,
-                                                  Board.Stone stoneColor,
-                                                  int factorX, int factorY,
-                                                  NonNegativeInteger numberOfConsecutive) {
-        for (int i = 1; i < numberOfConsecutive.intValue(); i++) {
-            int x = coordinates.getX() + i * factorX;
-            int y = coordinates.getY() + i * factorY;
-            if (x >= 0 && y >= 0) {
-                Coordinates currentCoordinates = new Coordinates(x, y);
-                if (!board.isCoordinatesInsideBoard(currentCoordinates) ||
-                        stoneColor != board.getStoneAtCoordinates(currentCoordinates)) {
-                    return false;
-                }
-            } else {
-                return false;
-            }
-        }
-        return true;
-    }
-
-
-    private void findCorrectCoordinates(@NotNull Board board, AtomicReference<Coordinates> finalC, int i2) {
-        Board.Stone[] stoneColors = new Board.Stone[]{Board.Stone.WHITE, Board.Stone.BLACK};
-        int[] factorXs = {0, 0, 1, -1, 1, -1, 1, -1};
-        int[] factorYs = {1, -1, 0, 0, 1, -1, -1, 1};
-
-        for (Board.Stone stoneColor : stoneColors) {
-            IntStream.range(0, board.getSize()).forEach(x ->
-                    IntStream.range(0, board.getSize()).forEach(y -> {
-                                Coordinates coordinates = new Coordinates(x, y);
-                                if (board.getStoneAtCoordinates(coordinates).isNone()) {
-
-                                    IntStream.range(0, factorXs.length).forEach(i -> {
-                                        if (isHeadOfAChainOfStones(board, coordinates, stoneColor,
-                                                factorXs[i], factorYs[i],
-                                                new NonNegativeInteger(i2))) {
-                                            finalC.set(new Coordinates(x, y));
-                                        }
-                                    });
-
-                                }
-                            }
-                    )
-            );
-        }
-    }
+//    @NotNull
+//    public Coordinates chooseEmptyCoordinates(@NotNull Board board) throws Board.NoMoreEmptyPositionAvailableException {
+//
+//
+//        if (board.isEmpty()) {
+//            return chooseNextEmptyCoordinatesFromCenter(board);
+//        }
+//
+//        AtomicReference<Coordinates> finalC = new AtomicReference<>();
+//
+//        if (findCorrectCoordinates(board, finalC, 5)) {
+//            return finalC.get();
+//        }
+//
+//        if (findCorrectCoordinates(board, finalC, 4)) {
+//            return finalC.get();
+//        }
+//
+//        if (findCorrectCoordinates(board, finalC, 3)) {
+//            return finalC.get();
+//        }
+//
+//        return chooseNextEmptyCoordinatesFromCenter(board);
+//    }
 
     @NotNull
-    public Coordinates chooseEmptyCoordinates(@NotNull Board board) throws Board.NoMoreEmptyPositionAvailableException {
+    public Coordinates chooseEmptyCoordinates(@NotNull Board board) throws NoMoreEmptyPositionAvailableException {
 
         if (board.isEmpty()) {
             return chooseNextEmptyCoordinatesFromCenter(board);
         }
 
-        AtomicReference<Coordinates> finalC = new AtomicReference<>();
-
-        findCorrectCoordinates(board, finalC, 5);
-        if (finalC.get()!=null){
-            return finalC.get();
+        Stone[] stoneColors = new Stone[]{Stone.WHITE, Stone.BLACK};
+        List<Coordinates> coordinatesList;
+        for (int i = 5; i > 2; i--) {
+            for (Stone stoneColor : stoneColors) {
+                coordinatesList = findCoordinates(board, stoneColor,i);
+                if (coordinatesList.size()!=0){
+                    return coordinatesList.get(0);
+                }
+            }
         }
-
-        findCorrectCoordinates(board, finalC, 4);
-
-        if (finalC.get()!=null){
-            return finalC.get();
-        }
-
-//        for (int x = 0; x < board.getSize(); x++) {
-//            for (int y = 0; y < board.getSize(); y++) {
-//                Coordinates coordinates = new Coordinates(x, y);
-//                if (board.getStoneAtCoordinates(coordinates).isNone()) {
-//                    for (Board.Stone stoneColor : stoneColors) {
-//                        for (int i = 0; i < factorXs.length; i++) {
-//                            if (isHeadOfAChainOfStones(board, coordinates, stoneColor,
-//                                    factorXs[i], factorYs[i],
-//                                    new NonNegativeInteger(4))) {
-//                                return new Coordinates(x, y);
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
 
         return chooseNextEmptyCoordinatesFromCenter(board);
+
+    }
+
+    private List<Coordinates> findCoordinates(@NotNull Board board, Stone stoneColor,int i) {
+        return IntStream.range(0, board.getSize()).boxed()
+                .flatMap(x -> IntStream.range(0, board.getSize())
+                        .mapToObj(y -> new Coordinates(x, y)))
+                .filter(c -> board.getStoneAtCoordinates(c).isNone())
+                .filter(c -> {
+                    try {
+                        Board boardCopy = board.clone();
+                        boardCopy.occupyPosition(stoneColor, c);
+                        return Board.checkNConsecutiveStonesNaive(boardCopy,c,new PositiveInteger(i));
+                    } catch (NoMoreEmptyPositionAvailableException | PositionAlreadyOccupiedException e) {
+                        e.printStackTrace();
+                    }
+                    return false;
+                })
+                .limit(1)
+                .collect(Collectors.toList());
     }
 
 
     @NotNull
-    public Coordinates chooseNextEmptyCoordinates(@NotNull Board board) throws Board.NoMoreEmptyPositionAvailableException {
+    public Coordinates chooseNextEmptyCoordinates(@NotNull Board board) throws NoMoreEmptyPositionAvailableException {
         if (board.isAnyEmptyPositionOnTheBoard()) {
             for (int i = 0; i < board.getSize(); i++) {
                 for (int j = 0; j < board.getSize(); j++) {
                     var coords = new Coordinates(i, j);
-                    if (board.getStoneAtCoordinates(coords) == Board.Stone.NONE) return coords;
+                    if (board.getStoneAtCoordinates(coords) == Stone.NONE) return coords;
                 }
             }
         }
-        throw new Board.NoMoreEmptyPositionAvailableException();
+        throw new NoMoreEmptyPositionAvailableException();
     }
 
     @NotNull
-    public Coordinates chooseNextEmptyCoordinatesFromCenter(@NotNull Board board) throws Board.NoMoreEmptyPositionAvailableException {
+    public Coordinates chooseNextEmptyCoordinatesFromCenter(@NotNull Board board) throws NoMoreEmptyPositionAvailableException {
         int s = board.getSize();
         int n = (int) Math.ceil(s / 2.0) - 1;
         if (board.isAnyEmptyPositionOnTheBoard()) {
@@ -133,16 +163,16 @@ public class CPUPlayer extends Player {
                 for (int x = i; x < s - i; x++) {
                     for (int y = i; y < s - i; y++) {
                         var coords = new Coordinates(x, y);
-                        if (board.getStoneAtCoordinates(coords) == Board.Stone.NONE) return coords;
+                        if (board.getStoneAtCoordinates(coords) == Stone.NONE) return coords;
                     }
                 }
             }
         }
-        throw new Board.NoMoreEmptyPositionAvailableException();
+        throw new NoMoreEmptyPositionAvailableException();
     }
 
     @NotNull
-    public Coordinates chooseRandomEmptyCoordinates(@NotNull Board board) throws Board.NoMoreEmptyPositionAvailableException {
+    public Coordinates chooseRandomEmptyCoordinates(@NotNull Board board) throws NoMoreEmptyPositionAvailableException {
         if (board.isAnyEmptyPositionOnTheBoard()) {
             int MAX_RANDOM_ITERATION = 500;
             for (int i = 0; i < MAX_RANDOM_ITERATION; i++) {
