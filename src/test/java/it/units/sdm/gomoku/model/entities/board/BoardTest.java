@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.function.BiFunction;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -122,14 +122,7 @@ public class BoardTest {
     @MethodSource("getABoardAndACoordinate")
     void fwdDiagonalToList(Board.Stone[][] matrix, Coordinates coords) {
         try {
-            Method m = Board.class.getDeclaredMethod("fwdDiagonalToList", Coordinates.class);
-            m.setAccessible(true);
-            Board b = createBoardFromMatrix(matrix);
-            @SuppressWarnings("unchecked") // invoked method returns the cast type
-            var actual = (List<Board.Stone>) m.invoke(b, coords);
-            var expected = alternativeFwdDiagonalToList(b, coords);
-            assertEquals(expected, actual);
-
+            assertTrue(isMatrixPartToListMethodCorrect(matrix, coords, "fwdDiagonalToList", this::alternativeFwdDiagonalToList));
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
             fail(e);
         }
@@ -139,14 +132,7 @@ public class BoardTest {
     @MethodSource("getABoardAndACoordinate")
     void bckDiagonalToList(Board.Stone[][] matrix, Coordinates coords) {
         try {
-            Method m = Board.class.getDeclaredMethod("bckDiagonalToList", Coordinates.class);
-            m.setAccessible(true);
-            Board b = createBoardFromMatrix(matrix);
-            @SuppressWarnings("unchecked") // invoked method returns the cast type
-            var actual = (List<Board.Stone>) m.invoke(b, coords);
-            var expected = alternativeBckDiagonalToList(b, coords);
-            assertEquals(expected, actual);
-
+            assertTrue(isMatrixPartToListMethodCorrect(matrix, coords, "bckDiagonalToList", this::alternativeBckDiagonalToList));
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
             fail(e);
         }
@@ -156,14 +142,7 @@ public class BoardTest {
     @MethodSource("getABoardAndACoordinate")
     void columnToList(Board.Stone[][] matrix, Coordinates coords) {
         try {
-            Method m = Board.class.getDeclaredMethod("columnToList", Coordinates.class);
-            m.setAccessible(true);
-            Board b = createBoardFromMatrix(matrix);
-            @SuppressWarnings("unchecked") // invoked method returns the cast type
-            var actual = (List<Board.Stone>) m.invoke(b, coords);
-            var expected = alternativeColumnToList(b, coords);
-            assertEquals(expected, actual);
-
+            assertTrue(isMatrixPartToListMethodCorrect(matrix, coords, "columnToList", this::alternativeColumnToList));
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
             fail(e);
         }
@@ -173,17 +152,25 @@ public class BoardTest {
     @MethodSource("getABoardAndACoordinate")
     void rowToList(Board.Stone[][] matrix, Coordinates coords) {
         try {
-            Method m = Board.class.getDeclaredMethod("rowToList", Coordinates.class);
-            m.setAccessible(true);
-            Board b = createBoardFromMatrix(matrix);
-            @SuppressWarnings("unchecked") // invoked method returns the cast type
-            var actual = (List<Board.Stone>) m.invoke(b, coords);
-            var expected = alternativeRowToList(b, coords);
-            assertEquals(expected, actual);
-
+            assertTrue(isMatrixPartToListMethodCorrect(matrix, coords, "rowToList", this::alternativeRowToList));
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
             fail(e);
         }
+    }
+
+    private boolean isMatrixPartToListMethodCorrect(Board.Stone[][] matrix,
+                                                    Coordinates coords,
+                                                    String methodToTestName,
+                                                    BiFunction<Board, Coordinates, List<Board.Stone>> alternativeMethod)
+            throws NoSuchMethodException, Board.NoMoreEmptyPositionAvailableException, Board.PositionAlreadyOccupiedException, IllegalAccessException, InvocationTargetException {
+
+        Method m = Board.class.getDeclaredMethod(methodToTestName, Coordinates.class);
+        m.setAccessible(true);
+        Board b = createBoardFromMatrix(matrix);
+        @SuppressWarnings("unchecked") // invoked method returns the cast type
+        List<Board.Stone> actual = (List<Board.Stone>) m.invoke(b, coords);
+        List<Board.Stone> expected = alternativeMethod.apply(b, coords);
+        return actual.equals(expected);
     }
 
     List<Board.Stone> alternativeRowToList(@NotNull final Board board, @NotNull final Coordinates coords) {
