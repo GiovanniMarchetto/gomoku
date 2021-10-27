@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 
 import static it.units.sdm.gomoku.model.custom_types.PositiveInteger.PositiveIntegerType;
 
-public class Board implements Observable {
+public class Board implements Observable, Cloneable {
 
     public static final String BoardMatrixPropertyName = "matrix";
     @NotNull
@@ -213,39 +213,59 @@ public class Board implements Observable {
         return s.toString();
     }
 
+    @Override
     public Board clone() {
         return new Board(this);
     }
 
     @NotNull
+    private List<Stone> diagonalToList(@NotNull final Coordinates coords, boolean isBackDiagonal) {
+        int B = getSize();
+        int sign = isBackDiagonal ? -1 : 1;
+        int S = Objects.requireNonNull(coords).getX() + sign * coords.getY();
+
+        return IntStream.range(0, B).sequential()
+                .filter(i -> B + sign * i > sign * S && sign * i <= sign * S)
+                // sign = 1 => B + i > S  && i <= S
+                // sign = 1 => B - i > -S && -i <= -S
+                .boxed()
+                .flatMap(i -> IntStream.range(0, B).unordered()
+                        .filter(j -> i + sign * j == S)
+                        .mapToObj(j -> new Coordinates(i, j)))
+                .map(this::getStoneAtCoordinates)
+                .collect(Collectors.toList());
+    }
+
+    @NotNull
     private List<Stone> fwdDiagonalToList(@NotNull final Coordinates coords) {
-        // TODO : very similar to bckDiagonalToList (refactoring?)
-        int S = getSize();
-        int diagN = Objects.requireNonNull(coords).getX() + coords.getY();
-        int x = Math.min(diagN, S - 1);
-        int y = Math.max(diagN - (S - 1), 0);
+        int B = getSize();
+        int S = Objects.requireNonNull(coords).getX() + coords.getY();
+
+        int x = Math.min(S, B - 1);
+        int y = Math.max(S - (B - 1), 0);
         ArrayList<Stone> arr = new ArrayList<>();
-        while (y < S && x >= 0) {
+        while (y < B && x >= 0) {
             arr.add(matrix[x][y]);
             x--;
             y++;
         }
-        return arr;
+        return diagonalToList(coords, false);
     }
 
     @NotNull
-    private ArrayList<Stone> bckDiagonalToList(@NotNull final Coordinates coords) {
-        int S = getSize();
-        int diagN = Objects.requireNonNull(coords).getX() - coords.getY();
-        int x = Math.max(diagN, 0);
-        int y = -Math.min(diagN, 0);
+    private List<Stone> bckDiagonalToList(@NotNull final Coordinates coords) {
+        int B = getSize();
+        int S = Objects.requireNonNull(coords).getX() - coords.getY();
+
+        int x = Math.max(S, 0);
+        int y = -Math.min(S, 0);
         ArrayList<Stone> arr = new ArrayList<>();
-        while (x < S && y < S) {
+        while (x < B && y < B) {
             arr.add(matrix[x][y]);
             x++;
             y++;
         }
-        return arr;
+        return diagonalToList(coords, true);
     }
 
     @NotNull
