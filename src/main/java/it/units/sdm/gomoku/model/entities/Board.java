@@ -215,19 +215,27 @@ public class Board implements Observable, Cloneable {
     }
 
     @NotNull
-    private List<Stone> fwdDiagonalToList(@NotNull final Coordinates coords) {
+    private List<Stone> diagonalToList(@NotNull final Coordinates coords, boolean isBackDiagonal) {
         int B = getSize();
-        int S = Objects.requireNonNull(coords).getX() + coords.getY();
+        int sign = isBackDiagonal ? -1 : 1;
+        int S = Objects.requireNonNull(coords).getX() + sign * coords.getY();
 
-        var list = IntStream.range(0, B).sequential()
-                .filter(i -> B + i > S && i <= S)
+        return IntStream.range(0, B).sequential()
+                .filter(i -> B + sign * i > sign * S && sign * i <= sign * S)
+                // sign = 1 => B + i > S  && i <= S
+                // sign = 1 => B - i > -S && -i <= -S
                 .boxed()
                 .flatMap(i -> IntStream.range(0, B).unordered()
-                        .filter(j -> i + j == S)
+                        .filter(j -> i + sign * j == S)
                         .mapToObj(j -> new Coordinates(i, j)))
                 .map(this::getStoneAtCoordinates)
                 .collect(Collectors.toList());
+    }
 
+    @NotNull
+    private List<Stone> fwdDiagonalToList(@NotNull final Coordinates coords) {
+        int B = getSize();
+        int S = Objects.requireNonNull(coords).getX() + coords.getY();
 
         int x = Math.min(S, B - 1);
         int y = Math.max(S - (B - 1), 0);
@@ -237,23 +245,13 @@ public class Board implements Observable, Cloneable {
             x--;
             y++;
         }
-        return list;
+        return diagonalToList(coords, false);
     }
 
     @NotNull
     private List<Stone> bckDiagonalToList(@NotNull final Coordinates coords) {
         int B = getSize();
         int S = Objects.requireNonNull(coords).getX() - coords.getY();
-
-
-        var list = IntStream.range(0, B).sequential()
-                .filter(i -> B - i > -S && i >= S)
-                .boxed()
-                .flatMap(i -> IntStream.range(0, B).unordered()
-                        .filter(j -> i - j == S)
-                        .mapToObj(j -> new Coordinates(i, j)))
-                .map(this::getStoneAtCoordinates)
-                .collect(Collectors.toList());
 
         int x = Math.max(S, 0);
         int y = -Math.min(S, 0);
@@ -263,7 +261,7 @@ public class Board implements Observable, Cloneable {
             x++;
             y++;
         }
-        return list;
+        return diagonalToList(coords, true);
     }
 
     @NotNull
