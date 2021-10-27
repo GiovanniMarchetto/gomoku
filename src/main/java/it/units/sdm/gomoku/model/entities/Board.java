@@ -215,33 +215,54 @@ public class Board implements Observable {
 
     @NotNull
     private List<Stone> fwdDiagonalToList(@NotNull final Coordinates coords) {
-        // TODO : very similar to bckDiagonalToList (refactoring?)
-        int S = getSize();
-        int diagN = Objects.requireNonNull(coords).getX() + coords.getY();
-        int x = Math.min(diagN, S - 1);
-        int y = Math.max(diagN - (S - 1), 0);
+        int B = getSize();
+        int S = Objects.requireNonNull(coords).getX() + coords.getY();
+
+        var list = IntStream.range(0, B).sequential()
+                .filter(i -> B + i > S && i <= S)
+                .boxed()
+                .flatMap(i -> IntStream.range(0, B).unordered()
+                        .filter(j -> i + j == S)
+                        .mapToObj(j -> new Coordinates(i, j)))
+                .map(this::getStoneAtCoordinates)
+                .collect(Collectors.toList());
+
+
+        int x = Math.min(S, B - 1);
+        int y = Math.max(S - (B - 1), 0);
         ArrayList<Stone> arr = new ArrayList<>();
-        while (y < S && x >= 0) {
+        while (y < B && x >= 0) {
             arr.add(matrix[x][y]);
             x--;
             y++;
         }
-        return arr;
+        return list;
     }
 
     @NotNull
-    private ArrayList<Stone> bckDiagonalToList(@NotNull final Coordinates coords) {
-        int S = getSize();
-        int diagN = Objects.requireNonNull(coords).getX() - coords.getY();
-        int x = Math.max(diagN, 0);
-        int y = -Math.min(diagN, 0);
+    private List<Stone> bckDiagonalToList(@NotNull final Coordinates coords) {
+        int B = getSize();
+        int S = Objects.requireNonNull(coords).getX() - coords.getY();
+
+
+        var list = IntStream.range(0, B).sequential()
+                .filter(i -> B - i > -S && i >= S)
+                .boxed()
+                .flatMap(i -> IntStream.range(0, B).unordered()
+                        .filter(j -> i - j == S)
+                        .mapToObj(j -> new Coordinates(i, j)))
+                .map(this::getStoneAtCoordinates)
+                .collect(Collectors.toList());
+
+        int x = Math.max(S, 0);
+        int y = -Math.min(S, 0);
         ArrayList<Stone> arr = new ArrayList<>();
-        while (x < S && y < S) {
+        while (x < B && y < B) {
             arr.add(matrix[x][y]);
             x++;
             y++;
         }
-        return arr;
+        return list;
     }
 
     @NotNull
@@ -299,7 +320,7 @@ public class Board implements Observable {
         }
     }
 
-    public class ChangedCell {
+    public static class ChangedCell {
         private final Coordinates coordinates;
         private final Stone newStone;
         private final Stone oldStone;
