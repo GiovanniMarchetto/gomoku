@@ -3,12 +3,11 @@ package it.units.sdm.gomoku.model.entities;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
+import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static it.units.sdm.gomoku.model.entities.Board.NoMoreEmptyPositionAvailableException;
@@ -26,6 +25,27 @@ public class CPUPlayer extends Player {
 
     public CPUPlayer() {
         super(CPU_DEFAULT_NAME + numberOfCpuPlayers.incrementAndGet());
+    }
+
+    private static boolean isHeadOfAChainOfStones(Board board, Coordinates coordinates,
+                                                  Board.Stone stoneColor,
+                                                  PositiveInteger numberOfConsecutive) {
+        int[] directionFactorXs = {0, 0, 1, -1, 1, -1, 1, -1};
+        int[] directionFactorYs = {1, -1, 0, 0, 1, -1, -1, 1};
+
+        return IntStream.range(0, directionFactorXs.length)
+                .mapToObj(i -> new Pair<>(directionFactorXs[i], directionFactorYs[i]))
+                .map(aDirectionFactor -> IntStream.range(1, numberOfConsecutive.intValue())
+                        .mapToObj(i -> new Pair<>(
+                                coordinates.getX() + i * aDirectionFactor.getKey(),
+                                coordinates.getY() + i * aDirectionFactor.getValue()))
+                        .filter(pair -> pair.getKey() >= 0 && pair.getValue() >= 0)
+                        .map(validPair -> new Coordinates(validPair.getKey(), validPair.getValue()))
+                        .filter(aCoord -> board.isCoordinatesInsideBoard(aCoord) &&
+                                stoneColor == board.getStoneAtCoordinates(aCoord))
+                        .count()
+                )
+                .anyMatch(counter -> counter == numberOfConsecutive.intValue() - 1);
     }
 
     @NotNull
@@ -58,41 +78,6 @@ public class CPUPlayer extends Player {
                 .filter(c -> isHeadOfAChainOfStones(board, c, stoneColor, new PositiveInteger(i)))
                 .findAny();
     }
-
-
-    private static boolean isHeadOfAChainOfStones(Board board, Coordinates coordinates,
-                                                  Board.Stone stoneColor,
-                                                  PositiveInteger numberOfConsecutive) {
-        int[] factorXs = {0, 0, 1, -1, 1, -1, 1, -1};
-        int[] factorYs = {1, -1, 0, 0, 1, -1, -1, 1};
-        int directionsFromAPoint = factorXs.length;
-
-        for (int f = 0; f < directionsFromAPoint; f++) {
-            boolean ok = true;
-
-            for (int i = 1; i < numberOfConsecutive.intValue(); i++) {
-                int x = coordinates.getX() + i * factorXs[f];
-                int y = coordinates.getY() + i * factorYs[f];
-                if (x >= 0 && y >= 0) {
-                    Coordinates currentCoordinates = new Coordinates(x, y);
-                    if (!board.isCoordinatesInsideBoard(currentCoordinates) ||
-                            stoneColor != board.getStoneAtCoordinates(currentCoordinates)) {
-                        ok = false;
-                        break;
-                    }
-                } else {
-                    ok = false;
-                    break;
-                }
-            }
-
-            if (ok) {
-                return true;
-            }
-        }
-        return false;
-    }
-
 
     @NotNull
     public Coordinates chooseNextEmptyCoordinates(@NotNull Board board) throws NoMoreEmptyPositionAvailableException {
