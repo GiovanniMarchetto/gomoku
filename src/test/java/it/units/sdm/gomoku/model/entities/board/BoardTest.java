@@ -101,12 +101,10 @@ public class BoardTest {
     @ParameterizedTest
     @MethodSource("readBoardsWithWinCoordsAndResultsFromSampleCSV")
     void checkNConsecutiveStones(Board.Stone[][] matrix, Coordinates coordinates, boolean expected) {
-        Board b = new Board(matrix.length);
         try {
-            for (int i = 0; i < matrix.length; i++)
-                for (int j = 0; j < matrix[i].length; j++)
-                    if (!matrix[i][j].isNone())
-                        b.occupyPosition(matrix[i][j], new Coordinates(i, j));
+            Board b = createBoardFromMatrix(matrix);
+            NonNegativeInteger N = new NonNegativeInteger(2);
+            assertEquals(expected, b.checkNConsecutiveStones(coordinates, N));
         } catch (IllegalArgumentException e) {
             if (!matrix[coordinates.getX()][coordinates.getY()].isNone()) {
                 fail(e);
@@ -114,8 +112,16 @@ public class BoardTest {
         } catch (Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
             fail(e);
         }
-        NonNegativeInteger N = new NonNegativeInteger(2);
-        assertEquals(expected, b.checkNConsecutiveStones(coordinates, N));
+    }
+
+    private Board createBoardFromMatrix(Board.Stone[][] matrix) throws Board.NoMoreEmptyPositionAvailableException, Board.PositionAlreadyOccupiedException {
+        Board b = new Board(matrix.length);
+        for (int i = 0; i < matrix.length; i++)
+            for (int j = 0; j < matrix[i].length; j++)
+                if (!matrix[i][j].isNone())
+                    b.occupyPosition(matrix[i][j], new Coordinates(i, j));
+
+        return b;
     }
 
 
