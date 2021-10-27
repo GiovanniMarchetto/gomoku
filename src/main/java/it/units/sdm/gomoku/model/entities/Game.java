@@ -86,7 +86,7 @@ public class Game implements Comparable<Game>, Observable {
     }
 
     private boolean hasThePlayerWonThisGame(@NotNull final Coordinates lastMove) {
-        return Board.checkNConsecutiveStonesNaive(board, lastMove, NUMBER_OF_CONSECUTIVE_STONE_FOR_WINNING);
+        return board.checkNConsecutiveStones(lastMove, NUMBER_OF_CONSECUTIVE_STONE_FOR_WINNING);
     }
 
     @Nullable
@@ -102,7 +102,7 @@ public class Game implements Comparable<Game>, Observable {
         this.winner = Objects.requireNonNull(winner);
     }
 
-    public boolean isThisGameEnded() {
+    public synchronized boolean isThisGameEnded() {
         return winner != null || !board.isAnyEmptyPositionOnTheBoard();
         // if there are empty positions on the board it can't be a draw
     }

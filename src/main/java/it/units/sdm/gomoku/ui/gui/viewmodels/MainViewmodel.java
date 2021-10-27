@@ -34,7 +34,7 @@ public class MainViewmodel extends Viewmodel {
         switch (evt.getPropertyName()) {
             case Board.BoardMatrixPropertyName -> {
                 Board.ChangedCell cell = (Board.ChangedCell) evt.getNewValue();
-                firePropertyChange(Board.BoardMatrixPropertyName, null, cell);
+                firePropertyChange(Board.BoardMatrixPropertyName, null, cell);  // TODO : inappropriate property name (observed in GomokuCell)
             }
             case Setup.setupCompletedPropertyName -> {
                 Setup setup = (Setup) evt.getNewValue();

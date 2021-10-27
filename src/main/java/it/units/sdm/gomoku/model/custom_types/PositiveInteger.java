@@ -20,6 +20,10 @@ public class PositiveInteger extends NonNegativeInteger {
         }
     }
 
+    public PositiveInteger(PositiveInteger positiveInteger){
+        this(positiveInteger.intValue());
+    }
+
     /**
      * This annotation is used to indicate that the value must be a
      * positive (&gt;0) integer, suitable for an instance of

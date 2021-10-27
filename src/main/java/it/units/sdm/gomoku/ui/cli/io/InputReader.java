@@ -10,7 +10,7 @@ import java.util.Scanner;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public class InputReader {  // TODO : to be tested
+public class InputReader {  // TODO : to be deleted 
 
     private static final InputReader singleInstance = new InputReader();
     private static final InputStream DEFAULT_INPUT_STREAM = System.in;
