@@ -87,8 +87,8 @@ public class Board implements Observable, Cloneable {
         return x < size.intValue() && y < size.intValue();
     }
 
-    public boolean isEmpty(){
-        return numberOfFilledPositionOnTheBoard.intValue()==0;
+    public boolean isEmpty() {
+        return numberOfFilledPositionOnTheBoard.intValue() == 0;
     }
 
     public synchronized boolean isAnyEmptyPositionOnTheBoard() {
@@ -179,8 +179,8 @@ public class Board implements Observable, Cloneable {
 
         return IntStream.range(0, B).sequential()
                 .filter(i -> B + sign * i > sign * S && sign * i <= sign * S)
-                // sign = 1 => B + i > S  && i <= S
-                // sign = 1 => B - i > -S && -i <= -S
+                // sign =  1 => B + i >  S &&  i <=  S
+                // sign = -1 => B - i > -S && -i <= -S
                 .boxed()
                 .flatMap(i -> IntStream.range(0, B).unordered()
                         .filter(j -> i + sign * j == S)
@@ -191,33 +191,11 @@ public class Board implements Observable, Cloneable {
 
     @NotNull
     private List<Stone> fwdDiagonalToList(@NotNull final Coordinates coords) {
-        int B = getSize();
-        int S = Objects.requireNonNull(coords).getX() + coords.getY();
-
-        int x = Math.min(S, B - 1);
-        int y = Math.max(S - (B - 1), 0);
-        ArrayList<Stone> arr = new ArrayList<>();
-        while (y < B && x >= 0) {
-            arr.add(matrix[x][y]);
-            x--;
-            y++;
-        }
         return diagonalToList(coords, false);
     }
 
     @NotNull
     private List<Stone> bckDiagonalToList(@NotNull final Coordinates coords) {
-        int B = getSize();
-        int S = Objects.requireNonNull(coords).getX() - coords.getY();
-
-        int x = Math.max(S, 0);
-        int y = -Math.min(S, 0);
-        ArrayList<Stone> arr = new ArrayList<>();
-        while (x < B && y < B) {
-            arr.add(matrix[x][y]);
-            x++;
-            y++;
-        }
         return diagonalToList(coords, true);
     }
 
