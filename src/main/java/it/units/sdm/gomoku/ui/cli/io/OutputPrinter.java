@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class OutputPrinter extends OutputStream {        // TODO : to be tested
+public class OutputPrinter extends OutputStream {        // TODO : to be deleted
 
     private final static ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     private final static String ANSI_CURSOR_ONE_LINE_UP = "\u001B[A";

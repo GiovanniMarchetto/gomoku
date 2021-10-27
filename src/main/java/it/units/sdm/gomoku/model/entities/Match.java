@@ -156,9 +156,8 @@ public class Match {
     public boolean isEnded() {
         int numberOfGamesPlayed = gameList.size();
         if (numberOfGamesPlayed == 0) return false;
-        return
-                gameList.get(numberOfGamesPlayed - 1).isThisGameEnded()
-                        && numberOfGamesPlayed >= getNumberOfGames();
+        return gameList.get(numberOfGamesPlayed - 1).isThisGameEnded()
+                && numberOfGamesPlayed >= getNumberOfGames();
     }
 
     public static class MatchEndedException extends Exception {

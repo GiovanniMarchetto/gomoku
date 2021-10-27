@@ -26,7 +26,7 @@ public class SceneController {
     private double sceneHeight = 0;
 
     @SafeVarargs
-    private SceneController(@NotNull final Stage stage, @NotNull final String firstStageTitle,
+    private SceneController(@NotNull final Stage stage, @NotNull final String firstStageTitle,  // TODO: should pass a setup objects instead of so many parameters?
                             double initialSceneWidth, double initialSceneHeight,
                             double stageMinWidth, double stageMinHeight,
                             @NotNull final Pair<@NotNull ViewName, @NotNull String>... fxmlFilePaths) {

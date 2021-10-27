@@ -28,7 +28,7 @@ public class NonNegativeInteger extends Number implements Comparable<Number> {
     }
 
     @NotNull
-    public NonNegativeInteger incrementAndGet() {
+    public synchronized NonNegativeInteger incrementAndGet() {
         value++;
         return this;
     }
