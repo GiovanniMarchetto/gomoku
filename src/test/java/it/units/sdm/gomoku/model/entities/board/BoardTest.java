@@ -135,6 +135,75 @@ public class BoardTest {
         }
     }
 
+    @ParameterizedTest
+    @MethodSource("getABoardAndACoordinate")
+    void bckDiagonalToList(Board.Stone[][] matrix, Coordinates coords) {
+        try {
+            Method m = Board.class.getDeclaredMethod("bckDiagonalToList", Coordinates.class);
+            m.setAccessible(true);
+            Board b = createBoardFromMatrix(matrix);
+            @SuppressWarnings("unchecked") // invoked method returns the cast type
+            var actual = (List<Board.Stone>) m.invoke(b, coords);
+            var expected = alternativeBckDiagonalToList(b, coords);
+            assertEquals(expected, actual);
+
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
+            fail(e);
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("getABoardAndACoordinate")
+    void columnToList(Board.Stone[][] matrix, Coordinates coords) {
+        try {
+            Method m = Board.class.getDeclaredMethod("columnToList", Coordinates.class);
+            m.setAccessible(true);
+            Board b = createBoardFromMatrix(matrix);
+            @SuppressWarnings("unchecked") // invoked method returns the cast type
+            var actual = (List<Board.Stone>) m.invoke(b, coords);
+            var expected = alternativeColumnToList(b, coords);
+            assertEquals(expected, actual);
+
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
+            fail(e);
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("getABoardAndACoordinate")
+    void rowToList(Board.Stone[][] matrix, Coordinates coords) {
+        try {
+            Method m = Board.class.getDeclaredMethod("rowToList", Coordinates.class);
+            m.setAccessible(true);
+            Board b = createBoardFromMatrix(matrix);
+            @SuppressWarnings("unchecked") // invoked method returns the cast type
+            var actual = (List<Board.Stone>) m.invoke(b, coords);
+            var expected = alternativeRowToList(b, coords);
+            assertEquals(expected, actual);
+
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
+            fail(e);
+        }
+    }
+
+    List<Board.Stone> alternativeRowToList(@NotNull final Board board, @NotNull final Coordinates coords) {
+        List<Board.Stone> list = new ArrayList<>();
+        for (int y = 0; y < board.getSize(); y++) {
+            var c = new Coordinates(Objects.requireNonNull(coords).getX(), y);
+            list.add(board.getStoneAtCoordinates(c));
+        }
+        return list;
+    }
+
+    List<Board.Stone> alternativeColumnToList(@NotNull final Board board, @NotNull final Coordinates coords) {
+        List<Board.Stone> list = new ArrayList<>();
+        for (int x = 0; x < board.getSize(); x++) {
+            var c = new Coordinates(x, Objects.requireNonNull(coords).getY());
+            list.add(board.getStoneAtCoordinates(c));
+        }
+        return list;
+    }
+
     List<Board.Stone> alternativeFwdDiagonalToList(@NotNull final Board board, @NotNull final Coordinates coords) {
         int B = board.getSize();
         int S = Objects.requireNonNull(coords).getX() + coords.getY();
@@ -147,6 +216,20 @@ public class BoardTest {
             y++;
         }
         Collections.reverse(list);
+        return list;
+    }
+
+    List<Board.Stone> alternativeBckDiagonalToList(@NotNull final Board board, @NotNull final Coordinates coords) {
+        int B = board.getSize();
+        int S = Objects.requireNonNull(coords).getX() - coords.getY();
+        int x = Math.max(S, 0);
+        int y = -Math.min(S, 0);
+        ArrayList<Board.Stone> list = new ArrayList<>();
+        while (x < B && y < B) {
+            list.add(board.getStoneAtCoordinates(new Coordinates(x, y)));
+            x++;
+            y++;
+        }
         return list;
     }
 

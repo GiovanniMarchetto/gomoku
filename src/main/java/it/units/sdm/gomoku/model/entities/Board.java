@@ -196,17 +196,6 @@ public class Board implements Observable, Cloneable {
 
     @NotNull
     private List<Stone> bckDiagonalToList(@NotNull final Coordinates coords) {
-        int B = getSize();
-        int S = Objects.requireNonNull(coords).getX() - coords.getY();
-
-        int x = Math.max(S, 0);
-        int y = -Math.min(S, 0);
-        ArrayList<Stone> arr = new ArrayList<>();
-        while (x < B && y < B) {
-            arr.add(matrix[x][y]);
-            x++;
-            y++;
-        }
         return diagonalToList(coords, true);
     }
 
