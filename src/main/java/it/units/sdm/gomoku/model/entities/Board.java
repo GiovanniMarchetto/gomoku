@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 
 import static it.units.sdm.gomoku.model.custom_types.PositiveInteger.PositiveIntegerType;
 
-public class Board implements Observable {
+public class Board implements Observable, Cloneable {
 
     public static final String BoardMatrixPropertyName = "matrix";
     @NotNull
@@ -209,6 +209,7 @@ public class Board implements Observable {
         return s.toString();
     }
 
+    @Override
     public Board clone() {
         return new Board(this);
     }
