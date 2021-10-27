@@ -87,17 +87,17 @@ public class BoardTest {
 
     @Test
     void isAnyEmptyPositionOnTheBoard_TestWhenShouldBeFalse() {
-        Board board2 = new Board(EnvVariables.BOARD_SIZE);
+        board = new Board(EnvVariables.BOARD_SIZE);
         for (int x = 0; x < EnvVariables.BOARD_SIZE.intValue(); x++) {
             for (int y = 0; y < EnvVariables.BOARD_SIZE.intValue(); y++) {
                 try {
-                    board2.occupyPosition(Board.Stone.BLACK, new Coordinates(x, y));
+                    board.occupyPosition(Board.Stone.BLACK, new Coordinates(x, y));
                 } catch (Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
                     fail(e);
                 }
             }
         }
-        assertFalse(board2.isAnyEmptyPositionOnTheBoard());
+        assertFalse(board.isAnyEmptyPositionOnTheBoard());
     }
 
     @ParameterizedTest
@@ -275,10 +275,10 @@ public class BoardTest {
 
     @Test
     void testEqualsAfterSomeChanges() {
-        Board expectedBoard = TestUtility.createBoardWithCsvBoardStone();
+        Board expectedBoard = board.clone();
         int found = 0;
-        for (int x = 0; x < BoardTest.board.getSize() && found < 2; x++) {
-            for (int y = 0; y < BoardTest.board.getSize() && found < 2; y++) {
+        for (int x = 0; x < board.getSize() && found < 2; x++) {
+            for (int y = 0; y < board.getSize() && found < 2; y++) {
                 Coordinates coordinates = new Coordinates(x, y);
                 if (expectedBoard.getStoneAtCoordinates(coordinates).isNone() || board.getStoneAtCoordinates(coordinates).isNone()) {
                     try {
