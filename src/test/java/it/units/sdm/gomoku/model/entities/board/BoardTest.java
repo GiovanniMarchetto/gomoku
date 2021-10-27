@@ -100,26 +100,6 @@ public class BoardTest {
 
     @ParameterizedTest
     @MethodSource("readBoardsWithWinCoordsAndResultsFromSampleCSV")
-    void checkNConsecutiveStonesNaive(Board.Stone[][] matrix, Coordinates coordinates, boolean expected) {
-        Board b = new Board(matrix.length);
-        try {
-            for (int i = 0; i < matrix.length; i++)
-                for (int j = 0; j < matrix[i].length; j++)
-                    if (!matrix[i][j].isNone())
-                        b.occupyPosition(matrix[i][j], new Coordinates(i, j));
-        } catch (IllegalArgumentException e) {
-            if (!matrix[coordinates.getX()][coordinates.getY()].isNone()) {
-                fail(e);
-            }
-        } catch (Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
-            fail(e);
-        }
-        PositiveInteger N = new PositiveInteger(2);
-        assertEquals(expected, Board.checkNConsecutiveStonesNaive(b, coordinates, N));
-    }
-
-    @ParameterizedTest
-    @MethodSource("readBoardsWithWinCoordsAndResultsFromSampleCSV")
     void checkNConsecutiveStones(Board.Stone[][] matrix, Coordinates coordinates, boolean expected) {
         Board b = new Board(matrix.length);
         try {
