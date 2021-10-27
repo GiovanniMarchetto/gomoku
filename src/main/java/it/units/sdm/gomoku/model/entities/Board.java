@@ -128,6 +128,10 @@ public class Board implements Observable {
         return x < size.intValue() && y < size.intValue();
     }
 
+    public boolean isEmpty(){
+        return numberOfFilledPositionOnTheBoard.intValue()==0;
+    }
+
     public boolean isAnyEmptyPositionOnTheBoard() {
         return numberOfFilledPositionOnTheBoard.intValue() < size.intValue() * size.intValue();
     }

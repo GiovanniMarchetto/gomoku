@@ -42,6 +42,7 @@ public class MainViewmodel extends Viewmodel {
                 startNewGameAndPassToMainView();
             }
             case Game.gameEndedPropertyName -> {
+                System.out.println(currentBoard);
                 endGame();
                 SceneController.passToNewScene(SceneController.ViewName.SUMMARY_VIEW);
             }
@@ -88,7 +89,7 @@ public class MainViewmodel extends Viewmodel {
             if (currentPlayer instanceof CPUPlayer || userCanPlace) {
                 Match.executeMoveOfPlayerInGame(currentGame,
                         currentPlayer instanceof CPUPlayer ?
-                                ((CPUPlayer) currentPlayer).chooseRandomEmptyCoordinates(currentBoard) : coordinates);
+                                ((CPUPlayer) currentPlayer).chooseEmptyCoordinates(currentBoard) : coordinates);
                 ifIsCpuPlaceStoneWithDelay(200);
             }
         } catch (Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
