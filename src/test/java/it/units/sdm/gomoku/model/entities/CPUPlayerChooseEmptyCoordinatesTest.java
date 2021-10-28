@@ -1,6 +1,7 @@
 package it.units.sdm.gomoku.model.entities;
 
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -24,59 +25,59 @@ public class CPUPlayerChooseEmptyCoordinatesTest {
 
     @Test
     void emptyBoard() {
-        try {
-            Coordinates expected = cpuPlayer.chooseNextEmptyCoordinatesFromCenter(board);
-            assertEquals(expected, cpuPlayer.chooseEmptyCoordinates(board));
-        } catch (NoMoreEmptyPositionAvailableException e) {
-            fail(e.getMessage());
-        }
+        Coordinates expected = getNextEmptyCoordinates();
+        assertChooseEmptyCoordinates(expected);
     }
 
     @Test
     void noChains() {
-        try {
-            occupyCoordinateFromXAndY(0, 0);
+        occupyCoordinateFromXAndY(0, 0);
 
-            Coordinates expected = cpuPlayer.chooseNextEmptyCoordinatesFromCenter(board);
-            assertEquals(expected, cpuPlayer.chooseEmptyCoordinates(board));
+        Coordinates expected = getNextEmptyCoordinates();
+        assertChooseEmptyCoordinates(expected);
+
+    }
+
+    @NotNull
+    private Coordinates getNextEmptyCoordinates() {
+        try {
+            return cpuPlayer.chooseNextEmptyCoordinatesFromCenter(board);
         } catch (NoMoreEmptyPositionAvailableException e) {
             fail(e.getMessage());
+            return new Coordinates(0, 0);
         }
     }
 
     @Test
     void chainOfTwo() {
-        try {
-            twoStoneIntTheFirstRow();
+        occupyNStonesInARow(2, 0);
 
-            Coordinates expected = new Coordinates(0, 2);
-            assertEquals(expected, cpuPlayer.chooseEmptyCoordinates(board));
-        } catch (NoMoreEmptyPositionAvailableException e) {
-            fail(e.getMessage());
-        }
+        Coordinates expected = new Coordinates(0, 2);
+        assertChooseEmptyCoordinates(expected);
     }
 
     @Test
     void chainOfThree() {
-        try {
-            twoStoneIntTheFirstRow();
-            threeStoneIntTheSecondRow();
+        occupyNStonesInARow(2, 0);
+        occupyNStonesInARow(3, 1);
 
-            Coordinates expected = new Coordinates(1, 3);
-            assertEquals(expected, cpuPlayer.chooseEmptyCoordinates(board));
-        } catch (NoMoreEmptyPositionAvailableException e) {
-            fail(e.getMessage());
-        }
+        Coordinates expected = new Coordinates(1, 3);
+        assertChooseEmptyCoordinates(expected);
     }
 
     @Test
     void chainOfFour() {
-        try {
-            twoStoneIntTheFirstRow();
-            threeStoneIntTheSecondRow();
-            fourStoneInTheThirdRow();
 
-            Coordinates expected = new Coordinates(2, 4);
+        occupyNStonesInARow(2, 0);
+        occupyNStonesInARow(3, 1);
+        occupyNStonesInARow(4, 2);
+
+        Coordinates expected = new Coordinates(2, 4);
+        assertChooseEmptyCoordinates(expected);
+    }
+
+    private void assertChooseEmptyCoordinates(Coordinates expected) {
+        try {
             assertEquals(expected, cpuPlayer.chooseEmptyCoordinates(board));
         } catch (NoMoreEmptyPositionAvailableException e) {
             fail(e.getMessage());
@@ -98,20 +99,4 @@ public class CPUPlayerChooseEmptyCoordinatesTest {
         );
     }
 
-    private void twoStoneIntTheFirstRow() {
-        occupyNStonesInARow(2,0);
-    }
-
-    private void threeStoneIntTheSecondRow() {
-        occupyCoordinateFromXAndY(1, 0);
-        occupyCoordinateFromXAndY(1, 1);
-        occupyCoordinateFromXAndY(1, 2);
-    }
-
-    private void fourStoneInTheThirdRow() {
-        occupyCoordinateFromXAndY(2, 0);
-        occupyCoordinateFromXAndY(2, 1);
-        occupyCoordinateFromXAndY(2, 2);
-        occupyCoordinateFromXAndY(2, 3);
-    }
 }
