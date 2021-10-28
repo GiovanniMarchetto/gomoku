@@ -57,7 +57,7 @@ public class MainViewmodel extends Viewmodel {
                 match.addAnExtraGame();
                 startNewGameAndPassToMainView();
             }
-            default -> throw new IllegalArgumentException("Property name " + evt.getPropertyName() + " not found!");
+//            default -> throw new IllegalArgumentException("Property name " + evt.getPropertyName() + " not found!");
         }
     }
 
