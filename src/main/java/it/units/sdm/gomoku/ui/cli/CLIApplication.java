@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 
 import static it.units.sdm.gomoku.model.entities.Game.gameEndedPropertyName;
 import static it.units.sdm.gomoku.model.entities.Game.newGameStartedPropertyName;
-import static it.units.sdm.gomoku.ui.cli.AbstractMainViewmodel.userCanPlacePropertyName;
+import static it.units.sdm.gomoku.ui.cli.AbstractMainViewmodel.userMustPlaceNewStonePropertyName;
 import static it.units.sdm.gomoku.ui.cli.CLIApplication.*;
 
 class CLIApplication {
@@ -46,8 +46,9 @@ class CLIApplication {
 
 }
 
-class CLIMainView extends View implements Observer {
-    public CLIMainView(Viewmodel viewmodelAssociatedWithView) throws IOException {
+class CLIMainView extends View implements Observer {    // TODO : all events clutter the memory stack
+
+    public CLIMainView(Viewmodel viewmodelAssociatedWithView) throws IOException {  // TODO : event-based flux of program to be tested
         super(viewmodelAssociatedWithView);
         getViewmodelAssociatedWithView().addPropertyChangeListener(this);// TODO : rethink about this (should View abstract class implement Observer to observer its corresponding Viewmodel)
         firePropertyChange(Setup.setupCompletedPropertyName, null, new CLISetup());// TODO : rethink about this
@@ -62,7 +63,7 @@ class CLIMainView extends View implements Observer {
                     System.out.println("\n\nNew game!");
                 }
             }
-            case userCanPlacePropertyName -> {
+            case userMustPlaceNewStonePropertyName -> {
                 if ((boolean) evt.getNewValue()) {
                     try {
                         waitForAValidMoveOfAPlayer();
@@ -90,12 +91,12 @@ class CLIMainView extends View implements Observer {
                         }
 
                         if (isMatchEndedWithDraft) {
-                            System.out.print("Extra game? Y/N: ");    // TODO: refactor?
-                            boolean anotherGame = Utility.getLowercaseCharIfValidCaseInsensitiveOr0('y', 'n') == 'y';
+                            System.out.print("Extra game? Y/N: ");    // TODO: refactor with lines down?
+                            boolean anotherGame = Utility.getLowercaseCharWhenValidCaseInsensitiveOrCycle('y', 'n') == 'y';
                             firePropertyChange(extraGameAfterSummaryPropertyName, null, anotherGame);
                         } else {
                             System.out.print("Another match? Y/N: ");
-                            boolean anotherMatch = Utility.getLowercaseCharIfValidCaseInsensitiveOr0('y', 'n') == 'y';
+                            boolean anotherMatch = Utility.getLowercaseCharWhenValidCaseInsensitiveOrCycle('y', 'n') == 'y'; // TODO : not working
                             firePropertyChange(newMatchAfterSummaryPropertyName, null, anotherMatch);
                         }
                     } else {
@@ -125,7 +126,7 @@ class CLIMainView extends View implements Observer {
                 System.out.print("\tColumn coordinate: ");
                 colCoord = Utility.getAIntFromStdIn();
                 coordInsertedByTheUser = new Coordinates(rowCoord, colCoord);
-                viewmodel.placeStone(coordInsertedByTheUser);  // TODO : correct or stones should be placed by the viewmodel?
+                viewmodel.placeStoneFromUser(coordInsertedByTheUser);  // TODO : correct or stones should be placed by the viewmodel?
                 validMove = true;
             } catch (IndexOutOfBoundsException e) {
                 System.out.print("Valid coordinates values are between " + 0 +
@@ -139,9 +140,6 @@ class CLIMainView extends View implements Observer {
                 throw e;
             } catch (Board.PositionAlreadyOccupiedException e) {
                 System.out.print("The position " + coordInsertedByTheUser + " is already occupied.");
-            } finally {
-                System.out.println();
-                System.out.flush();
             }
         } while (!validMove);
     }
