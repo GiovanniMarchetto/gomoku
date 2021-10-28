@@ -30,8 +30,6 @@ public class MainView extends View {
     private Label blackPlayer;
     @FXML
     private Label startTime;
-    @FXML
-    private Label currentTime;
 
     public MainView() {
         super(mainViewmodel);

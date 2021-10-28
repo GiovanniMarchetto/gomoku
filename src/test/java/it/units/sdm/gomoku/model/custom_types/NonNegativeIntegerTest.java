@@ -25,9 +25,12 @@ class NonNegativeIntegerTest {
         }
     }
 
-    @Test
-    void incrementAndGet() {
-        // TODO
+    @ParameterizedTest
+    @CsvFileSource(resources = EnvVariables.NON_NEGATIVE_INTS_PROVIDER_RESOURCE_LOCATION)
+    void incrementAndGet(int value) {
+        nonNegativeInteger1 = new NonNegativeInteger(value);
+        nonNegativeInteger2 = new NonNegativeInteger(value+1);
+        assertEquals(nonNegativeInteger2,nonNegativeInteger1.incrementAndGet());
     }
 
     @ParameterizedTest

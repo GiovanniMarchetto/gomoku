@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.time.Instant;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -16,12 +17,13 @@ class MatchTest {
     private final int boardSizeTest = 19;
     private final CPUPlayer cpu1 = new CPUPlayer("First Captain Gomoku");
     private final CPUPlayer cpu2 = new CPUPlayer("Second Iron Keroro");
+    private final int NUMBER_OF_GAMES = 3;
     private Match match;
     private Game currentGame;
 
     @BeforeEach
     void setup() {
-        match = new Match(cpu1, cpu2, boardSizeTest, 3);
+        match = new Match(cpu1, cpu2, boardSizeTest, NUMBER_OF_GAMES);
     }
 
     @Test
@@ -57,7 +59,22 @@ class MatchTest {
 
     @Test
     void matchEndedException() {
-        //TODO: start a new game when match is finished
+        try {
+            for (int numberOfGame = 0; numberOfGame < NUMBER_OF_GAMES; numberOfGame++) {
+                Game currentGame = match.startNewGame();
+                while(!currentGame.isThisGameEnded()) {
+                    currentGame.placeNextStone(cpu1.chooseNextEmptyCoordinates(currentGame.getBoard()));
+                }
+            }
+        } catch (Match.MatchEndedException | Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
+            fail(e.getMessage());
+        }
+
+        try {
+            match.startNewGame();
+            fail();
+        } catch (Match.MatchEndedException ignored) {
+        }
     }
 
     @Test
