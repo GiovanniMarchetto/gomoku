@@ -3,6 +3,7 @@ package it.units.sdm.gomoku.model.entities.board;
 import it.units.sdm.gomoku.EnvVariables;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
+import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.utils.TestUtility;
 import org.jetbrains.annotations.NotNull;
@@ -20,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -43,12 +45,16 @@ public class BoardTest {
         return readBoardsWithWinCoordsAndResultsFromSampleCSV()
                 .map(Arguments::get)
                 .map(singleTestParams -> (Board.Stone[][]) singleTestParams[0])
-                .flatMap(boardMtx -> IntStream.range(0, boardMtx.length)
-                        .boxed()
-                        .flatMap(i -> IntStream
-                                .range(0, boardMtx.length)
-                                .mapToObj(j -> new Coordinates(i, j)))
+                .flatMap(boardMtx -> generateCoordinates(boardMtx.length)
                         .map(aCoord -> Arguments.of(boardMtx, aCoord)));
+    }
+
+    @NotNull
+    private static Stream<Coordinates> generateCoordinates(@PositiveInteger.PositiveIntegerType int boardSize) {
+        return IntStream.range(0, boardSize)
+                .boxed()
+                .flatMap(i -> IntStream.range(0, boardSize)
+                        .mapToObj(j -> new Coordinates(i, j)));
     }
 
     @BeforeEach
@@ -88,15 +94,13 @@ public class BoardTest {
     @Test
     void isAnyEmptyPositionOnTheBoard_TestWhenShouldBeFalse() {
         board = new Board(EnvVariables.BOARD_SIZE);
-        for (int x = 0; x < EnvVariables.BOARD_SIZE.intValue(); x++) {
-            for (int y = 0; y < EnvVariables.BOARD_SIZE.intValue(); y++) {
-                try {
-                    board.occupyPosition(Board.Stone.BLACK, new Coordinates(x, y));
-                } catch (Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
-                    fail(e);
-                }
+        generateCoordinates(board.getSize()).forEach(coords -> {
+            try {
+                board.occupyPosition(Board.Stone.BLACK, coords);
+            } catch (Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
+                fail(e);
             }
-        }
+        });
         assertFalse(board.isAnyEmptyPositionOnTheBoard());
     }
 
@@ -238,10 +242,10 @@ public class BoardTest {
 
     private Board createBoardFromMatrix(Board.Stone[][] matrix) throws Board.NoMoreEmptyPositionAvailableException, Board.PositionAlreadyOccupiedException {
         Board b = new Board(matrix.length);
-        for (int i = 0; i < matrix.length; i++)
-            for (int j = 0; j < matrix[i].length; j++)
-                if (!matrix[i][j].isNone())
-                    b.occupyPosition(matrix[i][j], new Coordinates(i, j));
+        for (var coords : generateCoordinates(b.getSize()).toList()) {
+            if (!matrix[coords.getX()][coords.getY()].isNone())
+                b.occupyPosition(matrix[coords.getX()][coords.getY()], coords);
+        }
 
         return b;
     }
@@ -269,22 +273,21 @@ public class BoardTest {
 
     @Test
     void testEqualsNewBoard() {
-        Board newBoard = TestUtility.createBoardWithCsvBoardStone();
+        Board newBoard = board.clone();
         assertEquals(board, newBoard);
     }
 
     @Test
-    void testEqualsAfterSomeChanges() {
+    void testEqualsBetweenTwoDifferentBoardsWithSameNumberOfOccupiedPositions() {
         Board expectedBoard = board.clone();
         int found = 0;
-        for (int x = 0; x < board.getSize() && found < 2; x++) {
-            for (int y = 0; y < board.getSize() && found < 2; y++) {
-                Coordinates coordinates = new Coordinates(x, y);
-                if (expectedBoard.getStoneAtCoordinates(coordinates).isNone() || board.getStoneAtCoordinates(coordinates).isNone()) {
+        List<Coordinates> coords = generateCoordinates(board.getSize()).toList();
+        for (int i = 0; i < coords.size() && found < 2; i++) {
+                if (expectedBoard.getStoneAtCoordinates(coords.get(i)).isNone() || board.getStoneAtCoordinates(coords.get(i)).isNone()) {
                     try {
                         switch (found) {
-                            case 0 -> expectedBoard.occupyPosition(Board.Stone.BLACK, coordinates);
-                            case 1 -> board.occupyPosition(Board.Stone.BLACK, coordinates);
+                            case 0 -> expectedBoard.occupyPosition(Board.Stone.BLACK, coords.get(i));
+                            case 1 -> board.occupyPosition(Board.Stone.BLACK, coords.get(i));
                             default -> {
                             }
                         }
@@ -294,7 +297,6 @@ public class BoardTest {
 
                     found++;
                 }
-            }
         }
         assertNotEquals(expectedBoard, board);
     }
