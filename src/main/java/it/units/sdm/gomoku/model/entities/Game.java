@@ -21,6 +21,8 @@ public class Game implements Comparable<Game>, Observable {
     @NotNull
     public static final String newGameStartedPropertyName = "newGameStarted";
     @NotNull
+    public static final String currentPlayerPropertyName = "currentPlayer";
+    @NotNull
     private final Board board;
     @NotNull
     private final Instant start;
@@ -33,14 +35,22 @@ public class Game implements Comparable<Game>, Observable {
 
     public Game(@NotNull PositiveInteger boardSize, @NotNull Player blackPlayer, @NotNull Player whitePlayer) {
         this.board = new Board(Objects.requireNonNull(boardSize));
-        this.blackPlayer = blackPlayer;
-        this.whitePlayer = whitePlayer;
+        this.blackPlayer = Objects.requireNonNull(blackPlayer);
+        this.whitePlayer = Objects.requireNonNull(whitePlayer);
         this.currentPlayer = blackPlayer;
         this.start = Instant.now();
     }
 
     public Game(int boardSize, @NotNull Player blackPlayer, @NotNull Player whitePlayer) {
         this(new PositiveInteger(boardSize), blackPlayer, whitePlayer);
+    }
+
+    private void setCurrentPlayer(@NotNull final Player currentPlayer) {
+        Player oldValue = this.currentPlayer;
+        if (!oldValue.equals(Objects.requireNonNull(currentPlayer))) {
+            this.currentPlayer = currentPlayer;
+            firePropertyChange(currentPlayerPropertyName, oldValue, currentPlayer);
+        }
     }
 
     @NotNull
@@ -78,7 +88,7 @@ public class Game implements Comparable<Game>, Observable {
     }
 
     private void changeTurn() {
-        currentPlayer = currentPlayer == blackPlayer ? whitePlayer : blackPlayer;
+        setCurrentPlayer(currentPlayer == blackPlayer ? whitePlayer : blackPlayer);
     }
 
     private void setWinnerIfPlayerWon(@NotNull Player player, @NotNull Coordinates coordinates) {
