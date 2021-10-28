@@ -69,7 +69,7 @@ public class SummaryView extends View {
                     CommanderButton extraGameButton = getExtraGameCommanderButton();
                     buttonHBox.getChildren().add(extraGameButton.getGUIItem());
                 }
-            } catch (Match.MatchEndedException e) {
+            } catch (Match.MatchNotEndedException e) {
                 e.printStackTrace();
             }
 

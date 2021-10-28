@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -283,20 +282,20 @@ public class BoardTest {
         int found = 0;
         List<Coordinates> coords = generateCoordinates(board.getSize()).toList();
         for (int i = 0; i < coords.size() && found < 2; i++) {
-                if (expectedBoard.getStoneAtCoordinates(coords.get(i)).isNone() || board.getStoneAtCoordinates(coords.get(i)).isNone()) {
-                    try {
-                        switch (found) {
-                            case 0 -> expectedBoard.occupyPosition(Board.Stone.BLACK, coords.get(i));
-                            case 1 -> board.occupyPosition(Board.Stone.BLACK, coords.get(i));
-                            default -> {
-                            }
+            if (expectedBoard.getStoneAtCoordinates(coords.get(i)).isNone() || board.getStoneAtCoordinates(coords.get(i)).isNone()) {
+                try {
+                    switch (found) {
+                        case 0 -> expectedBoard.occupyPosition(Board.Stone.BLACK, coords.get(i));
+                        case 1 -> board.occupyPosition(Board.Stone.BLACK, coords.get(i));
+                        default -> {
                         }
-                    } catch (Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
-                        e.printStackTrace();
                     }
-
-                    found++;
+                } catch (Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
+                    e.printStackTrace();
                 }
+
+                found++;
+            }
         }
         assertNotEquals(expectedBoard, board);
     }

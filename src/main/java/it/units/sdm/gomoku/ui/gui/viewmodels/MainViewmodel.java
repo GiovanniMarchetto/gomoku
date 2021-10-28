@@ -31,6 +31,7 @@ public class MainViewmodel extends Viewmodel {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
+        // TODO : rethink about this when discussing about deleting commander button
         switch (evt.getPropertyName()) {
             case Board.BoardMatrixPropertyName -> {
                 Board.ChangedCell cell = (Board.ChangedCell) evt.getNewValue();
@@ -143,7 +144,7 @@ public class MainViewmodel extends Viewmodel {
     }
 
     @Nullable
-    public Player getWinnerOfTheMatch() throws Match.MatchEndedException {
+    public Player getWinnerOfTheMatch() throws Match.MatchNotEndedException {
         return match.getWinner();
     }
 
