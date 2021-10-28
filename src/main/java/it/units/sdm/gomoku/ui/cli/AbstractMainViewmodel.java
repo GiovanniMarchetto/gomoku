@@ -8,11 +8,15 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public abstract class AbstractMainViewmodel extends Viewmodel {
+
+    public final static String userCanPlacePropertyName = "userCanPlace";
 
     private Match match;
 
@@ -20,9 +24,17 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
 
     private Board currentBoard;
 
-    private boolean userCanPlace = true;
+    private boolean userCanPlace = false;
 
     public AbstractMainViewmodel() {
+    }
+
+    private void setUserCanPlace(boolean userCanPlace) {
+        boolean oldValue = this.userCanPlace;
+        if (oldValue != userCanPlace) {
+            this.userCanPlace = userCanPlace;
+            firePropertyChange(userCanPlacePropertyName, oldValue, userCanPlace);
+        }
     }
 
     public void addAnExtraGameToThisMatch() {
@@ -82,15 +94,18 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
             currentBoard = currentGame.getBoard();
             observe(currentGame);
             observe(currentBoard);
+            firePropertyChange(Game.newGameStartedPropertyName, false, true);
+            placeStoneWithDelayIfIsCpu(500);    // TODO : magicnumber?
         } catch (Match.MatchEndedException e) {
             e.printStackTrace();
         }
     }
 
     public void endGame() {
-        // *Avengers theme plays*
+        setUserCanPlace(false); // TODO : rethink about this
         stopObserving(currentGame);
         stopObserving(currentBoard);
+        firePropertyChange(Game.gameEndedPropertyName, false, true);
     }
 
     public void placeStone(@Nullable final Coordinates coordinates)
@@ -106,23 +121,34 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
 
 
     private void placeStoneWithDelayIfIsCpu(final long delay) {
-        if (!currentGame.isThisGameEnded() && currentGame.getCurrentPlayer() instanceof CPUPlayer) {
-            userCanPlace = false;
+        if (!currentGame.isThisGameEnded()) {
+            if (currentGame.getCurrentPlayer() instanceof CPUPlayer) {
+                setUserCanPlace(false);
 
-            Timer timer = new Timer();
-            TimerTask task = new TimerTask() {
-                @Override
-                public void run() {
-                    try {
-                        placeStone(null);
-                    } catch (Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
-                        e.printStackTrace();        // TODO : rethink about this method
-                    }
-                    userCanPlace = true;
-                    timer.cancel();
+//            Timer timer = new Timer();
+//            TimerTask task = new TimerTask() {
+//                @Override
+//                public void run() {
+                try {
+                    placeStone(null);
+                } catch (Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
+                    e.printStackTrace();        // TODO : rethink about this method
                 }
-            };
-            timer.schedule(task, delay);
+                setUserCanPlace(true);
+//                    timer.cancel();
+//                }
+//            };
+//            timer.schedule(task, delay);
+
+                // TODO : viewmodel should run on separate thread (not the same of gui)
+                //
+                // Here we want a Thread.sleep(200) so we can see how the game evolves when CPU vs CPU (otherwise it is instantaneous)
+                // but this would block the GUI. At the same time, scheduling this task with a time may break the logic
+                // The solution might be to put the entire method placeStone in another thread
+
+            } else {
+                setUserCanPlace(true);
+            }
         }
     }
 
