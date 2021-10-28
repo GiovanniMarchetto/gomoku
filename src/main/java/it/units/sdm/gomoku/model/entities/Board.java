@@ -138,32 +138,39 @@ public class Board implements Observable, Cloneable {
 
     @Override
     public String toString() {
-        //TODO: re-implement toString()
-        StringBuilder s = new StringBuilder();
-        StringBuilder indCol = new StringBuilder();
-        indCol.append("   ");
-        for (int i = 0; i < size.intValue(); i++) {
-            if (i < 10) {
-                s.append(" ");
-                indCol.append(" ");
-            }
-            s.append(i).append("| ");
-            indCol.append(i).append(" ");//square board
-            for (int j = 0; j < size.intValue(); j++) {
-                if (matrix[i][j] == null) s.append(" ");
-                else
-                    switch (matrix[i][j]) {
-                        case BLACK -> s.append("X");
-                        case WHITE -> s.append("O");
-                        default -> s.append(" ");
-                    }
-                s.append("  ");
-            }
-            s.append("\n");
-        }
-        indCol.append("\n");
-        s.insert(0, indCol);
-        return s.toString();
+        int lengthOfSize = String.valueOf(size).length();
+        String spaces = IntStream.range(0, lengthOfSize)
+                .mapToObj(n -> " ").collect(Collectors.joining());
+
+        return " " + spaces +
+                IntStream.range(0, size.intValue())
+                        .mapToObj(col ->
+                                getSpacesForEveryCharOfSizeMoreThanInt(col)
+                                        + col
+                                        + " "
+                        ).collect(Collectors.joining()) +
+                "\n" +
+                IntStream.range(0, size.intValue()).mapToObj(row -> "" +
+                        getSpacesForEveryCharOfSizeMoreThanInt(row)
+                        + row
+                        + "| "
+                        + IntStream.range(0, size.intValue()).mapToObj(col ->
+                                switch (matrix[row][col]) {
+                                    case BLACK -> "X";
+                                    case WHITE -> "O";
+                                    default -> " ";
+                                }
+                                + spaces)
+                        .collect(Collectors.joining())
+                        + "\n"
+                ).collect(Collectors.joining());
+    }
+
+    @NotNull
+    private String getSpacesForEveryCharOfSizeMoreThanInt(int number) {
+        int lengthOfSize = String.valueOf(size).length();
+        return IntStream.range(0, lengthOfSize - String.valueOf(number).length())
+                .mapToObj(n -> " ").collect(Collectors.joining());
     }
 
     @Override

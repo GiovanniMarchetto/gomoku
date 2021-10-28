@@ -52,4 +52,5 @@ public class CLIMainViewModel extends AbstractMainViewmodel {
             }
         }
     }
+
 }
