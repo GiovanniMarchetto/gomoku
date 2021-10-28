@@ -45,7 +45,7 @@ public class CLIMainViewModel extends AbstractMainViewmodel {
                     }
                 }
             }
-            default -> throw new IllegalArgumentException("Property name " + evt.getPropertyName() + " not found!");
+//            default -> throw new IllegalArgumentException("Property name " + evt.getPropertyName() + " not found!");
         }
     }
 
