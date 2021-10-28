@@ -4,12 +4,14 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-class UtilityTest {
+class UtilityTest { // TODO: a class with a similar name is present in src/test/java/it/units/sdm/gomoku/model/utils
 
     @ParameterizedTest
     @CsvSource({"a, a, a", "_, a, b", "a, a, A", "a, a, b#a#c", "a, a, b#A#c", "_, a, b#d#c"})
@@ -36,13 +38,24 @@ class UtilityTest {
     @CsvSource({"1,1", "2,2", "4, dfs fds 3# 4", "5,### # 5"})
     void getAIntFromStdIn(int expected, String inserted) {
         inserted = inserted.replaceAll("#", System.lineSeparator());
+        PrintStream stdErr = System.err;
+        disableStdErr();    // avoid seeing what the tested method prints to stdErr
         try (ByteArrayInputStream fakeStdIn = new ByteArrayInputStream(inserted.getBytes())) {
             System.setIn(fakeStdIn);
             assertEquals(expected, Utility.getAIntFromStdIn());
         } catch (IOException e) {
+            rehabilitateStdErr(stdErr);
             e.printStackTrace();
             fail();
         }
+    }
+
+    private void rehabilitateStdErr(PrintStream realStdErr) {
+        System.setErr(realStdErr);
+    }
+
+    private void disableStdErr() {
+        System.setErr(new PrintStream(new ByteArrayOutputStream()));
     }
 
 }
