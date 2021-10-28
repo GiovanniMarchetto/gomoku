@@ -92,9 +92,14 @@ public class CPUPlayerChooseEmptyCoordinatesTest {
         }
     }
 
+    private void occupyNStonesInARow(int n, int row) {
+        IntStream.range(0, n).forEach(col ->
+                occupyCoordinateFromXAndY(row, col)
+        );
+    }
+
     private void twoStoneIntTheFirstRow() {
-        occupyCoordinateFromXAndY(0, 0);
-        occupyCoordinateFromXAndY(0, 1);
+        occupyNStonesInARow(2,0);
     }
 
     private void threeStoneIntTheSecondRow() {
