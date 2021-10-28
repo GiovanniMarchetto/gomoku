@@ -7,8 +7,9 @@ import java.util.logging.Logger;
 
 public class Utility {
     public static char getLowercaseCharIfValidCaseInsensitiveOr0(char... validChars) {
+        Scanner userInput = new Scanner(System.in);
         //noinspection CatchMayIgnoreException
-        try (Scanner userInput = new Scanner(System.in)) {
+        try {
             char inserted = userInput.nextLine().toLowerCase().charAt(0);
             for (char validChar : validChars) {
                 if (Character.toLowerCase(inserted) == Character.toLowerCase(validChar)) {
