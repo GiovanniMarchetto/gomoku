@@ -60,7 +60,7 @@ class TestUtilityTest {
             Logger.getLogger(this.getClass().getCanonicalName())
                     .warning("Test " + (thisMethod.isPresent() ? thisMethod.get() : "") +
                             " in class " + this.getClass().getCanonicalName() + "ignored for N=" + N +
-                            " (value for N is too big)");
+                            " (value for N is too big)\n");
         }
     }
 
