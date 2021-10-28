@@ -19,6 +19,8 @@ public class Game implements Comparable<Game>, Observable {
     @NotNull
     public static final String gameEndedPropertyName = "gameEnded";
     @NotNull
+    public static final String newGameStartedPropertyName = "newGameStarted";
+    @NotNull
     private final Board board;
     @NotNull
     private final Instant start;
