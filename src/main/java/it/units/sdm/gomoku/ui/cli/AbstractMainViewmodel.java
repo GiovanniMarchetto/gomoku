@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 public abstract class AbstractMainViewmodel extends Viewmodel {
 
-    public final static String userCanPlacePropertyName = "userCanPlace";
+    public final static String userMustPlaceNewStonePropertyName = "userMustPlaceNewStone";
 
     private Match match;
 
@@ -24,17 +24,7 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
 
     private Board currentBoard;
 
-    private boolean userCanPlace = false;
-
     public AbstractMainViewmodel() {
-    }
-
-    private void setUserCanPlace(boolean userCanPlace) {
-        boolean oldValue = this.userCanPlace;
-        if (oldValue != userCanPlace) {
-            this.userCanPlace = userCanPlace;
-            firePropertyChange(userCanPlacePropertyName, oldValue, userCanPlace);
-        }
     }
 
     public void addAnExtraGameToThisMatch() {
@@ -58,99 +48,75 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
         return currentBoard.toString();
     }
 
-    //    @Override
-//    public void propertyChange(PropertyChangeEvent evt) {
-//        switch (evt.getPropertyName()) {
-//            case Board.BoardMatrixPropertyName -> {
-//                Board.ChangedCell cell = (Board.ChangedCell) evt.getNewValue();
-//                firePropertyChange(Board.BoardMatrixPropertyName, null, cell);
-//            }
-//            case Setup.setupCompletedPropertyName -> {
-//                Setup setup = (Setup) evt.getNewValue();
-//                match = new Match(setup.getBoardSizeValue(), setup.getNumberOfGames(), setup.getPlayers());
-//                startNewGameAndPassToMainView();
-//            }
-//            case Game.gameEndedPropertyName -> {
-//                endGame();
-//                SceneController.passToNewScene(SceneController.ViewName.SUMMARY_VIEW);
-//            }
-//            case SummaryView.continueAfterSummaryPropertyName -> {
-//                startNewGameAndPassToMainView();
-//            }
-//            case SummaryView.newMatchAfterSummaryPropertyName -> {
-//                SceneController.passToNewScene(SceneController.ViewName.START_VIEW);
-//            }
-//            case SummaryView.extraGameAfterSummaryPropertyName -> {
-//                match.addAnExtraGame();
-//                startNewGameAndPassToMainView();
-//            }
-//            default -> throw new IllegalArgumentException("Property name " + evt.getPropertyName() + " not found!");
-//        }
-//    }
-
-    public void startNewGame() {
+    public void initializeNewGame() {
         try {
             currentGame = match.startNewGame();
             currentBoard = currentGame.getBoard();
             observe(currentGame);
             observe(currentBoard);
             firePropertyChange(Game.newGameStartedPropertyName, false, true);
-            placeStoneWithDelayIfIsCpu(500);    // TODO : magicnumber?
         } catch (Match.MatchEndedException e) {
             e.printStackTrace();
         }
     }
 
     public void endGame() {
-        setUserCanPlace(false); // TODO : rethink about this
         stopObserving(currentGame);
         stopObserving(currentBoard);
         firePropertyChange(Game.gameEndedPropertyName, false, true);
     }
 
-    public void placeStone(@Nullable final Coordinates coordinates)
+    @NotNull
+    protected Game getCurrentGame() {
+        return currentGame;
+    }
+
+    @NotNull
+    protected Board getCurrentBoard() {
+        return currentBoard;
+    }
+
+    private void placeStone(@NotNull final Coordinates coordinates)
             throws Board.NoMoreEmptyPositionAvailableException, Board.PositionAlreadyOccupiedException {
-        Player currentPlayer = currentGame.getCurrentPlayer();
-        if (currentPlayer instanceof CPUPlayer || userCanPlace) {
-            Match.executeMoveOfPlayerInGame(currentGame,
-                    currentPlayer instanceof CPUPlayer ?
-                            ((CPUPlayer) currentPlayer).chooseRandomEmptyCoordinates(currentBoard) : coordinates);
-            placeStoneWithDelayIfIsCpu(200);
+        Match.executeMoveOfPlayerInGame(getCurrentGame(), Objects.requireNonNull(coordinates));
+    }
+
+    public void placeStoneFromUser(@NotNull final Coordinates coordinates)
+            throws Board.NoMoreEmptyPositionAvailableException, Board.PositionAlreadyOccupiedException {
+        if (!(getCurrentPlayer() instanceof CPUPlayer)) {
+            placeStone(coordinates);
         }
     }
 
 
-    private void placeStoneWithDelayIfIsCpu(final long delay) {
-        if (!currentGame.isThisGameEnded()) {
-            if (currentGame.getCurrentPlayer() instanceof CPUPlayer) {
-                setUserCanPlace(false);
+    protected void startNewGame() {
+        initializeNewGame();
+        placeStoneIfGameNotEndedAndIsCPUPlayingOrElseNotifyTheView(getCurrentPlayer());
+    }
 
-//            Timer timer = new Timer();
-//            TimerTask task = new TimerTask() {
-//                @Override
-//                public void run() {
+    protected void placeStoneIfGameNotEndedAndIsCPUPlayingOrElseNotifyTheView(Player currentPlayer) {
+        if (!isCurrentGameEnded()) {
+            if (currentPlayer instanceof CPUPlayer) {
                 try {
-                    placeStone(null);
-                } catch (Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
-                    e.printStackTrace();        // TODO : rethink about this method
+                    placeStone(((CPUPlayer) currentPlayer)
+                            .chooseRandomEmptyCoordinates(getCurrentBoard()));
+                } catch (Board.NoMoreEmptyPositionAvailableException |
+                        Board.PositionAlreadyOccupiedException e) {
+                    e.printStackTrace();    // TODO : handle this
                 }
-                setUserCanPlace(true);
-//                    timer.cancel();
-//                }
-//            };
-//            timer.schedule(task, delay);
-
-                // TODO : viewmodel should run on separate thread (not the same of gui)
-                //
-                // Here we want a Thread.sleep(200) so we can see how the game evolves when CPU vs CPU (otherwise it is instantaneous)
-                // but this would block the GUI. At the same time, scheduling this task with a time may break the logic
-                // The solution might be to put the entire method placeStone in another thread
-
             } else {
-                setUserCanPlace(true);
+                firePropertyChange(userMustPlaceNewStonePropertyName, false, true); // TODO : where is the property?
             }
         }
     }
+
+//    private void placeStoneWithDelayIfIsCpu(final long delay) {
+// TODO : viewmodel should run on separate thread (not the same of gui)
+//
+// Here we want a Thread.sleep(200) so we can see how the game evolves when CPU vs CPU (otherwise it is instantaneous)
+// but this would block the GUI. At the same time, scheduling this task with a time may break the logic
+// The solution might be to put the entire method placeStone in another thread
+//    }
 
     public int getBoardSize() {
         try {

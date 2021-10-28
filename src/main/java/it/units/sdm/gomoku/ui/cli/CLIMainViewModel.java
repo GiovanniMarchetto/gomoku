@@ -3,6 +3,7 @@ package it.units.sdm.gomoku.ui.cli;
 import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.entities.Game;
 import it.units.sdm.gomoku.model.entities.Match;
+import it.units.sdm.gomoku.model.entities.Player;
 import it.units.sdm.gomoku.ui.support.Setup;
 
 import java.beans.PropertyChangeEvent;
@@ -45,8 +46,10 @@ public class CLIMainViewModel extends AbstractMainViewmodel {
                     }
                 }
             }
-            default -> throw new IllegalArgumentException("Property name " + evt.getPropertyName() + " not found!");
+            case Game.currentPlayerPropertyName -> {
+                Player currentPlayer = (Player) evt.getNewValue();
+                placeStoneIfGameNotEndedAndIsCPUPlayingOrElseNotifyTheView(currentPlayer);
+            }
         }
     }
-
 }

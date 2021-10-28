@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 
 import static it.units.sdm.gomoku.model.entities.Game.gameEndedPropertyName;
 import static it.units.sdm.gomoku.model.entities.Game.newGameStartedPropertyName;
-import static it.units.sdm.gomoku.ui.cli.AbstractMainViewmodel.userCanPlacePropertyName;
+import static it.units.sdm.gomoku.ui.cli.AbstractMainViewmodel.userMustPlaceNewStonePropertyName;
 import static it.units.sdm.gomoku.ui.cli.CLIApplication.*;
 
 class CLIApplication {
@@ -62,7 +62,7 @@ class CLIMainView extends View implements Observer {
                     System.out.println("\n\nNew game!");
                 }
             }
-            case userCanPlacePropertyName -> {
+            case userMustPlaceNewStonePropertyName -> {
                 if ((boolean) evt.getNewValue()) {
                     try {
                         waitForAValidMoveOfAPlayer();
@@ -95,7 +95,7 @@ class CLIMainView extends View implements Observer {
                             firePropertyChange(extraGameAfterSummaryPropertyName, null, anotherGame);
                         } else {
                             System.out.print("Another match? Y/N: ");
-                            boolean anotherMatch = Utility.getLowercaseCharIfValidCaseInsensitiveOr0('y', 'n') == 'y';
+                            boolean anotherMatch = Utility.getLowercaseCharIfValidCaseInsensitiveOr0('y', 'n') == 'y'; // TODO : not working
                             firePropertyChange(newMatchAfterSummaryPropertyName, null, anotherMatch);
                         }
                     } else {
@@ -125,7 +125,7 @@ class CLIMainView extends View implements Observer {
                 System.out.print("\tColumn coordinate: ");
                 colCoord = Utility.getAIntFromStdIn();
                 coordInsertedByTheUser = new Coordinates(rowCoord, colCoord);
-                viewmodel.placeStone(coordInsertedByTheUser);  // TODO : correct or stones should be placed by the viewmodel?
+                viewmodel.placeStoneFromUser(coordInsertedByTheUser);  // TODO : correct or stones should be placed by the viewmodel?
                 validMove = true;
             } catch (IndexOutOfBoundsException e) {
                 System.out.print("Valid coordinates values are between " + 0 +
