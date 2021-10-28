@@ -42,13 +42,16 @@ public class CLISetup extends Setup { // TODO : to be tested
             );
         }
         return switch (matchType) {
-            case CPU_VS_PERSON -> Stream.of(
-                    new AbstractMap.SimpleEntry<>(new Player(playerNames.get(0)), PlayerTypes.PERSON),
-                    new AbstractMap.SimpleEntry<>(new CPUPlayer(), PlayerTypes.CPU)
-            ).collect(Collectors.toConcurrentMap(Map.Entry::getKey, Map.Entry::getValue));
-            case PERSON_VS_PERSON -> playerNames.stream().sequential()
-                    .map(playerName -> new AbstractMap.SimpleEntry<>(new Player(playerName), PlayerTypes.PERSON))
-                    .collect(Collectors.toConcurrentMap(Map.Entry::getKey, Map.Entry::getValue));
+            case CPU_VS_PERSON -> Collections.synchronizedMap(
+                    Stream.of(
+                                    new AbstractMap.SimpleEntry<>(new Player(playerNames.get(0)), PlayerTypes.PERSON),
+                                    new AbstractMap.SimpleEntry<>(new CPUPlayer(), PlayerTypes.CPU)
+                            )
+                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> b, LinkedHashMap::new)));
+            case PERSON_VS_PERSON -> Collections.synchronizedMap(
+                    playerNames.stream().sequential()
+                            .map(playerName -> new AbstractMap.SimpleEntry<>(new Player(playerName), PlayerTypes.PERSON))
+                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> b, LinkedHashMap::new)));
             //noinspection UnnecessaryDefault   // default branch used as good practice
             default -> throw new IllegalArgumentException("Unexpected " + matchType);
         };
