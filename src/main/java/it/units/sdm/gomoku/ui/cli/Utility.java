@@ -1,5 +1,6 @@
 package it.units.sdm.gomoku.ui.cli;
 
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -21,7 +22,22 @@ public class Utility {
         return 0;
     }
 
+    public static char getLowercaseCharWhenValidCaseInsensitiveOrCycle(char... validChars) {
+        char aChar = 0;
+        boolean validInputInserted = false;
+        do {
+            aChar = getLowercaseCharIfValidCaseInsensitiveOr0(validChars);
+            validInputInserted = aChar != 0;
+            if (!validInputInserted) {
+                System.out.print("Invalid input, please insert one from the list " +
+                        Arrays.toString(validChars) + ": ");
+            }
+        } while (!validInputInserted);
+        return aChar;
+    }
+
     public static int getAIntFromStdIn() {
+        // TODO : refactor to use method above
         Scanner fromUser = new Scanner(System.in);
         int aInt = 0;
         boolean validInputInserted = false;
