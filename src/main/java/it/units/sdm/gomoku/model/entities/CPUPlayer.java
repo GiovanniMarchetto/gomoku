@@ -6,8 +6,11 @@ import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static it.units.sdm.gomoku.model.entities.Board.NoMoreEmptyPositionAvailableException;
@@ -27,25 +30,34 @@ public class CPUPlayer extends Player {
         super(CPU_DEFAULT_NAME + numberOfCpuPlayers.incrementAndGet());
     }
 
-    private static boolean isHeadOfAChainOfStones(Board board, Coordinates coordinates,
-                                                  Board.Stone stoneColor,
+    private static boolean isHeadOfAChainOfStones(Board board, Coordinates startCoordinates,
                                                   PositiveInteger numberOfConsecutive) {
         int[] directionFactorXs = {0, 0, 1, -1, 1, -1, 1, -1};
         int[] directionFactorYs = {1, -1, 0, 0, 1, -1, -1, 1};
 
         return IntStream.range(0, directionFactorXs.length)
                 .mapToObj(i -> new Pair<>(directionFactorXs[i], directionFactorYs[i]))
-                .map(aDirectionFactor -> IntStream.range(1, numberOfConsecutive.intValue())
-                        .mapToObj(i -> new Pair<>(
-                                coordinates.getX() + i * aDirectionFactor.getKey(),
-                                coordinates.getY() + i * aDirectionFactor.getValue()))
-                        .filter(pair -> pair.getKey() >= 0 && pair.getValue() >= 0)
-                        .map(validPair -> new Coordinates(validPair.getKey(), validPair.getValue()))
-                        .filter(aCoord -> board.isCoordinatesInsideBoard(aCoord) &&
-                                stoneColor == board.getStoneAtCoordinates(aCoord))
-                        .count()
+                .map(aDirectionFactor -> {
+                            List<Stone> stoneList = IntStream.range(1, numberOfConsecutive.intValue() + 1)
+                                    .mapToObj(i -> new Pair<>(
+                                            startCoordinates.getX() + i * aDirectionFactor.getKey(),
+                                            startCoordinates.getY() + i * aDirectionFactor.getValue()))
+                                    .filter(pair -> pair.getKey() >= 0 && pair.getValue() >= 0)
+                                    .map(validPair -> new Coordinates(validPair.getKey(), validPair.getValue()))
+                                    .filter(board::isCoordinatesInsideBoard)
+                                    .map(board::getStoneAtCoordinates)
+                                    .filter(stone -> !stone.isNone())
+                                    .collect(Collectors.toList());
+                            if (stoneList.size() != 0) {
+                                return stoneList.stream()
+                                        .filter(stone -> stone == stoneList.get(0))
+                                        .count();
+                            } else {
+                                return 0L;
+                            }
+                        }
                 )
-                .anyMatch(counter -> counter == numberOfConsecutive.intValue() - 1);
+                .anyMatch(counter -> counter == numberOfConsecutive.intValue());
     }
 
     @NotNull
@@ -55,28 +67,24 @@ public class CPUPlayer extends Player {
             return chooseNextEmptyCoordinatesFromCenter(board);
         }
 
-        Stone[] stoneColors = new Stone[]{Stone.WHITE, Stone.BLACK};
-        Optional<Coordinates> optionalCoordinates;
-        for (int i = 5; i > 2; i--) {
-            for (Stone stoneColor : stoneColors) {
-                optionalCoordinates = findCoordinates(board, stoneColor, i);
+        final int maxChainToFind = 5;//exclusive
+        final int minChainToFind = 2;//inclusive
+
+        AtomicInteger consecutiveStonesToFind= new AtomicInteger(maxChainToFind);
+        for (; consecutiveStonesToFind.get() >= minChainToFind; consecutiveStonesToFind.getAndDecrement()) {
+                Optional<Coordinates> optionalCoordinates = IntStream.range(0, board.getSize()).boxed()
+                        .flatMap(x -> IntStream.range(0, board.getSize())
+                                .mapToObj(y -> new Coordinates(x, y)))
+                        .filter(c -> board.getStoneAtCoordinates(c).isNone())
+                        .filter(c -> isHeadOfAChainOfStones(board, c, new PositiveInteger(consecutiveStonesToFind.get())))
+                        .findAny();
+
                 if (optionalCoordinates.isPresent()) {
                     return optionalCoordinates.get();
                 }
-            }
         }
 
         return chooseNextEmptyCoordinatesFromCenter(board);
-
-    }
-
-    private Optional<Coordinates> findCoordinates(@NotNull Board board, Stone stoneColor, int i) {
-        return IntStream.range(0, board.getSize()).boxed()
-                .flatMap(x -> IntStream.range(0, board.getSize())
-                        .mapToObj(y -> new Coordinates(x, y)))
-                .filter(c -> board.getStoneAtCoordinates(c).isNone())
-                .filter(c -> isHeadOfAChainOfStones(board, c, stoneColor, new PositiveInteger(i)))
-                .findAny();
     }
 
     @NotNull
