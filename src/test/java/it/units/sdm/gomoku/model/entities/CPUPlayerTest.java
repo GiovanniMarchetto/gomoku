@@ -5,7 +5,11 @@ import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.utils.TestUtility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class CPUPlayerTest {
@@ -19,45 +23,72 @@ class CPUPlayerTest {
         board = TestUtility.createBoardWithCsvBoardStone();
     }
 
-    @RepeatedTest(EnvVariables.INT_NUMBER_REPETITIONS_TEST)
+
+    @ParameterizedTest
+    @CsvSource({"2, 0,0", "4, 1,1", "5, 2,2", "9, 4,4"})
+    void chooseFromCenterFirstStone(int size, int x, int y) {
+        board = new Board(size);
+        Coordinates expected = new Coordinates(x, y);
+        try {
+            assertEquals(expected, cpuPlayer.chooseNextEmptyCoordinatesFromCenter(board));
+        } catch (Board.NoMoreEmptyPositionAvailableException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @ParameterizedTest
+    @CsvSource({"2, 0,1", "4, 1,2", "5, 1,1", "9, 3,3"})
+    void chooseFromCenterSecondStone(int size, int x, int y) {
+        board = new Board(size);
+        try {
+            board.occupyPosition(Board.Stone.BLACK, cpuPlayer.chooseNextEmptyCoordinatesFromCenter(board));
+
+            Coordinates expected = new Coordinates(x, y);
+            assertEquals(expected, cpuPlayer.chooseNextEmptyCoordinatesFromCenter(board));
+        } catch (Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
     void chooseNextEmptyCoordinates() {
         try {
-            Coordinates coordinates = cpuPlayer.chooseNextEmptyCoordinates(board);
-            board.occupyPosition(cpuStone, coordinates);
+            tryToOccupyCoordinatesChosen(cpuPlayer.chooseNextEmptyCoordinates(board));
         } catch (Board.NoMoreEmptyPositionAvailableException e) {
             if (board.isAnyEmptyPositionOnTheBoard()) {
                 fail(e);
             }
-        } catch (Board.PositionAlreadyOccupiedException e) {
-            fail(e);
         }
     }
 
     @RepeatedTest(EnvVariables.INT_NUMBER_REPETITIONS_TEST)
     void chooseNextEmptyCoordinatesFromCenter() {
         try {
-            Coordinates coordinates = cpuPlayer.chooseNextEmptyCoordinatesFromCenter(board);
-            board.occupyPosition(cpuStone, coordinates);
+            tryToOccupyCoordinatesChosen(cpuPlayer.chooseNextEmptyCoordinatesFromCenter(board));
         } catch (Board.NoMoreEmptyPositionAvailableException e) {
             if (board.isAnyEmptyPositionOnTheBoard()) {
                 fail(e);
             }
-        } catch (Board.PositionAlreadyOccupiedException e) {
-            fail(e);
         }
     }
 
     @RepeatedTest(EnvVariables.INT_NUMBER_REPETITIONS_TEST)
     void chooseRandomEmptyCoordinates() {
         try {
-            Coordinates coordinates = cpuPlayer.chooseRandomEmptyCoordinates(board);
-            board.occupyPosition(cpuStone, coordinates);
+            tryToOccupyCoordinatesChosen(cpuPlayer.chooseRandomEmptyCoordinates(board));
         } catch (Board.NoMoreEmptyPositionAvailableException e) {
             if (board.isAnyEmptyPositionOnTheBoard()) {
                 fail(e);
             }
-        } catch (Board.PositionAlreadyOccupiedException e) {
+        }
+    }
+
+    private void tryToOccupyCoordinatesChosen(Coordinates coordinates) {
+        try {
+            board.occupyPosition(cpuStone, coordinates);
+        } catch (Board.PositionAlreadyOccupiedException | Board.NoMoreEmptyPositionAvailableException e) {
             fail(e);
         }
     }
+
 }
