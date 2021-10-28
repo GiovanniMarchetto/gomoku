@@ -182,7 +182,7 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
     }
 
     @Nullable
-    public Player getWinnerOfTheMatch() throws Match.MatchEndedException {
+    public Player getWinnerOfTheMatch() throws Match.MatchNotEndedException {
         return match.getWinner();
     }
 

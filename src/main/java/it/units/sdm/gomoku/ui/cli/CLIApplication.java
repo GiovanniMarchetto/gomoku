@@ -84,7 +84,7 @@ class MainCLIView extends View implements Observer {
                         boolean isMatchEndedWithDraft = false;
                         try {
                             isMatchEndedWithDraft = viewmodel.getWinnerOfTheMatch() == null;  // TODO : viewmodel should have a method "isMatchEndedWithADraft()" to avoid "==null"
-                        } catch (Match.MatchEndedException /* TODO: should be MatchNotEndedException */ e) {
+                        } catch (Match.MatchNotEndedException /* TODO: should be MatchNotEndedException */ e) {
                             Logger.getLogger(getClass().getCanonicalName())
                                     .log(Level.SEVERE, "Impossible to be here", e);
                         }

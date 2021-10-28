@@ -104,7 +104,7 @@ public class Match {
     }
 
     @Nullable
-    public Player getWinner() throws MatchEndedException {
+    public Player getWinner() throws MatchNotEndedException {
         if (isEnded()) {
             if (isEndedWithADraft()) {
                 return null;
@@ -114,7 +114,7 @@ public class Match {
                         : currentWhitePlayer;
             }
         } else {
-            throw new MatchEndedException();
+            throw new MatchNotEndedException();
         }
     }
 
@@ -161,5 +161,8 @@ public class Match {
     }
 
     public static class MatchEndedException extends Exception {
+    }
+
+    public static class MatchNotEndedException extends Exception {
     }
 }
