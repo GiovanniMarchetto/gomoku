@@ -39,7 +39,7 @@ public class CLIMainViewModel extends AbstractMainViewmodel {
             case newMatchAfterSummaryPropertyName -> {
                 if ((boolean) evt.getNewValue()) {
                     try {
-                        new MainCLIView(this);
+                        new CLIMainView(this);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

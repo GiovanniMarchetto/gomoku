@@ -33,7 +33,7 @@ class CLIApplication {
 //        boolean newMatch;
 //        do {
         try {
-            new MainCLIView(new CLIMainViewModel());
+            new CLIMainView(new CLIMainViewModel());
         } catch (IOException e) {
             Logger.getLogger(CLIApplication.class.getCanonicalName())
                     .log(Level.SEVERE, "Unable to setup CLI application", e);
@@ -46,8 +46,8 @@ class CLIApplication {
 
 }
 
-class MainCLIView extends View implements Observer {
-    public MainCLIView(Viewmodel viewmodelAssociatedWithView) throws IOException {
+class CLIMainView extends View implements Observer {
+    public CLIMainView(Viewmodel viewmodelAssociatedWithView) throws IOException {
         super(viewmodelAssociatedWithView);
         getViewmodelAssociatedWithView().addPropertyChangeListener(this);// TODO : rethink about this (should View abstract class implement Observer to observer its corresponding Viewmodel)
         firePropertyChange(Setup.setupCompletedPropertyName, null, new CLISetup());// TODO : rethink about this
