@@ -70,18 +70,18 @@ public class CPUPlayer extends Player {
         final int maxChainToFind = 5;//exclusive
         final int minChainToFind = 2;//inclusive
 
-        AtomicInteger consecutiveStonesToFind= new AtomicInteger(maxChainToFind);
+        AtomicInteger consecutiveStonesToFind = new AtomicInteger(maxChainToFind);
         for (; consecutiveStonesToFind.get() >= minChainToFind; consecutiveStonesToFind.getAndDecrement()) {
-                Optional<Coordinates> optionalCoordinates = IntStream.range(0, board.getSize()).boxed()
-                        .flatMap(x -> IntStream.range(0, board.getSize())
-                                .mapToObj(y -> new Coordinates(x, y)))
-                        .filter(c -> board.getStoneAtCoordinates(c).isNone())
-                        .filter(c -> isHeadOfAChainOfStones(board, c, new PositiveInteger(consecutiveStonesToFind.get())))
-                        .findAny();
+            Optional<Coordinates> optionalCoordinates = IntStream.range(0, board.getSize()).boxed()
+                    .flatMap(x -> IntStream.range(0, board.getSize())
+                            .mapToObj(y -> new Coordinates(x, y)))
+                    .filter(c -> board.getStoneAtCoordinates(c).isNone())
+                    .filter(c -> isHeadOfAChainOfStones(board, c, new PositiveInteger(consecutiveStonesToFind.get())))
+                    .findAny();
 
-                if (optionalCoordinates.isPresent()) {
-                    return optionalCoordinates.get();
-                }
+            if (optionalCoordinates.isPresent()) {
+                return optionalCoordinates.get();
+            }
         }
 
         return chooseNextEmptyCoordinatesFromCenter(board);

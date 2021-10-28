@@ -20,7 +20,7 @@ public class PositiveInteger extends NonNegativeInteger {
         }
     }
 
-    public PositiveInteger(PositiveInteger positiveInteger){
+    public PositiveInteger(PositiveInteger positiveInteger) {
         this(positiveInteger.intValue());
     }
 
