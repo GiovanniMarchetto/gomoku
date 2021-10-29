@@ -20,12 +20,6 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
 
     public final static String userMustPlaceNewStonePropertyName = "userMustPlaceNewStone";
     // TODO : correct to declare here this variable?
-    @NotNull
-    public static final String newMatchAfterSummaryPropertyName = "newMatchAfterSummary"; // TODO : this variable is duplicated somewhere
-    @NotNull
-    public static final String continueAfterSummaryPropertyName = "continueAfterSummary";
-    @NotNull
-    public static final String extraGameAfterSummaryPropertyName = "extraGameAfterSummary";
 
     @Nullable
     private Match match;
@@ -54,18 +48,6 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
                 firePropertyChange(Board.boardMatrixPropertyName, null, cell);  // TODO : inappropriate property name (observed in GomokuCell)
             }
             case Game.gameEndedPropertyName -> endGame();
-            case continueAfterSummaryPropertyName -> startNewGame();
-            case extraGameAfterSummaryPropertyName -> {
-                if ((boolean) evt.getNewValue()) {
-                    addAnExtraGameToThisMatch();
-                    startNewGame();
-                }
-            }
-            case newMatchAfterSummaryPropertyName -> {
-                if ((boolean) evt.getNewValue()) {
-                    startNewMatch();
-                }
-            }
             case Game.currentPlayerPropertyName -> {
                 Player currentPlayer = (Player) evt.getNewValue();
                 placeStoneIfGameNotEndedAndIsCPUPlayingOrElseNotifyTheView(currentPlayer);
@@ -73,11 +55,16 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
         }
     }
 
-    protected abstract void startNewMatch();
+    public abstract void startNewMatch();
 
-    protected void startNewGame() {
+    public void startNewGame() {
         initializeNewGame();
         placeStoneIfGameNotEndedAndIsCPUPlayingOrElseNotifyTheView(getCurrentPlayer());
+    }
+
+    public void startExtraGame() {
+        addAnExtraGameToThisMatch();
+        startNewGame();
     }
 
     protected void addAnExtraGameToThisMatch() {

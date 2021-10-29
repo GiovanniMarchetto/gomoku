@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 
 import static it.units.sdm.gomoku.model.entities.Game.gameEndedPropertyName;
 import static it.units.sdm.gomoku.model.entities.Game.newGameStartedPropertyName;
-import static it.units.sdm.gomoku.ui.AbstractMainViewmodel.*;
+import static it.units.sdm.gomoku.ui.AbstractMainViewmodel.userMustPlaceNewStonePropertyName;
 
 public class CLIMainView extends View implements Observer {    // TODO : all events clutter the memory stack
 
@@ -65,14 +65,18 @@ public class CLIMainView extends View implements Observer {    // TODO : all eve
                         if (isMatchEndedWithDraft) {
                             System.out.print("Extra game? Y/N: ");    // TODO: refactor with lines down?
                             boolean anotherGame = Utility.getLowercaseCharWhenValidCaseInsensitiveOrCycle('y', 'n') == 'y';
-                            firePropertyChange(extraGameAfterSummaryPropertyName, null, anotherGame);
+                            if (anotherGame) {
+                                viewmodel.startExtraGame();
+                            }
                         } else {
                             System.out.print("Another match? Y/N: ");
-                            boolean anotherMatch = Utility.getLowercaseCharWhenValidCaseInsensitiveOrCycle('y', 'n') == 'y'; // TODO : not working
-                            firePropertyChange(newMatchAfterSummaryPropertyName, null, anotherMatch);
+                            boolean anotherMatch = Utility.getLowercaseCharWhenValidCaseInsensitiveOrCycle('y', 'n') == 'y';
+                            if (anotherMatch) {
+                                viewmodel.startNewMatch();
+                            }
                         }
                     } else {
-                        firePropertyChange(continueAfterSummaryPropertyName, null, true);
+                        viewmodel.startNewGame();
                     }
                 }
             }

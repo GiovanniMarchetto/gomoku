@@ -12,13 +12,13 @@ public class MainViewmodel extends AbstractMainViewmodel {
     }
 
     @Override
-    protected void startNewGame() {
+    public void startNewGame() {
         super.startNewGame();
         SceneController.passToNewSceneIfIsGUIRunningOrDoNothing(SceneController.ViewName.MAIN_VIEW);
     }
 
     @Override
-    protected void startNewMatch() {
+    public void startNewMatch() {
         SceneController.passToNewSceneIfIsGUIRunningOrDoNothing(SceneController.ViewName.START_VIEW);
     }
 }

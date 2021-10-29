@@ -7,7 +7,7 @@ import java.io.IOException;
 public class CLIMainViewmodel extends AbstractMainViewmodel {
 
     @Override
-    protected void startNewMatch() {
+    public void startNewMatch() {
         try {
             new CLIMainView(this);
         } catch (IOException e) {

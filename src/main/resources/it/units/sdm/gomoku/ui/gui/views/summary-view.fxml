@@ -15,7 +15,7 @@
                GridPane.columnSpan="3" GridPane.halignment="CENTER"
                style="-fx-font-size: 20; -fx-font-weight: bold"/>
         <Label text="The match is ended with:"/>
-        <Label fx:id="winnerOfMatch" style="-fx-font-weight: bold"/>
+        <Label fx:id="winnerOfMatchLabel" style="-fx-font-weight: bold"/>
     </VBox>
 
     <!--TODO find a method to have a "class" for the same style properties-->
@@ -25,17 +25,18 @@
                GridPane.columnSpan="3" GridPane.halignment="CENTER"
                style="-fx-font-size: 20; -fx-font-weight: bold"/>
         <Label text="This game is ended with:"/>
-        <Label fx:id="winnerOfGame" style="-fx-font-weight: bold"/>
+        <Label fx:id="winnerOfGameLabel" style="-fx-font-weight: bold"/>
     </VBox>
 
 
     <VBox GridPane.rowIndex="3" GridPane.columnIndex="0">
         <Label text="Match current score:" style="-fx-font-weight: bold"/>
-        <Label fx:id="scoreOfMatch"/>
+        <Label fx:id="scoreOfMatchLabel"/>
     </VBox>
 
-    <HBox fx:id="buttonHBox"
-          GridPane.rowIndex="4" GridPane.columnIndex="1">
-
+    <HBox GridPane.rowIndex="5" GridPane.columnIndex="1" spacing="5">
+        <Button fx:id="continueButton" text="Continue" onMouseClicked="#continueButtonOnMouseClicked" visible="false"/>
+        <Button fx:id="extraGameButton" text="Extra Game" onMouseClicked="#extraGameButtonOnMouseClicked" visible="false"/>
+        <Button fx:id="newMatchButton" text="New Match" onMouseClicked="#newMatchButtonOnMouseClicked" visible="false"/>
     </HBox>
 </GridPane>

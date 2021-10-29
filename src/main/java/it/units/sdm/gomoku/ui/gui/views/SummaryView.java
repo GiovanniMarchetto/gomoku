@@ -4,32 +4,31 @@ import it.units.sdm.gomoku.model.entities.Game;
 import it.units.sdm.gomoku.model.entities.Match;
 import it.units.sdm.gomoku.model.entities.Player;
 import it.units.sdm.gomoku.mvvm_library.views.View;
-import it.units.sdm.gomoku.mvvm_library.views.gui_items.CommanderButton;
 import it.units.sdm.gomoku.ui.gui.viewmodels.MainViewmodel;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 
 import static it.units.sdm.gomoku.ui.gui.GUIMain.mainViewmodel;
 
 public class SummaryView extends View {
-
-    public static final String continueAfterSummaryPropertyName = "continue";
-    public static final String newMatchAfterSummaryPropertyName = "newMatch";
-    public static final String extraGameAfterSummaryPropertyName = "extraGame";
-
     @FXML
-    private HBox buttonHBox;
+    private Button newMatchButton;
+    @FXML
+    private Button extraGameButton;
+    @FXML
+    private Button continueButton;
     @FXML
     private VBox endMatchVBox;
 
     @FXML
-    private Label winnerOfGame;
+    private Label winnerOfGameLabel;
     @FXML
-    private Label winnerOfMatch;
+    private Label winnerOfMatchLabel;
     @FXML
-    private Label scoreOfMatch;
+    private Label scoreOfMatchLabel;
 
     public SummaryView() {
         super(mainViewmodel);
@@ -39,71 +38,54 @@ public class SummaryView extends View {
     private void initialize() {
         var vm = (MainViewmodel) getViewmodelAssociatedWithView();
 
+        continueButton.managedProperty().bind(continueButton.visibleProperty());
+        extraGameButton.managedProperty().bind(extraGameButton.visibleProperty());
+        newMatchButton.managedProperty().bind(newMatchButton.visibleProperty());
+
         try {
             Player winnerValue = vm.getWinnerOfTheGame();
-            this.winnerOfGame.setText(winnerValue != null
+            this.winnerOfGameLabel.setText(winnerValue != null
                     ? "WIN OF " + winnerValue
                     : "DRAW");
         } catch (Game.GameNotEndedException e) {
             e.printStackTrace();
         }
 
-        this.scoreOfMatch.setText(vm.getScoreOfMatch().toString()
+        this.scoreOfMatchLabel.setText(vm.getScoreOfMatch().toString()
                 .replace(", ", "\n\t")
                 .replace("{", "\t")
                 .replace("}", "")
                 .replace("=", " = "));
 
         if (!vm.isMatchEnded()) {
-            CommanderButton continueButton = getContinueCommanderButton();
-            buttonHBox.getChildren().add(continueButton.getGUIItem());
+            continueButton.setVisible(true);
         } else {
             endMatchVBox.setVisible(true);
             try {
                 Player winnerValue = vm.getWinnerOfTheMatch();
-                this.winnerOfMatch.setText(winnerValue != null
+                this.winnerOfMatchLabel.setText(winnerValue != null
                         ? "WIN OF " + winnerValue
                         : "DRAW");
 
                 if (vm.getWinnerOfTheMatch() == null) {
-                    CommanderButton extraGameButton = getExtraGameCommanderButton();
-                    buttonHBox.getChildren().add(extraGameButton.getGUIItem());
+                    extraGameButton.setVisible(true);
                 }
             } catch (Match.MatchNotEndedException e) {
                 e.printStackTrace();
             }
-
-
-            CommanderButton newMatchButton = getNewMatchCommanderButton();
-            buttonHBox.getChildren().add(newMatchButton.getGUIItem());
+            newMatchButton.setVisible(true);
         }
     }
 
-
-    private CommanderButton getContinueCommanderButton() {
-        return new CommanderButton(
-                "Continue",
-                this,
-                getViewmodelAssociatedWithView(),
-                continueAfterSummaryPropertyName,
-                () -> true);
+    public void continueButtonOnMouseClicked(MouseEvent e) {
+        ((MainViewmodel) getViewmodelAssociatedWithView()).startNewGame();
     }
 
-    private CommanderButton getNewMatchCommanderButton() {
-        return new CommanderButton(
-                "New Match",
-                this,
-                getViewmodelAssociatedWithView(),
-                newMatchAfterSummaryPropertyName,
-                () -> true);
+    public void extraGameButtonOnMouseClicked(MouseEvent e) {
+        ((MainViewmodel) getViewmodelAssociatedWithView()).startExtraGame();
     }
 
-    private CommanderButton getExtraGameCommanderButton() {
-        return new CommanderButton(
-                "Extra Game",
-                this,
-                getViewmodelAssociatedWithView(),
-                extraGameAfterSummaryPropertyName,
-                () -> true);
+    public void newMatchButtonOnMouseClicked(MouseEvent e) {
+        ((MainViewmodel) getViewmodelAssociatedWithView()).startNewMatch();
     }
 }
