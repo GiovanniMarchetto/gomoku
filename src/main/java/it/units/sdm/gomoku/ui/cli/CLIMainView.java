@@ -6,6 +6,7 @@ import it.units.sdm.gomoku.model.entities.Match;
 import it.units.sdm.gomoku.mvvm_library.Observer;
 import it.units.sdm.gomoku.mvvm_library.viewmodels.Viewmodel;
 import it.units.sdm.gomoku.mvvm_library.views.View;
+import it.units.sdm.gomoku.ui.AbstractMainViewmodel;
 import it.units.sdm.gomoku.ui.support.Setup;
 
 import java.beans.PropertyChangeEvent;
@@ -15,7 +16,7 @@ import java.util.logging.Logger;
 
 import static it.units.sdm.gomoku.model.entities.Game.gameEndedPropertyName;
 import static it.units.sdm.gomoku.model.entities.Game.newGameStartedPropertyName;
-import static it.units.sdm.gomoku.ui.cli.AbstractMainViewmodel.userMustPlaceNewStonePropertyName;
+import static it.units.sdm.gomoku.ui.AbstractMainViewmodel.*;
 import static it.units.sdm.gomoku.ui.cli.CLIApplication.*;
 
 public class CLIMainView extends View implements Observer {    // TODO : all events clutter the memory stack

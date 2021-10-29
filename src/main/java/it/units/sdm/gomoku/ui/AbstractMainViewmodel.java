@@ -1,4 +1,4 @@
-package it.units.sdm.gomoku.ui.cli;
+package it.units.sdm.gomoku.ui;
 
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
@@ -16,11 +16,16 @@ import java.util.Objects;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import static it.units.sdm.gomoku.ui.cli.CLIApplication.newMatchAfterSummaryPropertyName;
-
 public abstract class AbstractMainViewmodel extends Viewmodel {
 
     public final static String userMustPlaceNewStonePropertyName = "userMustPlaceNewStone";
+    // TODO : correct to declare here this variable?
+    @NotNull
+    public static final String newMatchAfterSummaryPropertyName = "newMatchAfterSummary"; // TODO : this variable is duplicated somewhere
+    @NotNull
+    public static final String continueAfterSummaryPropertyName = "continueAfterSummary";
+    @NotNull
+    public static final String extraGameAfterSummaryPropertyName = "extraGameAfterSummary";
 
     @Nullable
     private Match match;
@@ -49,8 +54,8 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
                 firePropertyChange(Board.boardMatrixPropertyName, null, cell);  // TODO : inappropriate property name (observed in GomokuCell)
             }
             case Game.gameEndedPropertyName -> endGame();
-            case CLIApplication.continueAfterSummaryPropertyName -> startNewGame();
-            case CLIApplication.extraGameAfterSummaryPropertyName -> {
+            case continueAfterSummaryPropertyName -> startNewGame();
+            case extraGameAfterSummaryPropertyName -> {
                 if ((boolean) evt.getNewValue()) {
                     addAnExtraGameToThisMatch();
                     startNewGame();
@@ -92,7 +97,7 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
     }
 
     @NotNull
-    protected String getCurrentBoardAsString() {
+    public String getCurrentBoardAsString() {
         return currentBoard.toString();
     }
 

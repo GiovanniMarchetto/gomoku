@@ -2,7 +2,7 @@ package it.units.sdm.gomoku.ui.gui.views;
 
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
 import it.units.sdm.gomoku.model.entities.Match;
-import it.units.sdm.gomoku.ui.cli.AbstractMainViewmodel;
+import it.units.sdm.gomoku.ui.AbstractMainViewmodel;
 import it.units.sdm.gomoku.ui.gui.viewmodels.MainViewmodel;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;

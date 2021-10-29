@@ -8,14 +8,6 @@ import java.util.logging.Logger;
 
 class CLIApplication {
 
-    // TODO : correct to declare here this variable?
-    @NotNull
-    public static final String newMatchAfterSummaryPropertyName = "newMatchAfterSummary"; // TODO : this variable is duplicated somewhere
-    @NotNull
-    public static final String continueAfterSummaryPropertyName = "continueAfterSummary";
-    @NotNull
-    public static final String extraGameAfterSummaryPropertyName = "extraGameAfterSummary";
-
     public static void launch() {
         try {
             new CLIMainView(new CLIMainViewmodel());
