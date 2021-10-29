@@ -139,28 +139,30 @@ public class Board implements Observable, Cloneable {
     @Override
     public String toString() {
         int lengthOfSize = String.valueOf(size).length();
-        String spaces = IntStream.range(0, lengthOfSize)
+        String spacesToCompensateDigits = IntStream.range(0, lengthOfSize)
                 .mapToObj(n -> " ").collect(Collectors.joining());
+        String spacesIndexColumns = ((size.intValue() < 11) ? "   " : "  ");
 
-        return " " + spaces +
+        return spacesIndexColumns +
+                spacesToCompensateDigits +
                 IntStream.range(0, size.intValue())
                         .mapToObj(col ->
                                 getSpacesForEveryCharOfSizeMoreThanInt(col)
                                         + col
-                                        + " "
+                                        + "  "
                         ).collect(Collectors.joining()) +
                 "\n" +
                 IntStream.range(0, size.intValue()).mapToObj(row -> "" +
                         getSpacesForEveryCharOfSizeMoreThanInt(row)
                         + row
                         + "| "
-                        + IntStream.range(0, size.intValue()).mapToObj(col ->
+                        + IntStream.range(0, size.intValue()).mapToObj(col -> " " +
                                 switch (matrix[row][col]) {
                                     case BLACK -> "X";
                                     case WHITE -> "O";
                                     default -> " ";
                                 }
-                                        + spaces)
+                                + spacesToCompensateDigits)
                         .collect(Collectors.joining())
                         + "\n"
                 ).collect(Collectors.joining());
