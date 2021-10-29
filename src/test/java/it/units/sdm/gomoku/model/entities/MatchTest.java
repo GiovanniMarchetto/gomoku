@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.time.Instant;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -62,7 +61,7 @@ class MatchTest {
         try {
             for (int numberOfGame = 0; numberOfGame < NUMBER_OF_GAMES; numberOfGame++) {
                 Game currentGame = match.startNewGame();
-                while(!currentGame.isThisGameEnded()) {
+                while (!currentGame.isThisGameEnded()) {
                     currentGame.placeNextStone(cpu1.chooseNextEmptyCoordinates(currentGame.getBoard()));
                 }
             }

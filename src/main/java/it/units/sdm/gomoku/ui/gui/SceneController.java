@@ -96,7 +96,7 @@ public class SceneController {
         return singleInstance != null;
     }
 
-    public static void passToNewScene(@NotNull final SceneController.ViewName viewEnum) {
+    public static void passToNewSceneIfIsGUIRunningOrDoNothing(@NotNull final SceneController.ViewName viewEnum) {
         if (!isJavaFxRunning()) return;
         getInstance().passToNewScene_(Objects.requireNonNull(viewEnum));
     }

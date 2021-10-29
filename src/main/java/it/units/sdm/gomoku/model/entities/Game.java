@@ -45,17 +45,17 @@ public class Game implements Comparable<Game>, Observable {
         this(new PositiveInteger(boardSize), blackPlayer, whitePlayer);
     }
 
+    @NotNull
+    public Player getCurrentPlayer() {
+        return currentPlayer;
+    }
+
     private void setCurrentPlayer(@NotNull final Player currentPlayer) {
         Player oldValue = this.currentPlayer;
         if (!oldValue.equals(Objects.requireNonNull(currentPlayer))) {
             this.currentPlayer = currentPlayer;
             firePropertyChange(currentPlayerPropertyName, oldValue, currentPlayer);
         }
-    }
-
-    @NotNull
-    public Player getCurrentPlayer() {
-        return currentPlayer;
     }
 
     @NotNull

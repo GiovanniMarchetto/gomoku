@@ -18,7 +18,7 @@ import static it.units.sdm.gomoku.model.custom_types.PositiveInteger.PositiveInt
 
 public class Board implements Observable, Cloneable {
 
-    public static final String BoardMatrixPropertyName = "matrix";
+    public static final String boardMatrixPropertyName = "matrix";
     @NotNull
     private final PositiveInteger size;
     @NotNull
@@ -101,7 +101,7 @@ public class Board implements Observable, Cloneable {
             if (isCoordinatesEmpty(Objects.requireNonNull(coordinates))) {
                 setStoneAtCoordinates(coordinates, Objects.requireNonNull(stone));
                 numberOfFilledPositionOnTheBoard.incrementAndGet();
-                firePropertyChange(BoardMatrixPropertyName, null, new ChangedCell(coordinates, stone, this));
+                firePropertyChange(boardMatrixPropertyName, null, new ChangedCell(coordinates, stone, this));
             } else {
                 throw new PositionAlreadyOccupiedException(coordinates);
             }

@@ -1,7 +1,6 @@
 package it.units.sdm.gomoku.model.custom_types;
 
 import it.units.sdm.gomoku.EnvVariables;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
 
@@ -29,8 +28,8 @@ class NonNegativeIntegerTest {
     @CsvFileSource(resources = EnvVariables.NON_NEGATIVE_INTS_PROVIDER_RESOURCE_LOCATION)
     void incrementAndGet(int value) {
         nonNegativeInteger1 = new NonNegativeInteger(value);
-        nonNegativeInteger2 = new NonNegativeInteger(value+1);
-        assertEquals(nonNegativeInteger2,nonNegativeInteger1.incrementAndGet());
+        nonNegativeInteger2 = new NonNegativeInteger(value + 1);
+        assertEquals(nonNegativeInteger2, nonNegativeInteger1.incrementAndGet());
     }
 
     @ParameterizedTest

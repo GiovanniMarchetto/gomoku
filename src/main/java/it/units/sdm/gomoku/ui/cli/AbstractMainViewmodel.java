@@ -4,9 +4,11 @@ import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.entities.*;
 import it.units.sdm.gomoku.mvvm_library.viewmodels.Viewmodel;
+import it.units.sdm.gomoku.ui.support.Setup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.beans.PropertyChangeEvent;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Map;
@@ -14,20 +16,66 @@ import java.util.Objects;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import static it.units.sdm.gomoku.ui.cli.CLIApplication.newMatchAfterSummaryPropertyName;
+
 public abstract class AbstractMainViewmodel extends Viewmodel {
 
     public final static String userMustPlaceNewStonePropertyName = "userMustPlaceNewStone";
 
+    @Nullable
     private Match match;
 
+    @Nullable
     private Game currentGame;
 
+    @Nullable
     private Board currentBoard;
 
     public AbstractMainViewmodel() {
     }
 
-    public void addAnExtraGameToThisMatch() {
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        // TODO : rethink about this when discussing about deleting commander button
+        switch (evt.getPropertyName()) {
+            case Setup.setupCompletedPropertyName -> {
+                Setup setup = (Setup) evt.getNewValue();
+                setMatch(new Match(
+                        setup.getBoardSizeValue(), setup.getNumberOfGames(), setup.getPlayers()));
+                startNewGame();
+            }
+            case Board.boardMatrixPropertyName -> {
+                Board.ChangedCell cell = (Board.ChangedCell) evt.getNewValue();
+                firePropertyChange(Board.boardMatrixPropertyName, null, cell);  // TODO : inappropriate property name (observed in GomokuCell)
+            }
+            case Game.gameEndedPropertyName -> endGame();
+            case CLIApplication.continueAfterSummaryPropertyName -> startNewGame();
+            case CLIApplication.extraGameAfterSummaryPropertyName -> {
+                if ((boolean) evt.getNewValue()) {
+                    addAnExtraGameToThisMatch();
+                    startNewGame();
+                }
+            }
+            case newMatchAfterSummaryPropertyName -> {
+                if ((boolean) evt.getNewValue()) {
+                    startNewMatch();
+                }
+            }
+            case Game.currentPlayerPropertyName -> {
+                Player currentPlayer = (Player) evt.getNewValue();
+                placeStoneIfGameNotEndedAndIsCPUPlayingOrElseNotifyTheView(currentPlayer);
+            }
+        }
+    }
+
+    protected abstract void startNewMatch();
+
+    protected void startNewGame() {
+        initializeNewGame();
+        placeStoneIfGameNotEndedAndIsCPUPlayingOrElseNotifyTheView(getCurrentPlayer());
+    }
+
+    protected void addAnExtraGameToThisMatch() {
         match.addAnExtraGame();
     }
 
@@ -35,12 +83,12 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
         return match.isEnded();
     }
 
-    public synchronized boolean isCurrentGameEnded() {
+    protected synchronized boolean isCurrentGameEnded() {
         return currentGame.isThisGameEnded();
     }
 
-    public void setMatch(Match match) {
-        this.match = match;
+    protected void setMatch(@NotNull Match match) {
+        this.match = Objects.requireNonNull(match);
     }
 
     @NotNull
@@ -48,7 +96,7 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
         return currentBoard.toString();
     }
 
-    public void initializeNewGame() {
+    protected void initializeNewGame() {
         try {
             currentGame = match.startNewGame();
             currentBoard = currentGame.getBoard();
@@ -86,12 +134,6 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
         if (!(getCurrentPlayer() instanceof CPUPlayer)) {
             placeStone(coordinates);
         }
-    }
-
-
-    protected void startNewGame() {
-        initializeNewGame();
-        placeStoneIfGameNotEndedAndIsCPUPlayingOrElseNotifyTheView(getCurrentPlayer());
     }
 
     protected void placeStoneIfGameNotEndedAndIsCPUPlayingOrElseNotifyTheView(Player currentPlayer) {
