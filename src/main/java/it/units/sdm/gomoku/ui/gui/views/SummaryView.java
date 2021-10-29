@@ -3,7 +3,7 @@ package it.units.sdm.gomoku.ui.gui.views;
 import it.units.sdm.gomoku.model.entities.Game;
 import it.units.sdm.gomoku.model.entities.Match;
 import it.units.sdm.gomoku.model.entities.Player;
-import it.units.sdm.gomoku.mvvm_library.views.View;
+import it.units.sdm.gomoku.mvvm_library.View;
 import it.units.sdm.gomoku.ui.gui.viewmodels.MainViewmodel;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;

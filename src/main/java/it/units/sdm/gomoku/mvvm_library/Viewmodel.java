@@ -1,7 +1,4 @@
-package it.units.sdm.gomoku.mvvm_library.viewmodels;
-
-import it.units.sdm.gomoku.mvvm_library.Observable;
-import it.units.sdm.gomoku.mvvm_library.Observer;
+package it.units.sdm.gomoku.mvvm_library;
 
 import java.beans.PropertyChangeEvent;
 

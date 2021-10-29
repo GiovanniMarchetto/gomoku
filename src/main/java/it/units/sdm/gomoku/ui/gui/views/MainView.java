@@ -1,6 +1,6 @@
 package it.units.sdm.gomoku.ui.gui.views;
 
-import it.units.sdm.gomoku.mvvm_library.views.View;
+import it.units.sdm.gomoku.mvvm_library.View;
 import it.units.sdm.gomoku.ui.gui.viewmodels.MainViewmodel;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;

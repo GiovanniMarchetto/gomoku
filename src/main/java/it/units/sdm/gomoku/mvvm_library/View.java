@@ -1,7 +1,4 @@
-package it.units.sdm.gomoku.mvvm_library.views;
-
-import it.units.sdm.gomoku.mvvm_library.Observable;
-import it.units.sdm.gomoku.mvvm_library.viewmodels.Viewmodel;
+package it.units.sdm.gomoku.mvvm_library;
 
 public abstract class View implements Observable {  // TODO : should be observer? (some views implement Observer)
 

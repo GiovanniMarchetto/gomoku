@@ -5,7 +5,7 @@ import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveOddInteger;
 import it.units.sdm.gomoku.model.entities.*;
-import it.units.sdm.gomoku.mvvm_library.viewmodels.Viewmodel;
+import it.units.sdm.gomoku.mvvm_library.Viewmodel;
 import it.units.sdm.gomoku.ui.gui.GUISetup;
 import it.units.sdm.gomoku.ui.support.BoardSizes;
 import it.units.sdm.gomoku.ui.support.PlayerTypes;

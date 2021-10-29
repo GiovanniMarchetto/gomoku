@@ -4,8 +4,8 @@ import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.entities.Match;
 import it.units.sdm.gomoku.mvvm_library.Observer;
-import it.units.sdm.gomoku.mvvm_library.viewmodels.Viewmodel;
-import it.units.sdm.gomoku.mvvm_library.views.View;
+import it.units.sdm.gomoku.mvvm_library.Viewmodel;
+import it.units.sdm.gomoku.mvvm_library.View;
 import it.units.sdm.gomoku.ui.AbstractMainViewmodel;
 
 import java.beans.PropertyChangeEvent;
