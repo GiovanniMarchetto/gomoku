@@ -36,7 +36,8 @@
 
     <HBox GridPane.rowIndex="5" GridPane.columnIndex="1" spacing="5">
         <Button fx:id="continueButton" text="Continue" onMouseClicked="#continueButtonOnMouseClicked" visible="false"/>
-        <Button fx:id="extraGameButton" text="Extra Game" onMouseClicked="#extraGameButtonOnMouseClicked" visible="false"/>
+        <Button fx:id="extraGameButton" text="Extra Game" onMouseClicked="#extraGameButtonOnMouseClicked"
+                visible="false"/>
         <Button fx:id="newMatchButton" text="New Match" onMouseClicked="#newMatchButtonOnMouseClicked" visible="false"/>
     </HBox>
 </GridPane>
