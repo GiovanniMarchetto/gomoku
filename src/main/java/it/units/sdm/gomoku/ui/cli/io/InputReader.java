@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.util.InputMismatchException;
 import java.util.Objects;
 import java.util.Scanner;
@@ -23,7 +24,7 @@ public class InputReader {  // TODO : to be deleted
     public static <T> T checkInputAndGet(
             @NotNull final Supplier<T> inputSupplier,
             @NotNull final Predicate<T> validator,
-            @NotNull final OutputPrinter out,
+            @NotNull final PrintStream out,
             @NotNull final String messageErrorIfInvalid) throws IOException {
         return checkInputAndGet(
                 Objects.requireNonNull(inputSupplier),
@@ -37,7 +38,7 @@ public class InputReader {  // TODO : to be deleted
             @NotNull final Supplier<T> inputSupplier,
             @NotNull final Predicate<T> validator,
             @NotNull final String messageErrorIfInvalid,
-            @NotNull final OutputPrinter out,
+            @NotNull final PrintStream out,
             @NotNull final Class<? extends Throwable> throwable) throws IOException {
         T inputValue = null;
         boolean isValidInput = false;
@@ -69,14 +70,4 @@ public class InputReader {  // TODO : to be deleted
             return 0;
         }
     }
-
-    public char getACharFromInput() {
-        try {
-            String line = scanner.nextLine().replace("\n", "");
-            return line.charAt(line.length() - 1);
-        } catch (IndexOutOfBoundsException e) {
-            return '\n';
-        }
-    }
-
 }

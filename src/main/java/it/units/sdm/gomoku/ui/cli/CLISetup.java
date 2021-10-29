@@ -5,7 +5,6 @@ import it.units.sdm.gomoku.model.custom_types.PositiveOddInteger;
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
 import it.units.sdm.gomoku.model.entities.Player;
 import it.units.sdm.gomoku.ui.cli.io.InputReader;
-import it.units.sdm.gomoku.ui.cli.io.OutputPrinter;
 import it.units.sdm.gomoku.ui.support.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,7 +15,6 @@ import java.util.stream.Stream;
 
 public class CLISetup extends Setup { // TODO : to be tested
 
-    private final static OutputPrinter out = OutputPrinter.getInstance();
     private final static InputReader in = InputReader.getInstance();
 
     public CLISetup() throws IOException {
@@ -31,12 +29,12 @@ public class CLISetup extends Setup { // TODO : to be tested
     private static Map<Player, PlayerTypes> askAndGetPlayersOfThisMatch(@NotNull final MatchTypes matchType) throws IOException {
         List<String> playerNames = new ArrayList<>(Objects.requireNonNull(matchType).getNumberOfHumanPlayers());
         for (int i = 1; i <= matchType.getNumberOfHumanPlayers(); i++) {
-            out.print("Name of player" + (matchType.getNumberOfHumanPlayers() > 1 ? " " + i : "") + ": ");
+            System.out.print("Name of player" + (matchType.getNumberOfHumanPlayers() > 1 ? " " + i : "") + ": ");
             playerNames.add(
                     InputReader.checkInputAndGet(
                             in::nextLine,
                             x -> !x.isBlank() && !playerNames.contains(x),
-                            out,
+                            System.out,
                             "Specify a non blank and not already inserted name: "
                     )
             );
@@ -60,22 +58,22 @@ public class CLISetup extends Setup { // TODO : to be tested
     @NotNull
     private static MatchTypes askAndGetNumberOfPlayers() throws IOException {
         String msgWithPossibleChoices = "Choose " + ExposedEnum.getEnumDescriptionOf(MatchTypes.class) + ": ";
-        out.print("How many players? " + msgWithPossibleChoices);
+        System.out.print("How many players? " + msgWithPossibleChoices);
         return InputReader.checkInputAndGet(
                 () -> ExposedEnum.getEnumValueFromExposedValueOrNull(MatchTypes.class, String.valueOf(in.getAnIntFromInput())),
                 Objects::nonNull,
-                out,
+                System.out,
                 msgWithPossibleChoices
         );
     }
 
     @NotNull
     private static PositiveInteger askAndGetNumberOfGames() throws IOException {
-        out.print("How many games? ");
+        System.out.print("How many games? ");
         return InputReader.checkInputAndGet(
                 () -> new PositiveInteger(in.getAnIntFromInput()),
                 Objects::nonNull,
-                out,
+                System.out,
                 "Insert a positive integer value for the number of games: "
         );
     }
@@ -83,12 +81,12 @@ public class CLISetup extends Setup { // TODO : to be tested
     @NotNull
     private static PositiveOddInteger askAndGetBoardSize() throws IOException {
         String msgWithPossibleChoices = "Choose the board size (" + ExposedEnum.getEnumDescriptionOf(BoardSizes.class) + "): ";
-        out.print(msgWithPossibleChoices);
+        System.out.print(msgWithPossibleChoices);
         int inputOption = InputReader.checkInputAndGet(
                 in::getAnIntFromInput,
                 insertedInput -> Objects.nonNull(insertedInput) &&
                         ExposedEnum.isValidExposedValueOf(BoardSizes.class, String.valueOf(insertedInput)),
-                out,
+                System.out,
                 msgWithPossibleChoices
         );
         return Objects.requireNonNull(
