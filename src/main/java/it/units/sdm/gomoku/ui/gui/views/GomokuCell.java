@@ -190,7 +190,12 @@ public class GomokuCell implements Observer {
 
         rectangle.setOnMousePressed(event -> {
             if (stone.isNone() && event.isPrimaryButtonDown()) {
-                vm.placeStone(coordinates);
+                try {
+                    vm.placeStoneFromUser(coordinates);
+                } catch (Board.NoMoreEmptyPositionAvailableException |
+                        Board.PositionAlreadyOccupiedException e) {
+                    e.printStackTrace();    // TODO : handle this exception (should never happen)
+                }
             }
         });
     }
@@ -202,7 +207,7 @@ public class GomokuCell implements Observer {
         if (evt.getPropertyName().equals(radiusPropertyName)) {
             setRadius((double) evt.getNewValue());
             resizeAllItemsOfCell();
-        } else if (evt.getPropertyName().equals(Board.BoardMatrixPropertyName)) {
+        } else if (evt.getPropertyName().equals(Board.boardMatrixPropertyName)) {
             Board.ChangedCell cell = (Board.ChangedCell) evt.getNewValue();
             if (cell.getCoordinates().equals(coordinates)) {
                 Platform.runLater(() -> setStone(cell.getNewStone()));
