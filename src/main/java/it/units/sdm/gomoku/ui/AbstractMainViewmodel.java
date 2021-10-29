@@ -2,17 +2,21 @@ package it.units.sdm.gomoku.ui;
 
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
+import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
+import it.units.sdm.gomoku.model.custom_types.PositiveOddInteger;
 import it.units.sdm.gomoku.model.entities.*;
 import it.units.sdm.gomoku.mvvm_library.viewmodels.Viewmodel;
+import it.units.sdm.gomoku.ui.gui.GUISetup;
+import it.units.sdm.gomoku.ui.support.BoardSizes;
+import it.units.sdm.gomoku.ui.support.PlayerTypes;
 import it.units.sdm.gomoku.ui.support.Setup;
+import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.beans.PropertyChangeEvent;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -35,14 +39,7 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        // TODO : rethink about this when discussing about deleting commander button
         switch (evt.getPropertyName()) {
-            case Setup.setupCompletedPropertyName -> {
-                Setup setup = (Setup) evt.getNewValue();
-                setMatch(new Match(
-                        setup.getBoardSizeValue(), setup.getNumberOfGames(), setup.getPlayers()));
-                startNewGame();
-            }
             case Board.boardMatrixPropertyName -> {
                 Board.ChangedCell cell = (Board.ChangedCell) evt.getNewValue();
                 firePropertyChange(Board.boardMatrixPropertyName, null, cell);  // TODO : inappropriate property name (observed in GomokuCell)
@@ -53,6 +50,31 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
                 placeStoneIfGameNotEndedAndIsCPUPlayingOrElseNotifyTheView(currentPlayer);
             }
         }
+    }
+
+    public void createMatchFromSetupAndStartGame(Setup setup) {
+        setMatch(new Match(
+                setup.getBoardSizeValue(), setup.getNumberOfGames(), setup.getPlayers()));
+        startNewGame();
+    }
+
+    public GUISetup createGUISetup(Pair<String, Boolean> player1Info, Pair<String, Boolean> player2Info, String numberOfGames, String boardSize) {
+        Map<Player, PlayerTypes> players = Collections.synchronizedMap(Arrays.stream(
+                        new Pair[]{player1Info, player2Info}
+                )
+                .map(pair -> {
+                    if ((Boolean) pair.getValue()) {
+                        return new AbstractMap.SimpleEntry<>(new CPUPlayer((String) pair.getKey()), PlayerTypes.CPU);
+                    } else {
+                        return new AbstractMap.SimpleEntry<>(new Player((String) pair.getKey()), PlayerTypes.PERSON);
+                    }
+                })
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> b, LinkedHashMap::new)));
+
+        PositiveInteger n = new PositiveInteger(Integer.parseInt(numberOfGames));
+        PositiveOddInteger s = BoardSizes.fromString(boardSize).getBoardSize();
+
+        return new GUISetup(players, n, s);
     }
 
     public abstract void startNewMatch();

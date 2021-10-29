@@ -5,7 +5,6 @@
 <?import javafx.scene.text.Text?>
 <GridPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/11.0.2"
           fx:controller="it.units.sdm.gomoku.ui.gui.views.StartView"
-          fx:id="startGridPane"
           alignment="CENTER" hgap="5" vgap="10"
           style="-fx-background-color: #4e6c4e;">
 
@@ -19,7 +18,7 @@
     <Label text="Player One:"
            GridPane.columnIndex="0" GridPane.rowIndex="1"/>
 
-    <TextField fx:id="player1" text="One"
+    <TextField fx:id="player1TextField" text="One"
                GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 
     <CheckBox fx:id="cpu1CheckBox" text="CPU"
@@ -29,7 +28,7 @@
     <Label text="Player Two:"
            GridPane.columnIndex="0" GridPane.rowIndex="2"/>
 
-    <TextField fx:id="player2" text="Two"
+    <TextField fx:id="player2TextField" text="Two"
                GridPane.columnIndex="1" GridPane.rowIndex="2"/>
 
     <CheckBox fx:id="cpu2CheckBox" text="CPU"
@@ -39,19 +38,19 @@
     <Label text="Board size:"
            GridPane.columnIndex="0" GridPane.rowIndex="3"/>
 
-    <ChoiceBox fx:id="boardSizeList"
+    <ChoiceBox fx:id="boardSizeChoiceBox"
                GridPane.columnIndex="1" GridPane.rowIndex="3"/>
 
 
     <Label text="How many games:"
            GridPane.columnIndex="0" GridPane.rowIndex="4"/>
 
-    <TextField fx:id="numberOfGames" text="1"
+    <TextField fx:id="numberOfGamesTextField" text="1"
                GridPane.columnIndex="1" GridPane.rowIndex="4"/>
 
 
-    <HBox fx:id="boxForButton"
-          GridPane.columnIndex="2" GridPane.rowIndex="6"
-    />
+    <HBox GridPane.columnIndex="2" GridPane.rowIndex="6" spacing="5">
+        <Button fx:id="startMatchButton" text="Start Match!" onMouseClicked="#startMatchButtonOnMouseClicked"/>
+    </HBox>
 
 </GridPane>

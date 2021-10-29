@@ -1,34 +1,26 @@
 package it.units.sdm.gomoku.ui.gui.views;
 
-import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
-import it.units.sdm.gomoku.model.custom_types.PositiveOddInteger;
-import it.units.sdm.gomoku.model.entities.CPUPlayer;
-import it.units.sdm.gomoku.model.entities.Player;
 import it.units.sdm.gomoku.mvvm_library.views.View;
-import it.units.sdm.gomoku.mvvm_library.views.gui_items.CommanderButton;
-import it.units.sdm.gomoku.ui.gui.GUISetup;
 import it.units.sdm.gomoku.ui.support.BoardSizes;
-import it.units.sdm.gomoku.ui.support.PlayerTypes;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.HBox;
+import javafx.scene.input.MouseEvent;
 import javafx.util.Pair;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Arrays;
 
 import static it.units.sdm.gomoku.ui.gui.GUIMain.mainViewmodel;
-import static it.units.sdm.gomoku.ui.support.Setup.setupCompletedPropertyName;
 
 public class StartView extends View {
-
     @FXML
-    private TextField player1;
+    private Button startMatchButton;
     @FXML
-    private TextField player2;
+    private TextField player1TextField;
+    @FXML
+    private TextField player2TextField;
 
     @FXML
     private CheckBox cpu1CheckBox;
@@ -36,14 +28,9 @@ public class StartView extends View {
     private CheckBox cpu2CheckBox;
 
     @FXML
-    private ChoiceBox<String> boardSizeList;
+    private ChoiceBox<String> boardSizeChoiceBox;
     @FXML
-    private TextField numberOfGames;
-
-    @FXML
-    private HBox boxForButton;
-    private Button confirmButton;
-
+    private TextField numberOfGamesTextField;
 
     public StartView() {
         super(mainViewmodel);
@@ -51,68 +38,38 @@ public class StartView extends View {
 
     @FXML
     private void initialize() {
-
-        CommanderButton commanderButton = getButtonFirePropertyChange();
-        confirmButton = commanderButton.getGUIItem();
-        boxForButton.getChildren().add(confirmButton);
-
         String[] boardSizeStringList = Arrays.stream(BoardSizes.values()).map(BoardSizes::toString).toArray(String[]::new);
-        boardSizeList.getItems().addAll(boardSizeStringList);
-        boardSizeList.setValue(boardSizeStringList[2]);
+        boardSizeChoiceBox.getItems().addAll(boardSizeStringList);
+        boardSizeChoiceBox.setValue(boardSizeStringList[2]);
 
-        CheckFieldsAndEnableButton();
-        player1.textProperty().addListener((observable, oldValue, newValue) -> {
-            CheckFieldsAndEnableButton();
+        checkFieldsAndEnableButton();
+        player1TextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            checkFieldsAndEnableButton();
         });
-        player2.textProperty().addListener((observable, oldValue, newValue) -> {
-            CheckFieldsAndEnableButton();
+        player2TextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            checkFieldsAndEnableButton();
         });
 
         allowOnlyNumberInNumberOfGamesTextField();
     }
 
-    private CommanderButton getButtonFirePropertyChange() {
-        return new CommanderButton(
-                "Start Match!",
-                this,
-                getViewmodelAssociatedWithView(),
-                setupCompletedPropertyName,
-                () -> {
-                    Map<Player, PlayerTypes> players = Collections.synchronizedMap(Arrays.stream(
-                                    new Pair[]{
-                                            new Pair<>(cpu1CheckBox, player1),
-                                            new Pair<>(cpu2CheckBox, player2)
-                                    }
-                            )
-                            .map(pair -> {
-                                CheckBox cpuCheckBox = ((CheckBox) pair.getKey());
-                                String playerName = ((TextField) pair.getValue()).getText();
-
-                                if (cpuCheckBox.isSelected()) {
-                                    return new AbstractMap.SimpleEntry<>(new CPUPlayer(playerName), PlayerTypes.CPU);
-                                } else {
-                                    return new AbstractMap.SimpleEntry<>(new Player(playerName), PlayerTypes.PERSON);
-                                }
-                            })
-                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> b, LinkedHashMap::new)));
-
-                    PositiveInteger numberOfGames = new PositiveInteger(Integer.parseInt(this.numberOfGames.getText()));
-                    PositiveOddInteger boardSize = BoardSizes.fromString(boardSizeList.getValue()).getBoardSize();
-
-                    return new GUISetup(players, numberOfGames, boardSize);
-                });
+    public void startMatchButtonOnMouseClicked(MouseEvent e) {
+        var p1 = new Pair<>(player1TextField.getText(), cpu1CheckBox.isSelected());
+        var p2 = new Pair<>(player2TextField.getText(), cpu2CheckBox.isSelected());
+        var setup = mainViewmodel.createGUISetup(p1, p2, numberOfGamesTextField.getText(), boardSizeChoiceBox.getValue());
+        mainViewmodel.createMatchFromSetupAndStartGame(setup);
     }
 
     private void allowOnlyNumberInNumberOfGamesTextField() {
-        numberOfGames.textProperty().addListener((observable, oldValue, newValue) -> {
+        numberOfGamesTextField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*")) {
-                numberOfGames.setText(newValue.replaceAll("[^\\d]", ""));
+                numberOfGamesTextField.setText(newValue.replaceAll("[^\\d]", ""));
             }
-            CheckFieldsAndEnableButton();
+            checkFieldsAndEnableButton();
         });
     }
 
-    private void CheckFieldsAndEnableButton() {
-        confirmButton.setDisable(player1.getText().isEmpty() || player2.getText().isEmpty() || numberOfGames.getText().isEmpty());
+    private void checkFieldsAndEnableButton() {
+        startMatchButton.setDisable(player1TextField.getText().isEmpty() || player2TextField.getText().isEmpty() || numberOfGamesTextField.getText().isEmpty());
     }
 }

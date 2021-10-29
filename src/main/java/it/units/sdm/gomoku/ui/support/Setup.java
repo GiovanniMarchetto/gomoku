@@ -11,8 +11,6 @@ import java.util.Objects;
 
 public abstract class Setup {       // TODO : to be tested
 
-    public static final String setupCompletedPropertyName = "setupReady";
-
     @NotNull
     protected final Map<Player, PlayerTypes> players;
 

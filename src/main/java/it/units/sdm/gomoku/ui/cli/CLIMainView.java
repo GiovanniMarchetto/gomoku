@@ -7,7 +7,6 @@ import it.units.sdm.gomoku.mvvm_library.Observer;
 import it.units.sdm.gomoku.mvvm_library.viewmodels.Viewmodel;
 import it.units.sdm.gomoku.mvvm_library.views.View;
 import it.units.sdm.gomoku.ui.AbstractMainViewmodel;
-import it.units.sdm.gomoku.ui.support.Setup;
 
 import java.beans.PropertyChangeEvent;
 import java.io.IOException;
@@ -23,7 +22,7 @@ public class CLIMainView extends View implements Observer {    // TODO : all eve
     public CLIMainView(Viewmodel viewmodelAssociatedWithView) throws IOException {  // TODO : event-based flux of program to be tested
         super(viewmodelAssociatedWithView);
         getViewmodelAssociatedWithView().addPropertyChangeListener(this);// TODO : rethink about this (should View abstract class implement Observer to observer its corresponding Viewmodel)
-        firePropertyChange(Setup.setupCompletedPropertyName, null, new CLISetup());// TODO : rethink about this
+        ((CLIMainViewmodel) viewmodelAssociatedWithView).createMatchFromSetupAndStartGame(new CLISetup());
     }
 
     @Override
