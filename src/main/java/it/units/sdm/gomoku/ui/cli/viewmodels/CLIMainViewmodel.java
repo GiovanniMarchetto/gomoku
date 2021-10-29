@@ -1,6 +1,7 @@
-package it.units.sdm.gomoku.ui.cli;
+package it.units.sdm.gomoku.ui.cli.viewmodels;
 
 import it.units.sdm.gomoku.ui.AbstractMainViewmodel;
+import it.units.sdm.gomoku.ui.cli.views.CLIMainView;
 
 import java.io.IOException;
 

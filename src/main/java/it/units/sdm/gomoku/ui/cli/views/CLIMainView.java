@@ -1,4 +1,4 @@
-package it.units.sdm.gomoku.ui.cli;
+package it.units.sdm.gomoku.ui.cli.views;
 
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.Board;
@@ -7,6 +7,9 @@ import it.units.sdm.gomoku.mvvm_library.Observer;
 import it.units.sdm.gomoku.mvvm_library.View;
 import it.units.sdm.gomoku.mvvm_library.Viewmodel;
 import it.units.sdm.gomoku.ui.AbstractMainViewmodel;
+import it.units.sdm.gomoku.ui.cli.CLISetup;
+import it.units.sdm.gomoku.ui.cli.Utility;
+import it.units.sdm.gomoku.ui.cli.viewmodels.CLIMainViewmodel;
 
 import java.beans.PropertyChangeEvent;
 import java.io.IOException;

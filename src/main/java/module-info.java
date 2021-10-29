@@ -23,4 +23,6 @@ module it.units.sdm.gomoku {
     exports it.units.sdm.gomoku.ui.gui.viewmodels;
     exports it.units.sdm.gomoku.ui.support;
     exports it.units.sdm.gomoku.ui;
+    exports it.units.sdm.gomoku.ui.cli.viewmodels;
+    exports it.units.sdm.gomoku.ui.cli.views;
 }
