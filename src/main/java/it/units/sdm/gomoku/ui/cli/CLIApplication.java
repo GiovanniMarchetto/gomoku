@@ -1,7 +1,5 @@
 package it.units.sdm.gomoku.ui.cli;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
