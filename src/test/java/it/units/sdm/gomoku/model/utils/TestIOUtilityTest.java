@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public
-class TestUtilityTest {
+class TestIOUtilityTest {
 
     private final static int LIMIT_VALUE_FOR_N = 200; // avoid creating too big boards
 

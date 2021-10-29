@@ -8,7 +8,7 @@ import it.units.sdm.gomoku.mvvm_library.View;
 import it.units.sdm.gomoku.mvvm_library.Viewmodel;
 import it.units.sdm.gomoku.ui.AbstractMainViewmodel;
 import it.units.sdm.gomoku.ui.cli.CLISetup;
-import it.units.sdm.gomoku.ui.cli.Utility;
+import it.units.sdm.gomoku.ui.cli.IOUtility;
 import it.units.sdm.gomoku.ui.cli.viewmodels.CLIMainViewmodel;
 
 import java.beans.PropertyChangeEvent;
@@ -66,13 +66,13 @@ public class CLIMainView extends View implements Observer {    // TODO : all eve
 
                         if (isMatchEndedWithDraft) {
                             System.out.print("Extra game? Y/N: ");    // TODO: refactor with lines down?
-                            boolean anotherGame = Utility.getLowercaseCharWhenValidCaseInsensitiveOrCycle('y', 'n') == 'y';
+                            boolean anotherGame = IOUtility.getLowercaseCharWhenValidCaseInsensitiveOrCycle('y', 'n') == 'y';
                             if (anotherGame) {
                                 viewmodel.startExtraGame();
                             }
                         } else {
                             System.out.print("Another match? Y/N: ");
-                            boolean anotherMatch = Utility.getLowercaseCharWhenValidCaseInsensitiveOrCycle('y', 'n') == 'y';
+                            boolean anotherMatch = IOUtility.getLowercaseCharWhenValidCaseInsensitiveOrCycle('y', 'n') == 'y';
                             if (anotherMatch) {
                                 viewmodel.startNewMatch();
                             }
@@ -100,9 +100,9 @@ public class CLIMainView extends View implements Observer {    // TODO : all eve
         do {
             try {
                 System.out.print("\tRow coordinate: ");
-                rowCoord = Utility.getAIntFromStdIn();
+                rowCoord = IOUtility.getAIntFromStdIn();
                 System.out.print("\tColumn coordinate: ");
-                colCoord = Utility.getAIntFromStdIn();
+                colCoord = IOUtility.getAIntFromStdIn();
                 coordInsertedByTheUser = new Coordinates(rowCoord, colCoord);
                 viewmodel.placeStoneFromUser(coordInsertedByTheUser);  // TODO : correct or stones should be placed by the viewmodel?
                 validMove = true;

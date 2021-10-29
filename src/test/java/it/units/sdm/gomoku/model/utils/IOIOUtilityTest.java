@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 
-class IOUtilityTest {
+class IOIOUtilityTest {
 
     @ParameterizedTest
     @ValueSource(strings = "1,2_3,4_5,6,7")

@@ -4,20 +4,16 @@ import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveOddInteger;
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
 import it.units.sdm.gomoku.model.entities.Player;
-import it.units.sdm.gomoku.ui.cli.io.InputReader;
 import it.units.sdm.gomoku.ui.support.*;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CLISetup extends Setup { // TODO : to be tested
 
-    private final static InputReader in = InputReader.getInstance();
-
-    public CLISetup() throws IOException {
+    public CLISetup() {
         super(
                 askAndGetPlayersOfThisMatch(askAndGetNumberOfPlayers()),
                 askAndGetNumberOfGames(),
@@ -26,13 +22,12 @@ public class CLISetup extends Setup { // TODO : to be tested
     }
 
     @NotNull
-    private static Map<Player, PlayerTypes> askAndGetPlayersOfThisMatch(@NotNull final MatchTypes matchType) throws IOException {
+    private static Map<Player, PlayerTypes> askAndGetPlayersOfThisMatch(@NotNull final MatchTypes matchType) {
         List<String> playerNames = new ArrayList<>(Objects.requireNonNull(matchType).getNumberOfHumanPlayers());
         for (int i = 1; i <= matchType.getNumberOfHumanPlayers(); i++) {
             System.out.print("Name of player" + (matchType.getNumberOfHumanPlayers() > 1 ? " " + i : "") + ": ");
             playerNames.add(
-                    InputReader.checkInputAndGet(
-                            in::nextLine,
+                    IOUtility.checkInputAndGet(
                             x -> !x.isBlank() && !playerNames.contains(x),
                             System.out,
                             "Specify a non blank and not already inserted name: "
@@ -56,39 +51,39 @@ public class CLISetup extends Setup { // TODO : to be tested
     }
 
     @NotNull
-    private static MatchTypes askAndGetNumberOfPlayers() throws IOException {
+    private static MatchTypes askAndGetNumberOfPlayers() {  // TODO : refactor this method
         String msgWithPossibleChoices = "Choose " + ExposedEnum.getEnumDescriptionOf(MatchTypes.class) + ": ";
         System.out.print("How many players? " + msgWithPossibleChoices);
-        return InputReader.checkInputAndGet(
-                () -> ExposedEnum.getEnumValueFromExposedValueOrNull(MatchTypes.class, String.valueOf(in.getAnIntFromInput())),
-                Objects::nonNull,
-                System.out,
-                msgWithPossibleChoices
-        );
+        return Objects.requireNonNull(
+                ExposedEnum.getEnumValueFromExposedValueOrNull(MatchTypes.class,
+                        IOUtility.checkInputAndGet(
+                                x -> ExposedEnum.getEnumValueFromExposedValueOrNull(
+                                        MatchTypes.class, Objects.requireNonNull(x)) != null,
+                                System.out,
+                                msgWithPossibleChoices
+                        )));
     }
 
     @NotNull
-    private static PositiveInteger askAndGetNumberOfGames() throws IOException {
+    private static PositiveInteger askAndGetNumberOfGames() {
         System.out.print("How many games? ");
-        return InputReader.checkInputAndGet(
-                () -> new PositiveInteger(in.getAnIntFromInput()),
-                Objects::nonNull,
+        return new PositiveInteger(Integer.parseInt(IOUtility.checkInputAndGet(
+                IOUtility::isInteger,
                 System.out,
                 "Insert a positive integer value for the number of games: "
-        );
+        )));
     }
 
     @NotNull
-    private static PositiveOddInteger askAndGetBoardSize() throws IOException {
+    private static PositiveOddInteger askAndGetBoardSize() {
         String msgWithPossibleChoices = "Choose the board size (" + ExposedEnum.getEnumDescriptionOf(BoardSizes.class) + "): ";
         System.out.print(msgWithPossibleChoices);
-        int inputOption = InputReader.checkInputAndGet(
-                in::getAnIntFromInput,
-                insertedInput -> Objects.nonNull(insertedInput) &&
+        int inputOption = Integer.parseInt(IOUtility.checkInputAndGet(
+                insertedInput -> IOUtility.isInteger(insertedInput) &&
                         ExposedEnum.isValidExposedValueOf(BoardSizes.class, String.valueOf(insertedInput)),
                 System.out,
                 msgWithPossibleChoices
-        );
+        ));
         return Objects.requireNonNull(
                 ExposedEnum.getEnumValueFromExposedValueOrNull(BoardSizes.class, String.valueOf(inputOption))
         ).getBoardSize();

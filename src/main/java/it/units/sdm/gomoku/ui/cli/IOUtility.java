@@ -1,12 +1,14 @@
 package it.units.sdm.gomoku.ui.cli;
 
-import java.util.Arrays;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
+import org.jetbrains.annotations.NotNull;
+
+import java.io.PrintStream;
+import java.util.*;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Utility {
+public class IOUtility {
     public static char getLowercaseCharIfValidCaseInsensitiveOr0(char... validChars) {
         Scanner userInput = new Scanner(System.in);
         //noinspection CatchMayIgnoreException
@@ -50,7 +52,7 @@ public class Utility {
                     throw new NoSuchElementException("The scanner has not any other token");
                 }
             } catch (NoSuchElementException e) {
-                Logger.getLogger(Utility.class.getCanonicalName())
+                Logger.getLogger(IOUtility.class.getCanonicalName())
                         .log(Level.SEVERE, "Error when reading an int from StdIn, 0 returned", e);
                 return 0;
             } catch (Exception e) {
@@ -59,5 +61,49 @@ public class Utility {
             }
         } while (!validInputInserted);
         return aInt;
+    }
+
+    public static String checkInputAndGet(
+            @NotNull final Predicate<String> validator,
+            @NotNull final PrintStream out,
+            @NotNull final String messageErrorIfInvalid) {
+        return checkInputAndGet(
+                Objects.requireNonNull(validator),
+                Objects.requireNonNull(messageErrorIfInvalid),
+                Objects.requireNonNull(out),
+                IllegalArgumentException.class);
+    }
+
+    public static String checkInputAndGet(
+            @NotNull final Predicate<String> validator,
+            @NotNull final String messageErrorIfInvalid,
+            @NotNull final PrintStream out,
+            @NotNull final Class<? extends Throwable> throwable) {
+        String inputValue = null;
+        boolean isValidInput = false;
+        while (!isValidInput) {
+            try {
+                inputValue = new Scanner(System.in).nextLine();
+            } catch (InputMismatchException ignored) {
+            } catch (Exception e) {
+                if (!throwable.isAssignableFrom(e.getClass())) {
+                    throw e;
+                }
+            }
+            isValidInput = validator.test(inputValue);
+            if (!isValidInput) {
+                Objects.requireNonNull(out).print("Invalid input. " + messageErrorIfInvalid);
+            }
+        }
+        return inputValue;
+    }
+
+    public static boolean isInteger(String s) {
+        try {
+            Integer.parseInt(Objects.requireNonNull(s));
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 }

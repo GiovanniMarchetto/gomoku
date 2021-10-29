@@ -11,7 +11,7 @@ import java.io.PrintStream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-class UtilityTest { // TODO: a class with a similar name is present in src/test/java/it/units/sdm/gomoku/model/utils
+class IOUtilityTest { // TODO: a class with a similar name is present in src/test/java/it/units/sdm/gomoku/model/utils
 
     @ParameterizedTest
     @CsvSource({"a, a, a", "_, a, b", "a, a, A", "a, a, b#a#c", "a, a, b#A#c", "_, a, b#d#c"})
@@ -27,7 +27,7 @@ class UtilityTest { // TODO: a class with a similar name is present in src/test/
 
         try (ByteArrayInputStream fakeStdIn = new ByteArrayInputStream(new byte[]{(byte) insertedInput})) {
             System.setIn(fakeStdIn);
-            assertEquals(expected, Utility.getLowercaseCharIfValidCaseInsensitiveOr0(validInputCharArray));
+            assertEquals(expected, IOUtility.getLowercaseCharIfValidCaseInsensitiveOr0(validInputCharArray));
         } catch (IOException e) {
             e.printStackTrace();
             fail();
@@ -42,7 +42,7 @@ class UtilityTest { // TODO: a class with a similar name is present in src/test/
         disableStdErr();    // avoid seeing what the tested method prints to stdErr
         try (ByteArrayInputStream fakeStdIn = new ByteArrayInputStream(inserted.getBytes())) {
             System.setIn(fakeStdIn);
-            assertEquals(expected, Utility.getAIntFromStdIn());
+            assertEquals(expected, IOUtility.getAIntFromStdIn());
         } catch (IOException e) {
             rehabilitateStdErr(stdErr);
             e.printStackTrace();

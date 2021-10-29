@@ -17,7 +17,6 @@ module it.units.sdm.gomoku {
     exports it.units.sdm.gomoku.model.custom_types;
     exports it.units.sdm.gomoku.mvvm_library;
     exports it.units.sdm.gomoku.ui.cli;
-    exports it.units.sdm.gomoku.ui.cli.io;
     exports it.units.sdm.gomoku.ui.gui;
     exports it.units.sdm.gomoku.ui.gui.views;
     exports it.units.sdm.gomoku.ui.gui.viewmodels;
