@@ -1,9 +1,8 @@
 package it.units.sdm.gomoku.ui.support;
 
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
-import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 
-import static it.units.sdm.gomoku.model.custom_types.PositiveInteger.*;
+import static it.units.sdm.gomoku.model.custom_types.PositiveInteger.PositiveIntegerType;
 
 public enum MatchTypes implements ExposedEnum {
     CPU_VS_PERSON(1),
