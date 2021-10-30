@@ -9,8 +9,7 @@
 
     <!--TODO: CHANGE COLORS-->
 
-    <GridPane fx:id="mainGridPane" alignment="CENTER"
-              style="-fx-background-color: green;"
+    <GridPane alignment="CENTER" style="-fx-background-color: green;"
               AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
               AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"
     >
@@ -21,10 +20,7 @@
                   GridPane.rowIndex="0" GridPane.vgrow="NEVER"
                   prefHeight="50"
         >
-            <Label fx:id="titleLabel"
-                   text="GOMOKU TIME!"
-                   style="-fx-font-size: 30"
-            />
+            <Label text="GOMOKU TIME!" style="-fx-font-size: 30"/>
         </GridPane>
 
         <GridPane fx:id="centerGridPane" alignment="CENTER"
@@ -48,9 +44,13 @@
                 <Label text="WHITE" style="-fx-text-fill: white; -fx-font-weight: bold"/>
                 <Label fx:id="whitePlayer"/>
             </VBox>
-            <VBox>
 
+            <VBox>
+                <Label text="Turn of:"/>
+                <Label fx:id="currentPlayerLabel" style="-fx-text-fill: #ffa600"/>
+                <!--TODO: complete currentPlayer Box-->
             </VBox>
+
             <VBox>
                 <padding>
                     <Insets top="10"/>
