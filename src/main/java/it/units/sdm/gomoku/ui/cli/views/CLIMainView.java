@@ -6,23 +6,22 @@ import it.units.sdm.gomoku.model.entities.Game;
 import it.units.sdm.gomoku.model.entities.Match;
 import it.units.sdm.gomoku.mvvm_library.Observer;
 import it.units.sdm.gomoku.mvvm_library.View;
-import it.units.sdm.gomoku.mvvm_library.Viewmodel;
 import it.units.sdm.gomoku.ui.AbstractMainViewmodel;
-import it.units.sdm.gomoku.ui.cli.CLIAbstractSetup;
+import it.units.sdm.gomoku.ui.cli.CLIMain;
 import it.units.sdm.gomoku.ui.cli.IOUtility;
 import it.units.sdm.gomoku.ui.cli.viewmodels.CLIMainViewmodel;
+import it.units.sdm.gomoku.ui.gui.viewmodels.StartViewmodel;
 
 import java.beans.PropertyChangeEvent;
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class CLIMainView extends View implements Observer {    // TODO : all events clutter the memory stack
 
-    public CLIMainView(Viewmodel viewmodelAssociatedWithView) throws IOException {  // TODO : event-based flux of program to be tested
-        super(viewmodelAssociatedWithView);
+    public CLIMainView(StartViewmodel startViewmodel) {  // TODO : event-based flux of program to be tested
+        super(CLIMain.cliMainViewmodel);
+        startViewmodel.addPropertyChangeListener(this);//startviewmodel fires newGameStarted property
         getViewmodelAssociatedWithView().addPropertyChangeListener(this);// TODO : rethink about this (should View abstract class implement Observer to observer its corresponding Viewmodel)
-        ((CLIMainViewmodel) viewmodelAssociatedWithView).createMatchFromSetupAndStartGame(new CLIAbstractSetup());
     }
 
     @Override
