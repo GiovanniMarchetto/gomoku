@@ -2,6 +2,7 @@ package it.units.sdm.gomoku.ui.cli.views;
 
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.Board;
+import it.units.sdm.gomoku.model.entities.Game;
 import it.units.sdm.gomoku.model.entities.Match;
 import it.units.sdm.gomoku.mvvm_library.Observer;
 import it.units.sdm.gomoku.mvvm_library.View;
@@ -16,10 +17,6 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static it.units.sdm.gomoku.model.entities.Game.gameEndedPropertyName;
-import static it.units.sdm.gomoku.model.entities.Game.newGameStartedPropertyName;
-import static it.units.sdm.gomoku.ui.AbstractMainViewmodel.userMustPlaceNewStonePropertyName;
-
 public class CLIMainView extends View implements Observer {    // TODO : all events clutter the memory stack
 
     public CLIMainView(Viewmodel viewmodelAssociatedWithView) throws IOException {  // TODO : event-based flux of program to be tested
@@ -32,12 +29,12 @@ public class CLIMainView extends View implements Observer {    // TODO : all eve
     public void propertyChange(PropertyChangeEvent evt) {
 
         switch (evt.getPropertyName()) {
-            case newGameStartedPropertyName -> {
+            case Game.newGameStartedPropertyName -> {
                 if ((boolean) evt.getNewValue()) {
                     System.out.println("\n\nNew game!");
                 }
             }
-            case userMustPlaceNewStonePropertyName -> {
+            case AbstractMainViewmodel.userMustPlaceNewStonePropertyName -> {
                 if ((boolean) evt.getNewValue()) {
                     try {
                         waitForAValidMoveOfAPlayer();
@@ -49,7 +46,7 @@ public class CLIMainView extends View implements Observer {    // TODO : all eve
                     }
                 }
             }
-            case gameEndedPropertyName -> {
+            case Game.isThisGameEndedPropertyName -> {
                 if ((boolean) evt.getNewValue()) {
                     System.out.println("Game ended");
                     // TODO : print summary

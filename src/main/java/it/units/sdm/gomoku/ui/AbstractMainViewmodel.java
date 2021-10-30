@@ -39,9 +39,13 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
         switch (evt.getPropertyName()) {
             case Board.boardMatrixPropertyName -> {
                 Board.ChangedCell cell = (Board.ChangedCell) evt.getNewValue();
-                firePropertyChange(Board.boardMatrixPropertyName, null, cell);  // TODO : inappropriate property name (observed in GomokuCell)
+                firePropertyChange(Board.boardMatrixPropertyName, null, cell);
             }
-            case Game.gameEndedPropertyName -> endGame();
+            case Game.isThisGameEndedPropertyName -> {
+                if ((Boolean) evt.getNewValue()) {
+                    endGame();
+                }
+            }
             case Game.currentPlayerPropertyName -> {
                 Player currentPlayer = (Player) evt.getNewValue();
                 placeStoneIfGameNotEndedAndIsCPUPlayingOrElseNotifyTheView(currentPlayer);
@@ -109,7 +113,7 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
     public void endGame() {
         stopObserving(Objects.requireNonNull(currentGame));
         stopObserving(Objects.requireNonNull(currentBoard));
-        firePropertyChange(Game.gameEndedPropertyName, false, true);
+        firePropertyChange(Game.isThisGameEndedPropertyName, false, true);
     }
 
     @NotNull

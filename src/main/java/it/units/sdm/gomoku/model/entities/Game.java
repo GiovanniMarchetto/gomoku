@@ -16,7 +16,7 @@ public class Game implements Comparable<Game>, Observable {
     @NotNull
     public static final PositiveInteger NUMBER_OF_CONSECUTIVE_STONE_FOR_WINNING = new PositiveInteger(5);
     @NotNull
-    public static final String gameEndedPropertyName = "gameEnded";
+    public static final String isThisGameEndedPropertyName = "isThisGameEnded";
     @NotNull
     public static final String newGameStartedPropertyName = "newGameStarted";
     @NotNull
@@ -82,7 +82,7 @@ public class Game implements Comparable<Game>, Observable {
         setWinnerIfPlayerWon(player, coordinates);
 
         if (isThisGameEnded()) {
-            firePropertyChange(gameEndedPropertyName, false, true);
+            firePropertyChange(isThisGameEndedPropertyName, false, true);
         }
     }
 
