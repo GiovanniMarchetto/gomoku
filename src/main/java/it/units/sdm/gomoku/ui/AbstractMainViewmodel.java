@@ -6,9 +6,9 @@ import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveOddInteger;
 import it.units.sdm.gomoku.model.entities.*;
 import it.units.sdm.gomoku.mvvm_library.Viewmodel;
-import it.units.sdm.gomoku.ui.gui.GUISetup;
+import it.units.sdm.gomoku.ui.gui.GUIAbstractSetup;
 import it.units.sdm.gomoku.ui.support.BoardSizes;
-import it.units.sdm.gomoku.ui.support.Setup;
+import it.units.sdm.gomoku.ui.support.AbstractSetup;
 import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -53,14 +53,14 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
         }
     }
 
-    public void createMatchFromSetupAndStartGame(Setup setup) {
+    public void createMatchFromSetupAndStartGame(AbstractSetup abstractSetup) {
         setMatch(new Match(
-                setup.getBoardSizeValue(), setup.getNumberOfGames(), setup.getPlayers()));
+                abstractSetup.getBoardSizeValue(), abstractSetup.getNumberOfGames(), abstractSetup.getPlayers()));
         startNewGame();
     }
 
-    public GUISetup createGUISetup(Pair<String, Boolean> player1Info, Pair<String, Boolean> player2Info,
-                                   String numberOfGames, String boardSize) {
+    public GUIAbstractSetup createGUISetup(Pair<String, Boolean> player1Info, Pair<String, Boolean> player2Info,
+                                           String numberOfGames, String boardSize) {
 
         var playerOne = player1Info.getValue()
                 ? new CPUPlayer(player1Info.getKey())
@@ -72,7 +72,7 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
         PositiveInteger n = new PositiveInteger(Integer.parseInt(numberOfGames));
         PositiveOddInteger s = BoardSizes.fromString(boardSize).getBoardSize();
 
-        return new GUISetup(playerOne,playerTwo, n, s);
+        return new GUIAbstractSetup(playerOne,playerTwo, n, s);
     }
 
     public abstract void startNewMatch();

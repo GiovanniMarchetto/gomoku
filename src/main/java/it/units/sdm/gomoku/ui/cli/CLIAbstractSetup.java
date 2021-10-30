@@ -8,12 +8,10 @@ import it.units.sdm.gomoku.ui.support.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-public class CLISetup extends Setup { // TODO : to be tested
+public class CLIAbstractSetup extends AbstractSetup { // TODO : to be tested
 
-    public CLISetup() {
+    public CLIAbstractSetup() {
         super(
                 askAndGetPlayersOfThisMatch(askAndGetNumberOfPlayers()),
                 askAndGetNumberOfGames(),
