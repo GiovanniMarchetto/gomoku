@@ -1,13 +1,17 @@
 package it.units.sdm.gomoku.ui.cli;
 
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
-import it.units.sdm.gomoku.model.custom_types.PositiveOddInteger;
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
 import it.units.sdm.gomoku.model.entities.Player;
-import it.units.sdm.gomoku.ui.support.*;
+import it.units.sdm.gomoku.ui.support.AbstractSetup;
+import it.units.sdm.gomoku.ui.support.BoardSizes;
+import it.units.sdm.gomoku.ui.support.ExposedEnum;
+import it.units.sdm.gomoku.ui.support.MatchTypes;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class CLIAbstractSetup extends AbstractSetup { // TODO : to be tested
 
@@ -33,7 +37,7 @@ public class CLIAbstractSetup extends AbstractSetup { // TODO : to be tested
         }
         return switch (matchType) {
             case CPU_VS_PERSON -> new Player[]{new Player(playerNames.get(0)), new CPUPlayer()};
-            case PERSON_VS_PERSON -> new Player[]{new Player(playerNames.get(0)),new Player(playerNames.get(1))};
+            case PERSON_VS_PERSON -> new Player[]{new Player(playerNames.get(0)), new Player(playerNames.get(1))};
             //noinspection UnnecessaryDefault   // default branch used as good practice
             default -> throw new IllegalArgumentException("Unexpected " + matchType);
         };
@@ -64,7 +68,7 @@ public class CLIAbstractSetup extends AbstractSetup { // TODO : to be tested
     }
 
     @NotNull
-    private static PositiveOddInteger askAndGetBoardSize() {
+    private static PositiveInteger askAndGetBoardSize() {
         String msgWithPossibleChoices = "Choose the board size (" + ExposedEnum.getEnumDescriptionOf(BoardSizes.class) + "): ";
         System.out.print(msgWithPossibleChoices);
         int inputOption = Integer.parseInt(IOUtility.checkInputAndGet(

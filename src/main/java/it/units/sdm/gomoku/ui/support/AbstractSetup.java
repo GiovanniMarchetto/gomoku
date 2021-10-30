@@ -2,7 +2,6 @@ package it.units.sdm.gomoku.ui.support;
 
 import it.units.sdm.gomoku.Length;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
-import it.units.sdm.gomoku.model.custom_types.PositiveOddInteger;
 import it.units.sdm.gomoku.model.entities.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,11 +17,11 @@ public abstract class AbstractSetup {       // TODO : to be tested
     protected final PositiveInteger numberOfGames;
 
     @NotNull
-    protected final PositiveOddInteger boardSize;
+    protected final PositiveInteger boardSize;
 
     protected AbstractSetup(@NotNull final Player[] players,
                             @NotNull final PositiveInteger numberOfGames,
-                            @NotNull final PositiveOddInteger boardSizes) {
+                            @NotNull final PositiveInteger boardSizes) {
         this.players = Objects.requireNonNull(players);
         this.numberOfGames = Objects.requireNonNull(numberOfGames);
         this.boardSize = Objects.requireNonNull(boardSizes);
@@ -31,7 +30,7 @@ public abstract class AbstractSetup {       // TODO : to be tested
     protected AbstractSetup(@NotNull final Player playerOne,
                             @NotNull final Player playerTwo,
                             @NotNull final PositiveInteger numberOfGames,
-                            @NotNull final PositiveOddInteger boardSizes) {
+                            @NotNull final PositiveInteger boardSizes) {
         this(
                 new Player[]{Objects.requireNonNull(playerOne), Objects.requireNonNull(playerTwo)},
                 numberOfGames, boardSizes
@@ -50,7 +49,7 @@ public abstract class AbstractSetup {       // TODO : to be tested
     }
 
     @NotNull
-    public PositiveOddInteger getBoardSizeValue() {
+    public PositiveInteger getBoardSizeValue() {
         return boardSize;
     }
 

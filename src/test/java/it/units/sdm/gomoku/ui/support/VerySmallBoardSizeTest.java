@@ -1,6 +1,6 @@
 package it.units.sdm.gomoku.ui.support;
 
-import it.units.sdm.gomoku.model.custom_types.PositiveOddInteger;
+import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -9,7 +9,7 @@ class VerySmallBoardSizeTest {
 
     private final BoardSizes verySmall = BoardSizes.VERY_SMALL;
     private final String verySmallString = "VERY SMALL";
-    private final PositiveOddInteger verySmallValue = new PositiveOddInteger(9);
+    private final PositiveInteger verySmallValue = new PositiveInteger(9);
 
     @Test
     void fromStringVerySmall() {

@@ -1,11 +1,10 @@
 package it.units.sdm.gomoku.ui.support;
 
-import it.units.sdm.gomoku.model.custom_types.PositiveOddInteger;
+import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import org.jetbrains.annotations.NotNull;
 
-import static it.units.sdm.gomoku.model.custom_types.PositiveOddInteger.PositiveOddIntegerType;
+import static it.units.sdm.gomoku.model.custom_types.PositiveInteger.PositiveIntegerType;
 
-@SuppressWarnings("unused") // enum values are used
 public enum BoardSizes implements ExposedEnum { // TODO : to be tested
     VERY_SMALL(9, 1),
     SMALL(15, 2),
@@ -13,11 +12,11 @@ public enum BoardSizes implements ExposedEnum { // TODO : to be tested
     BIG(23, 4),
     VERY_BIG(29, 5);
 
-    private final PositiveOddInteger boardSize;
+    private final PositiveInteger boardSize;
     private final int ordinalValueOfThisEnum;
 
-    BoardSizes(@PositiveOddIntegerType int boardSize, int ordinalValueOfThisEnum) {
-        this.boardSize = new PositiveOddInteger(boardSize);
+    BoardSizes(@PositiveIntegerType int boardSize, int ordinalValueOfThisEnum) {
+        this.boardSize = new PositiveInteger(boardSize);
         this.ordinalValueOfThisEnum = ordinalValueOfThisEnum;
     }
 
@@ -26,7 +25,7 @@ public enum BoardSizes implements ExposedEnum { // TODO : to be tested
     }
 
     @NotNull
-    public PositiveOddInteger getBoardSize() {
+    public PositiveInteger getBoardSize() {
         return boardSize;
     }
 

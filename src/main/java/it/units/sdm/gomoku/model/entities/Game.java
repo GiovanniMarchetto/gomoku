@@ -2,7 +2,6 @@ package it.units.sdm.gomoku.model.entities;
 
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
-import it.units.sdm.gomoku.model.custom_types.PositiveOddInteger;
 import it.units.sdm.gomoku.mvvm_library.Observable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,7 +14,7 @@ import java.util.Objects;
 public class Game implements Comparable<Game>, Observable {
 
     @NotNull
-    public static final PositiveInteger NUMBER_OF_CONSECUTIVE_STONE_FOR_WINNING = new PositiveOddInteger(5);
+    public static final PositiveInteger NUMBER_OF_CONSECUTIVE_STONE_FOR_WINNING = new PositiveInteger(5);
     @NotNull
     public static final String gameEndedPropertyName = "gameEnded";
     @NotNull

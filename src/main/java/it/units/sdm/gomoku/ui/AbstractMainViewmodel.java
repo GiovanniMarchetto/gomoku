@@ -3,12 +3,11 @@ package it.units.sdm.gomoku.ui;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
-import it.units.sdm.gomoku.model.custom_types.PositiveOddInteger;
 import it.units.sdm.gomoku.model.entities.*;
 import it.units.sdm.gomoku.mvvm_library.Viewmodel;
 import it.units.sdm.gomoku.ui.gui.GUIAbstractSetup;
-import it.units.sdm.gomoku.ui.support.BoardSizes;
 import it.units.sdm.gomoku.ui.support.AbstractSetup;
+import it.units.sdm.gomoku.ui.support.BoardSizes;
 import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -70,9 +69,9 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
                 : new Player(player2Info.getKey());
 
         PositiveInteger n = new PositiveInteger(Integer.parseInt(numberOfGames));
-        PositiveOddInteger s = BoardSizes.fromString(boardSize).getBoardSize();
+        PositiveInteger s = BoardSizes.fromString(boardSize).getBoardSize();
 
-        return new GUIAbstractSetup(playerOne,playerTwo, n, s);
+        return new GUIAbstractSetup(playerOne, playerTwo, n, s);
     }
 
     public abstract void startNewMatch();
