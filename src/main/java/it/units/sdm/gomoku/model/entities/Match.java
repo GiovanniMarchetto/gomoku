@@ -26,16 +26,19 @@ public class Match {
     private final PositiveInteger numberOfGames;
 
     @NotNull
-    private Player currentBlackPlayer,
-            currentWhitePlayer;
+    private Player currentBlackPlayer;
+
+    @NotNull
+    private Player currentWhitePlayer;
 
     public Match(@NotNull final PositiveInteger boardSize, @NotNull final PositiveInteger numberOfGames,
                  @NotNull @Length(length = 2) final Player... players) {
-        this(Objects.requireNonNull(boardSize), Objects.requireNonNull(numberOfGames), validatePlayersFromVarargs(players)[0], players[1]
-        );
+        this(Objects.requireNonNull(boardSize), Objects.requireNonNull(numberOfGames),
+                validatePlayersFromVarargs(players)[0], players[1]);
     }
 
-    public Match(@NotNull final PositiveInteger boardSize, @NotNull final PositiveInteger numberOfGames, @NotNull final Player player1, @NotNull final Player player2) {
+    public Match(@NotNull final PositiveInteger boardSize, @NotNull final PositiveInteger numberOfGames,
+                 @NotNull final Player player1, @NotNull final Player player2) {
         this.currentBlackPlayer = Objects.requireNonNull(player1);
         this.currentWhitePlayer = Objects.requireNonNull(player2);
         this.gameList = new ArrayList<>();
@@ -43,7 +46,8 @@ public class Match {
         this.numberOfGames = Objects.requireNonNull(numberOfGames);
     }
 
-    public Match(@PositiveIntegerType int boardSize, @PositiveIntegerType int numberOfGames, @NotNull final Player player1, @NotNull final Player player2) {
+    public Match(@PositiveIntegerType int boardSize, @PositiveIntegerType int numberOfGames,
+                 @NotNull final Player player1, @NotNull final Player player2) {
         this(new PositiveInteger(boardSize), new PositiveInteger(numberOfGames), player1, player2);
     }
 
