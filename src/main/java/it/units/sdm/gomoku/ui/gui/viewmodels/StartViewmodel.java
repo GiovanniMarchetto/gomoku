@@ -4,6 +4,7 @@ import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
 import it.units.sdm.gomoku.model.entities.Player;
 import it.units.sdm.gomoku.mvvm_library.Viewmodel;
+import it.units.sdm.gomoku.ui.AbstractMainViewmodel;
 import it.units.sdm.gomoku.ui.support.BoardSizes;
 import it.units.sdm.gomoku.ui.support.Setup;
 
@@ -11,8 +12,6 @@ import java.beans.PropertyChangeEvent;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-
-import static it.units.sdm.gomoku.ui.gui.GUIMain.mainViewmodel;
 
 public class StartViewmodel extends Viewmodel {
 
@@ -27,6 +26,8 @@ public class StartViewmodel extends Viewmodel {
             .map(BoardSizes::toString)
             .toList();
 
+    private final AbstractMainViewmodel mainViewmodel;
+
     private String player1Name;
     private String player2Name;
     private boolean player1CPU;
@@ -34,11 +35,12 @@ public class StartViewmodel extends Viewmodel {
     private String selectedBoardSize;
     private String numberOfGames;
 
-    public StartViewmodel() {
+    public StartViewmodel(AbstractMainViewmodel mainViewmodel) {
+        this.mainViewmodel = mainViewmodel;
     }
 
     public void startMatch() {
-        mainViewmodel.createMatchFromSetupAndStartGame(createSetup());
+        this.mainViewmodel.createMatchFromSetupAndStartGame(createSetup());
     }
 
     private Setup createSetup() {

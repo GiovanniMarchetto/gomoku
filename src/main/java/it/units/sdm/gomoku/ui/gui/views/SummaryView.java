@@ -11,7 +11,7 @@ import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 
-import static it.units.sdm.gomoku.ui.gui.GUIMain.mainViewmodel;
+import static it.units.sdm.gomoku.ui.gui.GUIMain.guiMainViewmodel;
 
 public class SummaryView extends View {
     @FXML
@@ -31,7 +31,7 @@ public class SummaryView extends View {
     private Label scoreOfMatchLabel;
 
     public SummaryView() {
-        super(mainViewmodel);
+        super(guiMainViewmodel);
     }
 
     @FXML

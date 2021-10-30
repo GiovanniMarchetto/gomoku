@@ -1,6 +1,7 @@
 package it.units.sdm.gomoku.ui.gui.views;
 
 import it.units.sdm.gomoku.mvvm_library.View;
+import it.units.sdm.gomoku.ui.gui.GUIMain;
 import it.units.sdm.gomoku.ui.gui.viewmodels.MainViewmodel;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -10,8 +11,6 @@ import javafx.scene.layout.VBox;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-
-import static it.units.sdm.gomoku.ui.gui.GUIMain.mainViewmodel;
 
 public class MainView extends View {
 
@@ -32,7 +31,7 @@ public class MainView extends View {
     private Label startTime;
 
     public MainView() {
-        super(mainViewmodel);
+        super(GUIMain.guiMainViewmodel);
     }
 
     @FXML

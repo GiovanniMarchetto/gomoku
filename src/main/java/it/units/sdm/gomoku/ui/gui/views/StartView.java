@@ -9,6 +9,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 
+import static it.units.sdm.gomoku.ui.gui.GUIMain.guiMainViewmodel;
 import static it.units.sdm.gomoku.ui.gui.viewmodels.StartViewmodel.*;
 
 
@@ -31,11 +32,11 @@ public class StartView extends View {
     private TextField numberOfGamesTextField;
 
     public StartView() {
-        super(new StartViewmodel());
+        super(new StartViewmodel(guiMainViewmodel));
     }
 
     @FXML
-    private void initialize() {
+    private void initialize() {// TODO : refactor this method
         boardSizeChoiceBox.getItems().addAll(boardSizes);
         boardSizeChoiceBox.setValue(boardSizes.get(boardSizes.size() / 2));
 

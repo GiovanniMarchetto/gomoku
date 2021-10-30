@@ -9,7 +9,7 @@ import static it.units.sdm.gomoku.ui.gui.SceneController.ViewName.*;
 
 public class GUIMain extends Application {
 
-    public static final MainViewmodel mainViewmodel = new MainViewmodel();
+    public static final MainViewmodel guiMainViewmodel = new MainViewmodel();
     private static final String FXML_LOCATION_PATH = "views/";
     private final static int initialSceneWidthInPx = 630;
     private final static int initialSceneHeightInPx = 580;
