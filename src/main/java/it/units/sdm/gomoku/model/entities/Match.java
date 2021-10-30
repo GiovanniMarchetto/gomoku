@@ -4,6 +4,7 @@ import it.units.sdm.gomoku.Length;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
+import it.units.sdm.gomoku.ui.support.Setup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -53,6 +54,10 @@ public class Match {
 
     public Match(@PositiveIntegerType int boardSize, @NotNull final Player player1, @NotNull final Player player2) {
         this(boardSize, DEFAULT_MAXIMUM_GAMES.intValue(), player1, player2);
+    }
+
+    public Match(@NotNull final Setup setup) {
+        this(Objects.requireNonNull(setup).boardSize(), setup.numberOfGames(), setup.player1(), setup.player2());
     }
 
     @NotNull
