@@ -6,13 +6,13 @@ import it.units.sdm.gomoku.model.custom_types.PositiveOddInteger;
 import it.units.sdm.gomoku.model.entities.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Map;
+import java.util.Arrays;
 import java.util.Objects;
 
 public abstract class Setup {       // TODO : to be tested
 
     @NotNull
-    protected final Map<Player, PlayerTypes> players;
+    protected final Player[] players;
 
     @NotNull
     protected final PositiveInteger numberOfGames;
@@ -20,7 +20,7 @@ public abstract class Setup {       // TODO : to be tested
     @NotNull
     protected final PositiveOddInteger boardSize;
 
-    protected Setup(@NotNull final Map<Player, PlayerTypes> players,
+    protected Setup(@NotNull final Player[] players,
                     @NotNull final PositiveInteger numberOfGames,
                     @NotNull final PositiveOddInteger boardSizes) {
         this.players = Objects.requireNonNull(players);
@@ -28,10 +28,20 @@ public abstract class Setup {       // TODO : to be tested
         this.boardSize = Objects.requireNonNull(boardSizes);
     }
 
+    protected Setup(@NotNull final Player playerOne,
+                    @NotNull final Player playerTwo,
+                    @NotNull final PositiveInteger numberOfGames,
+                    @NotNull final PositiveOddInteger boardSizes) {
+        this(
+                new Player[]{Objects.requireNonNull(playerOne), Objects.requireNonNull(playerTwo)},
+                numberOfGames, boardSizes
+        );
+    }
+
     @NotNull
     @Length(length = 2)
     public Player[] getPlayers() {
-        return players.keySet().toArray(new Player[0]);
+        return players;
     }
 
     @NotNull
@@ -47,7 +57,7 @@ public abstract class Setup {       // TODO : to be tested
     @Override
     public String toString() {
         return "Setup{" +
-                "players=" + players +
+                "players=" + Arrays.toString(players) +
                 ", numberOfGames=" + numberOfGames +
                 ", boardSize=" + boardSize +
                 '}';

@@ -21,8 +21,7 @@ public class CLISetup extends Setup { // TODO : to be tested
         );
     }
 
-    @NotNull
-    private static Map<Player, PlayerTypes> askAndGetPlayersOfThisMatch(@NotNull final MatchTypes matchType) {
+    private static @NotNull Player[] askAndGetPlayersOfThisMatch(@NotNull final MatchTypes matchType) {
         List<String> playerNames = new ArrayList<>(Objects.requireNonNull(matchType).getNumberOfHumanPlayers());
         for (int i = 1; i <= matchType.getNumberOfHumanPlayers(); i++) {
             System.out.print("Name of player" + (matchType.getNumberOfHumanPlayers() > 1 ? " " + i : "") + ": ");
@@ -35,16 +34,8 @@ public class CLISetup extends Setup { // TODO : to be tested
             );
         }
         return switch (matchType) {
-            case CPU_VS_PERSON -> Collections.synchronizedMap(
-                    Stream.of(
-                                    new AbstractMap.SimpleEntry<>(new Player(playerNames.get(0)), PlayerTypes.PERSON),
-                                    new AbstractMap.SimpleEntry<>(new CPUPlayer(), PlayerTypes.CPU)
-                            )
-                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> b, LinkedHashMap::new)));
-            case PERSON_VS_PERSON -> Collections.synchronizedMap(
-                    playerNames.stream().sequential()
-                            .map(playerName -> new AbstractMap.SimpleEntry<>(new Player(playerName), PlayerTypes.PERSON))
-                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> b, LinkedHashMap::new)));
+            case CPU_VS_PERSON -> new Player[]{new Player(playerNames.get(0)), new CPUPlayer()};
+            case PERSON_VS_PERSON -> new Player[]{new Player(playerNames.get(0)),new Player(playerNames.get(1))};
             //noinspection UnnecessaryDefault   // default branch used as good practice
             default -> throw new IllegalArgumentException("Unexpected " + matchType);
         };

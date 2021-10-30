@@ -8,7 +8,6 @@ import it.units.sdm.gomoku.model.entities.*;
 import it.units.sdm.gomoku.mvvm_library.Viewmodel;
 import it.units.sdm.gomoku.ui.gui.GUISetup;
 import it.units.sdm.gomoku.ui.support.BoardSizes;
-import it.units.sdm.gomoku.ui.support.PlayerTypes;
 import it.units.sdm.gomoku.ui.support.Setup;
 import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +15,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.beans.PropertyChangeEvent;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -58,23 +59,20 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
         startNewGame();
     }
 
-    public GUISetup createGUISetup(Pair<String, Boolean> player1Info, Pair<String, Boolean> player2Info, String numberOfGames, String boardSize) {
-        Map<Player, PlayerTypes> players = Collections.synchronizedMap(Arrays.stream(
-                        new Pair[]{player1Info, player2Info}
-                )
-                .map(pair -> {
-                    if ((Boolean) pair.getValue()) {
-                        return new AbstractMap.SimpleEntry<>(new CPUPlayer((String) pair.getKey()), PlayerTypes.CPU);
-                    } else {
-                        return new AbstractMap.SimpleEntry<>(new Player((String) pair.getKey()), PlayerTypes.PERSON);
-                    }
-                })
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> b, LinkedHashMap::new)));
+    public GUISetup createGUISetup(Pair<String, Boolean> player1Info, Pair<String, Boolean> player2Info,
+                                   String numberOfGames, String boardSize) {
+
+        var playerOne = player1Info.getValue()
+                ? new CPUPlayer(player1Info.getKey())
+                : new Player(player1Info.getKey());
+        var playerTwo = player2Info.getValue()
+                ? new CPUPlayer(player2Info.getKey())
+                : new Player(player2Info.getKey());
 
         PositiveInteger n = new PositiveInteger(Integer.parseInt(numberOfGames));
         PositiveOddInteger s = BoardSizes.fromString(boardSize).getBoardSize();
 
-        return new GUISetup(players, n, s);
+        return new GUISetup(playerOne,playerTwo, n, s);
     }
 
     public abstract void startNewMatch();
