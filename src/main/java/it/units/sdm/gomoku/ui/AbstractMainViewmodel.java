@@ -90,15 +90,15 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
     }
 
     protected void addAnExtraGameToThisMatch() {
-        match.addAnExtraGame();
+        Objects.requireNonNull(match).addAnExtraGame();
     }
 
     public synchronized boolean isMatchEnded() {
-        return match.isEnded();
+        return Objects.requireNonNull(match).isEnded();
     }
 
     protected synchronized boolean isCurrentGameEnded() {
-        return currentGame.isThisGameEnded();
+        return Objects.requireNonNull(currentGame).isThisGameEnded();
     }
 
     protected void setMatch(@NotNull Match match) {
@@ -107,12 +107,12 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
 
     @NotNull
     public String getCurrentBoardAsString() {
-        return currentBoard.toString();
+        return Objects.requireNonNull(currentBoard).toString();
     }
 
     protected void initializeNewGame() {
         try {
-            currentGame = match.startNewGame();
+            currentGame = Objects.requireNonNull(match).startNewGame();
             currentBoard = currentGame.getBoard();
             observe(currentGame);
             observe(currentBoard);
@@ -123,19 +123,19 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
     }
 
     public void endGame() {
-        stopObserving(currentGame);
-        stopObserving(currentBoard);
+        stopObserving(Objects.requireNonNull(currentGame));
+        stopObserving(Objects.requireNonNull(currentBoard));
         firePropertyChange(Game.gameEndedPropertyName, false, true);
     }
 
     @NotNull
     protected Game getCurrentGame() {
-        return currentGame;
+        return Objects.requireNonNull(currentGame);
     }
 
     @NotNull
     protected Board getCurrentBoard() {
-        return currentBoard;
+        return Objects.requireNonNull(currentBoard);
     }
 
     private void placeStone(@NotNull final Coordinates coordinates)
@@ -188,32 +188,32 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
     }
 
     public Map<Player, NonNegativeInteger> getScoreOfMatch() {
-        return match.getScore();
+        return Objects.requireNonNull(match).getScore();
     }
 
     public Player getCurrentPlayer() {
-        return currentGame.getCurrentPlayer();
+        return Objects.requireNonNull(currentGame).getCurrentPlayer();
     }
 
     public Player getCurrentBlackPlayer() {
-        return match.getCurrentBlackPlayer();
+        return Objects.requireNonNull(match).getCurrentBlackPlayer();
     }
 
     public Player getCurrentWhitePlayer() {
-        return match.getCurrentWhitePlayer();
+        return Objects.requireNonNull(match).getCurrentWhitePlayer();
     }
 
     @Nullable
     public Player getWinnerOfTheMatch() throws Match.MatchNotEndedException {
-        return match.getWinner();
+        return Objects.requireNonNull(match).getWinner();
     }
 
     @Nullable
     public Player getWinnerOfTheGame() throws Game.GameNotEndedException {
-        return currentGame.getWinner();
+        return Objects.requireNonNull(currentGame).getWinner();
     }
 
     public ZonedDateTime getGameStartTime() {
-        return currentGame.getStart();
+        return Objects.requireNonNull(currentGame).getStart();
     }
 }
