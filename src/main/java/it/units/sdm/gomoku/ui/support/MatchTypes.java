@@ -5,7 +5,8 @@ import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import static it.units.sdm.gomoku.model.custom_types.PositiveInteger.PositiveIntegerType;
 
 public enum MatchTypes implements ExposedEnum {
-    CPU_VS_PERSON(1),
+    CPU_VS_CPU(0),
+    PERSON_VS_CPU(1),
     PERSON_VS_PERSON(2);
     private final NonNegativeInteger numberOfHumanPlayers;
 
