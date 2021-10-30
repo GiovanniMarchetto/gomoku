@@ -1,63 +1,75 @@
 package it.units.sdm.gomoku.ui.gui.views;
 
 import it.units.sdm.gomoku.mvvm_library.View;
-import it.units.sdm.gomoku.ui.support.BoardSizes;
+import it.units.sdm.gomoku.ui.gui.viewmodels.StartViewmodel;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
-import javafx.util.Pair;
 
-import java.util.Arrays;
+import static it.units.sdm.gomoku.ui.gui.viewmodels.StartViewmodel.*;
 
-import static it.units.sdm.gomoku.ui.gui.GUIMain.mainViewmodel;
 
 public class StartView extends View {
+
     @FXML
     private Button startMatchButton;
-    @FXML
-    private TextField player1TextField;
-    @FXML
-    private TextField player2TextField;
 
     @FXML
-    private CheckBox cpu1CheckBox;
+    private TextField player1NameTextField;
     @FXML
-    private CheckBox cpu2CheckBox;
-
+    private TextField player2NameTextField;
+    @FXML
+    private CheckBox player1CPUCheckBox;
+    @FXML
+    private CheckBox player2CPUCheckBox;
     @FXML
     private ChoiceBox<String> boardSizeChoiceBox;
     @FXML
     private TextField numberOfGamesTextField;
 
     public StartView() {
-        super(mainViewmodel);
+        super(new StartViewmodel());
     }
 
     @FXML
     private void initialize() {
-        String[] boardSizeStringList = Arrays.stream(BoardSizes.values()).map(BoardSizes::toString).toArray(String[]::new);
-        boardSizeChoiceBox.getItems().addAll(boardSizeStringList);
-        boardSizeChoiceBox.setValue(boardSizeStringList[2]);
+        boardSizeChoiceBox.getItems().addAll(boardSizes);
+        boardSizeChoiceBox.setValue(boardSizes.get(boardSizes.size() / 2));
+
+        firePropertyChange(player1NamePropertyName, null, player1NameTextField.getText());
+        firePropertyChange(player2NamePropertyName, null, player2NameTextField.getText());
+        firePropertyChange(player1CPUPropertyName, null, player1CPUCheckBox.isSelected());
+        firePropertyChange(player2CPUPropertyName, null, player2CPUCheckBox.isSelected());
+        firePropertyChange(selectedBoardSizePropertyName, null, boardSizeChoiceBox.getValue());
+        firePropertyChange(numberOfGamesPropertyName, null, numberOfGamesTextField.getText());
+
 
         checkFieldsAndEnableButton();
-        player1TextField.textProperty().addListener((observable, oldValue, newValue) -> {
+        player1NameTextField.textProperty().addListener((observable, oldValue, newValue) -> {
             checkFieldsAndEnableButton();
+            firePropertyChange(player1NamePropertyName, oldValue, newValue);
         });
-        player2TextField.textProperty().addListener((observable, oldValue, newValue) -> {
+        player2NameTextField.textProperty().addListener((observable, oldValue, newValue) -> {
             checkFieldsAndEnableButton();
+            firePropertyChange(player2NamePropertyName, oldValue, newValue);
         });
+        player1CPUCheckBox.selectedProperty().addListener((observable, oldValue, newValue) ->
+                firePropertyChange(player1CPUPropertyName, oldValue, newValue));
+        player2CPUCheckBox.selectedProperty().addListener((observable, oldValue, newValue) ->
+                firePropertyChange(player2CPUPropertyName, oldValue, newValue));
+        boardSizeChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
+                firePropertyChange(selectedBoardSizePropertyName, oldValue, newValue));
+        numberOfGamesTextField.textProperty().addListener((observable, oldValue, newValue) ->
+                firePropertyChange(numberOfGamesPropertyName, oldValue, newValue));
 
         allowOnlyNumberInNumberOfGamesTextField();
     }
 
     public void startMatchButtonOnMouseClicked(MouseEvent e) {
-        var p1 = new Pair<>(player1TextField.getText(), cpu1CheckBox.isSelected());
-        var p2 = new Pair<>(player2TextField.getText(), cpu2CheckBox.isSelected());
-        var setup = mainViewmodel.createGUISetup(p1, p2, numberOfGamesTextField.getText(), boardSizeChoiceBox.getValue());
-        mainViewmodel.createMatchFromSetupAndStartGame(setup);
+        ((StartViewmodel) getViewmodelAssociatedWithView()).startMatch();
     }
 
     private void allowOnlyNumberInNumberOfGamesTextField() {
@@ -70,6 +82,9 @@ public class StartView extends View {
     }
 
     private void checkFieldsAndEnableButton() {
-        startMatchButton.setDisable(player1TextField.getText().isEmpty() || player2TextField.getText().isEmpty() || numberOfGamesTextField.getText().isEmpty());
+        startMatchButton.setDisable(
+                player1NameTextField.getText().isEmpty()
+                        || player2NameTextField.getText().isEmpty()
+                        || numberOfGamesTextField.getText().isEmpty());
     }
 }

@@ -18,20 +18,20 @@
     <Label text="Player One:"
            GridPane.columnIndex="0" GridPane.rowIndex="1"/>
 
-    <TextField fx:id="player1TextField" text="One"
+    <TextField fx:id="player1NameTextField" text="One"
                GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 
-    <CheckBox fx:id="cpu1CheckBox" text="CPU"
+    <CheckBox fx:id="player1CPUCheckBox" text="CPU"
               GridPane.columnIndex="2" GridPane.rowIndex="1"/>
 
 
     <Label text="Player Two:"
            GridPane.columnIndex="0" GridPane.rowIndex="2"/>
 
-    <TextField fx:id="player2TextField" text="Two"
+    <TextField fx:id="player2NameTextField" text="Two"
                GridPane.columnIndex="1" GridPane.rowIndex="2"/>
 
-    <CheckBox fx:id="cpu2CheckBox" text="CPU"
+    <CheckBox fx:id="player2CPUCheckBox" text="CPU"
               GridPane.columnIndex="2" GridPane.rowIndex="2"/>
 
 
