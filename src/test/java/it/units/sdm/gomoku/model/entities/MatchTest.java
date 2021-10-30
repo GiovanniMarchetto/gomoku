@@ -22,7 +22,7 @@ class MatchTest {
 
     @BeforeEach
     void setup() {
-        match = new Match(cpu1, cpu2, boardSizeTest, NUMBER_OF_GAMES);
+        match = new Match(boardSizeTest, NUMBER_OF_GAMES, cpu1, cpu2);
     }
 
     @Test

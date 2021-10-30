@@ -31,12 +31,11 @@ public class Match {
 
     public Match(@NotNull final PositiveInteger boardSize, @NotNull final PositiveInteger numberOfGames,
                  @NotNull @Length(length = 2) final Player... players) {
-        this(validatePlayersFromVarargs(players)[0], players[1],
-                Objects.requireNonNull(boardSize), Objects.requireNonNull(numberOfGames));
+        this(Objects.requireNonNull(boardSize), Objects.requireNonNull(numberOfGames), validatePlayersFromVarargs(players)[0], players[1]
+        );
     }
 
-    public Match(@NotNull final Player player1, @NotNull final Player player2,
-                 @NotNull final PositiveInteger boardSize, @NotNull final PositiveInteger numberOfGames) {
+    public Match(@NotNull final PositiveInteger boardSize, @NotNull final PositiveInteger numberOfGames, @NotNull final Player player1, @NotNull final Player player2) {
         this.currentBlackPlayer = Objects.requireNonNull(player1);
         this.currentWhitePlayer = Objects.requireNonNull(player2);
         this.gameList = new ArrayList<>();
@@ -44,14 +43,12 @@ public class Match {
         this.numberOfGames = Objects.requireNonNull(numberOfGames);
     }
 
-    public Match(@NotNull final Player player1, @NotNull final Player player2,
-                 @PositiveIntegerType int boardSize, @PositiveIntegerType int numberOfGames) {
-        this(player1, player2, new PositiveInteger(boardSize), new PositiveInteger(numberOfGames));
+    public Match(@PositiveIntegerType int boardSize, @PositiveIntegerType int numberOfGames, @NotNull final Player player1, @NotNull final Player player2) {
+        this(new PositiveInteger(boardSize), new PositiveInteger(numberOfGames), player1, player2);
     }
 
-    public Match(@NotNull final Player player1, @NotNull final Player player2,
-                 @PositiveIntegerType int boardSize) {
-        this(player1, player2, boardSize, DEFAULT_MAXIMUM_GAMES.intValue());
+    public Match(@PositiveIntegerType int boardSize, @NotNull final Player player1, @NotNull final Player player2) {
+        this(boardSize, DEFAULT_MAXIMUM_GAMES.intValue(), player1, player2);
     }
 
     @NotNull
