@@ -39,4 +39,8 @@ public interface Observable {
         getSupportOf(this).firePropertyChange(propertyName, oldValue, newValue);
     }
 
+    default void firePropertyChange(String propertyName, Object newValue) {
+        firePropertyChange(propertyName, null, newValue);
+    }
+
 }
