@@ -3,11 +3,10 @@ package it.units.sdm.gomoku.client_server;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.net.Socket;
 
-public class GomokuClient implements Closeable, Runnable {
+public class GomokuClient implements Client {
 
     @NotNull
     private final Socket socketToServer;
