@@ -7,12 +7,12 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.net.Socket;
 
-public class Client implements Closeable, Runnable {
+public class GomokuClient implements Closeable, Runnable {
 
     @NotNull
     private final Socket socketToServer;
 
-    protected Client(@Nullable final String serverHostName, final int serverPortNumber)
+    protected GomokuClient(@Nullable final String serverHostName, final int serverPortNumber)
             throws IOException {
         this.socketToServer = new Socket(serverHostName, serverPortNumber);
     }

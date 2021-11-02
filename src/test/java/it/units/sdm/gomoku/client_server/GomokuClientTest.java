@@ -17,9 +17,9 @@ import static it.units.sdm.gomoku.client_server.ClientServerUtility.SERVER_PORT_
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-class ClientTest {
+class GomokuClientTest {
 
-    private Client client;
+    private GomokuClient gomokuClient;
     private Pair<GomokuServer, Thread> serverAndItsThread;
     private final Logger testLogger = Logger.getLogger(getClass().getCanonicalName());
     private boolean clientClosed = false;
@@ -38,7 +38,7 @@ class ClientTest {
     @AfterEach
     void tearDown() throws IOException {
         if (!clientClosed) {
-            client.close();
+            gomokuClient.close();
         }
         ClientServerUtility.shutdownAndCloseServer(serverAndItsThread);
     }
@@ -46,7 +46,7 @@ class ClientTest {
     @Test
     void connectToServer() {
         try {
-            client = new Client(LOOPBACK_HOSTNAME, SERVER_PORT_NUMBER);
+            gomokuClient = new GomokuClient(LOOPBACK_HOSTNAME, SERVER_PORT_NUMBER);
         } catch (IOException e) {
             fail(e);
         }
@@ -55,7 +55,7 @@ class ClientTest {
     @Test
     void close() {
         try {
-            client.close();
+            gomokuClient.close();
             clientClosed = true;
             assertTrue(isSocketToClientClosed());
         } catch (IOException | AccessWithReflectionException e) {
@@ -65,9 +65,9 @@ class ClientTest {
 
     private boolean isSocketToClientClosed() throws AccessWithReflectionException {
         try {
-            Field socketField = Client.class.getDeclaredField("socketToServer");
+            Field socketField = GomokuClient.class.getDeclaredField("socketToServer");
             socketField.setAccessible(true);
-            return ((Socket) socketField.get(client)).isClosed();
+            return ((Socket) socketField.get(gomokuClient)).isClosed();
         } catch (NoSuchFieldException | IllegalAccessException e) {
             testLogger.log(Level.SEVERE, "Exception thrown in utility method", e);
             throw new AccessWithReflectionException();
