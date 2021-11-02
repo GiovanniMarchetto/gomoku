@@ -191,7 +191,7 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
         return Objects.requireNonNull(currentGame).getCurrentPlayer();
     }
 
-    public Board.Stone getCurrentStone() {
+    public Board.Stone getStoneOfCurrentPlayer() {
         return Objects.requireNonNull(currentGame).getStoneOfPlayer(getCurrentPlayer());
     }
 
