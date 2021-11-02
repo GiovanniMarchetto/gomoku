@@ -68,7 +68,7 @@ public class MainView extends View<MainViewmodel> implements Observer {
         if (evt.getPropertyName().equals(MainViewmodel.currentPlayerPropertyName)) {
             SceneController.executeOnJavaFxUiThread(() -> {
                 currentPlayerLabel.setText(evt.getNewValue().toString());
-                // pallino = getViewmodelAssociatedWithView().getCurrentStone() == BLACK ? nero : bianco;
+                // pallino = getViewmodelAssociatedWithView().getStoneOfCurrentPlayer() == BLACK ? nero : bianco;
             });
         }
     }

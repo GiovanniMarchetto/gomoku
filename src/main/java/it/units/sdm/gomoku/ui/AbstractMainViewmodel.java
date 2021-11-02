@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public abstract class AbstractMainViewmodel extends Viewmodel {
 
@@ -150,6 +151,17 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
         }
     }
 
+    public void forceRefireAllCells() {
+        IntStream.range(0, getBoardSize())
+                .unordered().parallel()
+                .boxed()
+                .flatMap(i -> IntStream.range(0, getBoardSize())
+                        .unordered().parallel()
+                        .mapToObj(j -> new Coordinates(i, j)))
+                .map(c -> new Board.ChangedCell(c, getStoneAtCoordinatesInCurrentBoard(c), currentBoard))
+                .forEach(c -> firePropertyChange(Board.boardMatrixPropertyName, c));
+    }
+
 //    private void placeStoneWithDelayIfIsCpu(final long delay) {
 // TODO : viewmodel should run on separate thread (not the same of gui)
 //
@@ -179,7 +191,7 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
         return Objects.requireNonNull(currentGame).getCurrentPlayer();
     }
 
-    public Board.Stone getCurrentStone() {
+    public Board.Stone getStoneOfCurrentPlayer() {
         return Objects.requireNonNull(currentGame).getStoneOfPlayer(getCurrentPlayer());
     }
 
@@ -189,6 +201,10 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
 
     public Player getCurrentWhitePlayer() {
         return Objects.requireNonNull(match).getCurrentWhitePlayer();
+    }
+
+    public Board.Stone getStoneAtCoordinatesInCurrentBoard(Coordinates coordinates) {
+        return Objects.requireNonNull(currentBoard).getStoneAtCoordinates(coordinates);
     }
 
     @Nullable

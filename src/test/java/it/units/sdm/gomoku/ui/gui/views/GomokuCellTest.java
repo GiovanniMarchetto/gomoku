@@ -4,7 +4,6 @@ import it.units.sdm.gomoku.EnvVariables;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.ui.gui.viewmodels.MainViewmodel;
 import javafx.scene.shape.Line;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
 
@@ -64,8 +63,4 @@ class GomokuCellTest {
                 : lineIntLength;
     }
 
-    @Test
-    void propertyChange() {
-        //TODO: to do
-    }
 }
