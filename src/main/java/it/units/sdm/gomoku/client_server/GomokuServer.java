@@ -1,5 +1,7 @@
 package it.units.sdm.gomoku.client_server;
 
+import it.units.sdm.gomoku.client_server.interfaces.Server;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.logging.Level;

@@ -1,5 +1,6 @@
 package it.units.sdm.gomoku.client_server;
 
+import it.units.sdm.gomoku.client_server.interfaces.Protocol;
 import org.jetbrains.annotations.NotNull;
 
 public class GameProtocol implements Protocol {
