@@ -1,8 +1,12 @@
 package it.units.sdm.gomoku.client_server;
 
+import it.units.sdm.gomoku.client_server.interfaces.Protocol;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Objects;
 
@@ -27,7 +31,7 @@ public class ServiceRequest implements Runnable {
                         new PrintWriter(socketToClient.getOutputStream(), true);
                 BufferedReader inFromClientToServer =
                         new BufferedReader(
-                                new InputStreamReader(socketToClient.getInputStream()));
+                                new InputStreamReader(socketToClient.getInputStream()))
         ) {
             String inputAsStr = inFromClientToServer.readLine();
             String outputAsStr = (String) protocol.processInput(inputAsStr);

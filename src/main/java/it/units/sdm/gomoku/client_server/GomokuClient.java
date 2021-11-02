@@ -1,5 +1,6 @@
 package it.units.sdm.gomoku.client_server;
 
+import it.units.sdm.gomoku.client_server.interfaces.Client;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

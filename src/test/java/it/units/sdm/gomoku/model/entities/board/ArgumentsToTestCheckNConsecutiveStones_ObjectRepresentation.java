@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static it.units.sdm.gomoku.model.custom_types.NonNegativeInteger.*;
+import static it.units.sdm.gomoku.model.custom_types.NonNegativeInteger.NonNegativeIntegerType;
 
 public class ArgumentsToTestCheckNConsecutiveStones_ObjectRepresentation {
     // TODO : refactoring needed

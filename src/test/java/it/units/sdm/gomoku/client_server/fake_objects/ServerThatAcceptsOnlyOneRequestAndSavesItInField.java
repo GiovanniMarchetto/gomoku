@@ -1,7 +1,7 @@
 package it.units.sdm.gomoku.client_server.fake_objects;
 
 import it.units.sdm.gomoku.client_server.ClientServerUtility;
-import it.units.sdm.gomoku.client_server.Server;
+import it.units.sdm.gomoku.client_server.interfaces.Server;
 
 import java.io.IOException;
 import java.net.ServerSocket;
