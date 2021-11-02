@@ -13,7 +13,7 @@ import java.util.Objects;
 
 import static it.units.sdm.gomoku.ui.gui.viewmodels.StartViewmodel.*;
 
-public class CLIStartView extends View {// TODO : refactor this class
+public class CLIStartView extends View<StartViewmodel> {// TODO : refactor this class
 
     public CLIStartView(StartViewmodel startViewmodel) {
         super(startViewmodel);
@@ -40,7 +40,7 @@ public class CLIStartView extends View {// TODO : refactor this class
         firePropertyChange(selectedBoardSizePropertyName, null, askAndGetBoardSize());
         firePropertyChange(numberOfGamesPropertyName, null, askAndGetNumberOfGames());
 
-        ((StartViewmodel) getViewmodelAssociatedWithView()).startMatch();
+        getViewmodelAssociatedWithView().startMatch();
     }
 
     @NotNull

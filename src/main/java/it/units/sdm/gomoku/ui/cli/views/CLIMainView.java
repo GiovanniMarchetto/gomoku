@@ -16,7 +16,7 @@ import java.beans.PropertyChangeEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class CLIMainView extends View implements Observer {    // TODO : all events clutter the memory stack
+public class CLIMainView extends View<CLIMainViewmodel> implements Observer {    // TODO : all events clutter the memory stack
 
     public CLIMainView(StartViewmodel startViewmodel) {  // TODO : event-based flux of program to be tested
         super(CLIMain.cliMainViewmodel);
@@ -49,7 +49,7 @@ public class CLIMainView extends View implements Observer {    // TODO : all eve
                 if ((boolean) evt.getNewValue()) {
                     System.out.println("Game ended");
                     // TODO : print summary
-                    CLIMainViewmodel viewmodel = (CLIMainViewmodel) getViewmodelAssociatedWithView();
+                    CLIMainViewmodel viewmodel = getViewmodelAssociatedWithView();
                     if (viewmodel.isMatchEnded()) {
 
                         boolean isMatchEndedWithDraft = false;
@@ -85,8 +85,7 @@ public class CLIMainView extends View implements Observer {    // TODO : all eve
         int rowCoord = 0, colCoord = 0;
         boolean validMove = false;
 
-        AbstractMainViewmodel viewmodel =
-                ((AbstractMainViewmodel) getViewmodelAssociatedWithView());
+        AbstractMainViewmodel viewmodel = getViewmodelAssociatedWithView();
 
         System.out.println(viewmodel.getCurrentBoardAsString());
         System.out.println("Turn of " + viewmodel.getCurrentPlayer());   // TODO : not showed for CPU player
