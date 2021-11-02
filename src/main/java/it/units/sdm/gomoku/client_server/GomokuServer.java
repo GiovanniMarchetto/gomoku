@@ -6,7 +6,7 @@ import java.net.ServerSocket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class GomokuServer implements Closeable, Runnable {
+public class GomokuServer implements Server {
 
     public final static int SERVER_PORT_NUMBER = 9999;
     private final ServerSocket serverSocket;
