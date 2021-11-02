@@ -1,4 +1,4 @@
-package it.units.sdm.gomoku.model.utils;
+package it.units.sdm.gomoku.utils;
 
 import it.units.sdm.gomoku.EnvVariables;
 import org.junit.jupiter.params.ParameterizedTest;

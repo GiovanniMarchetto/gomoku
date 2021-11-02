@@ -1,4 +1,4 @@
-package it.units.sdm.gomoku.model.utils;
+package it.units.sdm.gomoku.utils;
 
 import it.units.sdm.gomoku.EnvVariables;
 import it.units.sdm.gomoku.model.entities.Board;
@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static it.units.sdm.gomoku.model.utils.TestUtility.createNxNRandomBoardToStringInCSVFormat;
+import static it.units.sdm.gomoku.utils.TestUtility.createNxNRandomBoardToStringInCSVFormat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

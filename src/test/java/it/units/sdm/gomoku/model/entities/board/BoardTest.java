@@ -5,7 +5,7 @@ import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.Board;
-import it.units.sdm.gomoku.model.utils.TestUtility;
+import it.units.sdm.gomoku.utils.TestUtility;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,8 +24,8 @@ import java.util.function.BiFunction;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static it.units.sdm.gomoku.model.utils.TestUtility.provideCoupleOfNonNegativeIntegersTillNExcluded;
-import static it.units.sdm.gomoku.model.utils.TestUtility.readBoardsWithWinCoordsAndResultsFromCSV;
+import static it.units.sdm.gomoku.utils.TestUtility.provideCoupleOfNonNegativeIntegersTillNExcluded;
+import static it.units.sdm.gomoku.utils.TestUtility.readBoardsWithWinCoordsAndResultsFromCSV;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class BoardTest {

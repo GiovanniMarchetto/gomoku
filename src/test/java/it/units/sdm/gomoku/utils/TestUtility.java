@@ -1,4 +1,4 @@
-package it.units.sdm.gomoku.model.utils;
+package it.units.sdm.gomoku.utils;
 
 import it.units.sdm.gomoku.EnvVariables;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
@@ -19,9 +19,9 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static it.units.sdm.gomoku.model.utils.IOUtility.CSV_NEW_LINE;
-import static it.units.sdm.gomoku.model.utils.IOUtility.CSV_SEPARATOR;
-import static it.units.sdm.gomoku.model.utils.Predicates.isNonEmptyString;
+import static it.units.sdm.gomoku.utils.IOUtility.CSV_NEW_LINE;
+import static it.units.sdm.gomoku.utils.IOUtility.CSV_SEPARATOR;
+import static it.units.sdm.gomoku.utils.Predicates.isNonEmptyString;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class TestUtility {
