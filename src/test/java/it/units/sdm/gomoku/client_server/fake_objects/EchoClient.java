@@ -11,11 +11,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class EchoClient implements Client {    // TODO : to be tested
-    public static final String SENT_TO_SERVER = "Hello World";
+
     private final Socket socketToServer;   // TODO : Client may be an Abstract class
     private final PrintStream outputPrintStream;
+    private final String toSendToServer;
 
-    public EchoClient(@NotNull final PrintStream out) throws IOException {
+    public EchoClient(@NotNull final String stringToSendToServer,
+                      @NotNull final PrintStream out) throws IOException {
+        this.toSendToServer = Objects.requireNonNull(stringToSendToServer);
         this.socketToServer = new Socket(
                 ClientServerUtility.LOOPBACK_HOSTNAME,
                 ClientServerUtility.SERVER_PORT_NUMBER);
@@ -34,7 +37,7 @@ public class EchoClient implements Client {    // TODO : to be tested
                 BufferedReader in = new BufferedReader(
                         new InputStreamReader(socketToServer.getInputStream()))
         ) {
-            out.println(SENT_TO_SERVER);
+            out.println(toSendToServer);
             String fromServer = in.readLine();
             outputPrintStream.print(fromServer);
         } catch (IOException e) {
