@@ -4,29 +4,47 @@ import it.units.sdm.gomoku.client_server.interfaces.Server;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class GomokuServer implements Server {
 
     public final static int SERVER_PORT_NUMBER = 9999;
-    private final ServerSocket serverSocket;
+    private final static int NUMBER_OF_PROCESSABLE_CONCURRENT_REQUESTS = GameProtocol.NUMBER_OF_PLAYERS;
     private final Logger serverLogger;
+    private final ServerSocket serverSocket;
+    private final Set<Socket> handledClientSockets;
+    private final ExecutorService serviceRequestsOfClientsExecutorService;
+    private final Thread clientsHandlerThread;
 
     public GomokuServer() throws IOException {
         this.serverLogger = Logger.getLogger(getClass().getCanonicalName());
-        serverLogger.log(Level.INFO, "GomokuServer starting");
+        this.serverLogger.log(Level.INFO, "Server starting");
         this.serverSocket = new ServerSocket(SERVER_PORT_NUMBER);
-        serverLogger.log(Level.INFO, "GomokuServer started");
+        this.serviceRequestsOfClientsExecutorService =
+                Executors.newFixedThreadPool(NUMBER_OF_PROCESSABLE_CONCURRENT_REQUESTS);
+        this.handledClientSockets = ConcurrentHashMap.newKeySet();
+        this.clientsHandlerThread = new Thread(
+                new ClientHandler(
+                        handledClientSockets,
+                        new GameProtocol(),
+                        serviceRequestsOfClientsExecutorService));
+        this.clientsHandlerThread.start();
+        this.serverLogger.log(Level.INFO, "Server started");
     }
 
     @Override
     public void run() {
-        serverLogger.log(Level.INFO, "GomokuServer ready");
+        serverLogger.log(Level.INFO, "Server ready");
         while (isServerRunning()) {
-            serverLogger.log(Level.INFO, "GomokuServer waiting for a request from a client");
+            serverLogger.log(Level.INFO, "Server waiting for a request from a client");
             try {
-                serverSocket.accept();
+                handledClientSockets.add(serverSocket.accept());
             } catch (IOException ioe) {
                 if (isServerRunning()) {
                     serverLogger.log(Level.SEVERE, "Error accepting connection", ioe);
@@ -41,9 +59,21 @@ public class GomokuServer implements Server {
 
     public void shutDown() {
         try {
-            serverLogger.log(Level.INFO, "GomokuServer shutting down");
+            serverLogger.log(Level.INFO, "Server shutting down");
             serverSocket.close();
-            serverLogger.log(Level.INFO, "GomokuServer shot down");
+            serviceRequestsOfClientsExecutorService.shutdownNow();
+            try {
+                //Stop accepting requests.
+                serverSocket.close();
+                clientsHandlerThread.join();
+                System.out.println("SERVER closed");
+            } catch (InterruptedException ignored) {
+                // already interrupted
+            } catch (IOException e) {
+                System.err.println("[SERVER] Error in server shutdown");
+                e.printStackTrace();
+            }
+            serverLogger.log(Level.INFO, "Server shot down");
         } catch (IOException e) {
             serverLogger.log(Level.SEVERE, "Error in server shutdown", e);
         }
