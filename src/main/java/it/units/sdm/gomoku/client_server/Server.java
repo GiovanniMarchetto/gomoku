@@ -14,12 +14,14 @@ public class Server implements Closeable, Runnable {
 
     public Server() throws IOException {
         this.serverLogger = Logger.getLogger(getClass().getCanonicalName());
+        serverLogger.log(Level.INFO, "Server starting");
         this.serverSocket = new ServerSocket(SERVER_PORT_NUMBER);
+        serverLogger.log(Level.INFO, "Server started");
     }
 
     @Override
     public void run() {
-        serverLogger.log(Level.INFO, "Server starting");
+        serverLogger.log(Level.INFO, "Server ready");
         while (isServerRunning()) {
             serverLogger.log(Level.INFO,"Server waiting for a request from a client");
             try {
