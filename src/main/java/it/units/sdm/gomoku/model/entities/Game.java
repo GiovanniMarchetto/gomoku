@@ -63,7 +63,7 @@ public class Game implements Comparable<Game>, Observable {
     }
 
     @NotNull
-    private Board.Stone getStoneOfPlayer(@NotNull final Player player) {
+    public Board.Stone getStoneOfPlayer(@NotNull final Player player) {
         return player.equals(blackPlayer) ? Board.Stone.BLACK : Board.Stone.WHITE;
     }
 
