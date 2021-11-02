@@ -1,7 +1,6 @@
 package it.units.sdm.gomoku.model.entities.board;
 
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
-import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.utils.Predicates;
 import org.jetbrains.annotations.NotNull;
@@ -9,33 +8,19 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static it.units.sdm.gomoku.model.custom_types.NonNegativeInteger.*;
+
 public class ArgumentsToTestCheckNConsecutiveStones_ObjectRepresentation {
     // TODO : refactoring needed
 
-    @SuppressWarnings("FieldCanBeLocal")    // used for JSON de/serialization
-    private Board.Stone[][] matrix = null;
-    @SuppressWarnings("FieldCanBeLocal")
-    private Coordinates coordinates = null;
-    @SuppressWarnings("FieldCanBeLocal")
-    private boolean expected = false;
-
-    private ArgumentsToTestCheckNConsecutiveStones_ObjectRepresentation() {
-    }
-
-    public ArgumentsToTestCheckNConsecutiveStones_ObjectRepresentation(@NotNull Board.Stone[][] matrix, @NotNull Coordinates coordinates, boolean expected) {
-        if (Predicates.isSquareMatrixOfGivenSize.test(matrix, matrix.length)) {
-            this.matrix = matrix;
-            this.coordinates = coordinates;
-            this.expected = expected;
-        } else {
-            throw new IllegalArgumentException("Given matrix is not square but it should.");
-        }
-    }
+    private final Board.Stone[][] matrix;
+    private final Coordinates coordinates;
+    private final boolean isGameEndedExpected;
 
     public ArgumentsToTestCheckNConsecutiveStones_ObjectRepresentation(@NotNull String[][] matrixOfStonesAsString,
-                                                                       @NonNegativeInteger.NonNegativeIntegerType int cordX,
-                                                                       @NonNegativeInteger.NonNegativeIntegerType int cordY,
-                                                                       boolean expected) {
+                                                                       @NonNegativeIntegerType int xCoordinateOfLastMove,
+                                                                       @NonNegativeIntegerType int yCoordinateOfLastMove,
+                                                                       boolean isGameEndedExpected) {
         if (Predicates.isSquareMatrixOfGivenSize.test(matrixOfStonesAsString, matrixOfStonesAsString.length)) {
 
             Map<Character, Board.Stone> correspondence_firstChar_Stone = Arrays.stream(Board.Stone.values())
@@ -50,8 +35,8 @@ public class ArgumentsToTestCheckNConsecutiveStones_ObjectRepresentation {
                         )
                         .toArray(Board.Stone[][]::new);
 
-                this.coordinates = new Coordinates(cordX, cordY);
-                this.expected = expected;
+                this.coordinates = new Coordinates(xCoordinateOfLastMove, yCoordinateOfLastMove);
+                this.isGameEndedExpected = isGameEndedExpected;
             } catch (Exception e) {
                 throw new IllegalArgumentException("Invalid arguments: " + e.getMessage());
             }
@@ -75,8 +60,6 @@ public class ArgumentsToTestCheckNConsecutiveStones_ObjectRepresentation {
 
     @NotNull
     private static List<String> dataProvider() {
-
-        // TODO : find an effective way to test all possible combinations
 
         List<String> data = new ArrayList<>();
 
@@ -107,6 +90,33 @@ public class ArgumentsToTestCheckNConsecutiveStones_ObjectRepresentation {
                         new String[]{"N", "N", "N", "N", "W"}
                 }, 0, 0, false).toJson());
 
+        data.add(new ArgumentsToTestCheckNConsecutiveStones_ObjectRepresentation(
+                new String[][]{
+                        new String[]{"B", "W", "W", "W", "B"},
+                        new String[]{"N", "B", "N", "N", "W"},
+                        new String[]{"B", "W", "B", "B", "B"},
+                        new String[]{"N", "N", "N", "B", "W"},
+                        new String[]{"N", "N", "N", "N", "B"}
+                }, 0, 0, true).toJson());
+
+        data.add(new ArgumentsToTestCheckNConsecutiveStones_ObjectRepresentation(
+                new String[][]{
+                        new String[]{"B", "W", "W", "W", "B"},
+                        new String[]{"N", "B", "N", "B", "W"},
+                        new String[]{"B", "W", "B", "B", "B"},
+                        new String[]{"N", "B", "N", "N", "W"},
+                        new String[]{"B", "N", "N", "N", "B"}
+                }, 0, 0, true).toJson());
+
+        data.add(new ArgumentsToTestCheckNConsecutiveStones_ObjectRepresentation(
+                new String[][]{
+                        new String[]{"B", "B", "W", "W", "B"},
+                        new String[]{"W", "B", "B", "W", "W"},
+                        new String[]{"B", "W", "W", "B", "B"},
+                        new String[]{"B", "W", "W", "B", "W"},
+                        new String[]{"B", "W", "W", "B", "B"}
+                }, 2, 2, false).toJson());
+
         return data;
     }
 
@@ -133,7 +143,7 @@ public class ArgumentsToTestCheckNConsecutiveStones_ObjectRepresentation {
         sb.append("],\n");
 
         sb.append("\t\t\"expected\": ");
-        sb.append(expected);
+        sb.append(isGameEndedExpected);
 
         sb.append("\n\t}");
 
