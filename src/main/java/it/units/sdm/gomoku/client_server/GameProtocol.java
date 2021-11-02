@@ -1,6 +1,8 @@
 package it.units.sdm.gomoku.client_server;
 
-public class GameProtocol {
+import org.jetbrains.annotations.NotNull;
+
+public class GameProtocol implements Protocol {
 
     public static final int SERVER_PORT_NUMBER = 9999;
     public static final int NUMBER_OF_PLAYERS = 2;
@@ -19,7 +21,8 @@ public class GameProtocol {
     private Status currentStatus = Status.WAITING_FOR_FIRST_CLIENT_TO_CONNECT_AND_SETUP;
 
 
-    public void processInput(Object input) {
+    @Override
+    public void processInput(@NotNull final Object input) {
         throw new UnsupportedOperationException("Not implemented yet");
 //        switch(currentStatus) {
 //            case WAITING_FOR_FIRST_CLIENT_TO_CONNECT_AND_SETUP -> {
