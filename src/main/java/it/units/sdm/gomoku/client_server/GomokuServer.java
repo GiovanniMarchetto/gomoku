@@ -1,6 +1,5 @@
 package it.units.sdm.gomoku.client_server;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.logging.Level;
@@ -23,7 +22,7 @@ public class GomokuServer implements Server {
     public void run() {
         serverLogger.log(Level.INFO, "GomokuServer ready");
         while (isServerRunning()) {
-            serverLogger.log(Level.INFO,"GomokuServer waiting for a request from a client");
+            serverLogger.log(Level.INFO, "GomokuServer waiting for a request from a client");
             try {
                 serverSocket.accept();
             } catch (IOException ioe) {
