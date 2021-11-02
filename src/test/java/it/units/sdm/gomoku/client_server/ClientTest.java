@@ -8,26 +8,26 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static it.units.sdm.gomoku.client_server.ClientServerUtility.LOOPBACK_HOSTNAME;
+import static it.units.sdm.gomoku.client_server.ClientServerUtility.SERVER_PORT_NUMBER;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class ClientTest {
 
-    private static final String LOOPBACK_HOSTNAME = ServerTest.LOOPBACK_HOSTNAME;
     private Client client;
-    private Pair<Server,Thread> serverAndItsThread;
+    private Pair<Server, Thread> serverAndItsThread;
     private final Logger testLogger = Logger.getLogger(getClass().getCanonicalName());
-    private final static int SERVER_PORT_NUMBER = Server.SERVER_PORT_NUMBER;
     private boolean clientClosed = false;
 
     @BeforeEach
     void setUp() {
         try {
-            serverAndItsThread = ServerTest.createStartAndReturnServerAndItsThread();
+            serverAndItsThread = ClientServerUtility.createStartAndReturnServerAndItsThread();
         } catch (IOException e) {
             testLogger.log(Level.SEVERE, "Unable to start server", e);
             fail(e);
@@ -37,10 +37,10 @@ class ClientTest {
 
     @AfterEach
     void tearDown() throws IOException {
-        if(!clientClosed) {
+        if (!clientClosed) {
             client.close();
         }
-        ServerTest.shutdownAndCloseServer(serverAndItsThread);
+        ClientServerUtility.shutdownAndCloseServer(serverAndItsThread);
     }
 
     @Test

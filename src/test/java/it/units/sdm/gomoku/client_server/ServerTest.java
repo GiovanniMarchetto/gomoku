@@ -2,7 +2,6 @@ package it.units.sdm.gomoku.client_server;
 
 import it.units.sdm.gomoku.utils.AccessWithReflectionException;
 import javafx.util.Pair;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,26 +10,25 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Map;
-import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static it.units.sdm.gomoku.client_server.ClientServerUtility.LOOPBACK_HOSTNAME;
+import static it.units.sdm.gomoku.client_server.ClientServerUtility.SERVER_PORT_NUMBER;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class ServerTest {
 
-    static final String LOOPBACK_HOSTNAME = null;
     private Server server;
     private Thread serverThread;
-    private final Logger testLogger = Logger.getLogger(getClass().getCanonicalName());
-    private final static int SERVER_PORT_NUMBER = Server.SERVER_PORT_NUMBER;
+    private final Logger testLogger =
+            Logger.getLogger(getClass().getCanonicalName());
 
     @BeforeEach
     void setUp() {
         try {
-            Pair<Server, Thread> serverAndItsThread = createStartAndReturnServerAndItsThread();
+            Pair<Server, Thread> serverAndItsThread = ClientServerUtility.createStartAndReturnServerAndItsThread();
             server = serverAndItsThread.getKey();
             serverThread = serverAndItsThread.getValue();
         } catch (IOException e) {
@@ -39,23 +37,9 @@ class ServerTest {
         }
     }
 
-    static Pair<Server,Thread> createStartAndReturnServerAndItsThread() throws IOException {
-        Server server = new Server();
-        Thread serverThread = new Thread(server);
-        serverThread.start();
-        return new Pair<>(server,serverThread);
-    }
-
-    static void shutdownAndCloseServer(@NotNull final Pair<Server, Thread> serverAndItsThread) {
-        Server server = Objects.requireNonNull(Objects.requireNonNull(serverAndItsThread).getKey());
-        Thread serverThread = Objects.requireNonNull(serverAndItsThread.getValue());
-        server.close();
-        serverThread.interrupt();
-    }
-
     @AfterEach
     void tearDown() {
-        shutdownAndCloseServer(new Pair<>(server, serverThread));
+        ClientServerUtility.shutdownAndCloseServer(new Pair<>(server, serverThread));
     }
 
     @Test
