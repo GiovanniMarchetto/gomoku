@@ -195,6 +195,11 @@ public class GomokuCell implements Observer {
                 } catch (Board.NoMoreEmptyPositionAvailableException |
                         Board.PositionAlreadyOccupiedException e) {
                     e.printStackTrace();    // TODO : handle this exception (should never happen)
+                    // Possible things to do:
+                    // force update stone (in GUI) at current coordinates, or...
+//                    setStone(vm.getStoneAtCoordinatesInCurrentBoard(coordinates));
+                    // ... force update all stones
+                    vm.forceRefireAllCells();
                 }
             }
         });
