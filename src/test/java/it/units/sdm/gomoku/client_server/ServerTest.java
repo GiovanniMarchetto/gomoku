@@ -1,5 +1,6 @@
 package it.units.sdm.gomoku.client_server;
 
+import it.units.sdm.gomoku.utils.AccessWithReflectionException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -77,6 +78,4 @@ class ServerTest {
         shutDown();
     }
 
-    private static class AccessWithReflectionException extends Throwable {
-    }
 }
