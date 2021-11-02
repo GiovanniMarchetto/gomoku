@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 import static it.units.sdm.gomoku.model.custom_types.PositiveInteger.PositiveIntegerType;
 
-public enum BoardSizes implements ExposedEnum { // TODO : to be tested
+public enum BoardSizes implements ExposedEnum {
     VERY_SMALL(9, 1),
     SMALL(15, 2),
     NORMAL(19, 3),
