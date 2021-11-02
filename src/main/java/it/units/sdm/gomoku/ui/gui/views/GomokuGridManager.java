@@ -59,12 +59,6 @@ public class GomokuGridManager implements Observable {
 //        gridPane.getStyleClass().add("grid");
         gridPane.setStyle("-fx-background-color: peru;");
         gridPane.setAlignment(Pos.CENTER);
-
-        //TODO: need this? (are default value)
-        gridPane.setGridLinesVisible(false);
-        gridPane.setHgap(0);
-        gridPane.setVgap(0);
-
     }
 
     @NotNull

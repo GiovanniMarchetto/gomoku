@@ -4,7 +4,6 @@ import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.entities.*;
 import it.units.sdm.gomoku.mvvm_library.Viewmodel;
-import it.units.sdm.gomoku.ui.support.AbstractSetup;
 import it.units.sdm.gomoku.ui.support.Setup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -59,13 +58,6 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
 
     public void createMatchFromSetupAndStartGame(Setup setup) {
         setMatch(new Match(setup));
-        startNewGame();
-    }
-
-    @Deprecated
-    public void createMatchFromSetupAndStartGame(AbstractSetup abstractSetup) {
-        setMatch(new Match(
-                abstractSetup.getBoardSizeValue(), abstractSetup.getNumberOfGames(), abstractSetup.getPlayers()));
         startNewGame();
     }
 
