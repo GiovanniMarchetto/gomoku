@@ -42,7 +42,7 @@ class ClientHandlerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {0, 1, 2, 3, 4, 5, 6})
+    @ValueSource(ints = {0, 1, 2, 3, 4, 5, 6, 100, 1000})
     void run(int numberOfRequests) {
 
         try {
