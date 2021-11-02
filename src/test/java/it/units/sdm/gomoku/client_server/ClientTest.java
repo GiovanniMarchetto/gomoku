@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 class ClientTest {
 
     private Client client;
-    private Pair<Server, Thread> serverAndItsThread;
+    private Pair<GomokuServer, Thread> serverAndItsThread;
     private final Logger testLogger = Logger.getLogger(getClass().getCanonicalName());
     private boolean clientClosed = false;
 

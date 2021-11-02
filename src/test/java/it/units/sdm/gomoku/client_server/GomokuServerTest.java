@@ -18,9 +18,9 @@ import static it.units.sdm.gomoku.client_server.ClientServerUtility.SERVER_PORT_
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-class ServerTest {
+class GomokuServerTest {
 
-    private Server server;
+    private GomokuServer gomokuServer;
     private Thread serverThread;
     private final Logger testLogger =
             Logger.getLogger(getClass().getCanonicalName());
@@ -28,18 +28,18 @@ class ServerTest {
     @BeforeEach
     void setUp() {
         try {
-            Pair<Server, Thread> serverAndItsThread = ClientServerUtility.createStartAndReturnServerAndItsThread();
-            server = serverAndItsThread.getKey();
+            Pair<GomokuServer, Thread> serverAndItsThread = ClientServerUtility.createStartAndReturnServerAndItsThread();
+            gomokuServer = serverAndItsThread.getKey();
             serverThread = serverAndItsThread.getValue();
         } catch (IOException e) {
-            testLogger.log(Level.SEVERE, "Unable to start server", e);
+            testLogger.log(Level.SEVERE, "Unable to start gomokuServer", e);
             fail(e);
         }
     }
 
     @AfterEach
     void tearDown() {
-        ClientServerUtility.shutdownAndCloseServer(new Pair<>(server, serverThread));
+        ClientServerUtility.shutdownAndCloseServer(new Pair<>(gomokuServer, serverThread));
     }
 
     @Test
@@ -49,7 +49,7 @@ class ServerTest {
 
     @Test
     void shutDown() {
-        server.shutDown();
+        gomokuServer.shutDown();
         try {
             assertTrue(isServerSocketClosed() && !isServerAcceptingOneClientConnection());
         } catch (AccessWithReflectionException e) {
@@ -59,7 +59,7 @@ class ServerTest {
 
     @Test
     void close() {
-        server.close();
+        gomokuServer.close();
         shutDown();
     }
 
@@ -74,9 +74,9 @@ class ServerTest {
 
     private boolean isServerSocketClosed() throws AccessWithReflectionException {
         try {
-            Field serverSocketField = Server.class.getDeclaredField("serverSocket");
+            Field serverSocketField = GomokuServer.class.getDeclaredField("serverSocket");
             serverSocketField.setAccessible(true);
-            return ((ServerSocket) serverSocketField.get(server)).isClosed();
+            return ((ServerSocket) serverSocketField.get(gomokuServer)).isClosed();
         } catch (NoSuchFieldException | IllegalAccessException e) {
             testLogger.log(Level.SEVERE, "Exception thrown in utility method", e);
             throw new AccessWithReflectionException();
