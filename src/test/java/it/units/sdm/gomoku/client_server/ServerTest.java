@@ -1,5 +1,7 @@
 package it.units.sdm.gomoku.client_server;
 
+import it.units.sdm.gomoku.utils.AccessWithReflectionException;
+import javafx.util.Pair;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,29 +13,33 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static it.units.sdm.gomoku.client_server.ClientServerUtility.LOOPBACK_HOSTNAME;
+import static it.units.sdm.gomoku.client_server.ClientServerUtility.SERVER_PORT_NUMBER;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class ServerTest {
 
-    private static final String LOOPBACK_HOSTNAME = null;
     private Server server;
-    private final Logger testLogger = Logger.getLogger(getClass().getCanonicalName());
-    private final static int SERVER_PORT_NUMBER = Server.SERVER_PORT_NUMBER;
+    private Thread serverThread;
+    private final Logger testLogger =
+            Logger.getLogger(getClass().getCanonicalName());
 
     @BeforeEach
     void setUp() {
         try {
-            server = new Server();
-            new Thread(server).start();
+            Pair<Server, Thread> serverAndItsThread = ClientServerUtility.createStartAndReturnServerAndItsThread();
+            server = serverAndItsThread.getKey();
+            serverThread = serverAndItsThread.getValue();
         } catch (IOException e) {
+            testLogger.log(Level.SEVERE, "Unable to start server", e);
             fail(e);
         }
     }
 
     @AfterEach
     void tearDown() {
-        server.shutDown();
+        ClientServerUtility.shutdownAndCloseServer(new Pair<>(server, serverThread));
     }
 
     @Test
@@ -49,6 +55,12 @@ class ServerTest {
         } catch (AccessWithReflectionException e) {
             fail(e);
         }
+    }
+
+    @Test
+    void close() {
+        server.close();
+        shutDown();
     }
 
     private boolean isServerAcceptingOneClientConnection() {
@@ -71,12 +83,4 @@ class ServerTest {
         }
     }
 
-    @Test
-    void close() {
-        server.close();
-        shutDown();
-    }
-
-    private static class AccessWithReflectionException extends Throwable {
-    }
 }

@@ -1,4 +1,4 @@
-package it.units.sdm.gomoku.model.utils;
+package it.units.sdm.gomoku.utils;
 
 import it.units.sdm.gomoku.EnvVariables;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 
-class IOIOUtilityTest {
+class IOUtilityTest {
 
     @ParameterizedTest
     @ValueSource(strings = "1,2_3,4_5,6,7")

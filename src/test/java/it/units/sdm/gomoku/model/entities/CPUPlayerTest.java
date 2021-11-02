@@ -2,7 +2,7 @@ package it.units.sdm.gomoku.model.entities;
 
 import it.units.sdm.gomoku.EnvVariables;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
-import it.units.sdm.gomoku.model.utils.TestUtility;
+import it.units.sdm.gomoku.utils.TestUtility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
