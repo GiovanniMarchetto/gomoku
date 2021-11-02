@@ -10,20 +10,32 @@ import static org.junit.jupiter.api.Assertions.*;
 class ExposedEnumTest {
 
     @ParameterizedTest
-    @ValueSource(strings = {"VERY_SMALL", "SMALL", "NORMAL","BIG","VERY_BIG"})
-    void isValidExposedValueOfTrue(String boardSize) {
-        assertTrue(ExposedEnum.isValidExposedValueOf(BoardSizes.class, boardSize));
+    @ValueSource(strings = {"1", "2", "3", "4", "5"})
+    void isValidExposedValueOfTrueBoardSize(String boardSizeIndex) {
+        assertTrue(ExposedEnum.isValidExposedValueOf(BoardSizes.class, boardSizeIndex));
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"VERY SMALL", "SMALLING", "normal"})
-    void isValidExposedValueOfFalse(String boardSize) {
-        assertFalse(ExposedEnum.isValidExposedValueOf(BoardSizes.class, boardSize));
+    @ValueSource(strings = {"0", "1", "2"})
+    void isValidExposedValueOfTrueMatchTypes(String matchTypeIndex) {
+        assertTrue(ExposedEnum.isValidExposedValueOf(MatchTypes.class, matchTypeIndex));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"0", "-1", "6", "24"})
+    void isValidExposedValueOfFalseBoardSize(String boardSizeIndex) {
+        assertFalse(ExposedEnum.isValidExposedValueOf(BoardSizes.class, boardSizeIndex));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"3", "-1", "6", "24"})
+    void isValidExposedValueOfFalseMatchTypes(String matchTypeIndex) {
+        assertFalse(ExposedEnum.isValidExposedValueOf(MatchTypes.class, matchTypeIndex));
     }
 
     @Test
     void getEnumDescriptionOf() {
-        String expected = "1 for VERY SMALL," +
+        String expected = "1 for VERY SMALL, " +
                 "2 for SMALL, " +
                 "3 for NORMAL, " +
                 "4 for BIG, " +
