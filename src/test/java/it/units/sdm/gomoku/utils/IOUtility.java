@@ -1,4 +1,4 @@
-package it.units.sdm.gomoku.model.utils;
+package it.units.sdm.gomoku.utils;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static it.units.sdm.gomoku.model.utils.Predicates.isNonEmptyString;
+import static it.units.sdm.gomoku.utils.Predicates.isNonEmptyString;
 
 public class IOUtility {
 

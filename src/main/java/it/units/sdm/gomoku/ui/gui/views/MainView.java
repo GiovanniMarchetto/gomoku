@@ -1,7 +1,9 @@
 package it.units.sdm.gomoku.ui.gui.views;
 
+import it.units.sdm.gomoku.mvvm_library.Observer;
 import it.units.sdm.gomoku.mvvm_library.View;
 import it.units.sdm.gomoku.ui.gui.GUIMain;
+import it.units.sdm.gomoku.ui.gui.SceneController;
 import it.units.sdm.gomoku.ui.gui.viewmodels.MainViewmodel;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -9,11 +11,14 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 
+import java.beans.PropertyChangeEvent;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class MainView extends View<MainViewmodel> {
+public class MainView extends View<MainViewmodel> implements Observer {
 
+    @FXML
+    public Label currentPlayerLabel;
     @FXML
     private AnchorPane mainAnchorPane;
     @FXML
@@ -32,6 +37,7 @@ public class MainView extends View<MainViewmodel> {
 
     public MainView() {
         super(GUIMain.guiMainViewmodel);
+        getViewmodelAssociatedWithView().addPropertyChangeListener(this);
     }
 
     @FXML
@@ -57,5 +63,13 @@ public class MainView extends View<MainViewmodel> {
                 DateTimeFormatter.ofPattern("HH:mm:ss\ndd/MM/yyyy").format(startZoneDateTime) + "\n");
     }
 
-
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals(MainViewmodel.currentPlayerPropertyName)) {
+            SceneController.executeOnJavaFxUiThread(() -> {
+                currentPlayerLabel.setText(evt.getNewValue().toString());
+                // pallino = getViewmodelAssociatedWithView().getCurrentStone() == BLACK ? nero : bianco;
+            });
+        }
+    }
 }

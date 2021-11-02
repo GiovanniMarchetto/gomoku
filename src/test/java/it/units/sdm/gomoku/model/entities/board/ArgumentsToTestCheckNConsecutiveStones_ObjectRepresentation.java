@@ -3,7 +3,7 @@ package it.units.sdm.gomoku.model.entities.board;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.entities.Board;
-import it.units.sdm.gomoku.model.utils.Predicates;
+import it.units.sdm.gomoku.utils.Predicates;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;

@@ -2,7 +2,7 @@ package it.units.sdm.gomoku.model.entities;
 
 import it.units.sdm.gomoku.EnvVariables;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
-import it.units.sdm.gomoku.model.utils.TestUtility;
+import it.units.sdm.gomoku.utils.TestUtility;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -13,7 +13,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.stream.Stream;
 
-import static it.units.sdm.gomoku.model.utils.TestUtility.readBoardsWithWinCoordsAndResultsFromCSV;
+import static it.units.sdm.gomoku.utils.TestUtility.readBoardsWithWinCoordsAndResultsFromCSV;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GameTest {
