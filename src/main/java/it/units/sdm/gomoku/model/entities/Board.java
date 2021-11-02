@@ -101,7 +101,7 @@ public class Board implements Observable, Cloneable {
             if (isCoordinatesEmpty(Objects.requireNonNull(coordinates))) {
                 setStoneAtCoordinates(coordinates, Objects.requireNonNull(stone));
                 numberOfFilledPositionOnTheBoard.incrementAndGet();
-                firePropertyChange(boardMatrixPropertyName, null, new ChangedCell(coordinates, stone, this));
+                firePropertyChange(boardMatrixPropertyName, new ChangedCell(coordinates, stone, this));
             } else {
                 throw new PositionAlreadyOccupiedException(coordinates);
             }

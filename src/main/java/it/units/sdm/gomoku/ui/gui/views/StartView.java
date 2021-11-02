@@ -62,12 +62,12 @@ public class StartView extends View<StartViewmodel> {
     }
 
     private void firePropertyChangeForDefaultValues() {
-        firePropertyChange(player1NamePropertyName, null, player1NameTextField.getText());
-        firePropertyChange(player2NamePropertyName, null, player2NameTextField.getText());
-        firePropertyChange(player1CPUPropertyName, null, player1CPUCheckBox.isSelected());
-        firePropertyChange(player2CPUPropertyName, null, player2CPUCheckBox.isSelected());
-        firePropertyChange(selectedBoardSizePropertyName, null, boardSizeChoiceBox.getValue());
-        firePropertyChange(numberOfGamesPropertyName, null, numberOfGamesTextField.getText());
+        firePropertyChange(player1NamePropertyName, player1NameTextField.getText());
+        firePropertyChange(player2NamePropertyName, player2NameTextField.getText());
+        firePropertyChange(player1CPUPropertyName, player1CPUCheckBox.isSelected());
+        firePropertyChange(player2CPUPropertyName, player2CPUCheckBox.isSelected());
+        firePropertyChange(selectedBoardSizePropertyName, boardSizeChoiceBox.getValue());
+        firePropertyChange(numberOfGamesPropertyName, numberOfGamesTextField.getText());
     }
 
     private void addTextPropertyListener(TextField textField, String propertyName) {
