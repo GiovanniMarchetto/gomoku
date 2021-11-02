@@ -12,7 +12,7 @@ import java.util.function.Predicate;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-public interface ExposedEnum { // TODO : to be tested
+public interface ExposedEnum {
 
     static <S extends ExposedEnum> boolean
     isValidExposedValueOf(@NotNull final Class<S> enumClazz, String exposedValueToCheck) {
