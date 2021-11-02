@@ -13,7 +13,7 @@ import javafx.scene.layout.VBox;
 
 import static it.units.sdm.gomoku.ui.gui.GUIMain.guiMainViewmodel;
 
-public class SummaryView extends View {
+public class SummaryView extends View<MainViewmodel> {
     @FXML
     private Button newMatchButton;
     @FXML
@@ -36,7 +36,7 @@ public class SummaryView extends View {
 
     @FXML
     private void initialize() {
-        var vm = (MainViewmodel) getViewmodelAssociatedWithView();
+        MainViewmodel vm = getViewmodelAssociatedWithView();
 
         continueButton.managedProperty().bind(continueButton.visibleProperty());
         extraGameButton.managedProperty().bind(extraGameButton.visibleProperty());
@@ -78,14 +78,14 @@ public class SummaryView extends View {
     }
 
     public void continueButtonOnMouseClicked(MouseEvent e) {
-        ((MainViewmodel) getViewmodelAssociatedWithView()).startNewGame();
+        getViewmodelAssociatedWithView().startNewGame();
     }
 
     public void extraGameButtonOnMouseClicked(MouseEvent e) {
-        ((MainViewmodel) getViewmodelAssociatedWithView()).startExtraGame();
+        getViewmodelAssociatedWithView().startExtraGame();
     }
 
     public void newMatchButtonOnMouseClicked(MouseEvent e) {
-        ((MainViewmodel) getViewmodelAssociatedWithView()).startNewMatch();
+        getViewmodelAssociatedWithView().startNewMatch();
     }
 }

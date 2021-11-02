@@ -15,7 +15,7 @@ import static it.units.sdm.gomoku.ui.gui.GUIMain.guiMainViewmodel;
 import static it.units.sdm.gomoku.ui.gui.viewmodels.StartViewmodel.*;
 
 
-public class StartView extends View {
+public class StartView extends View<StartViewmodel> {
 
     @FXML
     private Button startMatchButton;
@@ -83,7 +83,7 @@ public class StartView extends View {
     }
 
     public void startMatchButtonOnMouseClicked(MouseEvent e) {
-        ((StartViewmodel) getViewmodelAssociatedWithView()).startMatch();
+        getViewmodelAssociatedWithView().startMatch();
     }
 
     private void allowOnlyNumberInNumberOfGamesTextField() {

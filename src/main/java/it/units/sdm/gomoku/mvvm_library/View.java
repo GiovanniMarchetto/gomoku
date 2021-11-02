@@ -1,15 +1,15 @@
 package it.units.sdm.gomoku.mvvm_library;
 
-public abstract class View implements Observable {  // TODO : should be observer? (some views implement Observer)
+public abstract class View<T extends Viewmodel> implements Observable {  // TODO : should be observer? (some views implement Observer)
 
-    private final Viewmodel viewmodelAssociatedWithView;
+    private final T viewmodelAssociatedWithView;
 
-    public View(Viewmodel viewmodelAssociatedWithView) {
+    public View(T viewmodelAssociatedWithView) {
         this.viewmodelAssociatedWithView = viewmodelAssociatedWithView;
         getViewmodelAssociatedWithView().observe(this);                // bind viewModel -> view
     }
 
-    public Viewmodel getViewmodelAssociatedWithView() {
+    public T getViewmodelAssociatedWithView() {
         return viewmodelAssociatedWithView;
     }
 }

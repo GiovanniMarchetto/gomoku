@@ -12,7 +12,7 @@ import javafx.scene.layout.VBox;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class MainView extends View {
+public class MainView extends View<MainViewmodel> {
 
     @FXML
     private AnchorPane mainAnchorPane;
@@ -37,7 +37,7 @@ public class MainView extends View {
     @FXML
     private void initialize() {
 
-        MainViewmodel vm = (MainViewmodel) getViewmodelAssociatedWithView();
+        MainViewmodel vm = getViewmodelAssociatedWithView();
 
         double discardSafeMisure = 50;
         double discardHeight = topGridPane.getPrefHeight();// 50;
