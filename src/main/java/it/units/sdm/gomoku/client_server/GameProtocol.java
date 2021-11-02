@@ -22,7 +22,7 @@ public class GameProtocol implements Protocol {
 
 
     @Override
-    public void processInput(@NotNull final Object input) {
+    public Object processInput(@NotNull final Object input) {
         throw new UnsupportedOperationException("Not implemented yet");
 //        switch(currentStatus) {
 //            case WAITING_FOR_FIRST_CLIENT_TO_CONNECT_AND_SETUP -> {
