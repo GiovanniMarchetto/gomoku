@@ -8,8 +8,8 @@ import java.util.Objects;
 
 public class ClientServerUtility {
 
-    static final int SERVER_PORT_NUMBER = 9999;
-    static final String LOOPBACK_HOSTNAME = null;
+    public static final int SERVER_PORT_NUMBER = 9999;
+    public static final String LOOPBACK_HOSTNAME = null;
 
     static Pair<GomokuServer, Thread> createStartAndReturnServerAndItsThread() throws IOException {
         GomokuServer gomokuServer = new GomokuServer();
