@@ -137,10 +137,9 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
 
     protected void placeStoneIfGameNotEndedAndIsCPUPlayingOrElseNotifyTheView(Player currentPlayer) {
         if (!isCurrentGameEnded()) {
-            if (currentPlayer instanceof CPUPlayer) {
+            if (currentPlayer instanceof CPUPlayer cpuPlayer) {
                 try {
-                    placeStone(((CPUPlayer) currentPlayer)
-                            .chooseRandomEmptyCoordinates(getCurrentBoard()));
+                    placeStone(cpuPlayer.chooseRandomEmptyCoordinates(getCurrentBoard()));
                 } catch (Board.NoMoreEmptyPositionAvailableException |
                         Board.PositionAlreadyOccupiedException e) {
                     e.printStackTrace();    // TODO : handle this
