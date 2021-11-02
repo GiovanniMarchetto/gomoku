@@ -18,8 +18,10 @@ import java.util.stream.Collectors;
 
 public abstract class AbstractMainViewmodel extends Viewmodel {
 
-    public final static String userMustPlaceNewStonePropertyName = "userMustPlaceNewStone";
     // TODO : correct to declare here this variable?
+    public final static String userMustPlaceNewStonePropertyName = "userMustPlaceNewStone";
+
+    public final static String currentPlayerPropertyName = Game.currentPlayerPropertyName;
 
     @Nullable
     private Match match;
@@ -47,6 +49,8 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
             }
             case Game.currentPlayerPropertyName -> {
                 Player currentPlayer = (Player) evt.getNewValue();
+                Player oldValue = (Player) evt.getOldValue();
+                firePropertyChange(currentPlayerPropertyName, oldValue, currentPlayer);
                 placeStoneIfGameNotEndedAndIsCPUPlayingOrElseNotifyTheView(currentPlayer);
             }
         }
@@ -173,6 +177,10 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
 
     public Player getCurrentPlayer() {
         return Objects.requireNonNull(currentGame).getCurrentPlayer();
+    }
+
+    public Board.Stone getCurrentStone() {
+        return Objects.requireNonNull(currentGame).getStoneOfPlayer(getCurrentPlayer());
     }
 
     public Player getCurrentBlackPlayer() {
