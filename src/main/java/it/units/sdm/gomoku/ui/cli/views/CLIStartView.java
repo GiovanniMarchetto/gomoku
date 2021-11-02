@@ -19,26 +19,26 @@ public class CLIStartView extends View<StartViewmodel> {// TODO : refactor this 
         super(startViewmodel);
         switch (askAndGetNumberOfPlayers()) {
             case CPU_VS_CPU -> {
-                firePropertyChange(player1NamePropertyName, null, "CPU1");
-                firePropertyChange(player2NamePropertyName, null, "CPU2");
-                firePropertyChange(player1CPUPropertyName, null, true);
-                firePropertyChange(player2CPUPropertyName, null, true);
+                firePropertyChange(player1NamePropertyName, "CPU1");
+                firePropertyChange(player2NamePropertyName, "CPU2");
+                firePropertyChange(player1CPUPropertyName, true);
+                firePropertyChange(player2CPUPropertyName, true);
             }
             case PERSON_VS_CPU -> {
-                firePropertyChange(player1NamePropertyName, null, askAndGetPlayerName(1));
-                firePropertyChange(player2NamePropertyName, null, "CPU");
-                firePropertyChange(player1CPUPropertyName, null, false);
-                firePropertyChange(player2CPUPropertyName, null, true);
+                firePropertyChange(player1NamePropertyName, askAndGetPlayerName(1));
+                firePropertyChange(player2NamePropertyName, "CPU");
+                firePropertyChange(player1CPUPropertyName, false);
+                firePropertyChange(player2CPUPropertyName, true);
             }
             case PERSON_VS_PERSON -> {
-                firePropertyChange(player1NamePropertyName, null, askAndGetPlayerName(1));
-                firePropertyChange(player2NamePropertyName, null, askAndGetPlayerName(2));
-                firePropertyChange(player1CPUPropertyName, null, false);
-                firePropertyChange(player2CPUPropertyName, null, false);
+                firePropertyChange(player1NamePropertyName, askAndGetPlayerName(1));
+                firePropertyChange(player2NamePropertyName, askAndGetPlayerName(2));
+                firePropertyChange(player1CPUPropertyName, false);
+                firePropertyChange(player2CPUPropertyName, false);
             }
         }
-        firePropertyChange(selectedBoardSizePropertyName, null, askAndGetBoardSize());
-        firePropertyChange(numberOfGamesPropertyName, null, askAndGetNumberOfGames());
+        firePropertyChange(selectedBoardSizePropertyName, askAndGetBoardSize());
+        firePropertyChange(numberOfGamesPropertyName, askAndGetNumberOfGames());
 
         getViewmodelAssociatedWithView().startMatch();
     }
