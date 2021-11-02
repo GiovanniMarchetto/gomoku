@@ -4,8 +4,6 @@ import it.units.sdm.gomoku.client_server.fake_objects.EchoClient;
 import it.units.sdm.gomoku.client_server.fake_objects.EchoProtocol;
 import it.units.sdm.gomoku.client_server.fake_objects.ServerThatAcceptsOnlyOneRequestAndSavesItInField;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -18,15 +16,14 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 class ServiceRequestTest {  // TODO : refactor/simplify ?
 
-    private ServiceRequest serviceRequest;
+    private static final String STRING_SENT_FROM_ECHO_CLIENT = "Hello World";
     private final Protocol echoProtocol = new EchoProtocol();
+    private final ByteArrayOutputStream clientOutputStream = new ByteArrayOutputStream();
+    private ServiceRequest serviceRequest;
     private ServerThatAcceptsOnlyOneRequestAndSavesItInField serverSingleRequest;
     private Client echoClient;
     private Thread echoClientThread;
-    private final ByteArrayOutputStream clientOutputStream = new ByteArrayOutputStream();
     private boolean clientInterrupted = false;
-
-    private static final String STRING_SENT_FROM_ECHO_CLIENT = "Hello World";
 
     @AfterEach
     void tearDown() {

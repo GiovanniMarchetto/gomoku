@@ -20,10 +20,10 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 class GomokuServerTest {
 
-    private GomokuServer gomokuServer;
-    private Thread serverThread;
     private final Logger testLogger =
             Logger.getLogger(getClass().getCanonicalName());
+    private GomokuServer gomokuServer;
+    private Thread serverThread;
 
     @BeforeEach
     void setUp() {

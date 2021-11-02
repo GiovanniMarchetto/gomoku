@@ -19,9 +19,9 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 class GomokuClientTest {
 
+    private final Logger testLogger = Logger.getLogger(getClass().getCanonicalName());
     private GomokuClient gomokuClient;
     private Pair<GomokuServer, Thread> serverAndItsThread;
-    private final Logger testLogger = Logger.getLogger(getClass().getCanonicalName());
     private boolean clientClosed = false;
 
     @BeforeEach

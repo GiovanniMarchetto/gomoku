@@ -135,7 +135,7 @@ public class TestUtility {
 
                         boolean finishedGame = (boolean) argsMap.get("finishedGame");
 
-                        return Arguments.of(matrix, coords, expected,finishedGame);
+                        return Arguments.of(matrix, coords, expected, finishedGame);
                     });
         } catch (IOException | URISyntaxException e) {
             fail(e);
