@@ -1,6 +1,7 @@
-package it.units.sdm.gomoku.utils;
+package it.units.sdm.gomoku.utils.test;
 
 import it.units.sdm.gomoku.EnvVariables;
+import it.units.sdm.gomoku.utils.IOUtility;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 

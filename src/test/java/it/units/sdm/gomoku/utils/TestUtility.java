@@ -74,7 +74,7 @@ public class TestUtility {
     }
 
     @NotNull
-    static String createNxNRandomBoardToStringInCSVFormat(int N, int randomSeed) {
+    public static String createNxNRandomBoardToStringInCSVFormat(int N, int randomSeed) {
         Random random = new Random(randomSeed);
         StringBuilder s = new StringBuilder();
         for (int i = 0; i < N; i++) {
@@ -165,7 +165,7 @@ public class TestUtility {
     }
 
     @NotNull
-    static Stream<Stream<String>> getRowsAsStreamOfStringFromBoarsProvidedAsStringRepresentingTheMatrixInCSVFormat(@NotNull final String boardAsStringInCSVFormat) {
+    public static Stream<Stream<String>> getRowsAsStreamOfStringFromBoarsProvidedAsStringRepresentingTheMatrixInCSVFormat(@NotNull final String boardAsStringInCSVFormat) {
         return Arrays.stream(Objects.requireNonNull(boardAsStringInCSVFormat).split(CSV_NEW_LINE))
                 .filter(isNonEmptyString)
                 .map(aLine -> Arrays.stream(aLine.split(CSV_SEPARATOR)));

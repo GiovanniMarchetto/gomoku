@@ -1,8 +1,12 @@
-package it.units.sdm.gomoku.utils;
+package it.units.sdm.gomoku.utils.test;
 
 import it.units.sdm.gomoku.EnvVariables;
 import it.units.sdm.gomoku.model.entities.Board;
+import it.units.sdm.gomoku.utils.IOUtility;
+import it.units.sdm.gomoku.utils.Predicates;
+import it.units.sdm.gomoku.utils.TestUtility;
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -35,7 +39,7 @@ class TestIOUtilityTest {
     void readBoardStoneFromCSVFile_testIfMatrixOfCorrectSizeWasRead() {
         final int SIZE = 19;
         Board.Stone[][] board = TestUtility.readBoardStoneFromCSVFile(EnvVariables.BOARD_19X19_PROVIDER_RESOURCE_LOCATION);
-        assertTrue(Predicates.isSquareMatrixOfGivenSize.test(board, SIZE));
+        Assertions.assertTrue(Predicates.isSquareMatrixOfGivenSize.test(board, SIZE));
     }
 
     @Test
@@ -54,11 +58,11 @@ class TestIOUtilityTest {
     void createNxNRandomBoardToStringTest_testMethodWithoutSeedParam(int N, TestInfo testInfo) {
         final int DEFAULT_RANDOM_SEED = 0;
         if (Math.abs(N) < LIMIT_VALUE_FOR_N) {
-            assertEquals(createNxNRandomBoardToStringInCSVFormat(N), createNxNRandomBoardToStringInCSVFormat(N, DEFAULT_RANDOM_SEED));
+            assertEquals(createNxNRandomBoardToStringInCSVFormat(N), TestUtility.createNxNRandomBoardToStringInCSVFormat(N, DEFAULT_RANDOM_SEED));
         } else {
             Optional<Method> thisMethod = testInfo.getTestMethod();
             Logger.getLogger(this.getClass().getCanonicalName())
-                    .warning("Test " + (thisMethod.isPresent() ? thisMethod.get() : "") +
+                    .info("Test " + (thisMethod.isPresent() ? thisMethod.get() : "") +
                             " in class " + this.getClass().getCanonicalName() + "ignored for N=" + N +
                             " (value for N is too big)\n");
         }
@@ -67,7 +71,7 @@ class TestIOUtilityTest {
     @ParameterizedTest
     @MethodSource("provideCoupleOfNonNegativeIntegersTill19Excluded")
     void createNxNRandomBoardToStringWithGivenRandomSeedTest_assertMatrixToBeSquaredOfSizeNxN(int N, int randomSeed) {
-        String boardAsCSVString = createNxNRandomBoardToStringInCSVFormat(N, randomSeed);
+        String boardAsCSVString = TestUtility.createNxNRandomBoardToStringInCSVFormat(N, randomSeed);
         String[][] matrix = TestUtility.getRowsAsStreamOfStringFromBoarsProvidedAsStringRepresentingTheMatrixInCSVFormat(boardAsCSVString)
                 .map(aRow -> aRow.toArray(String[]::new))
                 .toArray(String[][]::new);
@@ -78,7 +82,7 @@ class TestIOUtilityTest {
     @MethodSource("provideCoupleOfNonNegativeIntegersTill19Excluded")
     void createNxNRandomBoardToStringTest_assertHavingNxNStones(int N, int randomSeed) {
         final int expectedNumberOfStonesToBePresent = N * N;
-        String boardAsCSVString = createNxNRandomBoardToStringInCSVFormat(N, randomSeed);
+        String boardAsCSVString = TestUtility.createNxNRandomBoardToStringInCSVFormat(N, randomSeed);
         int totalNumberOfValidStones = TestUtility.getTotalNumberOfValidStoneInTheGivenBoarsAsStringInCSVFormat(boardAsCSVString);
         assertEquals(expectedNumberOfStonesToBePresent, totalNumberOfValidStones);
     }
