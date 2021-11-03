@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class GomokuProtocol implements Protocol {
 
@@ -23,12 +24,12 @@ public class GomokuProtocol implements Protocol {
     }
 
     @Nullable
-    public Object waitingForFirstClientConnection(@NotNull Object input)
+    public Object waitingForFirstClientConnection(@NotNull Object gomokuServer)
             throws IOException, IllegalStateException {
-        if (input instanceof GomokuServer gomokuServer) {
-            gomokuServer.acceptClientSocket();
+        if (Objects.requireNonNull(gomokuServer) instanceof GomokuServer server) {
+            server.acceptClientSocket();
         } else {
-            illegalStateNotification(input);
+            illegalStateNotification(gomokuServer);
         }
         return null;
     }
