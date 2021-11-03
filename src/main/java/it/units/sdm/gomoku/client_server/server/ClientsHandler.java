@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
+@SuppressWarnings("ClassCanBeRecord")   // Converting to record will weaken the visibility of private fields
 public class ClientsHandler implements Runnable {
 
     private final Set<Socket> handledClientSockets;

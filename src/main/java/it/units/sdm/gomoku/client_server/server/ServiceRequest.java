@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Objects;
 
+@SuppressWarnings("ClassCanBeRecord")   // Converting to record will weaken the visibility of private fields
 public class ServiceRequest implements Runnable {
 
     private final Socket socketToClient;
