@@ -3,10 +3,7 @@ package it.units.sdm.gomoku.client_server.server;
 import it.units.sdm.gomoku.client_server.interfaces.Protocol;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.util.Objects;
 
@@ -28,16 +25,15 @@ public class ServiceRequest implements Runnable {
 
     private void serviceOneClientRequest() {
         try (
-                PrintWriter outFromServerToClient =
-                        new PrintWriter(socketToClient.getOutputStream(), true);
-                BufferedReader inFromClientToServer =
-                        new BufferedReader(
-                                new InputStreamReader(socketToClient.getInputStream()))
+                ObjectOutputStream outFromServerToClient =
+                        new ObjectOutputStream(socketToClient.getOutputStream());
+                ObjectInputStream inFromClientToServer =
+                                new ObjectInputStream(socketToClient.getInputStream())
         ) {
-            String inputAsStr = inFromClientToServer.readLine();
-            String outputAsStr = (String) protocol.processInput(inputAsStr);
-            outFromServerToClient.println(outputAsStr);
-        } catch (IOException e) {
+            outFromServerToClient.writeObject(
+                    protocol.processInput(inFromClientToServer.readObject()));
+            outFromServerToClient.flush();
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();    // TODO : handle this exception
         }
     }

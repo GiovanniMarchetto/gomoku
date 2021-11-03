@@ -4,7 +4,10 @@ import it.units.sdm.gomoku.client_server.ClientServerUtility;
 import it.units.sdm.gomoku.client_server.interfaces.Client;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.PrintStream;
 import java.net.Socket;
 import java.util.Objects;
 import java.util.logging.Level;
@@ -33,14 +36,15 @@ public class EchoClient implements Client {    // TODO : to be tested
     @Override
     public void run() {
         try (
-                PrintWriter out = new PrintWriter(socketToServer.getOutputStream(), true);
-                BufferedReader in = new BufferedReader(
-                        new InputStreamReader(socketToServer.getInputStream()))
+                ObjectOutputStream out =
+                        new ObjectOutputStream(socketToServer.getOutputStream());
+                ObjectInputStream in =
+                        new ObjectInputStream(socketToServer.getInputStream())
         ) {
-            out.println(toSendToServer);
-            String fromServer = in.readLine();
+            out.writeObject(toSendToServer);
+            String fromServer = String.valueOf(in.readObject());
             outputPrintStream.print(fromServer);
-        } catch (IOException e) {
+        } catch (IOException | ClassNotFoundException e) {
             Logger.getLogger(getClass().getCanonicalName())
                     .log(Level.SEVERE, "I/O Exception", e);
         }
