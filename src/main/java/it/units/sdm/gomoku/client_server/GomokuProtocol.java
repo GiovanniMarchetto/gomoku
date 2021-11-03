@@ -72,7 +72,7 @@ public class GomokuProtocol implements Protocol {
     }
 
     @Nullable
-    public Object setPartialSetup(@NotNull Object partialSetup) {    // TODO : refactor (code duplication: very similar to previous method)
+    public Object setPartialSetup(@NotNull Object partialSetup) {
         if (Objects.requireNonNull(partialSetup) instanceof Setup partialSetupCasted) {
             this.setup = partialSetupCasted;
             this.currentStatus = Status.WAITING_FOR_SECOND_CLIENT_CONNECTION;
