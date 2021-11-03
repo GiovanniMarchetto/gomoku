@@ -3,7 +3,9 @@ package it.units.sdm.gomoku.client_server.server;
 import it.units.sdm.gomoku.client_server.interfaces.Protocol;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Objects;
 
@@ -28,7 +30,7 @@ public class ServiceRequest implements Runnable {
                 ObjectOutputStream outFromServerToClient =
                         new ObjectOutputStream(socketToClient.getOutputStream());
                 ObjectInputStream inFromClientToServer =
-                                new ObjectInputStream(socketToClient.getInputStream())
+                        new ObjectInputStream(socketToClient.getInputStream())
         ) {
             outFromServerToClient.writeObject(
                     protocol.processInput(inFromClientToServer.readObject()));
