@@ -3,7 +3,7 @@ package it.units.sdm.gomoku.client_server;
 import it.units.sdm.gomoku.client_server.interfaces.Protocol;
 import org.jetbrains.annotations.NotNull;
 
-public class GameProtocol implements Protocol {
+public class GomokuProtocol implements Protocol {
 
     public static final int SERVER_PORT_NUMBER = 9999;
     public static final int NUMBER_OF_PLAYERS = 2;
