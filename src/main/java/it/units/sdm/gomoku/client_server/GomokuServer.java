@@ -12,7 +12,7 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class GomokuServer implements Server { // TODO : add more specific tests?
+public class GomokuServer implements Server {
 
     public final static int SERVER_PORT_NUMBER = 9999;
     private final static int NUMBER_OF_PROCESSABLE_CONCURRENT_REQUESTS = GameProtocol.NUMBER_OF_PLAYERS;
