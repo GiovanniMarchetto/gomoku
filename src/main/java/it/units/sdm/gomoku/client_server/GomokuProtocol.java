@@ -1,37 +1,48 @@
 package it.units.sdm.gomoku.client_server;
 
 import it.units.sdm.gomoku.client_server.interfaces.Protocol;
+import it.units.sdm.gomoku.client_server.server.GomokuServer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.io.IOException;
 
 public class GomokuProtocol implements Protocol {
 
     public static final int SERVER_PORT_NUMBER = 9999;
     public static final int NUMBER_OF_PLAYERS = 2;
-    private final Status currentStatus = Status.WAITING_FOR_FIRST_CLIENT_TO_CONNECT_AND_SETUP;
+    private final Status currentStatus = Status.WAITING_FOR_FIRST_CLIENT_CONNECTION;
 
     @Override
-    public Object processInput(@NotNull final Object input) {
-        throw new UnsupportedOperationException("Not implemented yet");
-//        switch(currentStatus) {
-//            case WAITING_FOR_FIRST_CLIENT_TO_CONNECT_AND_SETUP -> {
-//                if(input instanceof Setup) {
-//                } else {
-//                    throw new IllegalArgumentException("");
-//                }
-//            }
-//        }
+    public Object processInput(@NotNull final Object input) throws IOException {
+
+        return switch (currentStatus) {
+            case WAITING_FOR_FIRST_CLIENT_CONNECTION -> waitingForFirstClientConnection(input);
+            default -> throw new IllegalStateException("Unexpected value: " + currentStatus);
+        };
+    }
+
+    @Nullable
+    public Object waitingForFirstClientConnection(@NotNull Object input)
+            throws IOException, IllegalStateException {
+        if (input instanceof GomokuServer gomokuServer) {
+            gomokuServer.acceptClientSocket();
+        } else {
+            illegalStateNotification(input);
+        }
+        return null;
+    }
+
+    private void illegalStateNotification(@NotNull Object input)
+            throws IllegalStateException {
+        throw new IllegalStateException("Current state is " + currentStatus + ".\n"
+                + "Expected input type " + GomokuServer.class.getCanonicalName()
+                + " but received " + input.getClass().getCanonicalName());
     }
 
 
-    private enum Status {
-        WAITING_FOR_FIRST_CLIENT_TO_CONNECT_AND_SETUP,
-        WAITING_FOR_SECOND_CLIENT_TO_CONNECT_AND_UPDATED_SETUP,
-        MATCH_STARTED,
-        FIRST_PLAYER_PLACED,
-        SECOND_PLAYER_PLACED,
-        GAME_ENDED,
-        MATCH_ENDED
-
+    public enum Status {
+        WAITING_FOR_FIRST_CLIENT_CONNECTION
     }
 
 }

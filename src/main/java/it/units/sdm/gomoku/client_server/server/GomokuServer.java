@@ -10,6 +10,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,6 +23,7 @@ public class GomokuServer implements Server {
     private final Set<Socket> handledClientSockets;
     private final ExecutorService serviceRequestsOfClientsExecutorService;
     private final Thread clientsHandlerThread;
+    private final GomokuProtocol gomokuProtocol;
 
     public GomokuServer() throws IOException {
         this.serverLogger = Logger.getLogger(getClass().getCanonicalName());
@@ -29,10 +32,11 @@ public class GomokuServer implements Server {
         this.serviceRequestsOfClientsExecutorService =
                 Executors.newFixedThreadPool(NUMBER_OF_PROCESSABLE_CONCURRENT_REQUESTS);
         this.handledClientSockets = ConcurrentHashMap.newKeySet();
+        this.gomokuProtocol = new GomokuProtocol();
         this.clientsHandlerThread = new Thread(
                 new ClientsHandler(
                         handledClientSockets,
-                        new GomokuProtocol(),
+                        gomokuProtocol,
                         serviceRequestsOfClientsExecutorService));
         this.clientsHandlerThread.start();
         this.serverLogger.log(Level.INFO, "Server started");
@@ -44,13 +48,17 @@ public class GomokuServer implements Server {
         while (isServerRunning()) {
             serverLogger.log(Level.INFO, "Server waiting for a request from a client");
             try {
-                handledClientSockets.add(serverSocket.accept());
+                gomokuProtocol.processInput(this);
             } catch (IOException ioe) {
                 if (isServerRunning()) {
                     serverLogger.log(Level.SEVERE, "Error accepting connection", ioe);
                 }
             }
         }
+    }
+
+    public void acceptClientSocket() throws IOException {
+        handledClientSockets.add(serverSocket.accept());
     }
 
     public boolean isServerRunning() {
