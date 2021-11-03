@@ -9,7 +9,7 @@ import java.util.Objects;
 
 public class ClientServerUtility {
 
-    public static final int SERVER_PORT_NUMBER = 9999;
+    public static final int SERVER_PORT_NUMBER = GomokuProtocol.SERVER_PORT_NUMBER;
     public static final String LOOPBACK_HOSTNAME = null;
 
     static Pair<GomokuServer, Thread> createStartAndReturnServerAndItsThread() throws IOException {
