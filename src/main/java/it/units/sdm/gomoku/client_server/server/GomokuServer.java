@@ -15,7 +15,6 @@ import java.util.logging.Logger;
 
 public class GomokuServer implements Server {
 
-    public final static int SERVER_PORT_NUMBER = 9999;
     private final static int NUMBER_OF_PROCESSABLE_CONCURRENT_REQUESTS = GameProtocol.NUMBER_OF_PLAYERS;
     private final Logger serverLogger;
     private final ServerSocket serverSocket;
@@ -26,7 +25,7 @@ public class GomokuServer implements Server {
     public GomokuServer() throws IOException {
         this.serverLogger = Logger.getLogger(getClass().getCanonicalName());
         this.serverLogger.log(Level.INFO, "Server starting");
-        this.serverSocket = new ServerSocket(SERVER_PORT_NUMBER);
+        this.serverSocket = new ServerSocket(GameProtocol.SERVER_PORT_NUMBER);
         this.serviceRequestsOfClientsExecutorService =
                 Executors.newFixedThreadPool(NUMBER_OF_PROCESSABLE_CONCURRENT_REQUESTS);
         this.handledClientSockets = ConcurrentHashMap.newKeySet();
