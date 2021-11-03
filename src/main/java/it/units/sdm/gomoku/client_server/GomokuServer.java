@@ -53,7 +53,7 @@ public class GomokuServer implements Server { // TODO : add more specific tests?
         }
     }
 
-    private boolean isServerRunning() {
+    public boolean isServerRunning() {
         return !serverSocket.isClosed();
     }
 
