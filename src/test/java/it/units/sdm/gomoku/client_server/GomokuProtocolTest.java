@@ -34,6 +34,25 @@ class GomokuProtocolTest {
     private Status currentStatus;
     private GomokuProtocol gomokuProtocol;
 
+    private static Stream<Arguments> partialSetupSupplier() {
+        final int MAX_NUMBER_OF_GAMES = 50;
+        return Arrays.stream(BoardSizes.values())
+                .map(BoardSizes::getBoardSize)
+                .flatMap(boardSizeVal ->
+                        IntStream.rangeClosed(1, MAX_NUMBER_OF_GAMES)
+                                .mapToObj(i ->
+                                        new Setup(
+                                                new Player("Player1_" + boardSizeVal),
+                                                null,//new Player("Player2_" + boardSizeVal),
+                                                new PositiveInteger(i),
+                                                boardSizeVal)))
+                .map(Arguments::of);
+    }
+
+    private static Stream<Arguments> protocolStatusSupplier() {
+        return Arrays.stream(Status.values()).map(Arguments::of);
+    }
+
     @BeforeEach
     void setUp() {
         currentStatus = Status.values()[0];
