@@ -25,8 +25,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 class ClientsHandlerTest {
 
-    private ExecutorService serviceRequestsOfClientsExecutorService;
     private final static int N_CONCURRENT_SERVED_REQUESTS = 10;
+    private ExecutorService serviceRequestsOfClientsExecutorService;
     private Set<Socket> handledClientSockets;
 
     @BeforeEach

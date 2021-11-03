@@ -1,7 +1,7 @@
 package it.units.sdm.gomoku.client_server.fake_objects;
 
-import it.units.sdm.gomoku.client_server.interfaces.Client;
 import it.units.sdm.gomoku.client_server.ClientServerUtility;
+import it.units.sdm.gomoku.client_server.interfaces.Client;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
