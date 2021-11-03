@@ -10,8 +10,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -57,8 +55,10 @@ public class GomokuServer implements Server {
         }
     }
 
-    public void acceptClientSocket() throws IOException {
-        handledClientSockets.add(serverSocket.accept());
+    public Socket acceptClientSocket() throws IOException {
+        Socket clientSocket = serverSocket.accept();
+        handledClientSockets.add(clientSocket);
+        return clientSocket;
     }
 
     public boolean isServerRunning() {

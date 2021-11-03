@@ -7,7 +7,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.net.Socket;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class GomokuProtocol implements Protocol {
 
@@ -15,6 +19,9 @@ public class GomokuProtocol implements Protocol {
     public static final int NUMBER_OF_PLAYERS = 2;
     private Status currentStatus = Status.WAITING_FOR_FIRST_CLIENT_CONNECTION;
 
+    private static Logger loggerOfThisClass = Logger.getLogger(GomokuProtocol.class.getCanonicalName());
+    private Socket client1Socket;   // field filled with reflection
+    private Socket client2Socket;   // field filled with reflection
     private Setup setup;
 
     @Override
@@ -23,20 +30,45 @@ public class GomokuProtocol implements Protocol {
         return switch (currentStatus) {
             case WAITING_FOR_FIRST_CLIENT_CONNECTION -> waitingForFirstClientConnection(input);
             case WAITING_FOR_PARTIAL_SETUP -> setPartialSetup(input);
+            case WAITING_FOR_SECOND_CLIENT_CONNECTION -> waitingForSecondClientConnection(input);
             default -> throw new IllegalStateException("Unexpected value: " + currentStatus);
         };
     }
 
+    public Object waitingForSecondClientConnection(@NotNull final Object gomokuServer)
+            throws IOException {
+        makeTheServerToAcceptAClientAndSaveItsSocketInGivenFieldAndEventuallyUpdateCurrentStateIfNoError(
+                gomokuServer, Status.WAITING_FOR_COMPLETING_SETUP, "client2Socket");
+        return null;
+    }
+
+
     @Nullable
     public Object waitingForFirstClientConnection(@NotNull Object gomokuServer)
-            throws IOException, IllegalStateException {
+            throws IOException {
+        makeTheServerToAcceptAClientAndSaveItsSocketInGivenFieldAndEventuallyUpdateCurrentStateIfNoError(
+                gomokuServer, Status.WAITING_FOR_PARTIAL_SETUP, "client1Socket");
+        return null;
+    }
+
+    private void makeTheServerToAcceptAClientAndSaveItsSocketInGivenFieldAndEventuallyUpdateCurrentStateIfNoError(
+            @NotNull final Object gomokuServer,
+            @NotNull final Status nextStatusToUpdateIfNoError,
+            @NotNull final String fieldNameWhereToSaveTheAcceptedClientSocketIfNoError)
+            throws IOException {
         if (Objects.requireNonNull(gomokuServer) instanceof GomokuServer server) {
-            server.acceptClientSocket();
-            currentStatus = Status.WAITING_FOR_PARTIAL_SETUP;
+            try {
+                Field fieldWhereToSaveAcceptedClientSocketIfNoError =
+                        getClass().getDeclaredField(Objects.requireNonNull(fieldNameWhereToSaveTheAcceptedClientSocketIfNoError));
+                fieldWhereToSaveAcceptedClientSocketIfNoError.setAccessible(true);
+                fieldWhereToSaveAcceptedClientSocketIfNoError.set(this, server.acceptClientSocket());
+                currentStatus = Objects.requireNonNull(nextStatusToUpdateIfNoError);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                loggerOfThisClass.log(Level.SEVERE, "Problems with reflections.", e);
+            }
         } else {
             illegalStateNotification(gomokuServer);
         }
-        return null;
     }
 
     @Nullable
@@ -62,7 +94,8 @@ public class GomokuProtocol implements Protocol {
     public enum Status {
         WAITING_FOR_FIRST_CLIENT_CONNECTION,
         WAITING_FOR_PARTIAL_SETUP,
-        WAITING_FOR_SECOND_CLIENT_CONNECTION
+        WAITING_FOR_SECOND_CLIENT_CONNECTION,
+        WAITING_FOR_COMPLETING_SETUP
     }
 
 }

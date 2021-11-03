@@ -18,9 +18,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -71,32 +74,13 @@ class GomokuProtocolTest {
 
     @Test
     void waitingForFirstClientConnection() {
-        try {
-            SimpleClient simpleClient = new SimpleClient();
-            Field clientSocketToServerField = simpleClient.getClass().getDeclaredField("socketToServer");
-            clientSocketToServerField.setAccessible(true);
-            Socket clientSocketToServer = (Socket) clientSocketToServerField.get(simpleClient);
+        assertCorrectNumberOfClientsConnectedInGivenProtocolState(1, Status.WAITING_FOR_FIRST_CLIENT_CONNECTION);
+    }
 
-            Thread clientThread = new Thread(simpleClient);
-            clientThread.start();
-
-            gomokuProtocol.waitingForFirstClientConnection(gomokuServer);
-            clientThread.join();
-
-            Field handledClientSocketsField = gomokuServer.getClass().getDeclaredField("handledClientSockets");
-            handledClientSocketsField.setAccessible(true);
-
-            @SuppressWarnings("unchecked")
-            Set<Socket> handledClientSockets = (Set<Socket>) handledClientSocketsField.get(gomokuServer);
-
-            assertEquals(
-                    handledClientSockets.toArray(new Socket[0])[0].getRemoteSocketAddress(),
-                    clientSocketToServer.getLocalSocketAddress());
-
-            simpleClient.close();
-        } catch (IOException | IllegalStateException | NoSuchFieldException | IllegalAccessException | InterruptedException e) {
-            fail(e);
-        }
+    @Test
+    void waitingForSecondClientConnection() {
+        waitingForFirstClientConnection();  // simulate the previous Status
+        assertCorrectNumberOfClientsConnectedInGivenProtocolState(2, Status.WAITING_FOR_SECOND_CLIENT_CONNECTION);
     }
 
     @ParameterizedTest
@@ -131,6 +115,74 @@ class GomokuProtocolTest {
             // default -> fail(new UnsupportedOperationException("Unhandled status \"" + currentStatus + "\"")); // TODO : handle protocol status update
         }
 //        assertEquals(getNextProtocolStatusOrNullIfLast(currentStatus), getCurrentProtocolStatusOrNullIfExceptionThrown());  // TODO : handle protocol status update
+    }
+
+    private void assertCorrectNumberOfClientsConnectedInGivenProtocolState(
+            final int EXPECTED_HANDLED_CLIENTS, @NotNull final Status currentStatus) {
+        setCurrentProtocolStatus(currentStatus);
+        assertCorrectNumberOfClientsConnectedToTheServer(EXPECTED_HANDLED_CLIENTS);
+    }
+
+    private void assertCorrectNumberOfClientsConnectedToTheServer(final int numberOfClientsToBeConnectedToTheServer) {
+        try {
+            SimpleClient simpleClient = makeAClientToConnectToTheServerAndGet();
+            assertEquals(numberOfClientsToBeConnectedToTheServer, getRemoteAddressOfClientSocketsHandledByTheServer().size());  // TODO : double assertions in sngle test
+            assertTrue(isClientLocalSocketAddressHandledByServer(getLocalSocketAddressOf(simpleClient)));
+            simpleClient.close();
+        } catch (IOException | IllegalStateException | NoSuchFieldException | IllegalAccessException | InterruptedException e) {
+            fail(e);
+        }
+    }
+
+    @NotNull
+    private SimpleClient makeAClientToConnectToTheServerAndGet() throws IOException, NoSuchFieldException, IllegalAccessException, InterruptedException {
+        SimpleClient simpleClient = new SimpleClient();
+
+        Thread clientThread = new Thread(simpleClient);
+        clientThread.start();
+
+        gomokuProtocol.waitingForFirstClientConnection(gomokuServer);
+        clientThread.join();
+
+        return simpleClient;
+    }
+
+    @NotNull
+    private SocketAddress getLocalSocketAddressOf(@NotNull final SimpleClient simpleClient) {
+        // TODO : SimpleClient may extends abstract class Client which has field "socketToServer"
+        try {
+            Field clientSocketToServerField = simpleClient.getClass().getDeclaredField("socketToServer");
+            clientSocketToServerField.setAccessible(true);
+            Socket clientSocketToServer = (Socket) clientSocketToServerField.get(simpleClient);
+            return clientSocketToServer.getLocalSocketAddress();
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            fail(e);
+            return null;
+        }
+    }
+
+    private boolean isClientLocalSocketAddressHandledByServer(@NotNull final SocketAddress clientLocalSocketAddress) {
+        return getRemoteAddressOfClientSocketsHandledByTheServer()
+                .contains(Objects.requireNonNull(clientLocalSocketAddress));
+    }
+
+    @NotNull
+    private Set<SocketAddress> getRemoteAddressOfClientSocketsHandledByTheServer() {
+        try {
+            Field handledClientSocketsField = gomokuServer.getClass().getDeclaredField("handledClientSockets");
+            handledClientSocketsField.setAccessible(true);
+
+            @SuppressWarnings("unchecked")
+            Set<Socket> handledClientSockets = (Set<Socket>) handledClientSocketsField.get(gomokuServer);
+
+            return handledClientSockets.stream()
+                    .unordered().parallel()
+                    .map(Socket::getRemoteSocketAddress)
+                    .collect(Collectors.toSet());
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            fail(e);
+            return ConcurrentHashMap.newKeySet();
+        }
     }
 
     @NotNull
@@ -185,5 +237,4 @@ class GomokuProtocolTest {
     private static boolean isLastStatus(Status[] allStatuses, int currentStatusIndex) {
         return currentStatusIndex == allStatuses.length - 1;
     }
-
 }
