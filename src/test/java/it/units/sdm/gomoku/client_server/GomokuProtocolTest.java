@@ -1,21 +1,32 @@
 package it.units.sdm.gomoku.client_server;
 
-import it.units.sdm.gomoku.client_server.fake_objects.EchoClient;
 import it.units.sdm.gomoku.client_server.fake_objects.SimpleClient;
 import it.units.sdm.gomoku.client_server.server.GomokuServer;
+import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
+import it.units.sdm.gomoku.model.entities.Player;
+import it.units.sdm.gomoku.ui.support.BoardSizes;
+import it.units.sdm.gomoku.ui.support.Setup;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.net.Socket;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static it.units.sdm.gomoku.client_server.GomokuProtocol.Status;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class GomokuProtocolTest {
 
@@ -46,7 +57,7 @@ class GomokuProtocolTest {
             SimpleClient simpleClient = new SimpleClient();
             Field clientSocketToServerField = simpleClient.getClass().getDeclaredField("socketToServer");
             clientSocketToServerField.setAccessible(true);
-            Socket clientSocketToServer = (Socket)clientSocketToServerField.get(simpleClient);
+            Socket clientSocketToServer = (Socket) clientSocketToServerField.get(simpleClient);
 
             Thread clientThread = new Thread(simpleClient);
             clientThread.start();
@@ -69,4 +80,64 @@ class GomokuProtocolTest {
             fail(e);
         }
     }
+
+    @ParameterizedTest
+    @MethodSource("protocolStatusSupplier")
+    void checkProtocolStatusChangeAfterProcessInput(GomokuProtocol.Status currentStatus) {
+        setCurrentProtocolStatus(currentStatus);
+        switch (currentStatus) {
+            case WAITING_FOR_FIRST_CLIENT_CONNECTION -> waitingForFirstClientConnection();
+            default -> fail(new UnsupportedOperationException("Unhandled status \"" + currentStatus + "\""));
+        }
+        assertEquals(getNextProtocolStatusOrNullIfLast(currentStatus), getCurrentProtocolStatusOrNullIfExceptionThrown());
+    }
+
+    @NotNull
+    private Status getCurrentProtocolStatusOrNullIfExceptionThrown() {
+        try {
+            return (Status) getCurrentProtocolStatusField().get(gomokuProtocol);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            fail(e);
+            return null;
+        }
+    }
+
+    private void setCurrentProtocolStatus(@NotNull final Status newCurrentStatus) {
+        Field currentProtocolStatusField;
+        try {
+            currentProtocolStatusField = getCurrentProtocolStatusField();
+            currentProtocolStatusField.set(gomokuProtocol, Objects.requireNonNull(newCurrentStatus));
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            fail(e);
+        }
+    }
+
+    @NotNull
+    private Field getCurrentProtocolStatusField() throws NoSuchFieldException {
+        Field currentProtocolStatusField;
+        currentProtocolStatusField = gomokuProtocol.getClass().getDeclaredField("currentStatus");
+        currentProtocolStatusField.setAccessible(true);
+        return currentProtocolStatusField;
+    }
+
+    @Nullable
+    private static Status getNextProtocolStatusOrNullIfLast(@NotNull final Status currentStatus) {
+        Status[] allStatuses = Status.values();
+        int currentStatusIndex =
+                IntStream.range(0, allStatuses.length)
+                        .sequential()
+                        .filter(index -> allStatuses[index] == Objects.requireNonNull(currentStatus))
+                        .findFirst()
+                        .orElseThrow();
+        if (isLastStatus(allStatuses, currentStatusIndex)) {
+            return null;
+        } else {
+            return allStatuses[currentStatusIndex + 1];
+        }
+    }
+
+    private static boolean isLastStatus(Status[] allStatuses, int currentStatusIndex) {
+        return currentStatusIndex == allStatuses.length - 1;
+    }
+
 }
