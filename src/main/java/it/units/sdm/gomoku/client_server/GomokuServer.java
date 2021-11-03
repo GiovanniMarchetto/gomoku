@@ -66,7 +66,7 @@ public class GomokuServer implements Server { // TODO : add more specific tests?
                 //Stop accepting requests.
                 serverSocket.close();
                 clientsHandlerThread.join();
-                System.out.println("SERVER closed");
+                serverLogger.log(Level.INFO, "SERVER closed");
             } catch (InterruptedException ignored) {
                 // already interrupted
             } catch (IOException e) {
