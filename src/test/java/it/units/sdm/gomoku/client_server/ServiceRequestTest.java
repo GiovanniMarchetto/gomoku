@@ -19,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 class ServiceRequestTest {  // TODO : refactor/simplify ?
 
-    private static final String STRING_SENT_FROM_ECHO_CLIENT = "Hello World";
     private final Protocol echoProtocol = new EchoProtocol();
     private final ByteArrayOutputStream clientOutputStream = new ByteArrayOutputStream();
     private ServiceRequest serviceRequest;
