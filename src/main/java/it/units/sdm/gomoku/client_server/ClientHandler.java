@@ -38,6 +38,7 @@ public class ClientHandler implements Runnable {
                         if (socket.getInputStream().available() != 0) {
                             serviceRequestsOfClientsExecutorService
                                     .submit(new ServiceRequest(socket, protocol));
+                            handledClientSockets.remove(socket);
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
