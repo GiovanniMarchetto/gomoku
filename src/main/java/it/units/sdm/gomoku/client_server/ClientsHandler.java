@@ -10,15 +10,15 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
-public class ClientHandler implements Runnable {
+public class ClientsHandler implements Runnable {
 
     private final Set<Socket> handledClientSockets;
     private final Protocol protocol;
     private final ExecutorService serviceRequestsOfClientsExecutorService;
 
-    public ClientHandler(@NotNull final Set<Socket> handledClientSockets,
-                         @NotNull final Protocol protocol,
-                         @NotNull final ExecutorService serviceRequestsOfClientsExecutorService) {
+    public ClientsHandler(@NotNull final Set<Socket> handledClientSockets,
+                          @NotNull final Protocol protocol,
+                          @NotNull final ExecutorService serviceRequestsOfClientsExecutorService) {
         this.handledClientSockets = Objects.requireNonNull(handledClientSockets);
         this.protocol = Objects.requireNonNull(protocol);
         this.serviceRequestsOfClientsExecutorService =

@@ -30,7 +30,7 @@ public class GomokuServer implements Server { // TODO : add more specific tests?
                 Executors.newFixedThreadPool(NUMBER_OF_PROCESSABLE_CONCURRENT_REQUESTS);
         this.handledClientSockets = ConcurrentHashMap.newKeySet();
         this.clientsHandlerThread = new Thread(
-                new ClientHandler(
+                new ClientsHandler(
                         handledClientSockets,
                         new GameProtocol(),
                         serviceRequestsOfClientsExecutorService));

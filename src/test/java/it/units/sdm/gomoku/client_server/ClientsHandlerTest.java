@@ -23,7 +23,7 @@ import java.util.stream.IntStream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-class ClientHandlerTest {
+class ClientsHandlerTest {
 
     private ExecutorService serviceRequestsOfClientsExecutorService;
     private final static int N_CONCURRENT_SERVED_REQUESTS = 10;
@@ -63,11 +63,11 @@ class ClientHandlerTest {
 
             CountHowManyServedRequestsProtocol protocol =
                     new CountHowManyServedRequestsProtocol();
-            ClientHandler clientHandler = new ClientHandler(
+            ClientsHandler clientsHandler = new ClientsHandler(
                     handledClientSockets,
                     protocol,
                     serviceRequestsOfClientsExecutorService);
-            Thread clientHandlerThread = new Thread(clientHandler);
+            Thread clientHandlerThread = new Thread(clientsHandler);
             clientHandlerThread.start();
 
             IntStream.range(0, numberOfRequests)
