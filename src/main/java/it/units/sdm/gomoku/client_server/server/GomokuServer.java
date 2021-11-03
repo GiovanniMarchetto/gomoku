@@ -1,5 +1,6 @@
-package it.units.sdm.gomoku.client_server;
+package it.units.sdm.gomoku.client_server.server;
 
+import it.units.sdm.gomoku.client_server.GameProtocol;
 import it.units.sdm.gomoku.client_server.interfaces.Server;
 
 import java.io.IOException;

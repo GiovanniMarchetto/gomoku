@@ -1,4 +1,4 @@
-package it.units.sdm.gomoku.client_server;
+package it.units.sdm.gomoku.client_server.server;
 
 import it.units.sdm.gomoku.client_server.interfaces.Protocol;
 import org.jetbrains.annotations.NotNull;

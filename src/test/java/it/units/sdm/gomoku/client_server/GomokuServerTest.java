@@ -1,5 +1,6 @@
 package it.units.sdm.gomoku.client_server;
 
+import it.units.sdm.gomoku.client_server.server.GomokuServer;
 import it.units.sdm.gomoku.utils.AccessWithReflectionException;
 import javafx.util.Pair;
 import org.junit.jupiter.api.AfterEach;

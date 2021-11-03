@@ -1,5 +1,6 @@
 package it.units.sdm.gomoku.client_server;
 
+import it.units.sdm.gomoku.client_server.server.GomokuServer;
 import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
 

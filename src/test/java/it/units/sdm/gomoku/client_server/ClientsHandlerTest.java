@@ -2,6 +2,7 @@ package it.units.sdm.gomoku.client_server;
 
 import it.units.sdm.gomoku.client_server.fake_objects.EchoClient;
 import it.units.sdm.gomoku.client_server.interfaces.Protocol;
+import it.units.sdm.gomoku.client_server.server.ClientsHandler;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

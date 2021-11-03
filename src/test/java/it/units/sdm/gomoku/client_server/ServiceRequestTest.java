@@ -5,6 +5,7 @@ import it.units.sdm.gomoku.client_server.fake_objects.EchoProtocol;
 import it.units.sdm.gomoku.client_server.fake_objects.ServerThatAcceptsOnlyOneRequestAndSavesItInField;
 import it.units.sdm.gomoku.client_server.interfaces.Client;
 import it.units.sdm.gomoku.client_server.interfaces.Protocol;
+import it.units.sdm.gomoku.client_server.server.ServiceRequest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
