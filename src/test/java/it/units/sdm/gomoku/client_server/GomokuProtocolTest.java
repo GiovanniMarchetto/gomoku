@@ -101,7 +101,7 @@ class GomokuProtocolTest {
 
     @ParameterizedTest
     @MethodSource("partialSetupSupplier")
-    void waitingForPartialSetup(Setup partialSetup) {
+    void setPartialSetup(Setup partialSetup) {
         setCurrentProtocolStatus(Status.WAITING_FOR_PARTIAL_SETUP);
         try {
             gomokuProtocol.processInput(partialSetup);
@@ -127,7 +127,7 @@ class GomokuProtocolTest {
         setCurrentProtocolStatus(currentStatus);
         switch (currentStatus) {
             case WAITING_FOR_FIRST_CLIENT_CONNECTION -> waitingForFirstClientConnection();
-            case WAITING_FOR_PARTIAL_SETUP -> waitingForPartialSetup(new Setup(new Player("p1"), new Player("p2"), new PositiveInteger(), BoardSizes.NORMAL.getBoardSize()));
+            case WAITING_FOR_PARTIAL_SETUP -> setPartialSetup(new Setup(new Player("p1"), new Player("p2"), new PositiveInteger(), BoardSizes.NORMAL.getBoardSize()));
             // default -> fail(new UnsupportedOperationException("Unhandled status \"" + currentStatus + "\"")); // TODO : handle protocol status update
         }
 //        assertEquals(getNextProtocolStatusOrNullIfLast(currentStatus), getCurrentProtocolStatusOrNullIfExceptionThrown());  // TODO : handle protocol status update

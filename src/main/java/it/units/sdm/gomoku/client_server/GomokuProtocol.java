@@ -22,7 +22,7 @@ public class GomokuProtocol implements Protocol {
 
         return switch (currentStatus) {
             case WAITING_FOR_FIRST_CLIENT_CONNECTION -> waitingForFirstClientConnection(input);
-            case WAITING_FOR_PARTIAL_SETUP -> waitingForPartialSetup(input);
+            case WAITING_FOR_PARTIAL_SETUP -> setPartialSetup(input);
             default -> throw new IllegalStateException("Unexpected value: " + currentStatus);
         };
     }
@@ -40,7 +40,7 @@ public class GomokuProtocol implements Protocol {
     }
 
     @Nullable
-    public Object waitingForPartialSetup(@NotNull Object partialSetup) {    // TODO : refactor (code duplication: very similar to previous method)
+    public Object setPartialSetup(@NotNull Object partialSetup) {    // TODO : refactor (code duplication: very similar to previous method)
         if (Objects.requireNonNull(partialSetup) instanceof Setup partialSetupCasted) {
             this.setup = partialSetupCasted;
             this.currentStatus = Status.WAITING_FOR_SECOND_CLIENT_CONNECTION;
