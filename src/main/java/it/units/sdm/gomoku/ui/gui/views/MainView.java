@@ -71,6 +71,12 @@ public class MainView extends View<MainViewmodel> implements Observer {
     }
 
     @Override
+    public void onViewInitialized() {
+        super.onViewInitialized();
+        getViewmodelAssociatedWithView().triggerFirstMove();
+    }
+
+    @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals(MainViewmodel.currentPlayerPropertyName)) {
             SceneController.executeOnJavaFxUiThread(() -> {
