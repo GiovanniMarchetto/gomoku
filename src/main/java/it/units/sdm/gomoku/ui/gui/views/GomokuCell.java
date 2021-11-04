@@ -216,6 +216,14 @@ public class GomokuCell implements Observer {
             Board.ChangedCell cell = (Board.ChangedCell) evt.getNewValue();
             if (cell.getCoordinates().equals(coordinates)) {
                 Platform.runLater(() -> setStone(cell.getNewStone()));
+                circle.setStroke(Color.DARKRED);
+                circle.setStrokeWidth(3.0);
+            }
+        } else if (evt.getPropertyName().equals(Board.oldCellBoardMatrixPropertyName)) {
+            Board.ChangedCell cell = (Board.ChangedCell) evt.getNewValue();
+            if (cell.getCoordinates().equals(coordinates)) {
+                circle.setStroke(Color.BLACK);
+                circle.setStrokeWidth(1.0);
             }
         }
     }

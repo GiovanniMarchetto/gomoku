@@ -19,6 +19,7 @@ import static it.units.sdm.gomoku.model.custom_types.PositiveInteger.PositiveInt
 public class Board implements Observable, Cloneable {
 
     public static final String boardMatrixPropertyName = "matrix";
+    public static final String oldCellBoardMatrixPropertyName = "oldCell";
     @NotNull
     private final PositiveInteger size;
     @NotNull

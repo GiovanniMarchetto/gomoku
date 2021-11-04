@@ -33,6 +33,9 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
     @Nullable
     private Board currentBoard;
 
+    @Nullable
+    private Board.ChangedCell oldCell = null;
+
     public AbstractMainViewmodel() {
     }
 
@@ -42,6 +45,10 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
             case Board.boardMatrixPropertyName -> {
                 Board.ChangedCell cell = (Board.ChangedCell) evt.getNewValue();
                 firePropertyChange(Board.boardMatrixPropertyName, cell);
+                if (oldCell!=null) {
+                    firePropertyChange(Board.oldCellBoardMatrixPropertyName, oldCell);
+                }
+                oldCell=cell;
             }
             case Game.isThisGameEndedPropertyName -> {
                 if ((Boolean) evt.getNewValue()) {
@@ -139,11 +146,13 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
     public void placeStoneFromUser(@NotNull final Coordinates coordinates)
             throws Board.NoMoreEmptyPositionAvailableException, Board.PositionAlreadyOccupiedException {
         if (!(getCurrentPlayer() instanceof CPUPlayer)) {
+            //TODO: why two methods that do the same control?
             placeStone(coordinates);
         }
     }
 
     private void placeStoneIfCPUPlayingWithDelayOrElseNotifyTheView(Player currentPlayer, int delayOfCpuMove) {
+        //TODO: why currentPlayer and not getCurrentPlayer?
         runOnSeparateThread(() -> {
             if (currentPlayer instanceof CPUPlayer cpuPlayer) {
                 try {
