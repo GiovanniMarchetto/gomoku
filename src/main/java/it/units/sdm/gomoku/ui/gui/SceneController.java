@@ -1,5 +1,6 @@
 package it.units.sdm.gomoku.ui.gui;
 
+import it.units.sdm.gomoku.mvvm_library.View;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -38,13 +39,17 @@ public class SceneController {
                     return new AbstractMap.SimpleEntry<>(name, getClass().getResource(fxmlFilePath));
                 })
                 .map(viewEntry -> {
-                    ViewName view = viewEntry.getKey();
-                    return new AbstractMap.SimpleEntry<ViewName, Supplier<Scene>>(view, () -> {
+                    ViewName viewName = viewEntry.getKey();
+                    return new AbstractMap.SimpleEntry<ViewName, Supplier<Scene>>(viewName, () -> {
                         try {
                             FXMLLoader fxmlLoader = new FXMLLoader(viewEntry.getValue());
                             sceneWidth = sceneWidth != 0 ? stage.getScene().getWidth() : initialSceneWidth;
                             sceneHeight = sceneHeight != 0 ? stage.getScene().getHeight() : initialSceneHeight;
-                            return new Scene(fxmlLoader.load(), sceneWidth, sceneHeight);
+                            var scene = new Scene(fxmlLoader.load(), sceneWidth, sceneHeight);
+                            if (fxmlLoader.getController() instanceof View view) {
+                                view.onViewInitialized();
+                            }
+                            return scene;
                         } catch (IOException e) {
                             Logger.getLogger(getClass().getCanonicalName())
                                     .severe("I/O Exception in " + getClass().getCanonicalName() +
