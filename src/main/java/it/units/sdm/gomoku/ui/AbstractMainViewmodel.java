@@ -53,10 +53,17 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
                 Player oldValue = (Player) evt.getOldValue();
                 firePropertyChange(currentPlayerPropertyName, oldValue, currentPlayer);
                 if (!isCurrentGameEnded()) {
-                    placeStoneIfCPUPlayingWithDelayOrElseNotifyTheView(currentPlayer,200);
+                    placeStoneIfCPUPlayingWithDelayOrElseNotifyTheView(currentPlayer, 0);
                 }
             }
         }
+    }
+
+    public void triggerFirstMove() {
+        if (currentGame == null) {
+            throw new NullPointerException("Cannot invoke triggerFirstMove() before starting the game (currentGame is null)");
+        }
+        placeStoneIfCPUPlayingWithDelayOrElseNotifyTheView(getCurrentPlayer(), 0);
     }
 
     public void createMatchFromSetupAndStartGame(Setup setup) {
@@ -68,7 +75,6 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
 
     public void startNewGame() {
         initializeNewGame();
-        placeStoneIfCPUPlayingWithDelayOrElseNotifyTheView(getCurrentPlayer(),500);
     }
 
     public void startExtraGame() {
@@ -137,13 +143,13 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
         }
     }
 
-    public void placeStoneIfCPUPlayingWithDelayOrElseNotifyTheView(Player currentPlayer, int delay) {
+    private void placeStoneIfCPUPlayingWithDelayOrElseNotifyTheView(Player currentPlayer, int delayOfCpuMove) {
         runOnSeparateThread(() -> {
             if (currentPlayer instanceof CPUPlayer cpuPlayer) {
                 try {
-//                    Thread.sleep(delay);
+                    Thread.sleep(delayOfCpuMove);
                     placeStone(cpuPlayer.chooseEmptyCoordinates(getCurrentBoard()));
-                } catch (Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
+                } catch (Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException | InterruptedException e) {
                     e.printStackTrace();    // TODO : handle this
                 }
             } else {
