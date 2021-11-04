@@ -18,9 +18,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -33,19 +36,25 @@ class GomokuProtocolTest {
     private Status currentStatus;
     private GomokuProtocol gomokuProtocol;
 
-    private static Stream<Arguments> partialSetupSupplier() {
+    private static Stream<Arguments> setupSupplierIndicatingIfIsPartialSetupInSecondArgument() {
         final int MAX_NUMBER_OF_GAMES = 50;
         return Arrays.stream(BoardSizes.values())
                 .map(BoardSizes::getBoardSize)
                 .flatMap(boardSizeVal ->
                         IntStream.rangeClosed(1, MAX_NUMBER_OF_GAMES)
-                                .mapToObj(i ->
-                                        new Setup(
-                                                new Player("Player1_" + boardSizeVal),
-                                                null,//new Player("Player2_" + boardSizeVal),
-                                                new PositiveInteger(i),
-                                                boardSizeVal)))
-                .map(Arguments::of);
+                                .flatMap(i -> IntStream.rangeClosed(1, 2).map(j -> i * j))
+                                .mapToObj(i -> {
+                                    boolean trueIfIsPartialSetup = i % 2 == 0;
+                                    return Arguments.of(
+                                            new Setup(
+                                                    new Player("Player1_" + boardSizeVal),
+                                                    trueIfIsPartialSetup
+                                                            ? null
+                                                            : new Player("Player2_" + boardSizeVal),
+                                                    new PositiveInteger(i),
+                                                    boardSizeVal),
+                                            trueIfIsPartialSetup);
+                                }));
     }
 
     private static Stream<Arguments> protocolStatusSupplier() {
@@ -71,51 +80,57 @@ class GomokuProtocolTest {
 
     @Test
     void waitingForFirstClientConnection() {
-        try {
-            SimpleClient simpleClient = new SimpleClient();
-            Field clientSocketToServerField = simpleClient.getClass().getDeclaredField("socketToServer");
-            clientSocketToServerField.setAccessible(true);
-            Socket clientSocketToServer = (Socket) clientSocketToServerField.get(simpleClient);
+        assertCorrectNumberOfClientsConnectedInGivenProtocolState(1, Status.WAITING_FOR_FIRST_CLIENT_CONNECTION);
+    }
 
-            Thread clientThread = new Thread(simpleClient);
-            clientThread.start();
-
-            gomokuProtocol.waitingForFirstClientConnection(gomokuServer);
-            clientThread.join();
-
-            Field handledClientSocketsField = gomokuServer.getClass().getDeclaredField("handledClientSockets");
-            handledClientSocketsField.setAccessible(true);
-
-            @SuppressWarnings("unchecked")
-            Set<Socket> handledClientSockets = (Set<Socket>) handledClientSocketsField.get(gomokuServer);
-
-            assertEquals(
-                    handledClientSockets.toArray(new Socket[0])[0].getRemoteSocketAddress(),
-                    clientSocketToServer.getLocalSocketAddress());
-
-            simpleClient.close();
-        } catch (IOException | IllegalStateException | NoSuchFieldException | IllegalAccessException | InterruptedException e) {
-            fail(e);
-        }
+    @Test
+    void waitingForSecondClientConnection() {
+        waitingForFirstClientConnection();  // simulate the previous Status
+        assertCorrectNumberOfClientsConnectedInGivenProtocolState(2, Status.WAITING_FOR_SECOND_CLIENT_CONNECTION);
     }
 
     @ParameterizedTest
-    @MethodSource("partialSetupSupplier")
-    void waitingForPartialSetup(Setup partialSetup) {
-        setCurrentProtocolStatus(Status.WAITING_FOR_PARTIAL_SETUP);
+    @MethodSource("setupSupplierIndicatingIfIsPartialSetupInSecondArgument")
+    void setPartialSetup(Setup partialSetup, boolean isPartialSetup) {
+        testIfPartialOfFullSetupSuccessfulCompleted(partialSetup, isPartialSetup, Status.WAITING_FOR_PARTIAL_SETUP);
+    }
+
+    @ParameterizedTest
+    @MethodSource("setupSupplierIndicatingIfIsPartialSetupInSecondArgument")
+    void setFullSetup(Setup fullSetup, boolean isPartialSetup) {
+        testIfPartialOfFullSetupSuccessfulCompleted(fullSetup, isPartialSetup, Status.WAITING_FOR_COMPLETING_SETUP);
+    }
+
+    private void testIfPartialOfFullSetupSuccessfulCompleted(
+            @NotNull final Setup partialOrFullSetup, boolean partialSetupProvided, @NotNull Status currentStatus) {
+        setCurrentProtocolStatus(Objects.requireNonNull(currentStatus));    // TODO: refactor needed
         try {
-            gomokuProtocol.processInput(partialSetup);
-            assertTrue(isPartialSetupSet());
+            boolean partialSetupDesired = currentStatus == Status.WAITING_FOR_PARTIAL_SETUP;
+            try {
+                gomokuProtocol.processInput(Objects.requireNonNull(partialOrFullSetup));
+            } catch (IllegalArgumentException e) {
+                if (partialSetupDesired == partialSetupProvided) {
+                    fail(e);
+                } else {
+                    return; // exception thrown as expected
+                }
+            }
+            assertEquals(partialSetupProvided, isPartialSetup());
         } catch (IOException e) {
             fail(e);
         }
     }
 
-    private boolean isPartialSetupSet() {
+    private boolean isPartialSetup() {
         try {
-            Field setupSavedInProtocolInstance = getFieldAlreadyMadeAccessible(gomokuProtocol.getClass(), "setup");
-            return setupSavedInProtocolInstance.get(gomokuProtocol) != null;
-        } catch (NoSuchFieldException | IllegalAccessException e) {
+            Field setupFieldSavedInProtocolInstance = getFieldAlreadyMadeAccessible(gomokuProtocol.getClass(), "setup");
+            if (setupFieldSavedInProtocolInstance.get(gomokuProtocol) instanceof Setup castedSetup) {
+                return gomokuProtocol.isPartialSetup(castedSetup)
+                        && !gomokuProtocol.isFinalizedSetup(castedSetup);
+            } else {
+                throw new IllegalArgumentException("Not an instance of " + Setup.class.getCanonicalName());
+            }
+        } catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException e) {
             fail(e);
             return false;
         }
@@ -127,10 +142,78 @@ class GomokuProtocolTest {
         setCurrentProtocolStatus(currentStatus);
         switch (currentStatus) {
             case WAITING_FOR_FIRST_CLIENT_CONNECTION -> waitingForFirstClientConnection();
-            case WAITING_FOR_PARTIAL_SETUP -> waitingForPartialSetup(new Setup(new Player("p1"), new Player("p2"), new PositiveInteger(), BoardSizes.NORMAL.getBoardSize()));
+            case WAITING_FOR_PARTIAL_SETUP -> setPartialSetup(new Setup(new Player("p1"), null, new PositiveInteger(), BoardSizes.NORMAL.getBoardSize()), true);
             // default -> fail(new UnsupportedOperationException("Unhandled status \"" + currentStatus + "\"")); // TODO : handle protocol status update
         }
 //        assertEquals(getNextProtocolStatusOrNullIfLast(currentStatus), getCurrentProtocolStatusOrNullIfExceptionThrown());  // TODO : handle protocol status update
+    }
+
+    private void assertCorrectNumberOfClientsConnectedInGivenProtocolState(
+            final int EXPECTED_HANDLED_CLIENTS, @NotNull final Status currentStatus) {
+        setCurrentProtocolStatus(currentStatus);
+        assertCorrectNumberOfClientsConnectedToTheServer(EXPECTED_HANDLED_CLIENTS);
+    }
+
+    private void assertCorrectNumberOfClientsConnectedToTheServer(final int numberOfClientsToBeConnectedToTheServer) {
+        try {
+            SimpleClient simpleClient = makeAClientToConnectToTheServerAndGet();
+            assertEquals(numberOfClientsToBeConnectedToTheServer, getRemoteAddressOfClientSocketsHandledByTheServer().size());  // TODO : double assertions in sngle test
+            assertTrue(isClientLocalSocketAddressHandledByServer(getLocalSocketAddressOf(simpleClient)));
+            simpleClient.close();
+        } catch (IOException | IllegalStateException | NoSuchFieldException | IllegalAccessException | InterruptedException e) {
+            fail(e);
+        }
+    }
+
+    @NotNull
+    private SimpleClient makeAClientToConnectToTheServerAndGet() throws IOException, NoSuchFieldException, IllegalAccessException, InterruptedException {
+        SimpleClient simpleClient = new SimpleClient();
+
+        Thread clientThread = new Thread(simpleClient);
+        clientThread.start();
+
+        gomokuProtocol.waitingForFirstClientConnection(gomokuServer);
+        clientThread.join();
+
+        return simpleClient;
+    }
+
+    @NotNull
+    private SocketAddress getLocalSocketAddressOf(@NotNull final SimpleClient simpleClient) {
+        // TODO : SimpleClient may extends abstract class Client which has field "socketToServer"
+        try {
+            Field clientSocketToServerField = simpleClient.getClass().getDeclaredField("socketToServer");
+            clientSocketToServerField.setAccessible(true);
+            Socket clientSocketToServer = (Socket) clientSocketToServerField.get(simpleClient);
+            return clientSocketToServer.getLocalSocketAddress();
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            fail(e);
+            return null;
+        }
+    }
+
+    private boolean isClientLocalSocketAddressHandledByServer(@NotNull final SocketAddress clientLocalSocketAddress) {
+        return getRemoteAddressOfClientSocketsHandledByTheServer()
+                .contains(Objects.requireNonNull(clientLocalSocketAddress));
+    }
+
+    @NotNull
+    private Set<SocketAddress> getRemoteAddressOfClientSocketsHandledByTheServer() {
+        try {
+            Field handledClientSocketsField = gomokuServer.getClass().getDeclaredField("handledClientSockets");
+            handledClientSocketsField.setAccessible(true);
+
+            @SuppressWarnings("unchecked")
+            Set<Socket> handledClientSockets = (Set<Socket>) handledClientSocketsField.get(gomokuServer);
+
+            return handledClientSockets.stream()
+                    .unordered().parallel()
+                    .map(Socket::getRemoteSocketAddress)
+                    .collect(Collectors.toSet());
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            fail(e);
+            return ConcurrentHashMap.newKeySet();
+        }
     }
 
     @NotNull
@@ -185,5 +268,4 @@ class GomokuProtocolTest {
     private static boolean isLastStatus(Status[] allStatuses, int currentStatusIndex) {
         return currentStatusIndex == allStatuses.length - 1;
     }
-
 }
