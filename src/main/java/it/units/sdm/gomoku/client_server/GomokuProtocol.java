@@ -67,27 +67,24 @@ public class GomokuProtocol implements Protocol {
     Object setSetupIfValidAndUpdateProtocolStatusAndGetOrNullIfInvalid(
             @NotNull final Object setup,
             @NotNull final Status newProtocolStatusIfNoErrors,
-            final boolean trueIfGivenSetupMustBeFinalizedOrFalseIfSecondPlayerMustNotBeSpecified) {
+            final boolean trueIfGivenSetupMustBeFinalizedOrFalseIfSecondPlayerMustNotBeSpecified)
+            throws IllegalArgumentException {
         // TODO : all this accesses via reflection are needed?
         // TODO : method to be tested (test correct behaviour of inner if statements)
         if (Objects.requireNonNull(setup) instanceof Setup castedSetup) {
-            try {
-                if (trueIfGivenSetupMustBeFinalizedOrFalseIfSecondPlayerMustNotBeSpecified) {
-                    if (!isFinalizedSetup(castedSetup)) {
-                        throw new IllegalArgumentException("Setup object not completely finalized but should be");
-                    }
-                } else {
-                    if (!isPartialSetup(castedSetup)) {
-                        throw new IllegalArgumentException("Field \"player2\"" +
-                                " in given setup object is not null but should be");
-                    }
+            if (trueIfGivenSetupMustBeFinalizedOrFalseIfSecondPlayerMustNotBeSpecified) {
+                if (!isFinalizedSetup(castedSetup)) {
+                    throw new IllegalArgumentException("Setup object not completely finalized but should be");
                 }
-                this.setup = castedSetup;
-                this.currentStatus = Objects.requireNonNull(newProtocolStatusIfNoErrors);
-                return setup;
-            } catch (IllegalArgumentException e) {
-                loggerOfThisClass.log(Level.SEVERE, "Illegal argument", e);
+            } else {
+                if (!isPartialSetup(castedSetup)) {
+                    throw new IllegalArgumentException("Field \"player2\"" +
+                            " in given setup object is not null but should be");
+                }
             }
+            this.setup = castedSetup;
+            this.currentStatus = Objects.requireNonNull(newProtocolStatusIfNoErrors);
+            return setup;
         } else {
             illegalStateNotification(setup);
         }
