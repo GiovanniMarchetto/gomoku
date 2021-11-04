@@ -15,6 +15,7 @@ public class MainViewmodel extends AbstractMainViewmodel {
     public void startNewGame() {
         super.startNewGame();
         SceneController.passToNewSceneIfIsGUIRunningOrDoNothing(SceneController.ViewName.MAIN_VIEW);
+        forceReFireAllCells();
     }
 
     @Override
