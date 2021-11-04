@@ -3,10 +3,10 @@ package it.units.sdm.gomoku.ui.gui;
 import it.units.sdm.gomoku.mvvm_library.View;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -113,7 +113,7 @@ public class SceneController {
         getInstance().passToNewScene(Objects.requireNonNull(viewEnum));
     }
 
-    public static void fadeOutSceneIfIsGUIRunningOrDoNothing(@NotNull final SceneController.ViewName viewEnum, @NotNull final int fadeDurationMillis) {
+    public static void fadeOutSceneIfIsGUIRunningOrDoNothing(@NotNull final SceneController.ViewName viewEnum, final int fadeDurationMillis) {
         if (!isJavaFxRunning()) return;
         getInstance().fadeToNewScene(Objects.requireNonNull(viewEnum), fadeDurationMillis);
     }
@@ -148,22 +148,31 @@ public class SceneController {
     }
 
     private void fadeToNewScene(@NotNull final SceneController.ViewName viewEnum, int fadeDurationMillis) {
-        executeOnJavaFxUiThread(() -> {
+        Scene oldScene = stage.getScene();
+        if (oldScene != null) {
+            executeOnJavaFxUiThread(() -> {
 
-            Scene oldScene = stage.getScene();
-            StackPane oldRoot = (StackPane) oldScene.getRoot();
+                StackPane oldRoot = (StackPane) oldScene.getRoot();
+                ObservableList<Node> children = oldRoot.getChildren();
+                Node lastChildOfOldRoot = children.get(children.size() - 1);
 
-            Scene newScene = scenes.get(Objects.requireNonNull(viewEnum)).get();
-            Node firstChild = ((Pane) newScene.getRoot()).getChildren().get(0);
+                Scene newScene = scenes.get(Objects.requireNonNull(viewEnum)).get();
+                StackPane newRoot = (StackPane) newScene.getRoot();
+                Node firstChildOfNewRoot = newRoot.getChildren().remove(0);
 
-            FadeTransition fadeInTransition = new FadeTransition(Duration.millis(fadeDurationMillis), firstChild);
-            fadeInTransition.setFromValue(0.0);
-            fadeInTransition.setToValue(1.0);
-            fadeInTransition.play();
+                FadeTransition fadeInTransition = new FadeTransition(Duration.millis(fadeDurationMillis), firstChildOfNewRoot);
+                fadeInTransition.setFromValue(0.0);
+                fadeInTransition.setToValue(1.0);
+                fadeInTransition.play();
 
-            oldRoot.getChildren().add(firstChild);
-//            stage.setScene(oldScene);
-        });
+                newRoot.getChildren().add(0, lastChildOfOldRoot);
+                newRoot.getChildren().add(1, firstChildOfNewRoot);
+
+                stage.setScene(newScene);
+            });
+        } else {
+            passToNewScene(viewEnum);
+        }
     }
 
 
