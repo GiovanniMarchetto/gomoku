@@ -4,7 +4,6 @@ import it.units.sdm.gomoku.client_server.interfaces.Protocol;
 import it.units.sdm.gomoku.client_server.server.GomokuServer;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.Board;
-import it.units.sdm.gomoku.ui.support.BoardSizes;
 import it.units.sdm.gomoku.ui.support.Setup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,6 +20,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class GomokuProtocol implements Protocol {
+
+    // TODO : to be interfaced with the model
 
     public static final int SERVER_PORT_NUMBER = 9999;
     public static final int NUMBER_OF_PLAYERS = 2;
@@ -43,8 +44,15 @@ public class GomokuProtocol implements Protocol {
             case SENDING_CURRENT_STATUS -> sendCurrentBoardToClients(input);
             case WAITING_FOR_MOVE_OF_A_CLIENT -> waitingForMoveOfAClientAndGet(input);
             case SENDING_SUMMARY -> sendingSummary(input);
+            case CLOSING -> closing();
             default -> throw new IllegalStateException("Unexpected value: " + currentStatus);
         };
+    }
+
+    private Object closing() {
+        // TODO: decide if invoking close() methods and how to divide responsibilities between protocolo and server gomoku instances and decide if current status should be updated to the first one or if close() method of this class should be invoked.
+        currentStatus = Status.WAITING_FOR_MOVE_OF_A_CLIENT;
+        return null;
     }
 
     public Object sendingSummary(Object input) throws IOException {
