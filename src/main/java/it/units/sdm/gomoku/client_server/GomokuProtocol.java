@@ -4,6 +4,7 @@ import it.units.sdm.gomoku.client_server.interfaces.Protocol;
 import it.units.sdm.gomoku.client_server.server.GomokuServer;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.Board;
+import it.units.sdm.gomoku.ui.support.BoardSizes;
 import it.units.sdm.gomoku.ui.support.Setup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -39,10 +40,18 @@ public class GomokuProtocol implements Protocol {
             case WAITING_FOR_PARTIAL_SETUP -> setPartialSetup(input);
             case WAITING_FOR_SECOND_CLIENT_CONNECTION -> waitingForSecondClientConnection(input);
             case WAITING_FOR_COMPLETING_SETUP -> finalizeSetup(input);
-            case SENDING_CURRENT_STATUS -> sendCurrentBoardReceivedAsArgumentsToClients(input);
+            case SENDING_CURRENT_STATUS -> sendCurrentBoardToClients(input);
             case WAITING_FOR_MOVE_OF_A_CLIENT -> waitingForMoveOfAClientAndGet(input);
+            case SENDING_SUMMARY -> sendingSummary(input);
             default -> throw new IllegalStateException("Unexpected value: " + currentStatus);
         };
+    }
+
+    public Object sendingSummary(Object input) throws IOException {
+        // TODO : summary should come from the model
+        Object tmp = sendCurrentBoardToClients(input);
+        currentStatus = Status.CLOSING;
+        return tmp;
     }
 
     synchronized public Object waitingForMoveOfAClientAndGet(Object ignored) throws IOException {
@@ -70,7 +79,8 @@ public class GomokuProtocol implements Protocol {
         return true;
     }
 
-    public Object sendCurrentBoardReceivedAsArgumentsToClients(Object input) throws IOException {
+    public Object sendCurrentBoardToClients(Object input) throws IOException {
+        // TODO : board should come from the model
         if (input instanceof Board currentBoard) {
             AtomicReference<IOException> eventuallyThrownException = new AtomicReference<>();
             Arrays.stream(new Socket[]{client1Socket, client2Socket})
@@ -209,7 +219,8 @@ public class GomokuProtocol implements Protocol {
         WAITING_FOR_COMPLETING_SETUP,
         SENDING_CURRENT_STATUS,          // TODO: change to more significant status name
         WAITING_FOR_MOVE_OF_A_CLIENT,
-        SENDING_SUMMARY
+        SENDING_SUMMARY,
+        CLOSING
     }
 
 }
