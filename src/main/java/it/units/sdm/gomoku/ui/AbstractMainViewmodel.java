@@ -53,7 +53,7 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
                 Player oldValue = (Player) evt.getOldValue();
                 firePropertyChange(currentPlayerPropertyName, oldValue, currentPlayer);
                 if (!isCurrentGameEnded()) {
-                    placeStoneIfCPUPlayingOrElseNotifyTheView(currentPlayer);
+                    placeStoneIfCPUPlayingWithDelayOrElseNotifyTheView(currentPlayer,200);
                 }
             }
         }
@@ -68,7 +68,7 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
 
     public void startNewGame() {
         initializeNewGame();
-        placeStoneIfCPUPlayingOrElseNotifyTheView(getCurrentPlayer());
+        placeStoneIfCPUPlayingWithDelayOrElseNotifyTheView(getCurrentPlayer(),500);
     }
 
     public void startExtraGame() {
@@ -137,17 +137,19 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
         }
     }
 
-    protected void placeStoneIfCPUPlayingOrElseNotifyTheView(Player currentPlayer) {
-        if (currentPlayer instanceof CPUPlayer cpuPlayer) {
-            try {
-                placeStone(cpuPlayer.chooseEmptyCoordinates(getCurrentBoard()));
-            } catch (Board.NoMoreEmptyPositionAvailableException |
-                    Board.PositionAlreadyOccupiedException e) {
-                e.printStackTrace();    // TODO : handle this
+    public void placeStoneIfCPUPlayingWithDelayOrElseNotifyTheView(Player currentPlayer, int delay) {
+        runOnSeparateThread(() -> {
+            if (currentPlayer instanceof CPUPlayer cpuPlayer) {
+                try {
+//                    Thread.sleep(delay);
+                    placeStone(cpuPlayer.chooseEmptyCoordinates(getCurrentBoard()));
+                } catch (Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
+                    e.printStackTrace();    // TODO : handle this
+                }
+            } else {
+                firePropertyChange(userMustPlaceNewStonePropertyName, false, true); // TODO : where is the property?
             }
-        } else {
-            firePropertyChange(userMustPlaceNewStonePropertyName, false, true); // TODO : where is the property?
-        }
+        });
     }
 
     public void forceReFireAllCells() {
