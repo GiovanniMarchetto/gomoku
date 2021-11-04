@@ -38,17 +38,16 @@
             </padding>
             <VBox style="-fx-border-width: 2">
                 <Label text="BLACK" style="-fx-text-fill: black; -fx-font-weight: bold"/>
-                <Label fx:id="blackPlayer"/>
+                <Label fx:id="blackPlayerLabel"/>
             </VBox>
             <VBox style="-fx-border-width: 2">
                 <Label text="WHITE" style="-fx-text-fill: white; -fx-font-weight: bold"/>
-                <Label fx:id="whitePlayer"/>
+                <Label fx:id="whitePlayerLabel"/>
             </VBox>
 
-            <VBox>
+            <VBox style="-fx-background-radius: 5; -fx-background-color: #ffa600">
                 <Label text="Turn of:"/>
-                <Label fx:id="currentPlayerLabel" style="-fx-text-fill: #ffa600"/>
-                <!--TODO: complete currentPlayer Box-->
+                <Label fx:id="currentPlayerLabel"/>
             </VBox>
 
             <VBox>

@@ -29,9 +29,9 @@ public class MainView extends View<MainViewmodel> implements Observer {
     private VBox rightGridPane;
 
     @FXML
-    private Label whitePlayer;
+    private Label whitePlayerLabel;
     @FXML
-    private Label blackPlayer;
+    private Label blackPlayerLabel;
     @FXML
     private Label startTime;
 
@@ -55,8 +55,9 @@ public class MainView extends View<MainViewmodel> implements Observer {
 
         centerGridPane.getChildren().add(baseGridPane);
 
-        blackPlayer.setText(vm.getCurrentBlackPlayer().toString());
-        whitePlayer.setText(vm.getCurrentWhitePlayer().toString());
+        blackPlayerLabel.setText(vm.getCurrentBlackPlayer().toString());
+        whitePlayerLabel.setText(vm.getCurrentWhitePlayer().toString());
+        currentPlayerLabel.setText(vm.getCurrentPlayer().toString());
 
         ZonedDateTime startZoneDateTime = vm.getGameStartTime();
         startTime.setText("Start game: \n" +
