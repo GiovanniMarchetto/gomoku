@@ -169,14 +169,6 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
                 .forEach(c -> firePropertyChange(Board.boardMatrixPropertyName, c));
     }
 
-//    private void placeStoneWithDelayIfIsCpu(final long delay) {
-// TODO : viewmodel should run on separate thread (not the same of gui)
-//
-// Here we want a Thread.sleep(200) so we can see how the game evolves when CPU vs CPU (otherwise it is instantaneous)
-// but this would block the GUI. At the same time, scheduling this task with a time may break the logic
-// The solution might be to put the entire method placeStone in another thread
-//    }
-
     public int getBoardSize() {
         try {
             return Objects.requireNonNull(currentBoard).getSize();
