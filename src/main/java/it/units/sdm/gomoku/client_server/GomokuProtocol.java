@@ -2,15 +2,18 @@ package it.units.sdm.gomoku.client_server;
 
 import it.units.sdm.gomoku.client_server.interfaces.Protocol;
 import it.units.sdm.gomoku.client_server.server.GomokuServer;
+import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.ui.support.Setup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,8 +24,8 @@ public class GomokuProtocol implements Protocol {
     private Status currentStatus = Status.WAITING_FOR_FIRST_CLIENT_CONNECTION;
 
     private static Logger loggerOfThisClass = Logger.getLogger(GomokuProtocol.class.getCanonicalName());
-    private Socket client1Socket;   // field filled with reflection
-    private Socket client2Socket;   // field filled with reflection
+    private volatile Socket client1Socket;   // field filled with reflection
+    private volatile Socket client2Socket;   // field filled with reflection
     private Setup setup;
 
     @Override
@@ -33,8 +36,34 @@ public class GomokuProtocol implements Protocol {
             case WAITING_FOR_PARTIAL_SETUP -> setPartialSetup(input);
             case WAITING_FOR_SECOND_CLIENT_CONNECTION -> waitingForSecondClientConnection(input);
             case WAITING_FOR_COMPLETING_SETUP -> finalizeSetup(input);
+            case SENDING_CURRENT_STATUS -> sendCurrentBoardReceivedAsArgumentsToClients(input);
             default -> throw new IllegalStateException("Unexpected value: " + currentStatus);
         };
+    }
+
+    public Object sendCurrentBoardReceivedAsArgumentsToClients(Object input) throws IOException {
+        if (input instanceof Board currentBoard) {
+            AtomicReference<IOException> eventuallyThrownException = new AtomicReference<>();
+            Arrays.stream(new Socket[]{client1Socket, client2Socket})
+                    .forEach(aClient -> {
+                        try {
+                            ObjectOutputStream oos =
+                                    new ObjectOutputStream(aClient.getOutputStream());
+                            oos.writeObject(currentBoard);
+                            oos.flush();
+                        } catch (IOException e) {
+                            eventuallyThrownException.set(e);
+                        }
+                    });
+            if (eventuallyThrownException.get() != null) {
+                throw eventuallyThrownException.get();
+            }
+        } else {
+            throw new IllegalArgumentException(
+                    "Expected " + Board.class.getCanonicalName() +
+                            " as input parameter but received " + input.getClass());
+        }
+        return null;
     }
 
     @Nullable
