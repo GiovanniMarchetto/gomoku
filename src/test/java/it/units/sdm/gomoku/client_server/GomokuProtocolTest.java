@@ -36,30 +36,25 @@ class GomokuProtocolTest {
     private Status currentStatus;
     private GomokuProtocol gomokuProtocol;
 
-    private static Stream<Arguments> partialSetupSupplier() {
+    private static Stream<Arguments> setupSupplierIndicatingIfIsPartialSetupInSecondArgument() {
         final int MAX_NUMBER_OF_GAMES = 50;
         return Arrays.stream(BoardSizes.values())
                 .map(BoardSizes::getBoardSize)
                 .flatMap(boardSizeVal ->
                         IntStream.rangeClosed(1, MAX_NUMBER_OF_GAMES)
-                                .mapToObj(i ->
-                                        new Setup(
-                                                new Player("Player1_" + boardSizeVal),
-                                                null,
-                                                new PositiveInteger(i),
-                                                boardSizeVal)))
-                .map(Arguments::of);
-    }
-
-    public static Stream<Arguments> fullSetupSupplier() {
-        return partialSetupSupplier()
-                .map(arguments -> (Setup)arguments.get()[0])
-                .map(setup -> new Setup(
-                        setup.player1(),
-                        new Player("Player2_" + setup.boardSize().intValue()),
-                        setup.numberOfGames(),
-                        setup.boardSize()))
-                .map(Arguments::of);
+                                .flatMap(i -> IntStream.rangeClosed(1, 2).map(j -> i * j))
+                                .mapToObj(i -> {
+                                    boolean trueIfIsPartialSetup = i % 2 == 0;
+                                    return Arguments.of(
+                                            new Setup(
+                                                    new Player("Player1_" + boardSizeVal),
+                                                    trueIfIsPartialSetup
+                                                            ? null
+                                                            : new Player("Player2_" + boardSizeVal),
+                                                    new PositiveInteger(i),
+                                                    boardSizeVal),
+                                            trueIfIsPartialSetup);
+                                }));
     }
 
     private static Stream<Arguments> protocolStatusSupplier() {
@@ -95,40 +90,43 @@ class GomokuProtocolTest {
     }
 
     @ParameterizedTest
-    @MethodSource("partialSetupSupplier")
-        // TODO : should provide a couple <trueIfPartialOrFalse, setupInstance> and assert consequently
-    void setPartialSetup(Setup partialSetup) {
-        setCurrentProtocolStatus(Status.WAITING_FOR_PARTIAL_SETUP);
-        try {
-            gomokuProtocol.processInput(partialSetup);
-            boolean partialSetupDesired = true;
-            assertTrue(checkIfPartialOrFullSetup(partialSetupDesired));
-        } catch (IOException e) {
-            fail(e);
-        }
+    @MethodSource("setupSupplierIndicatingIfIsPartialSetupInSecondArgument")
+    void setPartialSetup(Setup partialSetup, boolean isPartialSetup) {
+        testIfPartialOfFullSetupSuccessfulCompleted(partialSetup, isPartialSetup, Status.WAITING_FOR_PARTIAL_SETUP);
     }
 
     @ParameterizedTest
-    @MethodSource("fullSetupSupplier")
-        // TODO : should provide a couple <trueIfPartialOrFalse, setupInstance> and assert consequently
-    void setFullSetup(Setup fullSetup) {
-        setCurrentProtocolStatus(Status.WAITING_FOR_COMPLETING_SETUP);
+    @MethodSource("setupSupplierIndicatingIfIsPartialSetupInSecondArgument")
+    void setFullSetup(Setup fullSetup, boolean isPartialSetup) {
+        testIfPartialOfFullSetupSuccessfulCompleted(fullSetup, isPartialSetup, Status.WAITING_FOR_COMPLETING_SETUP);
+    }
+
+    private void testIfPartialOfFullSetupSuccessfulCompleted(
+            @NotNull final Setup partialOrFullSetup, boolean partialSetupProvided, @NotNull Status currentStatus) {
+        setCurrentProtocolStatus(Objects.requireNonNull(currentStatus));    // TODO: refactor needed
         try {
-            gomokuProtocol.processInput(fullSetup);
-            boolean partialSetupDesired = false;
-            assertTrue(checkIfPartialOrFullSetup(partialSetupDesired));
+            boolean partialSetupDesired = currentStatus == Status.WAITING_FOR_PARTIAL_SETUP;
+            try {
+                gomokuProtocol.processInput(Objects.requireNonNull(partialOrFullSetup));
+            } catch (IllegalArgumentException e) {
+                if (partialSetupDesired == partialSetupProvided) {
+                    fail(e);
+                } else {
+                    return; // exception thrown as expected
+                }
+            }
+            assertEquals(partialSetupProvided, isPartialSetup());
         } catch (IOException e) {
             fail(e);
         }
     }
 
-    private boolean checkIfPartialOrFullSetup(final boolean partialSetupDesired) {
+    private boolean isPartialSetup() {
         try {
             Field setupFieldSavedInProtocolInstance = getFieldAlreadyMadeAccessible(gomokuProtocol.getClass(), "setup");
             if (setupFieldSavedInProtocolInstance.get(gomokuProtocol) instanceof Setup castedSetup) {
-                //noinspection ConstantConditions   // field accessed via reflection may be null    // TODO : check the reason for this warning
-                return castedSetup != null &&
-                        (partialSetupDesired ? gomokuProtocol.isPartialSetup(castedSetup) : gomokuProtocol.isFinalizedSetup(castedSetup));
+                return gomokuProtocol.isPartialSetup(castedSetup)
+                        && !gomokuProtocol.isFinalizedSetup(castedSetup);
             } else {
                 throw new IllegalArgumentException("Not an instance of " + Setup.class.getCanonicalName());
             }
@@ -144,7 +142,7 @@ class GomokuProtocolTest {
         setCurrentProtocolStatus(currentStatus);
         switch (currentStatus) {
             case WAITING_FOR_FIRST_CLIENT_CONNECTION -> waitingForFirstClientConnection();
-            case WAITING_FOR_PARTIAL_SETUP -> setPartialSetup(new Setup(new Player("p1"), null, new PositiveInteger(), BoardSizes.NORMAL.getBoardSize()));
+            case WAITING_FOR_PARTIAL_SETUP -> setPartialSetup(new Setup(new Player("p1"), null, new PositiveInteger(), BoardSizes.NORMAL.getBoardSize()), true);
             // default -> fail(new UnsupportedOperationException("Unhandled status \"" + currentStatus + "\"")); // TODO : handle protocol status update
         }
 //        assertEquals(getNextProtocolStatusOrNullIfLast(currentStatus), getCurrentProtocolStatusOrNullIfExceptionThrown());  // TODO : handle protocol status update
