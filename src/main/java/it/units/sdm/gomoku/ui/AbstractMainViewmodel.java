@@ -52,7 +52,9 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
                 Player currentPlayer = (Player) evt.getNewValue();
                 Player oldValue = (Player) evt.getOldValue();
                 firePropertyChange(currentPlayerPropertyName, oldValue, currentPlayer);
-                placeStoneIfGameNotEndedAndIsCPUPlayingOrElseNotifyTheView(currentPlayer);
+                if (!isCurrentGameEnded()) {
+                    placeStoneIfCPUPlayingOrElseNotifyTheView(currentPlayer);
+                }
             }
         }
     }
@@ -66,7 +68,7 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
 
     public void startNewGame() {
         initializeNewGame();
-        placeStoneIfGameNotEndedAndIsCPUPlayingOrElseNotifyTheView(getCurrentPlayer());
+        placeStoneIfCPUPlayingOrElseNotifyTheView(getCurrentPlayer());
     }
 
     public void startExtraGame() {
@@ -135,22 +137,20 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
         }
     }
 
-    protected void placeStoneIfGameNotEndedAndIsCPUPlayingOrElseNotifyTheView(Player currentPlayer) {
-        if (!isCurrentGameEnded()) {
-            if (currentPlayer instanceof CPUPlayer cpuPlayer) {
-                try {
-                    placeStone(cpuPlayer.chooseRandomEmptyCoordinates(getCurrentBoard()));
-                } catch (Board.NoMoreEmptyPositionAvailableException |
-                        Board.PositionAlreadyOccupiedException e) {
-                    e.printStackTrace();    // TODO : handle this
-                }
-            } else {
-                firePropertyChange(userMustPlaceNewStonePropertyName, false, true); // TODO : where is the property?
+    protected void placeStoneIfCPUPlayingOrElseNotifyTheView(Player currentPlayer) {
+        if (currentPlayer instanceof CPUPlayer cpuPlayer) {
+            try {
+                placeStone(cpuPlayer.chooseEmptyCoordinates(getCurrentBoard()));
+            } catch (Board.NoMoreEmptyPositionAvailableException |
+                    Board.PositionAlreadyOccupiedException e) {
+                e.printStackTrace();    // TODO : handle this
             }
+        } else {
+            firePropertyChange(userMustPlaceNewStonePropertyName, false, true); // TODO : where is the property?
         }
     }
 
-    public void forceRefireAllCells() {
+    public void forceReFireAllCells() {
         IntStream.range(0, getBoardSize())
                 .unordered().parallel()
                 .boxed()

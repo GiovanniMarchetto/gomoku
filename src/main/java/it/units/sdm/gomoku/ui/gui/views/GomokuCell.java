@@ -199,7 +199,7 @@ public class GomokuCell implements Observer {
                     // force update stone (in GUI) at current coordinates, or...
 //                    setStone(vm.getStoneAtCoordinatesInCurrentBoard(coordinates));
                     // ... force update all stones
-                    vm.forceRefireAllCells();
+                    vm.forceReFireAllCells();
                 }
             }
         });
