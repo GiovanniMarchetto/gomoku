@@ -43,8 +43,15 @@ public class GomokuProtocol implements Protocol {
             case SENDING_CURRENT_STATUS -> sendCurrentBoardToClients(input);
             case WAITING_FOR_MOVE_OF_A_CLIENT -> waitingForMoveOfAClientAndGet(input);
             case SENDING_SUMMARY -> sendingSummary(input);
+            case CLOSING -> closing();
             default -> throw new IllegalStateException("Unexpected value: " + currentStatus);
         };
+    }
+
+    private Object closing() {
+        // TODO: decide if invoking close() methods and how to divide responsibilities between protocolo and server gomoku instances and decide if current status should be updated to the first one or if close() method of this class should be invoked.
+        currentStatus = Status.WAITING_FOR_MOVE_OF_A_CLIENT;
+        return null;
     }
 
     public Object sendingSummary(Object input) throws IOException {
