@@ -45,9 +45,20 @@ class GomokuProtocolTest {
                                 .mapToObj(i ->
                                         new Setup(
                                                 new Player("Player1_" + boardSizeVal),
-                                                null,//new Player("Player2_" + boardSizeVal),
+                                                null,
                                                 new PositiveInteger(i),
                                                 boardSizeVal)))
+                .map(Arguments::of);
+    }
+
+    public static Stream<Arguments> fullSetupSupplier() {
+        return partialSetupSupplier()
+                .map(arguments -> (Setup)arguments.get()[0])
+                .map(setup -> new Setup(
+                        setup.player1(),
+                        new Player("Player2_" + setup.boardSize().intValue()),
+                        setup.numberOfGames(),
+                        setup.boardSize()))
                 .map(Arguments::of);
     }
 
@@ -85,21 +96,43 @@ class GomokuProtocolTest {
 
     @ParameterizedTest
     @MethodSource("partialSetupSupplier")
+        // TODO : should provide a couple <trueIfPartialOrFalse, setupInstance> and assert consequently
     void setPartialSetup(Setup partialSetup) {
         setCurrentProtocolStatus(Status.WAITING_FOR_PARTIAL_SETUP);
         try {
             gomokuProtocol.processInput(partialSetup);
-            assertTrue(isPartialSetupSet());
+            boolean partialSetupDesired = true;
+            assertTrue(checkIfPartialOrFullSetup(partialSetupDesired));
         } catch (IOException e) {
             fail(e);
         }
     }
 
-    private boolean isPartialSetupSet() {
+    @ParameterizedTest
+    @MethodSource("fullSetupSupplier")
+        // TODO : should provide a couple <trueIfPartialOrFalse, setupInstance> and assert consequently
+    void setFullSetup(Setup fullSetup) {
+        setCurrentProtocolStatus(Status.WAITING_FOR_COMPLETING_SETUP);
         try {
-            Field setupSavedInProtocolInstance = getFieldAlreadyMadeAccessible(gomokuProtocol.getClass(), "setup");
-            return setupSavedInProtocolInstance.get(gomokuProtocol) != null;
-        } catch (NoSuchFieldException | IllegalAccessException e) {
+            gomokuProtocol.processInput(fullSetup);
+            boolean partialSetupDesired = false;
+            assertTrue(checkIfPartialOrFullSetup(partialSetupDesired));
+        } catch (IOException e) {
+            fail(e);
+        }
+    }
+
+    private boolean checkIfPartialOrFullSetup(final boolean partialSetupDesired) {
+        try {
+            Field setupFieldSavedInProtocolInstance = getFieldAlreadyMadeAccessible(gomokuProtocol.getClass(), "setup");
+            if (setupFieldSavedInProtocolInstance.get(gomokuProtocol) instanceof Setup castedSetup) {
+                //noinspection ConstantConditions   // field accessed via reflection may be null    // TODO : check the reason for this warning
+                return castedSetup != null &&
+                        (partialSetupDesired ? gomokuProtocol.isPartialSetup(castedSetup) : gomokuProtocol.isFinalizedSetup(castedSetup));
+            } else {
+                throw new IllegalArgumentException("Not an instance of " + Setup.class.getCanonicalName());
+            }
+        } catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException e) {
             fail(e);
             return false;
         }
@@ -111,7 +144,7 @@ class GomokuProtocolTest {
         setCurrentProtocolStatus(currentStatus);
         switch (currentStatus) {
             case WAITING_FOR_FIRST_CLIENT_CONNECTION -> waitingForFirstClientConnection();
-            case WAITING_FOR_PARTIAL_SETUP -> setPartialSetup(new Setup(new Player("p1"), new Player("p2"), new PositiveInteger(), BoardSizes.NORMAL.getBoardSize()));
+            case WAITING_FOR_PARTIAL_SETUP -> setPartialSetup(new Setup(new Player("p1"), null, new PositiveInteger(), BoardSizes.NORMAL.getBoardSize()));
             // default -> fail(new UnsupportedOperationException("Unhandled status \"" + currentStatus + "\"")); // TODO : handle protocol status update
         }
 //        assertEquals(getNextProtocolStatusOrNullIfLast(currentStatus), getCurrentProtocolStatusOrNullIfExceptionThrown());  // TODO : handle protocol status update
