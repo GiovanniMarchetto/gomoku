@@ -16,4 +16,9 @@ public class CLIMainViewmodel extends AbstractMainViewmodel {
         }
     }
 
+    @Override
+    public void startNewGame() {
+        super.startNewGame();
+        triggerFirstMove();
+    }
 }

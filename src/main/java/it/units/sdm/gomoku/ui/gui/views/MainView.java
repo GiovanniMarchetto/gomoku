@@ -1,5 +1,6 @@
 package it.units.sdm.gomoku.ui.gui.views;
 
+import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.mvvm_library.Observer;
 import it.units.sdm.gomoku.mvvm_library.View;
 import it.units.sdm.gomoku.ui.gui.GUIMain;
@@ -10,6 +11,8 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 
 import java.beans.PropertyChangeEvent;
 import java.time.ZonedDateTime;
@@ -18,7 +21,9 @@ import java.time.format.DateTimeFormatter;
 public class MainView extends View<MainViewmodel> implements Observer {
 
     @FXML
-    public Label currentPlayerLabel;
+    private Label currentPlayerLabel;
+    @FXML
+    private Circle currentPlayerCircle;
     @FXML
     private AnchorPane mainAnchorPane;
     @FXML
@@ -29,9 +34,9 @@ public class MainView extends View<MainViewmodel> implements Observer {
     private VBox rightGridPane;
 
     @FXML
-    private Label whitePlayer;
+    private Label whitePlayerLabel;
     @FXML
-    private Label blackPlayer;
+    private Label blackPlayerLabel;
     @FXML
     private Label startTime;
 
@@ -55,8 +60,10 @@ public class MainView extends View<MainViewmodel> implements Observer {
 
         centerGridPane.getChildren().add(baseGridPane);
 
-        blackPlayer.setText(vm.getCurrentBlackPlayer().toString());
-        whitePlayer.setText(vm.getCurrentWhitePlayer().toString());
+        blackPlayerLabel.setText(vm.getCurrentBlackPlayer().toString());
+        whitePlayerLabel.setText(vm.getCurrentWhitePlayer().toString());
+        currentPlayerLabel.setText(vm.getCurrentPlayer().toString());
+        currentPlayerCircle.setFill(vm.getStoneOfCurrentPlayer() == Board.Stone.BLACK ? Color.BLACK : Color.WHITE);
 
         ZonedDateTime startZoneDateTime = vm.getGameStartTime();
         startTime.setText("Start game: \n" +
@@ -64,11 +71,19 @@ public class MainView extends View<MainViewmodel> implements Observer {
     }
 
     @Override
+    public void onViewInitialized() {
+        super.onViewInitialized();
+        getViewmodelAssociatedWithView().triggerFirstMove();
+    }
+
+    @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals(MainViewmodel.currentPlayerPropertyName)) {
             SceneController.executeOnJavaFxUiThread(() -> {
                 currentPlayerLabel.setText(evt.getNewValue().toString());
-                // pallino = getViewmodelAssociatedWithView().getStoneOfCurrentPlayer() == BLACK ? nero : bianco;
+                currentPlayerCircle.setFill(
+                        getViewmodelAssociatedWithView().getStoneOfCurrentPlayer() == Board.Stone.BLACK
+                                ? Color.BLACK : Color.WHITE);
             });
         }
     }

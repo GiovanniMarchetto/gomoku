@@ -52,9 +52,18 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
                 Player currentPlayer = (Player) evt.getNewValue();
                 Player oldValue = (Player) evt.getOldValue();
                 firePropertyChange(currentPlayerPropertyName, oldValue, currentPlayer);
-                placeStoneIfGameNotEndedAndIsCPUPlayingOrElseNotifyTheView(currentPlayer);
+                if (!isCurrentGameEnded()) {
+                    placeStoneIfCPUPlayingWithDelayOrElseNotifyTheView(currentPlayer, 0);
+                }
             }
         }
+    }
+
+    public void triggerFirstMove() {
+        if (currentGame == null) {
+            throw new NullPointerException("Cannot invoke triggerFirstMove() before starting the game (currentGame is null)");
+        }
+        placeStoneIfCPUPlayingWithDelayOrElseNotifyTheView(getCurrentPlayer(), 0);
     }
 
     public void createMatchFromSetupAndStartGame(Setup setup) {
@@ -66,7 +75,6 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
 
     public void startNewGame() {
         initializeNewGame();
-        placeStoneIfGameNotEndedAndIsCPUPlayingOrElseNotifyTheView(getCurrentPlayer());
     }
 
     public void startExtraGame() {
@@ -135,22 +143,22 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
         }
     }
 
-    protected void placeStoneIfGameNotEndedAndIsCPUPlayingOrElseNotifyTheView(Player currentPlayer) {
-        if (!isCurrentGameEnded()) {
+    private void placeStoneIfCPUPlayingWithDelayOrElseNotifyTheView(Player currentPlayer, int delayOfCpuMove) {
+        runOnSeparateThread(() -> {
             if (currentPlayer instanceof CPUPlayer cpuPlayer) {
                 try {
-                    placeStone(cpuPlayer.chooseRandomEmptyCoordinates(getCurrentBoard()));
-                } catch (Board.NoMoreEmptyPositionAvailableException |
-                        Board.PositionAlreadyOccupiedException e) {
+                    Thread.sleep(delayOfCpuMove);
+                    placeStone(cpuPlayer.chooseEmptyCoordinates(getCurrentBoard()));
+                } catch (Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException | InterruptedException e) {
                     e.printStackTrace();    // TODO : handle this
                 }
             } else {
                 firePropertyChange(userMustPlaceNewStonePropertyName, false, true); // TODO : where is the property?
             }
-        }
+        });
     }
 
-    public void forceRefireAllCells() {
+    public void forceReFireAllCells() {
         IntStream.range(0, getBoardSize())
                 .unordered().parallel()
                 .boxed()
@@ -160,14 +168,6 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
                 .map(c -> new Board.ChangedCell(c, getStoneAtCoordinatesInCurrentBoard(c), currentBoard))
                 .forEach(c -> firePropertyChange(Board.boardMatrixPropertyName, c));
     }
-
-//    private void placeStoneWithDelayIfIsCpu(final long delay) {
-// TODO : viewmodel should run on separate thread (not the same of gui)
-//
-// Here we want a Thread.sleep(200) so we can see how the game evolves when CPU vs CPU (otherwise it is instantaneous)
-// but this would block the GUI. At the same time, scheduling this task with a time may break the logic
-// The solution might be to put the entire method placeStone in another thread
-//    }
 
     public int getBoardSize() {
         try {

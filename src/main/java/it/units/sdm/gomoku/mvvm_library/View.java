@@ -12,4 +12,7 @@ public abstract class View<T extends Viewmodel> implements Observable {  // TODO
     public T getViewmodelAssociatedWithView() {
         return viewmodelAssociatedWithView;
     }
+
+    public void onViewInitialized() {
+    }
 }

@@ -1,9 +1,15 @@
 package it.units.sdm.gomoku.ui.gui;
 
+import it.units.sdm.gomoku.mvvm_library.View;
+import javafx.animation.FadeTransition;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
 
@@ -38,13 +44,19 @@ public class SceneController {
                     return new AbstractMap.SimpleEntry<>(name, getClass().getResource(fxmlFilePath));
                 })
                 .map(viewEntry -> {
-                    ViewName view = viewEntry.getKey();
-                    return new AbstractMap.SimpleEntry<ViewName, Supplier<Scene>>(view, () -> {
+                    ViewName viewName = viewEntry.getKey();
+                    return new AbstractMap.SimpleEntry<ViewName, Supplier<Scene>>(viewName, () -> {
                         try {
                             FXMLLoader fxmlLoader = new FXMLLoader(viewEntry.getValue());
                             sceneWidth = sceneWidth != 0 ? stage.getScene().getWidth() : initialSceneWidth;
                             sceneHeight = sceneHeight != 0 ? stage.getScene().getHeight() : initialSceneHeight;
-                            return new Scene(fxmlLoader.load(), sceneWidth, sceneHeight);
+                            StackPane parentPane = new StackPane();
+                            parentPane.getChildren().add(fxmlLoader.load());
+                            var scene = new Scene(parentPane, sceneWidth, sceneHeight);
+                            if (fxmlLoader.getController() instanceof View view) {
+                                view.onViewInitialized();
+                            }
+                            return scene;
                         } catch (IOException e) {
                             Logger.getLogger(getClass().getCanonicalName())
                                     .severe("I/O Exception in " + getClass().getCanonicalName() +
@@ -61,7 +73,7 @@ public class SceneController {
         stage.setTitle(Objects.requireNonNull(firstStageTitle));
         stage.setMinWidth(stageMinWidth);
         stage.setMinHeight(stageMinHeight);
-        passToNewScene_(ViewName.START_VIEW);
+        passToNewScene(ViewName.START_VIEW);
         singleInstance = this;
     }
 
@@ -98,7 +110,12 @@ public class SceneController {
 
     public static void passToNewSceneIfIsGUIRunningOrDoNothing(@NotNull final SceneController.ViewName viewEnum) {
         if (!isJavaFxRunning()) return;
-        getInstance().passToNewScene_(Objects.requireNonNull(viewEnum));
+        getInstance().passToNewScene(Objects.requireNonNull(viewEnum));
+    }
+
+    public static void fadeOutSceneIfIsGUIRunningOrDoNothing(@NotNull final SceneController.ViewName viewEnum, final int fadeDurationMillis) {
+        if (!isJavaFxRunning()) return;
+        getInstance().fadeToNewScene(Objects.requireNonNull(viewEnum), fadeDurationMillis);
     }
 
     public static boolean isJavaFxRunning() {
@@ -126,9 +143,38 @@ public class SceneController {
         }
     }
 
-    private void passToNewScene_(@NotNull final SceneController.ViewName viewEnum) {
+    private void passToNewScene(@NotNull final SceneController.ViewName viewEnum) {
         executeOnJavaFxUiThread(() -> stage.setScene(scenes.get(Objects.requireNonNull(viewEnum)).get()));
     }
+
+    private void fadeToNewScene(@NotNull final SceneController.ViewName viewEnum, int fadeDurationMillis) {
+        Scene oldScene = stage.getScene();
+        if (oldScene != null) {
+            executeOnJavaFxUiThread(() -> {
+
+                StackPane oldRoot = (StackPane) oldScene.getRoot();
+                ObservableList<Node> children = oldRoot.getChildren();
+                Node lastChildOfOldRoot = children.get(children.size() - 1);
+
+                Scene newScene = scenes.get(Objects.requireNonNull(viewEnum)).get();
+                StackPane newRoot = (StackPane) newScene.getRoot();
+                Node firstChildOfNewRoot = newRoot.getChildren().remove(0);
+
+                FadeTransition fadeInTransition = new FadeTransition(Duration.millis(fadeDurationMillis), firstChildOfNewRoot);
+                fadeInTransition.setFromValue(0.0);
+                fadeInTransition.setToValue(1.0);
+                fadeInTransition.play();
+
+                newRoot.getChildren().add(0, lastChildOfOldRoot);
+                newRoot.getChildren().add(1, firstChildOfNewRoot);
+
+                stage.setScene(newScene);
+            });
+        } else {
+            passToNewScene(viewEnum);
+        }
+    }
+
 
     public enum ViewName {
         START_VIEW,

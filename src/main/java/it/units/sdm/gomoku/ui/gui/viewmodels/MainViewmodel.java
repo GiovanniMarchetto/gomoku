@@ -8,7 +8,7 @@ public class MainViewmodel extends AbstractMainViewmodel {
     @Override
     public void endGame() {
         super.endGame();
-        SceneController.passToNewSceneIfIsGUIRunningOrDoNothing(SceneController.ViewName.SUMMARY_VIEW);
+        SceneController.fadeOutSceneIfIsGUIRunningOrDoNothing(SceneController.ViewName.SUMMARY_VIEW, 1500);
     }
 
     @Override
