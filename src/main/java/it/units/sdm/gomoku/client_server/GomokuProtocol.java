@@ -2,12 +2,14 @@ package it.units.sdm.gomoku.client_server;
 
 import it.units.sdm.gomoku.client_server.interfaces.Protocol;
 import it.units.sdm.gomoku.client_server.server.GomokuServer;
+import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.ui.support.Setup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
 import java.net.Socket;
@@ -26,6 +28,7 @@ public class GomokuProtocol implements Protocol {
     private static Logger loggerOfThisClass = Logger.getLogger(GomokuProtocol.class.getCanonicalName());
     private volatile Socket client1Socket;   // field filled with reflection
     private volatile Socket client2Socket;   // field filled with reflection
+    private volatile Socket currentClientPlayerSocket = null;   // TODO : may be set as constructor parameter
     private Setup setup;
 
     @Override
@@ -37,8 +40,34 @@ public class GomokuProtocol implements Protocol {
             case WAITING_FOR_SECOND_CLIENT_CONNECTION -> waitingForSecondClientConnection(input);
             case WAITING_FOR_COMPLETING_SETUP -> finalizeSetup(input);
             case SENDING_CURRENT_STATUS -> sendCurrentBoardReceivedAsArgumentsToClients(input);
+            case WAITING_FOR_MOVE_OF_A_CLIENT -> waitingForMoveOfAClientAndGet(input);
             default -> throw new IllegalStateException("Unexpected value: " + currentStatus);
         };
+    }
+
+    synchronized public Object waitingForMoveOfAClientAndGet(Object ignored) throws IOException {
+        // TODO : to be tested
+        currentClientPlayerSocket = currentClientPlayerSocket == null ? client1Socket : client2Socket;
+        ObjectInputStream ois = new ObjectInputStream(currentClientPlayerSocket.getInputStream());
+        try {
+            if (ois.readObject() instanceof Coordinates insertedCoord) {
+                // TODO : send the just read move to the model
+                currentClientPlayerSocket = currentClientPlayerSocket == client1Socket ? client2Socket : client1Socket;
+            }
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();    // TODO : handle this exception
+        }
+        if (isGameEnded()) { // TODO : behaviour to be tested
+            currentStatus = Status.SENDING_SUMMARY;
+        } else {
+            currentStatus = Status.SENDING_CURRENT_STATUS;
+        }
+        return null;
+    }
+
+    private boolean isGameEnded() {
+        // TODO : ask to the model if the game is ended
+        return true;
     }
 
     public Object sendCurrentBoardReceivedAsArgumentsToClients(Object input) throws IOException {
@@ -58,8 +87,9 @@ public class GomokuProtocol implements Protocol {
             if (eventuallyThrownException.get() != null) {
                 throw eventuallyThrownException.get();
             }
+            currentStatus = Status.WAITING_FOR_MOVE_OF_A_CLIENT;
         } else {
-            throw new IllegalArgumentException(
+            throw new IllegalArgumentException(// TODO : refactor needed (this is present almost in all methods)
                     "Expected " + Board.class.getCanonicalName() +
                             " as input parameter but received " + input.getClass());
         }
@@ -177,7 +207,9 @@ public class GomokuProtocol implements Protocol {
         WAITING_FOR_PARTIAL_SETUP,
         WAITING_FOR_SECOND_CLIENT_CONNECTION,
         WAITING_FOR_COMPLETING_SETUP,
-        SENDING_CURRENT_STATUS          // TODO: change to more significant status name
+        SENDING_CURRENT_STATUS,          // TODO: change to more significant status name
+        WAITING_FOR_MOVE_OF_A_CLIENT,
+        SENDING_SUMMARY
     }
 
 }
