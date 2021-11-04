@@ -42,6 +42,7 @@ public class EchoClient implements Client {    // TODO : to be tested
                         new ObjectInputStream(socketToServer.getInputStream())
         ) {
             out.writeObject(toSendToServer);
+            out.flush();
             String fromServer = String.valueOf(in.readObject());
             outputPrintStream.print(fromServer);
         } catch (IOException | ClassNotFoundException e) {
