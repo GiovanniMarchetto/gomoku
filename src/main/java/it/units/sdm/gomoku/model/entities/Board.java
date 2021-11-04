@@ -6,6 +6,7 @@ import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.mvvm_library.Observable;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.stream.Stream;
 
 import static it.units.sdm.gomoku.model.custom_types.PositiveInteger.PositiveIntegerType;
 
-public class Board implements Observable, Cloneable {
+public class Board implements Observable, Cloneable, Serializable {
 
     public static final String boardMatrixPropertyName = "matrix";
     public static final String oldCellBoardMatrixPropertyName = "oldCell";

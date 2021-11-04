@@ -1,8 +1,12 @@
 package it.units.sdm.gomoku.client_server;
 
+import it.units.sdm.gomoku.EnvVariables;
+import it.units.sdm.gomoku.client_server.fake_objects.ConsumerClient;
 import it.units.sdm.gomoku.client_server.fake_objects.SimpleClient;
 import it.units.sdm.gomoku.client_server.server.GomokuServer;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
+import it.units.sdm.gomoku.model.entities.Board;
+import it.units.sdm.gomoku.model.entities.CPUPlayer;
 import it.units.sdm.gomoku.model.entities.Player;
 import it.units.sdm.gomoku.ui.support.BoardSizes;
 import it.units.sdm.gomoku.ui.support.Setup;
@@ -17,12 +21,14 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -61,13 +67,30 @@ class GomokuProtocolTest {
         return Arrays.stream(Status.values()).map(Arguments::of);
     }
 
+    public static Stream<Arguments> boardSupplier() {
+        final int NUMBER_OF_ARGUMENTS = 100;
+        return IntStream.range(0, NUMBER_OF_ARGUMENTS)
+                .mapToObj(j -> {
+                    Board board = new Board(EnvVariables.BOARD_SIZE);
+                    CPUPlayer cpuPlayer = new CPUPlayer();
+                    final int MAX_NUMBER_OF_STONE_TO_PLACE_ON_THE_BOARD = 10;
+                    for (int i = 0; i < MAX_NUMBER_OF_STONE_TO_PLACE_ON_THE_BOARD; i++) {
+                        try {
+                            cpuPlayer.chooseRandomEmptyCoordinates(board);
+                        } catch (Board.NoMoreEmptyPositionAvailableException ignored) {
+                        }
+                    }
+                    return board;
+                })
+                .map(Arguments::of);
+    }
+
     @BeforeEach
     void setUp() {
         currentStatus = Status.values()[0];
         gomokuProtocol = new GomokuProtocol();
         try {
             gomokuServer = new GomokuServer();
-
         } catch (IOException e) {
             fail(e);
         }
@@ -87,6 +110,64 @@ class GomokuProtocolTest {
     void waitingForSecondClientConnection() {
         waitingForFirstClientConnection();  // simulate the previous Status
         assertCorrectNumberOfClientsConnectedInGivenProtocolState(2, Status.WAITING_FOR_SECOND_CLIENT_CONNECTION);
+    }
+
+    @ParameterizedTest
+    @MethodSource("boardSupplier")
+    void sendCurrentGameStatusToUsersWhenInTheCorrectStatus(Board board) {
+        // TODO : refactor needed
+        AtomicReference<Exception> eventuallyThrownException = new AtomicReference<>();
+        final int FAKE_SERVER_PORT = 20000;
+        try (ServerSocket fakeServerAccepting2Clients = new ServerSocket(FAKE_SERVER_PORT);) {
+            Thread fakeServerThread = new Thread(() -> {
+                for (int numberOfAcceptedClients = 0; numberOfAcceptedClients < 2; numberOfAcceptedClients++) {
+                    try {
+                        getFieldAlreadyMadeAccessible(gomokuProtocol.getClass(),
+                                "client" + (numberOfAcceptedClients + 1) + "Socket")
+                                .set(gomokuProtocol, fakeServerAccepting2Clients.accept());
+                    } catch (IOException | NoSuchFieldException | IllegalAccessException e) {
+                        eventuallyThrownException.set(e);
+                        return;
+                    }
+                }
+                setCurrentProtocolStatus(Status.SENDING_CURRENT_STATUS);
+                try {
+                    gomokuProtocol.processInput(board);
+                } catch (IOException e) {
+                    eventuallyThrownException.set(e);
+                    return;
+                }
+            });
+            fakeServerThread.start();
+            ConsumerClient c1 = new ConsumerClient(FAKE_SERVER_PORT);
+            ConsumerClient c2 = new ConsumerClient(FAKE_SERVER_PORT);
+
+            Thread t1 = new Thread(c1);
+            Thread t2 = new Thread(c2);
+
+            t1.start();
+            t2.start();
+
+            t1.join();
+            t2.join();
+
+            fakeServerThread.join();
+
+            Arrays.stream(new Object[]{c1.getReceivedFromServer(), c2.getReceivedFromServer()})
+                    .forEach(whatAClientReceived -> {
+                        if (whatAClientReceived instanceof Board boardReceivedByAClient) {
+                            assertEquals(board, boardReceivedByAClient);
+                        } else {
+                            fail(new IllegalArgumentException("Received object is not an instance of class " +
+                                    board.getClass().getCanonicalName()));
+                        }
+                    });
+            if (eventuallyThrownException.get() != null) {
+                fail(eventuallyThrownException.get());
+            }
+        } catch (Exception e) {
+            fail(e);
+        }
     }
 
     @ParameterizedTest
