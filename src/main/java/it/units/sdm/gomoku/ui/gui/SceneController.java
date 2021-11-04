@@ -1,10 +1,15 @@
 package it.units.sdm.gomoku.ui.gui;
 
 import it.units.sdm.gomoku.mvvm_library.View;
+import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
 
@@ -45,7 +50,9 @@ public class SceneController {
                             FXMLLoader fxmlLoader = new FXMLLoader(viewEntry.getValue());
                             sceneWidth = sceneWidth != 0 ? stage.getScene().getWidth() : initialSceneWidth;
                             sceneHeight = sceneHeight != 0 ? stage.getScene().getHeight() : initialSceneHeight;
-                            var scene = new Scene(fxmlLoader.load(), sceneWidth, sceneHeight);
+                            StackPane parentPane = new StackPane();
+                            parentPane.getChildren().add(fxmlLoader.load());
+                            var scene = new Scene(parentPane, sceneWidth, sceneHeight);
                             if (fxmlLoader.getController() instanceof View view) {
                                 view.onViewInitialized();
                             }
@@ -66,7 +73,7 @@ public class SceneController {
         stage.setTitle(Objects.requireNonNull(firstStageTitle));
         stage.setMinWidth(stageMinWidth);
         stage.setMinHeight(stageMinHeight);
-        passToNewScene_(ViewName.START_VIEW);
+        passToNewScene(ViewName.START_VIEW);
         singleInstance = this;
     }
 
@@ -103,7 +110,12 @@ public class SceneController {
 
     public static void passToNewSceneIfIsGUIRunningOrDoNothing(@NotNull final SceneController.ViewName viewEnum) {
         if (!isJavaFxRunning()) return;
-        getInstance().passToNewScene_(Objects.requireNonNull(viewEnum));
+        getInstance().passToNewScene(Objects.requireNonNull(viewEnum));
+    }
+
+    public static void fadeOutSceneIfIsGUIRunningOrDoNothing(@NotNull final SceneController.ViewName viewEnum, @NotNull final int fadeDurationMillis) {
+        if (!isJavaFxRunning()) return;
+        getInstance().fadeToNewScene(Objects.requireNonNull(viewEnum), fadeDurationMillis);
     }
 
     public static boolean isJavaFxRunning() {
@@ -131,9 +143,29 @@ public class SceneController {
         }
     }
 
-    private void passToNewScene_(@NotNull final SceneController.ViewName viewEnum) {
+    private void passToNewScene(@NotNull final SceneController.ViewName viewEnum) {
         executeOnJavaFxUiThread(() -> stage.setScene(scenes.get(Objects.requireNonNull(viewEnum)).get()));
     }
+
+    private void fadeToNewScene(@NotNull final SceneController.ViewName viewEnum, int fadeDurationMillis) {
+        executeOnJavaFxUiThread(() -> {
+
+            Scene oldScene = stage.getScene();
+            StackPane oldRoot = (StackPane) oldScene.getRoot();
+
+            Scene newScene = scenes.get(Objects.requireNonNull(viewEnum)).get();
+            Node firstChild = ((Pane) newScene.getRoot()).getChildren().get(0);
+
+            FadeTransition fadeInTransition = new FadeTransition(Duration.millis(fadeDurationMillis), firstChild);
+            fadeInTransition.setFromValue(0.0);
+            fadeInTransition.setToValue(1.0);
+            fadeInTransition.play();
+
+            oldRoot.getChildren().add(firstChild);
+//            stage.setScene(oldScene);
+        });
+    }
+
 
     public enum ViewName {
         START_VIEW,
