@@ -2,6 +2,7 @@ package it.units.sdm.gomoku.ui.gui.views;
 
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.Board;
+import it.units.sdm.gomoku.model.entities.Stone;
 import it.units.sdm.gomoku.mvvm_library.Observer;
 import it.units.sdm.gomoku.ui.gui.viewmodels.MainViewmodel;
 import javafx.application.Platform;
@@ -23,7 +24,7 @@ public class GomokuCell implements Observer {
     private final Coordinates coordinates;
     private double radius;
 
-    private Board.Stone stone;
+    private Stone stone;
 
     private Rectangle rectangle;
     private Line lineH;
@@ -78,11 +79,11 @@ public class GomokuCell implements Observer {
         return group;
     }
 
-    private void setStone(Board.Stone stone) {
+    private void setStone(Stone stone) {
         this.stone = stone;
         if (!stone.isNone()) {
             circle.setOpacity(1);
-            circle.setFill(stone == Board.Stone.BLACK ? Color.BLACK : Color.WHITE);
+            circle.setFill(stone == Stone.BLACK ? Color.BLACK : Color.WHITE);
         } else {
             circle.setOpacity(0);
             circle.setFill(Color.AQUAMARINE);
@@ -163,7 +164,7 @@ public class GomokuCell implements Observer {
 
     private void initializeCircle() {
         circle = new Circle(getRadius());
-        setStone(Board.Stone.NONE);
+        setStone(Stone.NONE);
         group.getChildren().add(circle);
     }
 

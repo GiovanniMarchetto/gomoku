@@ -56,11 +56,11 @@ public class Board implements Observable, Cloneable, Serializable {
         }
         return Stream.of(rowToList(coords), columnToList(coords), fwdDiagonalToList(coords), bckDiagonalToList(coords))
                 .unordered().parallel()
-                .anyMatch(stones -> Stone.listContainsNConsecutiveStones(stones, N, stone));
+                .anyMatch(stones -> Stone.isListContainingChainOfNStones(stones, N, stone));
     }
 
     @NotNull
-    public Board.Stone getStoneAtCoordinates(@NotNull final Coordinates coordinates) {
+    public Stone getStoneAtCoordinates(@NotNull final Coordinates coordinates) {
         if (isCoordinatesInsideBoard(Objects.requireNonNull(coordinates))) {
             return matrix[coordinates.getX()][coordinates.getY()];
         } else {
@@ -97,7 +97,7 @@ public class Board implements Observable, Cloneable, Serializable {
         return numberOfFilledPositionOnTheBoard.intValue() < Math.pow(size.intValue(), 2);
     }
 
-    public synchronized void occupyPosition(@NotNull Board.Stone stone, @NotNull Coordinates coordinates)
+    public synchronized void occupyPosition(@NotNull Stone stone, @NotNull Coordinates coordinates)
             throws NoMoreEmptyPositionAvailableException, PositionAlreadyOccupiedException {
         if (isAnyEmptyPositionOnTheBoard()) {
             if (isCoordinatesEmpty(Objects.requireNonNull(coordinates))) {
@@ -223,34 +223,6 @@ public class Board implements Observable, Cloneable, Serializable {
     @NotNull
     private List<Stone> rowToList(@NotNull final Coordinates coords) {
         return new ArrayList<>(Arrays.asList(matrix[Objects.requireNonNull(coords).getX()]));
-    }
-
-    public enum Stone {
-        NONE,
-        BLACK,
-        WHITE;
-
-        private static boolean listContainsNConsecutiveStones(
-                @NotNull final List<@NotNull Stone> list,
-                NonNegativeInteger N, @NotNull final Board.Stone stone) {
-
-            int n = N.intValue();
-
-            if (list.size() < n)
-                return false;
-
-            return IntStream.range(0, list.size() - n + 1)
-                    .unordered()
-                    .map(x -> list.subList(x, x + n)
-                            .stream()
-                            .mapToInt(y -> y == stone ? 1 : 0/*type conversion*/)
-                            .sum())
-                    .anyMatch(aSum -> aSum >= n);
-        }
-
-        public boolean isNone() {
-            return this == NONE;
-        }
     }
 
     public static class NoMoreEmptyPositionAvailableException extends Exception {

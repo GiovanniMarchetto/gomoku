@@ -1,7 +1,7 @@
 package it.units.sdm.gomoku.utils.test;
 
 import it.units.sdm.gomoku.EnvVariables;
-import it.units.sdm.gomoku.model.entities.Board;
+import it.units.sdm.gomoku.model.entities.Stone;
 import it.units.sdm.gomoku.utils.IOUtility;
 import it.units.sdm.gomoku.utils.Predicates;
 import it.units.sdm.gomoku.utils.TestUtility;
@@ -38,7 +38,7 @@ class TestIOUtilityTest {
     @Test
     void readBoardStoneFromCSVFile_testIfMatrixOfCorrectSizeWasRead() {
         final int SIZE = 19;
-        Board.Stone[][] board = TestUtility.readBoardStoneFromCSVFile(EnvVariables.BOARD_19X19_PROVIDER_RESOURCE_LOCATION);
+        Stone[][] board = TestUtility.readBoardStoneFromCSVFile(EnvVariables.BOARD_19X19_PROVIDER_RESOURCE_LOCATION);
         Assertions.assertTrue(Predicates.isSquareMatrixOfGivenSize.test(board, SIZE));
     }
 

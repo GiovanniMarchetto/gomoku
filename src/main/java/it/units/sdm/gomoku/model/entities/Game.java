@@ -63,8 +63,8 @@ public class Game implements Comparable<Game>, Observable {
     }
 
     @NotNull
-    public Board.Stone getStoneOfPlayer(@NotNull final Player player) {
-        return player.equals(blackPlayer) ? Board.Stone.BLACK : Board.Stone.WHITE;
+    public Stone getStoneOfPlayer(@NotNull final Player player) {
+        return player.equals(blackPlayer) ? Stone.BLACK : Stone.WHITE;
     }
 
     public void placeNextStone(@NotNull final Coordinates coordinates)

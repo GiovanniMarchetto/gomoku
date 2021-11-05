@@ -25,12 +25,12 @@ class GameTest {
         return readBoardsWithWinCoordsAndResultsFromCSV(EnvVariables.END_GAMES);
     }
 
-    private void setGameFromCsv(Game voidGame, Board.Stone[][] boardStone) {
+    private void setGameFromCsv(Game voidGame, Stone[][] boardStone) {
         for (int x = 0; x < boardStone.length; x++) {
             for (int y = 0; y < boardStone.length; y++) {
                 if (!boardStone[x][y].isNone()) {
                     Player playerFoundInBoard;
-                    if (boardStone[x][y] == Board.Stone.BLACK) {
+                    if (boardStone[x][y] == Stone.BLACK) {
                         playerFoundInBoard = cpuBlack;
                     } else {
                         playerFoundInBoard = cpuWhite;
@@ -49,7 +49,7 @@ class GameTest {
 
     @ParameterizedTest
     @MethodSource("readBoardsWithWinCoordsAndResultsFromSampleCSV")
-    void placeStone(Board.Stone[][] matrix, Coordinates coordinates, boolean finishedGame) throws NoSuchFieldException, IllegalAccessException {
+    void placeStone(Stone[][] matrix, Coordinates coordinates, boolean finishedGame) throws NoSuchFieldException, IllegalAccessException {
         game = new Game(matrix.length, cpuBlack, cpuWhite);
         setGameFromCsv(game, matrix);
 
@@ -74,7 +74,7 @@ class GameTest {
 
     @ParameterizedTest
     @MethodSource("readBoardsWithWinCoordsAndResultsFromSampleCSV")
-    void getWinner(Board.Stone[][] matrix, Coordinates coordinates, boolean finishedGame) {
+    void getWinner(Stone[][] matrix, Coordinates coordinates, boolean finishedGame) {
         game = new Game(matrix.length, cpuBlack, cpuWhite);
         setGameFromCsv(game, matrix);
         try {
@@ -91,7 +91,7 @@ class GameTest {
 
     @ParameterizedTest
     @MethodSource("readBoardsWithWinCoordsAndResultsFromSampleCSV")
-    void isThisGameEnded(Board.Stone[][] matrix, Coordinates ignoredC, boolean ignoredB, boolean finishedGame) {
+    void isThisGameEnded(Stone[][] matrix, Coordinates ignoredC, boolean ignoredB, boolean finishedGame) {
         game = new Game(matrix.length, cpuBlack, cpuWhite);
         setGameFromCsv(game, matrix);
         assertEquals(finishedGame, game.isThisGameEnded());

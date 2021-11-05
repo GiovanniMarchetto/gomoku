@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static it.units.sdm.gomoku.model.entities.Board.NoMoreEmptyPositionAvailableException;
-import static it.units.sdm.gomoku.model.entities.Board.Stone;
 
 public class CPUPlayer extends Player {
 

@@ -199,7 +199,7 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
         return Objects.requireNonNull(currentGame).getCurrentPlayer();
     }
 
-    public Board.Stone getStoneOfCurrentPlayer() {
+    public Stone getStoneOfCurrentPlayer() {
         return Objects.requireNonNull(currentGame).getStoneOfPlayer(getCurrentPlayer());
     }
 
@@ -211,7 +211,7 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
         return Objects.requireNonNull(match).getCurrentWhitePlayer();
     }
 
-    public Board.Stone getStoneAtCoordinatesInCurrentBoard(Coordinates coordinates) {
+    public Stone getStoneAtCoordinatesInCurrentBoard(Coordinates coordinates) {
         return Objects.requireNonNull(currentBoard).getStoneAtCoordinates(coordinates);
     }
 

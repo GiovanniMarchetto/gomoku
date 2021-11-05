@@ -1,6 +1,6 @@
 package it.units.sdm.gomoku.ui.gui.views;
 
-import it.units.sdm.gomoku.model.entities.Board;
+import it.units.sdm.gomoku.model.entities.Stone;
 import it.units.sdm.gomoku.mvvm_library.Observer;
 import it.units.sdm.gomoku.mvvm_library.View;
 import it.units.sdm.gomoku.ui.gui.GUIMain;
@@ -63,7 +63,7 @@ public class MainView extends View<MainViewmodel> implements Observer {
         blackPlayerLabel.setText(vm.getCurrentBlackPlayer().toString());
         whitePlayerLabel.setText(vm.getCurrentWhitePlayer().toString());
         currentPlayerLabel.setText(vm.getCurrentPlayer().toString());
-        currentPlayerCircle.setFill(vm.getStoneOfCurrentPlayer() == Board.Stone.BLACK ? Color.BLACK : Color.WHITE);
+        currentPlayerCircle.setFill(vm.getStoneOfCurrentPlayer() == Stone.BLACK ? Color.BLACK : Color.WHITE);
 
         ZonedDateTime startZoneDateTime = vm.getGameStartTime();
         startTime.setText("Start game: \n" +
@@ -82,7 +82,7 @@ public class MainView extends View<MainViewmodel> implements Observer {
             SceneController.executeOnJavaFxUiThread(() -> {
                 currentPlayerLabel.setText(evt.getNewValue().toString());
                 currentPlayerCircle.setFill(
-                        getViewmodelAssociatedWithView().getStoneOfCurrentPlayer() == Board.Stone.BLACK
+                        getViewmodelAssociatedWithView().getStoneOfCurrentPlayer() == Stone.BLACK
                                 ? Color.BLACK : Color.WHITE);
             });
         }
