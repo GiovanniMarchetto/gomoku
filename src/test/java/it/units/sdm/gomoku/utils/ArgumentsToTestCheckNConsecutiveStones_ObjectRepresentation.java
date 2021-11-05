@@ -1,8 +1,7 @@
-package it.units.sdm.gomoku.model.entities.board;
+package it.units.sdm.gomoku.utils;
 
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.Stone;
-import it.units.sdm.gomoku.utils.Predicates;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
