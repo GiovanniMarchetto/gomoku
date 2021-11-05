@@ -24,19 +24,20 @@ public class Board implements Observable, Cloneable, Serializable {
     @NotNull
     private final PositiveInteger size;
     @NotNull
-    private final Stone[][] matrix;
+    private final List<Coordinates> coordinatesHistory;
     @NotNull
-    private final NonNegativeInteger numberOfFilledPositionOnTheBoard;
+    private final Stone[][] matrix;
+
 
     public Board(@NotNull PositiveInteger size) {
         this.size = size;
+        coordinatesHistory = new ArrayList<>(size.intValue());
         this.matrix = IntStream.range(0, size.intValue())
                 .unordered().parallel()
                 .mapToObj(a -> IntStream.range(0, size.intValue())
                         .mapToObj(x -> Stone.NONE)
                         .toArray(Stone[]::new))
                 .toArray(Stone[][]::new);
-        this.numberOfFilledPositionOnTheBoard = new NonNegativeInteger(0);
     }
 
     public Board(@PositiveIntegerType int size) {
@@ -45,8 +46,8 @@ public class Board implements Observable, Cloneable, Serializable {
 
     public Board(@NotNull Board board) {
         this.size = new PositiveInteger(board.size);
+        this.coordinatesHistory = new ArrayList<>(board.coordinatesHistory);
         this.matrix = board.getBoardMatrixCopy();
-        this.numberOfFilledPositionOnTheBoard = new NonNegativeInteger(board.numberOfFilledPositionOnTheBoard);
     }
 
     public boolean isCoordinatesBelongingToChainOfNStones(@NotNull final Coordinates coords, NonNegativeInteger N) {
@@ -90,11 +91,11 @@ public class Board implements Observable, Cloneable, Serializable {
     }
 
     public boolean isEmpty() {
-        return numberOfFilledPositionOnTheBoard.intValue() == 0;
+        return coordinatesHistory.size() == 0;
     }
 
     public synchronized boolean isAnyEmptyPositionOnTheBoard() {
-        return numberOfFilledPositionOnTheBoard.intValue() < Math.pow(size.intValue(), 2);
+        return coordinatesHistory.size() < Math.pow(size.intValue(), 2);
     }
 
     public synchronized void occupyPosition(@NotNull Stone stone, @NotNull Coordinates coordinates)
@@ -102,7 +103,7 @@ public class Board implements Observable, Cloneable, Serializable {
         if (isAnyEmptyPositionOnTheBoard()) {
             if (isCoordinatesEmpty(Objects.requireNonNull(coordinates))) {
                 setStoneAtCoordinates(coordinates, Objects.requireNonNull(stone));
-                numberOfFilledPositionOnTheBoard.incrementAndGet();
+                coordinatesHistory.add(coordinates);
                 firePropertyChange(boardMatrixPropertyName, new ChangedCell(coordinates, stone, this));
             } else {
                 throw new PositionAlreadyOccupiedException(coordinates);
@@ -134,7 +135,7 @@ public class Board implements Observable, Cloneable, Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         Board otherBoard = (Board) o;
         return size.equals(otherBoard.size)
-                && numberOfFilledPositionOnTheBoard.equals(otherBoard.numberOfFilledPositionOnTheBoard)
+                && coordinatesHistory.size() == otherBoard.coordinatesHistory.size()
                 && Arrays.deepEquals(matrix, otherBoard.matrix);
     }
 
