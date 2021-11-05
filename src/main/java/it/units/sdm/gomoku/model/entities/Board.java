@@ -69,6 +69,11 @@ public class Board implements Observable, Cloneable, Serializable {
         }
     }
 
+    @NotNull
+    public List<Coordinates> getCoordinatesHistory() {
+        return coordinatesHistory;
+    }
+
     public Stone[][] getBoardMatrix() {
         return matrix;
     }
@@ -104,7 +109,7 @@ public class Board implements Observable, Cloneable, Serializable {
             if (isCoordinatesEmpty(Objects.requireNonNull(coordinates))) {
                 setStoneAtCoordinates(coordinates, Objects.requireNonNull(stone));
                 coordinatesHistory.add(coordinates);
-                firePropertyChange(boardMatrixPropertyName, new ChangedCell(coordinates, stone, this));
+                firePropertyChange(boardMatrixPropertyName, this);
             } else {
                 throw new PositionAlreadyOccupiedException(coordinates);
             }
