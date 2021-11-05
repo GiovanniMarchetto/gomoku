@@ -191,40 +191,25 @@ public class Board implements Observable, Cloneable, Serializable {
     @Override
     public String toString() {
         int lengthOfSize = String.valueOf(size).length();
-        String spacesToCompensateDigits = IntStream.range(0, lengthOfSize)
-                .mapToObj(n -> " ").collect(Collectors.joining());
-        String spacesIndexColumns = ((size.intValue() < 11) ? "   " : "  ");
 
-        return spacesIndexColumns +
-                spacesToCompensateDigits +
+        return String.format("  %s%" + lengthOfSize + "s", size.intValue() < 11 ? " " : "", "") +
                 IntStream.range(0, size.intValue())
                         .mapToObj(col ->
-                                getSpacesForEveryCharOfSizeMoreThanInt(col)
-                                        + col
-                                        + "  "
+                                String.format("%" + lengthOfSize + "d  ", col)
                         ).collect(Collectors.joining()) +
-                "\n" +
-                IntStream.range(0, size.intValue()).mapToObj(row -> "" +
-                        getSpacesForEveryCharOfSizeMoreThanInt(row)
-                        + row
-                        + "| "
-                        + IntStream.range(0, size.intValue()).mapToObj(col -> " " +
-                                switch (matrix[row][col]) {
-                                    case BLACK -> "X";
-                                    case WHITE -> "O";
-                                    default -> " ";
-                                }
-                                + spacesToCompensateDigits)
-                        .collect(Collectors.joining())
-                        + "\n"
+                System.lineSeparator() +
+                IntStream.range(0, size.intValue()).mapToObj(row ->
+                        String.format("%" + lengthOfSize + "d| ", row)
+                                + IntStream.range(0, size.intValue()).mapToObj(col -> " " +
+                                        switch (matrix[row][col]) {
+                                            case BLACK -> "X";
+                                            case WHITE -> "O";
+                                            default -> " ";
+                                        }
+                                        + String.format("%" + lengthOfSize + "s", ""))
+                                .collect(Collectors.joining())
+                                + System.lineSeparator()
                 ).collect(Collectors.joining());
-    }
-
-    @NotNull
-    private String getSpacesForEveryCharOfSizeMoreThanInt(int number) {
-        int lengthOfSize = String.valueOf(size).length();
-        return IntStream.range(0, lengthOfSize - String.valueOf(number).length())
-                .mapToObj(n -> " ").collect(Collectors.joining());
     }
 
     public static class NoMoreEmptyPositionAvailableException extends Exception {
