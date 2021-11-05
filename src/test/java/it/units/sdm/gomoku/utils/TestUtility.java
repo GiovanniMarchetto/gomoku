@@ -5,6 +5,7 @@ import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.entities.Stone;
+import it.units.sdm.gomoku.model.entities.board.BoardTest;
 import it.units.sdm.gomoku.ui.support.GamePlayElements;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -27,13 +28,6 @@ import static it.units.sdm.gomoku.utils.Predicates.isNonEmptyString;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class TestUtility {
-
-    public static final Stone[][] boardStoneFromCsv = TestUtility.readBoardStoneFromCSVFile(EnvVariables.BOARD_19X19_PROVIDER_RESOURCE_LOCATION);
-
-    @NotNull
-    public static Board createBoardWithCsvBoardStone() {
-        return createBoardFromBoardStone(boardStoneFromCsv, EnvVariables.BOARD_SIZE);
-    }
 
     @NotNull
     public static Board createBoardFromBoardStone(Stone[][] boardStone, PositiveInteger boardSize) {

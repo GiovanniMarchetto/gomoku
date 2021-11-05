@@ -3,7 +3,6 @@ package it.units.sdm.gomoku.model.entities.board;
 import it.units.sdm.gomoku.EnvVariables;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
-import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.entities.Stone;
 import it.units.sdm.gomoku.utils.TestUtility;
@@ -25,11 +24,13 @@ import java.util.function.BiFunction;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static it.units.sdm.gomoku.model.custom_types.PositiveInteger.*;
+import static it.units.sdm.gomoku.model.custom_types.PositiveInteger.PositiveIntegerType;
 import static it.units.sdm.gomoku.utils.TestUtility.getStreamOfGamePlayElements;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class BoardTest {
+
+    public static final Stone[][] boardStoneFromCsv = TestUtility.readBoardStoneFromCSVFile(EnvVariables.BOARD_19X19_PROVIDER_RESOURCE_LOCATION);
 
     private static Board board;
 
@@ -49,9 +50,14 @@ public class BoardTest {
                         .mapToObj(j -> new Coordinates(i, j)));
     }
 
+    @NotNull
+    public static Board createBoardWithCsvBoardStone() {
+        return TestUtility.createBoardFromBoardStone(boardStoneFromCsv, EnvVariables.BOARD_SIZE);
+    }
+
     @BeforeEach
     void setup() {
-        board = TestUtility.createBoardWithCsvBoardStone();
+        board = createBoardWithCsvBoardStone();
     }
 
     @Test
@@ -62,13 +68,13 @@ public class BoardTest {
     @ParameterizedTest
     @MethodSource("it.units.sdm.gomoku.utils.TestUtility#provideCoupleOfNonNegativeIntegersTillBoardSize")
     void getStoneAtCoordinates(int x, int y) {
-        assertEquals(TestUtility.boardStoneFromCsv[x][y], board.getStoneAtCoordinates(new Coordinates(x, y)));
+        assertEquals(boardStoneFromCsv[x][y], board.getStoneAtCoordinates(new Coordinates(x, y)));
     }
 
     @ParameterizedTest
     @MethodSource("it.units.sdm.gomoku.utils.TestUtility#provideCoupleOfNonNegativeIntegersTillBoardSize")
     void getBoardMatrixCopy(int x, int y) {
-        assertEquals(TestUtility.boardStoneFromCsv[x][y], board.getBoardMatrixCopy()[x][y]);
+        assertEquals(boardStoneFromCsv[x][y], board.getBoardMatrixCopy()[x][y]);
     }
 
     @ParameterizedTest
@@ -102,13 +108,13 @@ public class BoardTest {
         Coordinates coordinates = new Coordinates(x, y);
         try {
             board.occupyPosition(Stone.BLACK, coordinates);
-            assertTrue(TestUtility.boardStoneFromCsv[x][y].isNone());
+            assertTrue(boardStoneFromCsv[x][y].isNone());
             assertEquals(Stone.BLACK, board.getStoneAtCoordinates(coordinates));
         } catch (Board.NoMoreEmptyPositionAvailableException e) {
             Coordinates firstCoordinateAfterFillBoard = new Coordinates(18, 17);
             assertEquals(firstCoordinateAfterFillBoard, coordinates);
         } catch (Board.PositionAlreadyOccupiedException e) {
-            if (TestUtility.boardStoneFromCsv[x][y].isNone()) {
+            if (boardStoneFromCsv[x][y].isNone()) {
                 fail();
             }
         }
