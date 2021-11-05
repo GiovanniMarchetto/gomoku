@@ -5,6 +5,7 @@ import it.units.sdm.gomoku.utils.AccessWithReflectionException;
 import javafx.util.Pair;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -18,6 +19,7 @@ import static it.units.sdm.gomoku.client_server.ClientServerUtility.SERVER_PORT_
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+@Disabled("Disabled until refactoring of the rest of the project")
 class GomokuClientTest {
 
     private final Logger testLogger = Logger.getLogger(getClass().getCanonicalName());
