@@ -12,7 +12,7 @@ public class PositiveIntegerTest {
 
     @ParameterizedTest
     @CsvFileSource(resources = EnvVariables.INTS_PROVIDER_RESOURCE_LOCATION)
-    void constructorTest(int value) {
+    void constructor(int value) {
         try {
             new PositiveInteger(value);
         } catch (Exception e) {
@@ -23,8 +23,18 @@ public class PositiveIntegerTest {
     }
 
     @ParameterizedTest
+    @CsvFileSource(resources = EnvVariables.INTS_PROVIDER_RESOURCE_LOCATION)
+    void copyConstructor(int value) {
+        if (value >= 1) {
+            PositiveInteger p1 = new PositiveInteger(value);
+            PositiveInteger p2 = new PositiveInteger(p1);
+            assertEquals(p1, p2);
+        }
+    }
+
+    @ParameterizedTest
     @CsvSource({"0,false", "-1,false", "1,true", "2,true"})
     void isPositiveInteger(String s, boolean expected) {
-        assertEquals(expected,PositiveInteger.isPositiveInteger(s));
+        assertEquals(expected, PositiveInteger.isPositiveInteger(s));
     }
 }

@@ -1,14 +1,15 @@
 package it.units.sdm.gomoku.model.custom_types;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.Target;
+import java.util.Objects;
 
 import static java.lang.annotation.ElementType.*;
 
 public class PositiveInteger extends NonNegativeInteger {
-    /**
-     * Initialize the number to 1.
-     */
+
     public PositiveInteger() {
         super(1);
     }
@@ -20,11 +21,11 @@ public class PositiveInteger extends NonNegativeInteger {
         }
     }
 
-    public PositiveInteger(PositiveInteger positiveInteger) {
-        this(positiveInteger.intValue());
+    public PositiveInteger(@NotNull final PositiveInteger positiveInteger) {
+        super(Objects.requireNonNull(positiveInteger));
     }
 
-    public static boolean isPositiveInteger(String s) {
+    public static boolean isPositiveInteger(@NotNull final String s) {
         try {
             new PositiveInteger(Integer.parseInt(s));
             return true;
