@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public abstract class AbstractMainViewmodel extends Viewmodel {
 
@@ -38,9 +37,6 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
 
     @NotNull
     private final Property<Player> currentPlayer = new Property<>(this);
-
-    @NotNull
-    private final Property<ChangedCell> cell = new Property<>(this);
 
     @NotNull
     private final Property<Board> currentBoard = new Property<>(this);  // TODO : needed?
@@ -67,12 +63,7 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
                 placeStoneIfCPUPlayingWithDelayOrElseNotifyTheView(currentPlayer.getPropertyValue(), 0);// TODO : delay?
             }
         } else if (Objects.equals(evtName, Board.boardMatrixPropertyName)) {    // TODO : property name to be changed into a property
-            if (cell.getPropertyValue() != null) { // TODO: correct this check?
-                cell.setPropertyValueAndFireIfPropertyChange((ChangedCell) evt.getNewValue());  // TODO : wrong! The board is passed to the view as event, then it must find what has changed
-            } else {
-                cell.setPropertyValue((ChangedCell) evt.getNewValue());
-            }
-            firePropertyChange(Board.boardMatrixPropertyName, cell.getPropertyValue()); // TODO: use a Property
+            firePropertyChange(Board.boardMatrixPropertyName, evt.getNewValue()); // TODO: use a Property
         }
     }
 
@@ -183,14 +174,7 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
     }
 
     public void forceReFireAllCells() {
-        IntStream.range(0, getBoardSize())
-                .unordered().parallel()
-                .boxed()
-                .flatMap(i -> IntStream.range(0, getBoardSize())
-                        .unordered().parallel()
-                        .mapToObj(j -> new Coordinates(i, j)))
-                .map(c -> new ChangedCell(c, getStoneAtCoordinatesInCurrentBoard(c), currentGame.getPropertyValue().getBoard()))
-                .forEach(c -> firePropertyChange(Board.boardMatrixPropertyName, c));
+        firePropertyChange(Board.boardMatrixPropertyName, null);
     }
 
     public int getBoardSize() {

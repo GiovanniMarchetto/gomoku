@@ -90,8 +90,7 @@ public class GomokuGridManager implements Observable {
         double newRadiusValue = minSideOfTotalSpaceForGrid / (boardSize * 2.5);
         radius = newRadiusValue;
 
-        String radiusPropertyName = "radius";
-        firePropertyChange(radiusPropertyName, oldRadiusValue, newRadiusValue);
+        firePropertyChange(GomokuCell.radiusPropertyName, oldRadiusValue, newRadiusValue);
     }
 
     public GridPane getGridPane() {

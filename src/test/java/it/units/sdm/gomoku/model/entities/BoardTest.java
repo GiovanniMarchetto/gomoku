@@ -1,4 +1,4 @@
-package it.units.sdm.gomoku.model.entities.board;
+package it.units.sdm.gomoku.model.entities;
 
 import it.units.sdm.gomoku.EnvVariables;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;

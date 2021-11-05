@@ -2,7 +2,6 @@ package it.units.sdm.gomoku.ui.gui.views;
 
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.Board;
-import it.units.sdm.gomoku.model.entities.ChangedCell;
 import it.units.sdm.gomoku.model.entities.Stone;
 import it.units.sdm.gomoku.mvvm_library.Observer;
 import it.units.sdm.gomoku.ui.gui.viewmodels.MainViewmodel;
@@ -20,9 +19,12 @@ import java.beans.PropertyChangeEvent;
 
 public class GomokuCell implements Observer {
 
+    public static final String radiusPropertyName = "radius";
+
     private final int boardSize;
     private final MainViewmodel vm;
     private final Coordinates coordinates;
+
     private double radius;
 
     private Stone stone;
@@ -49,6 +51,7 @@ public class GomokuCell implements Observer {
 
     private void setRadius(double value) {
         radius = value;
+        resizeAllItemsOfCell();
     }
 
     private double getRectSide() {
@@ -85,9 +88,22 @@ public class GomokuCell implements Observer {
         if (!stone.isNone()) {
             circle.setOpacity(1);
             circle.setFill(stone == Stone.BLACK ? Color.BLACK : Color.WHITE);
+            circle.setStroke(Color.DARKRED);
+            circle.setStrokeWidth(3.0);
         } else {
             circle.setOpacity(0);
             circle.setFill(Color.AQUAMARINE);
+            circle.setStroke(null);
+            circle.setStrokeWidth(1.0);
+        }
+    }
+
+    private void resetStrokeToPlacedStone() {
+        if (!stone.isNone()) {
+            circle.setStroke(Color.BLACK);
+            circle.setStrokeWidth(1.0);
+        } else {
+            setStone(stone);
         }
     }
 
@@ -202,6 +218,7 @@ public class GomokuCell implements Observer {
 //                    setStone(vm.getStoneAtCoordinatesInCurrentBoard(coordinates));
                     // ... force update all stones
                     vm.forceReFireAllCells();
+
                 }
             }
         });
@@ -210,22 +227,31 @@ public class GomokuCell implements Observer {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        String radiusPropertyName = "radius";
-        if (evt.getPropertyName().equals(radiusPropertyName)) {
-            setRadius((double) evt.getNewValue());
-            resizeAllItemsOfCell();
-        } else if (evt.getPropertyName().equals(Board.boardMatrixPropertyName)) {
-            ChangedCell cell = (ChangedCell) evt.getNewValue();
-            if (cell.getCoordinates().equals(coordinates)) {
-                Platform.runLater(() -> setStone(cell.getNewStone()));
-                circle.setStroke(Color.DARKRED);
-                circle.setStrokeWidth(3.0);
-            }
-        } else if (evt.getPropertyName().equals(Board.oldCellBoardMatrixPropertyName)) {
-            ChangedCell cell = (ChangedCell) evt.getNewValue();
-            if (cell.getCoordinates().equals(coordinates)) {
-                circle.setStroke(Color.BLACK);
-                circle.setStrokeWidth(1.0);
+        switch (evt.getPropertyName()) {
+            case radiusPropertyName -> setRadius((double) evt.getNewValue());
+            case Board.boardMatrixPropertyName -> {
+                if (evt.getNewValue() != null) {
+                    Board board = (Board) evt.getNewValue();
+                    int nOfStones = board.getCoordinatesHistory().size();
+
+                    Coordinates lastCoords = board.getCoordinatesHistory().get(nOfStones - 1);
+                    if (lastCoords.equals(coordinates)) {
+                        Platform.runLater(() -> setStone(board.getStoneAtCoordinates(lastCoords)));
+                    }
+
+                    Coordinates penultimateCoords = null;
+                    if (board.getCoordinatesHistory().size() > 1) {
+                        penultimateCoords = board.getCoordinatesHistory().get(nOfStones - 2);
+                    }
+                    if (penultimateCoords != null && penultimateCoords.equals(coordinates)) {
+                        Platform.runLater(this::resetStrokeToPlacedStone);
+                    }
+                } else {
+                    Platform.runLater(() -> {
+                        setStone(vm.getStoneAtCoordinatesInCurrentBoard(coordinates));
+                        resetStrokeToPlacedStone();
+                    });
+                }
             }
         }
     }
