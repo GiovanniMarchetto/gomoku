@@ -3,7 +3,9 @@ package it.units.sdm.gomoku.model.custom_types;
 import it.units.sdm.gomoku.EnvVariables;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
+import org.junit.jupiter.params.provider.CsvSource;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class PositiveIntegerTest {
@@ -20,4 +22,9 @@ public class PositiveIntegerTest {
         }
     }
 
+    @ParameterizedTest
+    @CsvSource({"0,false", "-1,false", "1,true", "2,true"})
+    void isPositiveInteger(String s, boolean expected) {
+        assertEquals(expected,PositiveInteger.isPositiveInteger(s));
+    }
 }
