@@ -16,27 +16,27 @@ public class Game implements Comparable<Game>, Observable {
     @NotNull
     public static final PositiveInteger NUMBER_OF_CONSECUTIVE_STONE_FOR_WINNING = new PositiveInteger(5);
     @NotNull
-    public static final String isThisGameEndedPropertyName = "isThisGameEnded";
-    @NotNull
-    public static final String newGameStartedPropertyName = "newGameStarted";
-    @NotNull
-    public static final String currentPlayerPropertyName = "currentPlayer";
-    @NotNull
     private final Board board;
     @NotNull
     private final Instant start;
     @NotNull
     private final Player blackPlayer, whitePlayer;
     @NotNull
-    private Player currentPlayer;
-    @Nullable
+    public final Property<Player> currentPlayer;    // TODO : property are public...
+    @NotNull
+    public final Property<Boolean> gameEnded;
+    @NotNull
+    public final Property<Boolean> newGameStarted;
+    @NotNull
     private Player winner;  // available after the end of the game
 
     public Game(@NotNull PositiveInteger boardSize, @NotNull Player blackPlayer, @NotNull Player whitePlayer) {
         this.board = new Board(Objects.requireNonNull(boardSize));
         this.blackPlayer = Objects.requireNonNull(blackPlayer);
         this.whitePlayer = Objects.requireNonNull(whitePlayer);
-        this.currentPlayer = blackPlayer;
+        this.currentPlayer = new Property<>(blackPlayer, this);
+        this.gameEnded = new Property<>(false, this);
+        this.newGameStarted = new Property<>(false, this);
         this.start = Instant.now();
     }
 
@@ -46,15 +46,11 @@ public class Game implements Comparable<Game>, Observable {
 
     @NotNull
     public Player getCurrentPlayer() {
-        return currentPlayer;
+        return currentPlayer.getPropertyValue();
     }
 
     private void setCurrentPlayer(@NotNull final Player currentPlayer) {
-        Player oldValue = this.currentPlayer;
-        if (!oldValue.equals(Objects.requireNonNull(currentPlayer))) {
-            this.currentPlayer = currentPlayer;
-            firePropertyChange(currentPlayerPropertyName, oldValue, currentPlayer);
-        }
+        this.currentPlayer.setPropertyValueAndFireIfPropertyChange(Objects.requireNonNull(currentPlayer));
     }
 
     @NotNull
@@ -69,8 +65,7 @@ public class Game implements Comparable<Game>, Observable {
 
     public void placeNextStone(@NotNull final Coordinates coordinates)
             throws Board.NoMoreEmptyPositionAvailableException, Board.PositionAlreadyOccupiedException {
-
-        placeStone(currentPlayer, coordinates);
+        placeStone(currentPlayer.getPropertyValue(), coordinates);
         changeTurn();
     }
 
@@ -81,13 +76,11 @@ public class Game implements Comparable<Game>, Observable {
 
         setWinnerIfPlayerWon(player, coordinates);
 
-        if (isThisGameEnded()) {
-            firePropertyChange(isThisGameEndedPropertyName, false, true);
-        }
+        gameEnded.setPropertyValueAndFireIfPropertyChange(isThisGameEnded());
     }
 
     private void changeTurn() {
-        setCurrentPlayer(currentPlayer == blackPlayer ? whitePlayer : blackPlayer);
+        setCurrentPlayer(currentPlayer.getPropertyValue() == blackPlayer ? whitePlayer : blackPlayer);
     }
 
     private void setWinnerIfPlayerWon(@NotNull Player player, @NotNull Coordinates coordinates) {

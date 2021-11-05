@@ -22,52 +22,62 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
     // TODO : correct to declare here this variable?
     public final static String userMustPlaceNewStonePropertyName = "userMustPlaceNewStone";
 
-    public final static String currentPlayerPropertyName = Game.currentPlayerPropertyName;
-
     @Nullable
     private Match match;
 
-    @Nullable
-    private Game currentGame;
+    public enum CurrentGameStatus {GAME_STARTED, USER_MUST_PLACE, USER_MUST_NOT_PLACE, GAME_ENDED}
 
-    @Nullable
-    private Board currentBoard;
+    @NotNull
+    public final Property<CurrentGameStatus> currentGameStatus = new Property<>(this);//TODO : PUBLIC?
 
-    @Nullable
-    private ChangedCell oldCell = null;
+    @NotNull
+    public final Property<Game> currentGame = new Property<>(this); // TODO:public???
+
+    @NotNull
+    private final Property<Boolean> currentGameEnded = new Property<>(this);
+
+    @NotNull
+    private final Property<Player> currentPlayer = new Property<>(this);
+
+    @NotNull
+    private final Property<ChangedCell> cell = new Property<>(this);
+
+    @NotNull
+    private final Property<Board> currentBoard = new Property<>(this);  // TODO : needed?
 
     public AbstractMainViewmodel() {
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        switch (evt.getPropertyName()) {
-            case Board.boardMatrixPropertyName -> {
-                ChangedCell cell = (ChangedCell) evt.getNewValue();
-                firePropertyChange(Board.boardMatrixPropertyName, cell);
-                if (oldCell!=null) {
-                    firePropertyChange(Board.oldCellBoardMatrixPropertyName, oldCell);
-                }
-                oldCell=cell;
+        // TODO : refactor needed
+
+        final String evtName = evt.getPropertyName();
+        if (Objects.equals(evtName, currentGame.getPropertyValue().gameEnded.getPropertyNameOrElseThrow())) {    // TODO : switch may be better
+            // TODO: message chain code smell (the property is the game itself)
+//            if (isCurrentGameEnded()) {
+//                endGame();
+//            }
+            if ((boolean) evt.getNewValue()) {
+                endGame();
             }
-            case Game.isThisGameEndedPropertyName -> {
-                if ((Boolean) evt.getNewValue()) {
-                    endGame();
-                }
+        } else if (Objects.equals(evtName, currentGame.getPropertyValue().currentPlayer.getPropertyNameOrElseThrow())) {// TODO: message chain code smell (the property is the game itself)
+            currentPlayer.setPropertyValueAndFireIfPropertyChange((Player) evt.getNewValue());
+            if (!isCurrentGameEnded()) {
+                placeStoneIfCPUPlayingWithDelayOrElseNotifyTheView(currentPlayer.getPropertyValue(), 0);// TODO : delay?
             }
-            case Game.currentPlayerPropertyName -> {
-                Player currentPlayer = (Player) evt.getNewValue();
-                Player oldValue = (Player) evt.getOldValue();
-                firePropertyChange(currentPlayerPropertyName, oldValue, currentPlayer);
-                if (!isCurrentGameEnded()) {
-                    placeStoneIfCPUPlayingWithDelayOrElseNotifyTheView(currentPlayer, 0);
-                }
+        } else if (Objects.equals(evtName, Board.boardMatrixPropertyName)) {    // TODO : property name to be changed into a property
+            if (cell.getPropertyValue() != null) { // TODO: correct this check?
+                cell.setPropertyValueAndFireIfPropertyChange((ChangedCell) evt.getNewValue());  // TODO : wrong! The board is passed to the view as event, then it must find what has changed
+            } else {
+                cell.setPropertyValue((ChangedCell) evt.getNewValue());
             }
+            firePropertyChange(Board.boardMatrixPropertyName, cell.getPropertyValue()); // TODO: use a Property
         }
     }
 
     public void triggerFirstMove() {
-        if (currentGame == null) {
+        if (currentGame.getPropertyValue() == null) {
             throw new NullPointerException("Cannot invoke this method before starting the game (current game is null)");
         }
         placeStoneIfCPUPlayingWithDelayOrElseNotifyTheView(getCurrentPlayer(), 0);
@@ -98,7 +108,7 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
     }
 
     protected synchronized boolean isCurrentGameEnded() {
-        return Objects.requireNonNull(currentGame).isThisGameEnded();
+        return Objects.requireNonNull(currentGame).getPropertyValue().isThisGameEnded();
     }
 
     protected void setMatch(@NotNull Match match) {
@@ -107,35 +117,39 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
 
     @NotNull
     public String getCurrentBoardAsString() {
-        return Objects.requireNonNull(currentBoard).toString();
+        return Objects.requireNonNull(currentGame.getPropertyValue().getBoard()).toString();
     }
 
     protected void initializeNewGame() {
         try {
-            currentGame = Objects.requireNonNull(match).startNewGame();
-            currentBoard = currentGame.getBoard();
-            observe(currentGame);
-            observe(currentBoard);
-            firePropertyChange(Game.newGameStartedPropertyName, false, true);
+            Game newGame = Objects.requireNonNull(match).startNewGame();
+            Board newBoard = newGame.getBoard();
+            observe(newGame);
+            observe(newBoard);
+            currentGame.setPropertyValueAndFireIfPropertyChange(newGame);   // TODO : property needed?
+            currentBoard.setPropertyValueAndFireIfPropertyChange(newBoard);   // TODO : property needed?
+            currentGameStatus.setPropertyValueAndFireIfPropertyChange(CurrentGameStatus.GAME_STARTED);
         } catch (Match.MatchEndedException e) {
             e.printStackTrace();
         }
     }
 
     public void endGame() {
-        stopObserving(Objects.requireNonNull(currentGame));
-        stopObserving(Objects.requireNonNull(currentBoard));
-        firePropertyChange(Game.isThisGameEndedPropertyName, false, true);
+        stopObserving(Objects.requireNonNull(currentGame.getPropertyValue()));
+        stopObserving(Objects.requireNonNull(currentBoard.getPropertyValue()));
+        currentGameEnded.setPropertyValueAndFireIfPropertyChange(true); // TODO: property needed
+        currentGameStatus.setPropertyValue(CurrentGameStatus.GAME_ENDED);
     }
 
     @NotNull
     protected Game getCurrentGame() {
-        return Objects.requireNonNull(currentGame);
+        return Objects.requireNonNull(currentGame.getPropertyValue());
     }
 
     @NotNull
     protected Board getCurrentBoard() {
-        return Objects.requireNonNull(currentBoard);
+        // TODO : a property board may be needed instead of accessing via currentGame property
+        return Objects.requireNonNull(currentGame.getPropertyValue().getBoard());
     }
 
     private void placeStone(@NotNull final Coordinates coordinates)
@@ -162,7 +176,8 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
                     e.printStackTrace();    // TODO : handle this
                 }
             } else {
-                firePropertyChange(userMustPlaceNewStonePropertyName, false, true); // TODO : where is the property?
+                currentGameStatus.setPropertyValueAndFireIfPropertyChange(CurrentGameStatus.USER_MUST_PLACE);
+                currentGameStatus.setPropertyValue(CurrentGameStatus.USER_MUST_NOT_PLACE);  // TODO : improve this tricky: here we are notifying the view the the user must place and immediately after we rechange the status of this property without notifying it
             }
         });
     }
@@ -174,13 +189,13 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
                 .flatMap(i -> IntStream.range(0, getBoardSize())
                         .unordered().parallel()
                         .mapToObj(j -> new Coordinates(i, j)))
-                .map(c -> new ChangedCell(c, getStoneAtCoordinatesInCurrentBoard(c), currentBoard))
+                .map(c -> new ChangedCell(c, getStoneAtCoordinatesInCurrentBoard(c), currentGame.getPropertyValue().getBoard()))
                 .forEach(c -> firePropertyChange(Board.boardMatrixPropertyName, c));
     }
 
     public int getBoardSize() {
         try {
-            return Objects.requireNonNull(currentBoard).getSize();
+            return Objects.requireNonNull(currentGame.getPropertyValue().getBoard()).getSize();
         } catch (NullPointerException e) {
             Logger.getLogger(getClass().getCanonicalName())
                     .severe("The board is null but should not.\n\t" +
@@ -196,11 +211,11 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
     }
 
     public Player getCurrentPlayer() {
-        return Objects.requireNonNull(currentGame).getCurrentPlayer();
+        return Objects.requireNonNull(currentGame.getPropertyValue()).getCurrentPlayer();
     }
 
     public Stone getStoneOfCurrentPlayer() {
-        return Objects.requireNonNull(currentGame).getStoneOfPlayer(getCurrentPlayer());
+        return Objects.requireNonNull(currentGame.getPropertyValue()).getStoneOfPlayer(getCurrentPlayer());
     }
 
     public Player getCurrentBlackPlayer() {
@@ -212,7 +227,7 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
     }
 
     public Stone getStoneAtCoordinatesInCurrentBoard(Coordinates coordinates) {
-        return Objects.requireNonNull(currentBoard).getStoneAtCoordinates(coordinates);
+        return Objects.requireNonNull(currentGame.getPropertyValue().getBoard()).getStoneAtCoordinates(coordinates);
     }
 
     @Nullable
@@ -222,10 +237,10 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
 
     @Nullable
     public Player getWinnerOfTheGame() throws Game.GameNotEndedException {
-        return Objects.requireNonNull(currentGame).getWinner();
+        return Objects.requireNonNull(currentGame.getPropertyValue()).getWinner();
     }
 
     public ZonedDateTime getGameStartTime() {
-        return Objects.requireNonNull(currentGame).getStart();
+        return Objects.requireNonNull(currentGame.getPropertyValue()).getStart();
     }
 }

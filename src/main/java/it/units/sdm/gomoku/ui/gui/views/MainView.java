@@ -17,6 +17,7 @@ import javafx.scene.shape.Circle;
 import java.beans.PropertyChangeEvent;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 public class MainView extends View<MainViewmodel> implements Observer {
 
@@ -78,7 +79,7 @@ public class MainView extends View<MainViewmodel> implements Observer {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(MainViewmodel.currentPlayerPropertyName)) {
+        if (Objects.equals(evt.getPropertyName(), getViewmodelAssociatedWithView().currentGame.getPropertyValue().currentPlayer.getPropertyNameOrElseThrow())) {//TODO:message chain code smell
             SceneController.executeOnJavaFxUiThread(() -> {
                 currentPlayerLabel.setText(evt.getNewValue().toString());
                 currentPlayerCircle.setFill(
