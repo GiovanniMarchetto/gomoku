@@ -12,6 +12,7 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static it.units.sdm.gomoku.model.entities.Board.NoMoreEmptyPositionAvailableException;
 
@@ -71,10 +72,7 @@ public class CPUPlayer extends Player {
 
         AtomicInteger consecutiveStonesToFind = new AtomicInteger(maxChainToFind);
         for (; consecutiveStonesToFind.get() >= minChainToFind; consecutiveStonesToFind.getAndDecrement()) {
-            Optional<Coordinates> optionalCoordinates = IntStream.range(0, board.getSize()).boxed()
-                    .flatMap(x -> IntStream.range(0, board.getSize())
-                            .mapToObj(y -> new Coordinates(x, y)))
-                    .filter(c -> board.getStoneAtCoordinates(c).isNone())
+            Optional<Coordinates> optionalCoordinates = getStreamOfEmptyCoordinates(board)
                     .filter(c -> isHeadOfAChainOfStones(board, c, new PositiveInteger(consecutiveStonesToFind.get())))
                     .findAny();
 
@@ -119,21 +117,17 @@ public class CPUPlayer extends Player {
     @NotNull
     public Coordinates chooseRandomEmptyCoordinates(@NotNull Board board) throws NoMoreEmptyPositionAvailableException {
         if (board.isAnyEmptyPositionOnTheBoard()) {
-            int MAX_RANDOM_ITERATION = 500;
-            for (int i = 0; i < MAX_RANDOM_ITERATION; i++) {
-                Coordinates coordinates = generateRandomCoordinates(board.getSize());
-                if (board.getStoneAtCoordinates(coordinates).isNone())
-                    return coordinates;
-            }
+            List<Coordinates> emptyCoordinates = getStreamOfEmptyCoordinates(board).toList();
+            return emptyCoordinates.get(rand.nextInt(emptyCoordinates.size()));
         }
         return chooseNextEmptyCoordinates(board);
     }
 
-    @NotNull
-    public Coordinates generateRandomCoordinates(@PositiveInteger.PositiveIntegerType int boardSize) {
-        return new Coordinates(rand.nextInt(boardSize), rand.nextInt(boardSize));
+    private Stream<Coordinates> getStreamOfEmptyCoordinates(@NotNull Board board) {
+        return IntStream.range(0, board.getSize()).boxed()
+                .flatMap(x -> IntStream.range(0, board.getSize())
+                        .mapToObj(y -> new Coordinates(x, y)))
+                .filter(c -> board.getStoneAtCoordinates(c).isNone());
     }
-
-
 }
 
