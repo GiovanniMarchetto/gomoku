@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Target;
+import java.util.Objects;
 
 import static java.lang.annotation.ElementType.*;
 
@@ -19,8 +20,9 @@ public class NonNegativeInteger extends Number implements Comparable<Number> {
         }
     }
 
-    public NonNegativeInteger(NonNegativeInteger nonNegativeInteger) {
-        this(nonNegativeInteger.intValue());
+    @SuppressWarnings("CopyConstructorMissesField") // It checks if input param is not null before copying the field
+    public NonNegativeInteger(@NotNull final NonNegativeInteger nonNegativeInteger) {
+        this(Objects.requireNonNull(nonNegativeInteger).value);
     }
 
     public NonNegativeInteger() {
@@ -62,9 +64,7 @@ public class NonNegativeInteger extends Number implements Comparable<Number> {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         NonNegativeInteger that = (NonNegativeInteger) o;
-
         return value == that.value;
     }
 
@@ -87,5 +87,4 @@ public class NonNegativeInteger extends Number implements Comparable<Number> {
     @Target({METHOD, FIELD, PARAMETER, LOCAL_VARIABLE})
     public @interface NonNegativeIntegerType {
     }
-
 }

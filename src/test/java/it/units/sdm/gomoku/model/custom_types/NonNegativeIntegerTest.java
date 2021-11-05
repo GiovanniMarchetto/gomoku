@@ -2,25 +2,48 @@ package it.units.sdm.gomoku.model.custom_types;
 
 import it.units.sdm.gomoku.EnvVariables;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvFileSource;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class NonNegativeIntegerTest {
 
     private NonNegativeInteger nonNegativeInteger1;
     private NonNegativeInteger nonNegativeInteger2;
 
+    public static Stream<Arguments> nonNegativeIntegerAndValidFlagSupplier() {
+        return IntStream.rangeClosed(0, 1)
+                .mapToObj(i -> Arguments.of(
+                        i == 0 ? null : new NonNegativeInteger(i),
+                        i != 0
+                ));
+    }
+
     @ParameterizedTest
     @CsvFileSource(resources = EnvVariables.INTS_PROVIDER_RESOURCE_LOCATION)
-    void constructorTest(int value) {
+    void constructor(int value) {
         try {
             new NonNegativeInteger(value);
         } catch (Exception e) {
             if (value >= 0) {
                 fail(e);
             }
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("nonNegativeIntegerAndValidFlagSupplier")
+    void doNotCreateIfNullInput(NonNegativeInteger n, boolean valid) {
+        try {
+            nonNegativeInteger1 = new NonNegativeInteger(n);
+            assertTrue(valid);
+        } catch (Exception e) {
+            assertFalse(valid);
         }
     }
 
@@ -62,14 +85,14 @@ class NonNegativeIntegerTest {
 
     @ParameterizedTest
     @CsvFileSource(resources = EnvVariables.NON_NEGATIVE_INTS_PROVIDER_RESOURCE_LOCATION)
-    void testToString(int value) {
+    void toString(int value) {
         nonNegativeInteger1 = new NonNegativeInteger(value);
         assertEquals(String.valueOf(value), nonNegativeInteger1.toString());
     }
 
     @ParameterizedTest
     @CsvFileSource(resources = EnvVariables.COUPLE_OF_NON_NEGATIVE_INTS_PROVIDER_RESOURCE_LOCATION)
-    void testEquals(int value1, int value2) {
+    void equals(int value1, int value2) {
         nonNegativeInteger1 = new NonNegativeInteger(value1);
         nonNegativeInteger2 = new NonNegativeInteger(value2);
         assertEquals(value1 == value2, nonNegativeInteger1.equals(nonNegativeInteger2));
@@ -77,7 +100,7 @@ class NonNegativeIntegerTest {
 
     @ParameterizedTest
     @CsvFileSource(resources = EnvVariables.COUPLE_OF_NON_NEGATIVE_INTS_PROVIDER_RESOURCE_LOCATION)
-    void testCompareTo(int value1, int value2) {
+    void compareTo(int value1, int value2) {
         nonNegativeInteger1 = new NonNegativeInteger(value1);
         nonNegativeInteger2 = new NonNegativeInteger(value2);
         assertEquals(value1 >= value2, nonNegativeInteger1.compareTo(nonNegativeInteger2) >= 0);

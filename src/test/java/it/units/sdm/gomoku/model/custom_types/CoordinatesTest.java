@@ -7,9 +7,9 @@ import org.junit.jupiter.params.provider.CsvFileSource;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static it.units.sdm.gomoku.model.custom_types.NonNegativeIntegerTest.nonNegativeIntegerAndValidFlagSupplier;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CoordinatesTest {
@@ -17,12 +17,13 @@ class CoordinatesTest {
     private Coordinates coordinates;
 
     private static Stream<Arguments> nonNegativeIntegerPairAndValidFlagSupplier() {
-        return IntStream.rangeClosed(0, 1).boxed()
-                .flatMap(i -> IntStream.rangeClosed(0, 1)
-                        .mapToObj(j -> Arguments.of(
-                                i == 0 ? null : new NonNegativeInteger(i),
-                                j == 0 ? null : new NonNegativeInteger(j),
-                                i == 1 && j == 1)));
+        return nonNegativeIntegerAndValidFlagSupplier()
+                .flatMap(args1 -> nonNegativeIntegerAndValidFlagSupplier()
+                        .map(args2 -> Arguments.of(
+                                args1.get()[0],
+                                args2.get()[0],
+                                (boolean) args1.get()[1] && (boolean) args2.get()[1]
+                        )));
     }
 
     @ParameterizedTest
