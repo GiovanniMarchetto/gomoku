@@ -60,7 +60,7 @@ public class CPUPlayer extends Player {
     }
 
     @NotNull
-    public Coordinates chooseEmptyCoordinates(@NotNull Board board) throws NoMoreEmptyPositionAvailableException {
+    public Coordinates chooseSmartEmptyCoordinates(@NotNull Board board) throws NoMoreEmptyPositionAvailableException {
 
         if (board.isEmpty()) {
             return chooseNextEmptyCoordinatesFromCenter(board);

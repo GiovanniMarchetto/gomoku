@@ -154,7 +154,7 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
             if (currentPlayer instanceof CPUPlayer cpuPlayer) {
                 try {
                     Thread.sleep(delayOfCpuMove);
-                    placeStone(cpuPlayer.chooseEmptyCoordinates(getCurrentBoard()));
+                    placeStone(cpuPlayer.chooseSmartEmptyCoordinates(getCurrentBoard()));
                 } catch (Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException | InterruptedException e) {
                     e.printStackTrace();    // TODO : handle this
                 }

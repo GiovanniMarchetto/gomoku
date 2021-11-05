@@ -5,7 +5,6 @@ import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.entities.Stone;
-import it.units.sdm.gomoku.model.entities.board.BoardTest;
 import it.units.sdm.gomoku.ui.support.GamePlayElements;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -28,6 +27,8 @@ import static it.units.sdm.gomoku.utils.Predicates.isNonEmptyString;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class TestUtility {
+
+    public final static String END_GAMES = "/endGames.json";
 
     @NotNull
     public static Board createBoardFromBoardStone(Stone[][] boardStone, PositiveInteger boardSize) {
@@ -149,7 +150,7 @@ public class TestUtility {
     }
 
     public static Stream<Arguments> getStreamOfGamePlayElements() {
-        return getStreamOfGamePlayElementsFromCSV(EnvVariables.END_GAMES);
+        return getStreamOfGamePlayElementsFromCSV(END_GAMES);
     }
 
     public static int getTotalNumberOfValidStoneInTheGivenBoarsAsStringInCSVFormat(@NotNull final String boardAsCSVString) {

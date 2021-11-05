@@ -78,7 +78,7 @@ public class CPUPlayerChooseEmptyCoordinatesTest {
 
     private void assertChooseEmptyCoordinates(Coordinates expected) {
         try {
-            assertEquals(expected, cpuPlayer.chooseEmptyCoordinates(board));
+            assertEquals(expected, cpuPlayer.chooseSmartEmptyCoordinates(board));
         } catch (NoMoreEmptyPositionAvailableException e) {
             fail(e.getMessage());
         }
