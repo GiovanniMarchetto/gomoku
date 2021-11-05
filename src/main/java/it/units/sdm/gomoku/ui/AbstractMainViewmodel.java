@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public abstract class AbstractMainViewmodel extends Viewmodel {
 
@@ -33,9 +32,6 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
     @Nullable
     private Board currentBoard;
 
-    @Nullable
-    private ChangedCell oldCell = null;
-
     public AbstractMainViewmodel() {
     }
 
@@ -43,9 +39,8 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
             case Board.boardMatrixPropertyName -> {
-                ChangedCell cell = (ChangedCell) evt.getNewValue();
-                firePropertyChange(Board.boardMatrixPropertyName, oldCell, cell);
-                oldCell = cell;
+                Board board = (Board) evt.getNewValue();
+                firePropertyChange(Board.boardMatrixPropertyName, board);
             }
             case Game.isThisGameEndedPropertyName -> {
                 if ((Boolean) evt.getNewValue()) {
@@ -165,14 +160,7 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
     }
 
     public void forceReFireAllCells() {
-        IntStream.range(0, getBoardSize())
-                .unordered().parallel()
-                .boxed()
-                .flatMap(i -> IntStream.range(0, getBoardSize())
-                        .unordered().parallel()
-                        .mapToObj(j -> new Coordinates(i, j)))
-                .map(c -> new ChangedCell(c, getStoneAtCoordinatesInCurrentBoard(c), currentBoard))
-                .forEach(c -> firePropertyChange(Board.boardMatrixPropertyName, c));
+        firePropertyChange(Board.boardMatrixPropertyName, null);
     }
 
     public int getBoardSize() {

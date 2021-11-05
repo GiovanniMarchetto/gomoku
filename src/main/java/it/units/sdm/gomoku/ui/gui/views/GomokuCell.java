@@ -2,7 +2,6 @@ package it.units.sdm.gomoku.ui.gui.views;
 
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.Board;
-import it.units.sdm.gomoku.model.entities.ChangedCell;
 import it.units.sdm.gomoku.model.entities.Stone;
 import it.units.sdm.gomoku.mvvm_library.Observer;
 import it.units.sdm.gomoku.ui.gui.viewmodels.MainViewmodel;
@@ -215,6 +214,7 @@ public class GomokuCell implements Observer {
 //                    setStone(vm.getStoneAtCoordinatesInCurrentBoard(coordinates));
                     // ... force update all stones
                     vm.forceReFireAllCells();
+
                 }
             }
         });
@@ -228,13 +228,27 @@ public class GomokuCell implements Observer {
             setRadius((double) evt.getNewValue());
             resizeAllItemsOfCell();
         } else if (evt.getPropertyName().equals(Board.boardMatrixPropertyName)) {
-            ChangedCell cell = (ChangedCell) evt.getNewValue();
-            ChangedCell oldCell = (ChangedCell) evt.getOldValue();
-            if (cell.getCoordinates().equals(coordinates)) {
-                Platform.runLater(() -> setStone(cell.getNewStone()));
-            }
-            if (oldCell != null && oldCell.getCoordinates().equals(coordinates)) {
-                Platform.runLater(this::resetStrokeToPlacedStone);
+            if (evt.getNewValue() != null) {
+                Board board = (Board) evt.getNewValue();
+                var nOfStones = board.getCoordinatesHistory().size();
+
+                Coordinates lastCoords = board.getCoordinatesHistory().get(nOfStones - 1);
+                if (lastCoords.equals(coordinates)) {
+                    Platform.runLater(() -> setStone(board.getStoneAtCoordinates(lastCoords)));
+                }
+
+                Coordinates penultimateCoords = null;
+                if (board.getCoordinatesHistory().size() > 1) {
+                    penultimateCoords = board.getCoordinatesHistory().get(nOfStones - 2);
+                }
+                if (penultimateCoords != null && penultimateCoords.equals(coordinates)) {
+                    Platform.runLater(this::resetStrokeToPlacedStone);
+                }
+            } else {
+                Platform.runLater(() -> {
+                    setStone(vm.getStoneAtCoordinatesInCurrentBoard(coordinates));
+                    resetStrokeToPlacedStone();
+                });
             }
         }
     }
