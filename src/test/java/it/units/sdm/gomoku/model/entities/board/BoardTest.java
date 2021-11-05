@@ -25,8 +25,8 @@ import java.util.function.BiFunction;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static it.units.sdm.gomoku.utils.TestUtility.getStreamOfGamePlayElements;
 import static it.units.sdm.gomoku.utils.TestUtility.provideCoupleOfNonNegativeIntegersTillNExcluded;
-import static it.units.sdm.gomoku.utils.TestUtility.readBoardsWithWinCoordsAndResultsFromCSV;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class BoardTest {
@@ -37,12 +37,8 @@ public class BoardTest {
         return provideCoupleOfNonNegativeIntegersTillNExcluded(EnvVariables.BOARD_SIZE.intValue());
     }
 
-    private static Stream<Arguments> readBoardsWithWinCoordsAndResultsFromSampleCSV() {
-        return readBoardsWithWinCoordsAndResultsFromCSV(EnvVariables.END_GAMES);
-    }
-
     private static Stream<Arguments> getABoardAndACoordinate() {
-        return readBoardsWithWinCoordsAndResultsFromSampleCSV()
+        return getStreamOfGamePlayElements()
                 .map(Arguments::get)
                 .map(singleTestParams -> (Stone[][]) singleTestParams[0])
                 .flatMap(boardMtx -> generateCoordinates(boardMtx.length)
@@ -225,7 +221,7 @@ public class BoardTest {
     }
 
     @ParameterizedTest
-    @MethodSource("readBoardsWithWinCoordsAndResultsFromSampleCSV")
+    @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfGamePlayElements")
     void checkNConsecutiveStones(Stone[][] matrix, Coordinates coordinates, boolean expected) {
         try {
             Board b = createBoardFromMatrix(matrix);

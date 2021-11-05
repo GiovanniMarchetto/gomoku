@@ -111,7 +111,7 @@ public class TestUtility {
     }
 
     @NotNull
-    public static Stream<Arguments> readBoardsWithWinCoordsAndResultsFromCSV(@NotNull String filePath) {
+    public static Stream<Arguments> getStreamOfGamePlayElementsFromCSV(@NotNull String filePath) {
         try {
             String json = Files.readString(Paths.get(Objects.requireNonNull(TestUtility.class.getResource(filePath)).toURI()));
             JSONObject jsonObject = new JSONObject(json);
@@ -142,6 +142,10 @@ public class TestUtility {
             fail(e);
             return Stream.empty();
         }
+    }
+
+    public static Stream<Arguments> getStreamOfGamePlayElements() {
+        return getStreamOfGamePlayElementsFromCSV(EnvVariables.END_GAMES);
     }
 
     public static int getTotalNumberOfValidStoneInTheGivenBoarsAsStringInCSVFormat(@NotNull final String boardAsCSVString) {
