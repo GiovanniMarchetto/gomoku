@@ -85,9 +85,22 @@ public class GomokuCell implements Observer {
         if (!stone.isNone()) {
             circle.setOpacity(1);
             circle.setFill(stone == Stone.BLACK ? Color.BLACK : Color.WHITE);
+            circle.setStroke(Color.DARKRED);
+            circle.setStrokeWidth(3.0);
         } else {
             circle.setOpacity(0);
             circle.setFill(Color.AQUAMARINE);
+            circle.setStroke(null);
+            circle.setStrokeWidth(1.0);
+        }
+    }
+
+    private void resetStrokeToPlacedStone() {
+        if (!stone.isNone()) {
+            circle.setStroke(Color.BLACK);
+            circle.setStrokeWidth(1.0);
+        } else {
+            setStone(stone);
         }
     }
 
@@ -216,16 +229,12 @@ public class GomokuCell implements Observer {
             resizeAllItemsOfCell();
         } else if (evt.getPropertyName().equals(Board.boardMatrixPropertyName)) {
             ChangedCell cell = (ChangedCell) evt.getNewValue();
+            ChangedCell oldCell = (ChangedCell) evt.getOldValue();
             if (cell.getCoordinates().equals(coordinates)) {
                 Platform.runLater(() -> setStone(cell.getNewStone()));
-                circle.setStroke(Color.DARKRED);
-                circle.setStrokeWidth(3.0);
             }
-        } else if (evt.getPropertyName().equals(Board.oldCellBoardMatrixPropertyName)) {
-            ChangedCell cell = (ChangedCell) evt.getNewValue();
-            if (cell.getCoordinates().equals(coordinates)) {
-                circle.setStroke(Color.BLACK);
-                circle.setStrokeWidth(1.0);
+            if (oldCell != null && oldCell.getCoordinates().equals(coordinates)) {
+                Platform.runLater(this::resetStrokeToPlacedStone);
             }
         }
     }

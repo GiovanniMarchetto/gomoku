@@ -44,11 +44,8 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
         switch (evt.getPropertyName()) {
             case Board.boardMatrixPropertyName -> {
                 ChangedCell cell = (ChangedCell) evt.getNewValue();
-                firePropertyChange(Board.boardMatrixPropertyName, cell);
-                if (oldCell!=null) {
-                    firePropertyChange(Board.oldCellBoardMatrixPropertyName, oldCell);
-                }
-                oldCell=cell;
+                firePropertyChange(Board.boardMatrixPropertyName, oldCell, cell);
+                oldCell = cell;
             }
             case Game.isThisGameEndedPropertyName -> {
                 if ((Boolean) evt.getNewValue()) {
