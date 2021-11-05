@@ -68,7 +68,7 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
 
     public void triggerFirstMove() {
         if (currentGame == null) {
-            throw new NullPointerException("Cannot invoke triggerFirstMove() before starting the game (currentGame is null)");
+            throw new NullPointerException("Cannot invoke this method before starting the game (current game is null)");
         }
         placeStoneIfCPUPlayingWithDelayOrElseNotifyTheView(getCurrentPlayer(), 0);
     }
