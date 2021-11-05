@@ -19,9 +19,12 @@ import java.beans.PropertyChangeEvent;
 
 public class GomokuCell implements Observer {
 
+    public static final String radiusPropertyName = "radius";
+
     private final int boardSize;
     private final MainViewmodel vm;
     private final Coordinates coordinates;
+
     private double radius;
 
     private Stone stone;
@@ -223,7 +226,6 @@ public class GomokuCell implements Observer {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        String radiusPropertyName = "radius";
         if (evt.getPropertyName().equals(radiusPropertyName)) {
             setRadius((double) evt.getNewValue());
             resizeAllItemsOfCell();
