@@ -87,12 +87,8 @@ public class CPUPlayer extends Player {
     @NotNull
     public Coordinates chooseNextEmptyCoordinates(@NotNull Board board) throws NoMoreEmptyPositionAvailableException {
         if (board.isAnyEmptyPositionOnTheBoard()) {
-            for (int i = 0; i < board.getSize(); i++) {
-                for (int j = 0; j < board.getSize(); j++) {
-                    var coords = new Coordinates(i, j);
-                    if (board.getStoneAtCoordinates(coords) == Stone.NONE) return coords;
-                }
-            }
+            //noinspection OptionalGetWithoutIsPresent because is yet checked with isAnyEmptyPosition
+            return getStreamOfEmptyCoordinates(board).findFirst().get();
         }
         throw new NoMoreEmptyPositionAvailableException();
     }
