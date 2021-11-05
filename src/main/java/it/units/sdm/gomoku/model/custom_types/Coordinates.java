@@ -31,5 +31,4 @@ public class Coordinates extends Pair<NonNegativeInteger, NonNegativeInteger> {
     public String toString() {
         return "(" + getX() + "," + getY() + ")";
     }
-
 }
