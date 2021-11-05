@@ -34,7 +34,7 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
     private Board currentBoard;
 
     @Nullable
-    private Board.ChangedCell oldCell = null;
+    private ChangedCell oldCell = null;
 
     public AbstractMainViewmodel() {
     }
@@ -43,7 +43,7 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
             case Board.boardMatrixPropertyName -> {
-                Board.ChangedCell cell = (Board.ChangedCell) evt.getNewValue();
+                ChangedCell cell = (ChangedCell) evt.getNewValue();
                 firePropertyChange(Board.boardMatrixPropertyName, cell);
                 if (oldCell!=null) {
                     firePropertyChange(Board.oldCellBoardMatrixPropertyName, oldCell);
@@ -174,7 +174,7 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
                 .flatMap(i -> IntStream.range(0, getBoardSize())
                         .unordered().parallel()
                         .mapToObj(j -> new Coordinates(i, j)))
-                .map(c -> new Board.ChangedCell(c, getStoneAtCoordinatesInCurrentBoard(c), currentBoard))
+                .map(c -> new ChangedCell(c, getStoneAtCoordinatesInCurrentBoard(c), currentBoard))
                 .forEach(c -> firePropertyChange(Board.boardMatrixPropertyName, c));
     }
 

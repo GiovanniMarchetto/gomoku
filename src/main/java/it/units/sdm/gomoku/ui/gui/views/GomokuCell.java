@@ -2,6 +2,7 @@ package it.units.sdm.gomoku.ui.gui.views;
 
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.Board;
+import it.units.sdm.gomoku.model.entities.ChangedCell;
 import it.units.sdm.gomoku.model.entities.Stone;
 import it.units.sdm.gomoku.mvvm_library.Observer;
 import it.units.sdm.gomoku.ui.gui.viewmodels.MainViewmodel;
@@ -214,14 +215,14 @@ public class GomokuCell implements Observer {
             setRadius((double) evt.getNewValue());
             resizeAllItemsOfCell();
         } else if (evt.getPropertyName().equals(Board.boardMatrixPropertyName)) {
-            Board.ChangedCell cell = (Board.ChangedCell) evt.getNewValue();
+            ChangedCell cell = (ChangedCell) evt.getNewValue();
             if (cell.getCoordinates().equals(coordinates)) {
                 Platform.runLater(() -> setStone(cell.getNewStone()));
                 circle.setStroke(Color.DARKRED);
                 circle.setStrokeWidth(3.0);
             }
         } else if (evt.getPropertyName().equals(Board.oldCellBoardMatrixPropertyName)) {
-            Board.ChangedCell cell = (Board.ChangedCell) evt.getNewValue();
+            ChangedCell cell = (ChangedCell) evt.getNewValue();
             if (cell.getCoordinates().equals(coordinates)) {
                 circle.setStroke(Color.BLACK);
                 circle.setStrokeWidth(1.0);
