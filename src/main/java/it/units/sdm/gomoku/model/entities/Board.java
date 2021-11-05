@@ -21,6 +21,7 @@ public class Board implements Observable, Cloneable, Serializable {
 
     public static final String boardMatrixPropertyName = "matrix";
     public static final String oldCellBoardMatrixPropertyName = "oldCell";
+
     @NotNull
     private final PositiveInteger size;
     @NotNull
@@ -49,7 +50,7 @@ public class Board implements Observable, Cloneable, Serializable {
         this.numberOfFilledPositionOnTheBoard = new NonNegativeInteger(board.numberOfFilledPositionOnTheBoard);
     }
 
-    public boolean checkNConsecutiveStones(@NotNull final Coordinates coords, NonNegativeInteger N) {
+    public boolean isCoordinatesBelongingToChainOfNStones(@NotNull final Coordinates coords, NonNegativeInteger N) {
         Stone stone = getStoneAtCoordinates(Objects.requireNonNull(coords));
         if (stone.isNone()) {
             throw new IllegalArgumentException("Given coordinates cannot refer to Stone." + stone);

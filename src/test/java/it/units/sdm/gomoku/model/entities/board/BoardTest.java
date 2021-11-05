@@ -230,7 +230,7 @@ public class BoardTest {
         try {
             Board b = createBoardFromMatrix(matrix);
             NonNegativeInteger N = new NonNegativeInteger(5);
-            assertEquals(expected, b.checkNConsecutiveStones(coordinates, N));
+            assertEquals(expected, b.isCoordinatesBelongingToChainOfNStones(coordinates, N));
         } catch (IllegalArgumentException e) {
             if (!matrix[coordinates.getX()][coordinates.getY()].isNone()) {
                 fail(e);
