@@ -51,6 +51,7 @@ public class GomokuCell implements Observer {
 
     private void setRadius(double value) {
         radius = value;
+        resizeAllItemsOfCell();
     }
 
     private double getRectSide() {
@@ -226,31 +227,31 @@ public class GomokuCell implements Observer {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(radiusPropertyName)) {
-            setRadius((double) evt.getNewValue());
-            resizeAllItemsOfCell();
-        } else if (evt.getPropertyName().equals(Board.boardMatrixPropertyName)) {
-            if (evt.getNewValue() != null) {
-                Board board = (Board) evt.getNewValue();
-                var nOfStones = board.getCoordinatesHistory().size();
+        switch (evt.getPropertyName()) {
+            case radiusPropertyName -> setRadius((double) evt.getNewValue());
+            case Board.boardMatrixPropertyName -> {
+                if (evt.getNewValue() != null) {
+                    Board board = (Board) evt.getNewValue();
+                    int nOfStones = board.getCoordinatesHistory().size();
 
-                Coordinates lastCoords = board.getCoordinatesHistory().get(nOfStones - 1);
-                if (lastCoords.equals(coordinates)) {
-                    Platform.runLater(() -> setStone(board.getStoneAtCoordinates(lastCoords)));
-                }
+                    Coordinates lastCoords = board.getCoordinatesHistory().get(nOfStones - 1);
+                    if (lastCoords.equals(coordinates)) {
+                        Platform.runLater(() -> setStone(board.getStoneAtCoordinates(lastCoords)));
+                    }
 
-                Coordinates penultimateCoords = null;
-                if (board.getCoordinatesHistory().size() > 1) {
-                    penultimateCoords = board.getCoordinatesHistory().get(nOfStones - 2);
+                    Coordinates penultimateCoords = null;
+                    if (board.getCoordinatesHistory().size() > 1) {
+                        penultimateCoords = board.getCoordinatesHistory().get(nOfStones - 2);
+                    }
+                    if (penultimateCoords != null && penultimateCoords.equals(coordinates)) {
+                        Platform.runLater(this::resetStrokeToPlacedStone);
+                    }
+                } else {
+                    Platform.runLater(() -> {
+                        setStone(vm.getStoneAtCoordinatesInCurrentBoard(coordinates));
+                        resetStrokeToPlacedStone();
+                    });
                 }
-                if (penultimateCoords != null && penultimateCoords.equals(coordinates)) {
-                    Platform.runLater(this::resetStrokeToPlacedStone);
-                }
-            } else {
-                Platform.runLater(() -> {
-                    setStone(vm.getStoneAtCoordinatesInCurrentBoard(coordinates));
-                    resetStrokeToPlacedStone();
-                });
             }
         }
     }
