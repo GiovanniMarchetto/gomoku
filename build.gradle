@@ -25,7 +25,8 @@ tasks.withType(JavaCompile) {
 
 application {
     mainModule = 'it.units.sdm.gomoku'
-    mainClass = 'it.units.sdm.gomoku.ui.gui.GUIMain'
+//    mainClass = 'it.units.sdm.gomoku.ui.gui.GUIMain'
+    mainClass = 'it.units.sdm.gomoku.Main'
 }
 
 javafx {
