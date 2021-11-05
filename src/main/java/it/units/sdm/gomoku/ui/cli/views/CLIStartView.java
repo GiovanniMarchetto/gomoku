@@ -86,7 +86,7 @@ public class CLIStartView extends View<StartViewmodel> {// TODO : refactor this 
     private static String askAndGetNumberOfGames() {
         System.out.print("How many games? ");
         return IOUtility.checkInputAndGet(
-                PositiveInteger::isPositiveInteger,
+                PositiveInteger::isPositiveIntegerFromString,
                 System.out,
                 "Insert a positive integer value for the number of games: "
         );

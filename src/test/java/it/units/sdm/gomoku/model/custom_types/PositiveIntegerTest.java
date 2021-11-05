@@ -34,7 +34,7 @@ public class PositiveIntegerTest {
 
     @ParameterizedTest
     @CsvSource({"0,false", "-1,false", "1,true", "2,true"})
-    void isPositiveInteger(String s, boolean expected) {
-        assertEquals(expected, PositiveInteger.isPositiveInteger(s));
+    void isPositiveIntegerFromString(String s, boolean expected) {
+        assertEquals(expected, PositiveInteger.isPositiveIntegerFromString(s));
     }
 }

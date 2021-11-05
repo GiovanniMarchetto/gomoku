@@ -25,7 +25,7 @@ public class PositiveInteger extends NonNegativeInteger {
         super(Objects.requireNonNull(positiveInteger));
     }
 
-    public static boolean isPositiveInteger(@NotNull final String s) {
+    public static boolean isPositiveIntegerFromString(@NotNull final String s) {
         try {
             new PositiveInteger(Integer.parseInt(s));
             return true;
