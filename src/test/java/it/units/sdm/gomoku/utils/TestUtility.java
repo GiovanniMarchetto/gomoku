@@ -5,6 +5,7 @@ import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.entities.Stone;
+import it.units.sdm.gomoku.ui.support.GamePlayElements;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -121,22 +122,26 @@ public class TestUtility {
                     .map(argsForOneTest -> {
                         Map<?, ?> argsMap = (HashMap<?, ?>) argsForOneTest;
 
-                        Stone[][] matrix = ((List<?>) (argsMap).get("matrix"))
-                                .stream().sequential()
-                                .map(row -> ((List<?>) row)
-                                        .stream()
-                                        .map(cell -> Stone.valueOf((String) cell))
-                                        .toArray(Stone[]::new))
-                                .toArray(Stone[][]::new);
-
                         List<Integer> ints = ((List<?>) argsMap.get("coordinates")).stream().map(x -> (int) x).collect(Collectors.toList());
-                        Coordinates coords = new Coordinates(ints.get(0), ints.get(1));
 
-                        boolean expected = (boolean) argsMap.get("expected");
+                        GamePlayElements gamePlayElements = new GamePlayElements(
+                                ((List<?>) (argsMap).get("matrix"))
+                                        .stream().sequential()
+                                        .map(row -> ((List<?>) row)
+                                                .stream()
+                                                .map(cell -> Stone.valueOf((String) cell))
+                                                .toArray(Stone[]::new))
+                                        .toArray(Stone[][]::new),
+                                new Coordinates(ints.get(0), ints.get(1)),
+                                (boolean) argsMap.get("expected"),
+                                (boolean) argsMap.get("finishedGame")
+                        );
 
-                        boolean finishedGame = (boolean) argsMap.get("finishedGame");
-
-                        return Arguments.of(matrix, coords, expected, finishedGame);
+                        return Arguments.of(
+                                gamePlayElements.matrix(),
+                                gamePlayElements.coordinatesToControl(),
+                                gamePlayElements.isWinChainFromCoordinates(),
+                                gamePlayElements.isFinishedGame());
                     });
         } catch (IOException | URISyntaxException e) {
             fail(e);
