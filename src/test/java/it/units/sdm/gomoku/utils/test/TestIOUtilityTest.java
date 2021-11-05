@@ -5,12 +5,10 @@ import it.units.sdm.gomoku.model.entities.Stone;
 import it.units.sdm.gomoku.utils.IOUtility;
 import it.units.sdm.gomoku.utils.Predicates;
 import it.units.sdm.gomoku.utils.TestUtility;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvFileSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -19,7 +17,6 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static it.units.sdm.gomoku.utils.TestUtility.createNxNRandomBoardToStringInCSVFormat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -29,11 +26,6 @@ public
 class TestIOUtilityTest {
 
     private final static int LIMIT_VALUE_FOR_N = 200; // avoid creating too big boards
-
-    @NotNull
-    static Stream<Arguments> provideCoupleOfNonNegativeIntegersTill19Excluded() {
-        return TestUtility.provideCoupleOfNonNegativeIntegersTillNExcluded(19);
-    }
 
     @Test
     void readBoardStoneFromCSVFile_testIfMatrixOfCorrectSizeWasRead() {
@@ -69,7 +61,7 @@ class TestIOUtilityTest {
     }
 
     @ParameterizedTest
-    @MethodSource("provideCoupleOfNonNegativeIntegersTill19Excluded")
+    @MethodSource("it.units.sdm.gomoku.utils.TestUtility#provideCoupleOfNonNegativeIntegersTillBoardSize")
     void createNxNRandomBoardToStringWithGivenRandomSeedTest_assertMatrixToBeSquaredOfSizeNxN(int N, int randomSeed) {
         String boardAsCSVString = TestUtility.createNxNRandomBoardToStringInCSVFormat(N, randomSeed);
         String[][] matrix = TestUtility.getRowsAsStreamOfStringFromBoarsProvidedAsStringRepresentingTheMatrixInCSVFormat(boardAsCSVString)
@@ -79,7 +71,7 @@ class TestIOUtilityTest {
     }
 
     @ParameterizedTest
-    @MethodSource("provideCoupleOfNonNegativeIntegersTill19Excluded")
+    @MethodSource("it.units.sdm.gomoku.utils.TestUtility#provideCoupleOfNonNegativeIntegersTillBoardSize")
     void createNxNRandomBoardToStringTest_assertHavingNxNStones(int N, int randomSeed) {
         final int expectedNumberOfStonesToBePresent = N * N;
         String boardAsCSVString = TestUtility.createNxNRandomBoardToStringInCSVFormat(N, randomSeed);

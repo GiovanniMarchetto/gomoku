@@ -25,17 +25,13 @@ import java.util.function.BiFunction;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static it.units.sdm.gomoku.model.custom_types.PositiveInteger.*;
 import static it.units.sdm.gomoku.utils.TestUtility.getStreamOfGamePlayElements;
-import static it.units.sdm.gomoku.utils.TestUtility.provideCoupleOfNonNegativeIntegersTillNExcluded;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class BoardTest {
 
     private static Board board;
-
-    private static Stream<Arguments> provideCoupleOfNonNegativeIntegersTillBOARD_SIZEExcluded() {
-        return provideCoupleOfNonNegativeIntegersTillNExcluded(EnvVariables.BOARD_SIZE.intValue());
-    }
 
     private static Stream<Arguments> getABoardAndACoordinate() {
         return getStreamOfGamePlayElements()
@@ -46,7 +42,7 @@ public class BoardTest {
     }
 
     @NotNull
-    private static Stream<Coordinates> generateCoordinates(@PositiveInteger.PositiveIntegerType int boardSize) {
+    private static Stream<Coordinates> generateCoordinates(@PositiveIntegerType int boardSize) {
         return IntStream.range(0, boardSize)
                 .boxed()
                 .flatMap(i -> IntStream.range(0, boardSize)
@@ -64,13 +60,13 @@ public class BoardTest {
     }
 
     @ParameterizedTest
-    @MethodSource("provideCoupleOfNonNegativeIntegersTillBOARD_SIZEExcluded")
+    @MethodSource("it.units.sdm.gomoku.utils.TestUtility#provideCoupleOfNonNegativeIntegersTillBoardSize")
     void getStoneAtCoordinates(int x, int y) {
         assertEquals(TestUtility.boardStoneFromCsv[x][y], board.getStoneAtCoordinates(new Coordinates(x, y)));
     }
 
     @ParameterizedTest
-    @MethodSource("provideCoupleOfNonNegativeIntegersTillBOARD_SIZEExcluded")
+    @MethodSource("it.units.sdm.gomoku.utils.TestUtility#provideCoupleOfNonNegativeIntegersTillBoardSize")
     void getBoardMatrixCopy(int x, int y) {
         assertEquals(TestUtility.boardStoneFromCsv[x][y], board.getBoardMatrixCopy()[x][y]);
     }
@@ -101,7 +97,7 @@ public class BoardTest {
     }
 
     @ParameterizedTest
-    @MethodSource("provideCoupleOfNonNegativeIntegersTillBOARD_SIZEExcluded")
+    @MethodSource("it.units.sdm.gomoku.utils.TestUtility#provideCoupleOfNonNegativeIntegersTillBoardSize")
     void occupyPosition(int x, int y) {
         Coordinates coordinates = new Coordinates(x, y);
         try {

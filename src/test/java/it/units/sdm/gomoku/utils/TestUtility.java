@@ -112,6 +112,11 @@ public class TestUtility {
     }
 
     @NotNull
+    public static Stream<Arguments> provideCoupleOfNonNegativeIntegersTillBoardSize() {
+        return provideCoupleOfNonNegativeIntegersTillNExcluded(EnvVariables.BOARD_SIZE.intValue());
+    }
+
+    @NotNull
     public static Stream<Arguments> getStreamOfGamePlayElementsFromCSV(@NotNull String filePath) {
         try {
             String json = Files.readString(Paths.get(Objects.requireNonNull(TestUtility.class.getResource(filePath)).toURI()));
