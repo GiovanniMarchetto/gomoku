@@ -1,10 +1,12 @@
 package it.units.sdm.gomoku.client_server.fake_objects;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@Disabled("Disabled until refactoring of the rest of the project")
 public class TestFakeObjects {
 
     @ParameterizedTest

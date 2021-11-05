@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -36,6 +37,7 @@ import java.util.stream.Stream;
 import static it.units.sdm.gomoku.client_server.GomokuProtocol.Status;
 import static org.junit.jupiter.api.Assertions.*;
 
+@Disabled("Disabled until refactoring of the rest of the project")
 class GomokuProtocolTest {
 
     private GomokuServer gomokuServer;
