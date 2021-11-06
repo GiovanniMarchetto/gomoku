@@ -7,6 +7,7 @@ import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -14,7 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static it.units.sdm.gomoku.model.entities.Board.NoMoreEmptyPositionAvailableException;
+import static it.units.sdm.gomoku.model.entities.Board.BoardIsFullException;
 
 public class CPUPlayer extends Player {
 
@@ -46,7 +47,7 @@ public class CPUPlayer extends Player {
                                     .map(validPair -> new Coordinates(validPair.getKey(), validPair.getValue()))
                                     .filter(board::isCoordinatesInsideBoard)
                                     .map(board::getStoneAtCoordinates)
-                                    .filter(stone -> !stone.isNone())
+                                    .filter(Objects::nonNull)
                                     .collect(Collectors.toList());
                             if (stoneList.size() != 0) {
                                 return stoneList.stream()
@@ -61,7 +62,7 @@ public class CPUPlayer extends Player {
     }
 
     @NotNull
-    public Coordinates chooseSmartEmptyCoordinates(@NotNull Board board) throws NoMoreEmptyPositionAvailableException {
+    public Coordinates chooseSmartEmptyCoordinates(@NotNull Board board) throws BoardIsFullException {
 
         if (board.isEmpty()) {
             return chooseNextEmptyCoordinatesFromCenter(board);
@@ -85,34 +86,34 @@ public class CPUPlayer extends Player {
     }
 
     @NotNull
-    public Coordinates chooseNextEmptyCoordinates(@NotNull Board board) throws NoMoreEmptyPositionAvailableException {
-        if (board.isAnyEmptyPositionOnTheBoard()) {
+    public Coordinates chooseNextEmptyCoordinates(@NotNull Board board) throws BoardIsFullException {
+        if (board.isThereAnyEmptyCell()) {
             //noinspection OptionalGetWithoutIsPresent because is yet checked with isAnyEmptyPosition
             return getStreamOfEmptyCoordinates(board).findFirst().get();
         }
-        throw new NoMoreEmptyPositionAvailableException();
+        throw new BoardIsFullException();
     }
 
     @NotNull
-    public Coordinates chooseNextEmptyCoordinatesFromCenter(@NotNull Board board) throws NoMoreEmptyPositionAvailableException {
+    public Coordinates chooseNextEmptyCoordinatesFromCenter(@NotNull Board board) throws BoardIsFullException {
         int s = board.getSize();
         int n = (int) Math.ceil(s / 2.0) - 1;
-        if (board.isAnyEmptyPositionOnTheBoard()) {
+        if (board.isThereAnyEmptyCell()) {
             for (int i = n; i >= 0; i--) {
                 for (int x = i; x < s - i; x++) {
                     for (int y = i; y < s - i; y++) {
                         var coords = new Coordinates(x, y);
-                        if (board.getStoneAtCoordinates(coords) == Stone.NONE) return coords;
+                        if (board.getCellAtCoordinates(coords).isEmpty()) return coords;
                     }
                 }
             }
         }
-        throw new NoMoreEmptyPositionAvailableException();
+        throw new BoardIsFullException();
     }
 
     @NotNull
-    public Coordinates chooseRandomEmptyCoordinates(@NotNull Board board) throws NoMoreEmptyPositionAvailableException {
-        if (board.isAnyEmptyPositionOnTheBoard()) {
+    public Coordinates chooseRandomEmptyCoordinates(@NotNull Board board) throws BoardIsFullException {
+        if (board.isThereAnyEmptyCell()) {
             List<Coordinates> emptyCoordinates = getStreamOfEmptyCoordinates(board).toList();
             return emptyCoordinates.get(rand.nextInt(emptyCoordinates.size()));
         }
@@ -123,7 +124,7 @@ public class CPUPlayer extends Player {
         return IntStream.range(0, board.getSize()).boxed()
                 .flatMap(x -> IntStream.range(0, board.getSize())
                         .mapToObj(y -> new Coordinates(x, y)))
-                .filter(c -> board.getStoneAtCoordinates(c).isNone());
+                .filter(c -> board.getCellAtCoordinates(c).isEmpty());
     }
 }
 

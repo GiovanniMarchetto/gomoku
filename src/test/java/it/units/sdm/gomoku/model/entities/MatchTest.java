@@ -62,10 +62,10 @@ class MatchTest {
             for (int numberOfGame = 0; numberOfGame < NUMBER_OF_GAMES; numberOfGame++) {
                 Game currentGame = match.startNewGame();
                 while (!currentGame.isThisGameEnded()) {
-                    currentGame.placeNextStone(cpu1.chooseNextEmptyCoordinates(currentGame.getBoard()));
+                    currentGame.placeStoneAndChangeTurn(cpu1.chooseNextEmptyCoordinates(currentGame.getBoard()));
                 }
             }
-        } catch (Match.MatchEndedException | Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
+        } catch (Match.MatchEndedException | Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
             fail(e.getMessage());
         }
 
@@ -150,7 +150,7 @@ class MatchTest {
             Method placeStoneMethod = currentGame.getClass().getDeclaredMethod("placeStone", Player.class, Coordinates.class);
             placeStoneMethod.setAccessible(true);
             placeStoneMethod.invoke(currentGame, cpuPlayer, cpu1.chooseNextEmptyCoordinates(currentGame.getBoard()));
-        } catch (Board.NoMoreEmptyPositionAvailableException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
+        } catch (Board.BoardIsFullException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
             e.printStackTrace();
         }
     }

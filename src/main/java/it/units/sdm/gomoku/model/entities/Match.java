@@ -70,8 +70,8 @@ public class Match {
     }
 
     public static void executeMoveOfPlayerInGame(@NotNull Game game, @NotNull Coordinates coordinatesOfTheMove)
-            throws Board.NoMoreEmptyPositionAvailableException, Board.PositionAlreadyOccupiedException {
-        game.placeNextStone(coordinatesOfTheMove);
+            throws Board.BoardIsFullException, Board.CellAlreadyOccupiedException {
+        game.placeStoneAndChangeTurn(coordinatesOfTheMove);
     }
 
     public void addAnExtraGame() {

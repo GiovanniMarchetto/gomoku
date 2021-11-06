@@ -17,12 +17,12 @@ class GameTest {
     private final CPUPlayer cpuWhite = new CPUPlayer("cpuWhite");
     private Game game;
 
-    private void setGameFromCsv(Game voidGame, Stone[][] boardStone) {
-        for (int x = 0; x < boardStone.length; x++) {
-            for (int y = 0; y < boardStone.length; y++) {
-                if (!boardStone[x][y].isNone()) {
+    private void setGameFromCsv(Game voidGame, Cell[][] cellMatrix) {
+        for (int x = 0; x < cellMatrix.length; x++) {
+            for (int y = 0; y < cellMatrix.length; y++) {
+                if (!cellMatrix[x][y].isNone()) {
                     Player playerFoundInBoard;
-                    if (boardStone[x][y] == Stone.BLACK) {
+                    if (cellMatrix[x][y] == Stone.BLACK) {
                         playerFoundInBoard = cpuBlack;
                     } else {
                         playerFoundInBoard = cpuWhite;
@@ -41,19 +41,19 @@ class GameTest {
 
     @ParameterizedTest
     @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfGamePlayElements")
-    void placeStone(Stone[][] matrix, Coordinates coordinates, boolean finishedGame) throws NoSuchFieldException, IllegalAccessException {
+    void placeStone(Cell[][] matrix, Coordinates coordinates, boolean finishedGame) throws NoSuchFieldException, IllegalAccessException {
         game = new Game(matrix.length, cpuBlack, cpuWhite);
         setGameFromCsv(game, matrix);
 
         Field fieldBoardGame = game.getClass().getDeclaredField("board");
         fieldBoardGame.setAccessible(true);
-        Board expectedBoard = TestUtility.createBoardFromBoardStone(matrix, matrix.length);
+        Board expectedBoard = TestUtility.createBoardFromCellMatrix(matrix, matrix.length);
 
         assertEquals(expectedBoard, fieldBoardGame.get(game));
 
         if (finishedGame) {
             try {
-                if (expectedBoard.isAnyEmptyPositionOnTheBoard()) {
+                if (expectedBoard.isThereAnyEmptyCell()) {
                     assertNotNull(game.getWinner());
                 } else {
                     assertNull(game.getWinner());
@@ -71,7 +71,7 @@ class GameTest {
         setGameFromCsv(game, matrix);
         try {
             Player winner = game.getWinner();
-            if (game.getBoard().isAnyEmptyPositionOnTheBoard()) {
+            if (game.getBoard().isThereAnyEmptyCell()) {
                 assertNotNull(winner);
             } else {
                 assertNull(winner);

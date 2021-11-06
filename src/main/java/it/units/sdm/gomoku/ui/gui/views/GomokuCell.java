@@ -2,8 +2,10 @@ package it.units.sdm.gomoku.ui.gui.views;
 
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.Board;
+import it.units.sdm.gomoku.model.entities.Cell;
 import it.units.sdm.gomoku.model.entities.Stone;
 import it.units.sdm.gomoku.mvvm_library.Observer;
+import it.units.sdm.gomoku.ui.AbstractMainViewmodel;
 import it.units.sdm.gomoku.ui.gui.viewmodels.MainViewmodel;
 import javafx.application.Platform;
 import javafx.geometry.HPos;
@@ -16,6 +18,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 
 import java.beans.PropertyChangeEvent;
+import java.util.Objects;
 
 public class GomokuCell implements Observer {
 
@@ -27,7 +30,7 @@ public class GomokuCell implements Observer {
 
     private double radius;
 
-    private Stone stone;
+    private Cell cell;
 
     private Rectangle rectangle;
     private Line lineH;
@@ -83,27 +86,28 @@ public class GomokuCell implements Observer {
         return group;
     }
 
-    private void setStone(Stone stone) {
-        this.stone = stone;
-        if (!stone.isNone()) {
-            circle.setOpacity(1);
-            circle.setFill(stone == Stone.BLACK ? Color.BLACK : Color.WHITE);
-            circle.setStroke(Color.DARKRED);
-            circle.setStrokeWidth(3.0);
-        } else {
+    private void setCell(Cell cell) {
+        this.cell = cell;
+        if (cell.isEmpty()) {
             circle.setOpacity(0);
             circle.setFill(Color.AQUAMARINE);
             circle.setStroke(null);
             circle.setStrokeWidth(1.0);
+        } else {
+            circle.setOpacity(1);
+            //noinspection ConstantConditions // already checked
+            circle.setFill(cell.getStone().color() == Stone.Color.BLACK ? Color.BLACK : Color.WHITE);
+            circle.setStroke(Color.DARKRED);
+            circle.setStrokeWidth(3.0);
         }
     }
 
     private void resetStrokeToPlacedStone() {
-        if (!stone.isNone()) {
+        if (cell.isEmpty()) {
+            setCell(cell);
+        } else {
             circle.setStroke(Color.BLACK);
             circle.setStrokeWidth(1.0);
-        } else {
-            setStone(stone);
         }
     }
 
@@ -181,7 +185,7 @@ public class GomokuCell implements Observer {
 
     private void initializeCircle() {
         circle = new Circle(getRadius());
-        setStone(Stone.NONE);
+        cell = new Cell();
         group.getChildren().add(circle);
     }
 
@@ -196,26 +200,26 @@ public class GomokuCell implements Observer {
 
     private void initializeEvents() {
         rectangle.setOnMouseEntered(event -> {
-            if (stone.isNone()) {
+            if (cell.isEmpty()) {
                 circle.setOpacity(0.5);
             }
         });
         rectangle.setOnMouseExited(event -> {
-            if (stone.isNone()) {
+            if (cell.isEmpty()) {
                 circle.setOpacity(0);
             }
         });
 
         rectangle.setOnMousePressed(event -> {
-            if (stone.isNone() && event.isPrimaryButtonDown()) {
+            if (cell.isEmpty() && event.isPrimaryButtonDown()) {
                 try {
                     vm.placeStoneFromUser(coordinates);
-                } catch (Board.NoMoreEmptyPositionAvailableException |
-                        Board.PositionAlreadyOccupiedException e) {
+                } catch (Board.BoardIsFullException |
+                        Board.CellAlreadyOccupiedException e) {
                     e.printStackTrace();    // TODO : handle this exception (should never happen)
                     // Possible things to do:
                     // force update stone (in GUI) at current coordinates, or...
-//                    setStone(vm.getStoneAtCoordinatesInCurrentBoard(coordinates));
+//                    setCell(vm.getCellAtCoordinatesInCurrentBoard(coordinates));
                     // ... force update all stones
                     vm.forceReFireAllCells();
 
@@ -229,28 +233,15 @@ public class GomokuCell implements Observer {
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
             case radiusPropertyName -> setRadius((double) evt.getNewValue());
-            case Board.boardMatrixPropertyName -> {
-                if (evt.getNewValue() != null) {
-                    Board board = (Board) evt.getNewValue();
-                    int nOfStones = board.getCoordinatesHistory().size();
+            case AbstractMainViewmodel.lastMoveCoordinatesPropertyName -> {
+                Coordinates lastCoords = (Coordinates) Objects.requireNonNull(evt.getNewValue());
+                if(lastCoords.equals(coordinates)) {
+                    Platform.runLater(() -> setCell(Objects.requireNonNull(vm.getCellAtCoordinatesInCurrentBoard(lastCoords))));
+                }
 
-                    Coordinates lastCoords = board.getCoordinatesHistory().get(nOfStones - 1);
-                    if (lastCoords.equals(coordinates)) {
-                        Platform.runLater(() -> setStone(board.getStoneAtCoordinates(lastCoords)));
-                    }
-
-                    Coordinates penultimateCoords = null;
-                    if (board.getCoordinatesHistory().size() > 1) {
-                        penultimateCoords = board.getCoordinatesHistory().get(nOfStones - 2);
-                    }
-                    if (penultimateCoords != null && penultimateCoords.equals(coordinates)) {
-                        Platform.runLater(this::resetStrokeToPlacedStone);
-                    }
-                } else {
-                    Platform.runLater(() -> {
-                        setStone(vm.getStoneAtCoordinatesInCurrentBoard(coordinates));
-                        resetStrokeToPlacedStone();
-                    });
+                Coordinates penultimateCoords = (Coordinates) evt.getOldValue();
+                if (penultimateCoords != null && penultimateCoords.equals(coordinates)) {
+                    Platform.runLater(this::resetStrokeToPlacedStone);
                 }
             }
         }

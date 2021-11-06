@@ -36,7 +36,7 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
                 case USER_MUST_PLACE:
                     try {
                         waitForAValidMoveOfAPlayer();
-                    } catch (Board.NoMoreEmptyPositionAvailableException e) {
+                    } catch (Board.BoardIsFullException e) {
                         // TODO : handle exception
                         System.err.println("Game terminated due an unexpected exception: ");
                         e.printStackTrace();
@@ -78,7 +78,7 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
 
     }
 
-    private void waitForAValidMoveOfAPlayer() throws Board.NoMoreEmptyPositionAvailableException {  // TODO : not tested
+    private void waitForAValidMoveOfAPlayer() throws Board.BoardIsFullException {  // TODO : not tested
         int rowCoord = 0, colCoord = 0;
         boolean validMove = false;
 
@@ -103,12 +103,12 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
                         " and " + (viewmodel.getBoardSize() - 1) + " included.");
             } catch (IllegalArgumentException e) {
                 System.out.print("Invalid coordinates value.");
-            } catch (Board.NoMoreEmptyPositionAvailableException e) {
+            } catch (Board.BoardIsFullException e) {
                 Logger.getLogger(getClass().getCanonicalName())
                         .log(Level.SEVERE, "Should never happen: no more empty position" +
                                 " available on the board but game should be already ended", e);
                 throw e;
-            } catch (Board.PositionAlreadyOccupiedException e) {
+            } catch (Board.CellAlreadyOccupiedException e) {
                 System.out.print("The position " + coordInsertedByTheUser + " is already occupied.");
             }
         } while (!validMove);
