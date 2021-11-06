@@ -84,7 +84,6 @@ public class CPUPlayerChooseEmptyCoordinatesTest {
         }
     }
 
-
     private void occupyCoordinateFromXAndY(int x, int y) {
         try {
             board.occupyPosition(stoneColor, new Coordinates(x, y));

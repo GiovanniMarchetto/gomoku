@@ -18,18 +18,15 @@ class CPUPlayerTest {
     private static final PositiveInteger BOARD_SIZE = new PositiveInteger(5);
     private static Board board = null;
     private final CPUPlayer cpuPlayer = new CPUPlayer("cpuPlayer");
-    private Stone cpuStone = Stone.BLACK;
+    private static Stone cpuStone = Stone.BLACK;
 
     @BeforeAll
     static void resetBoard() {
         board = new Board(BOARD_SIZE);
-        try {
-            board.occupyPosition(Stone.BLACK, new Coordinates(0, 1));
-            board.occupyPosition(Stone.BLACK, new Coordinates(0, 3));
-            board.occupyPosition(Stone.WHITE, new Coordinates(1, 2));
-        } catch (NoMoreEmptyPositionAvailableException | PositionAlreadyOccupiedException e) {
-            e.printStackTrace();
-        }
+
+        tryToOccupyCoordinatesChosen(new Coordinates(0, 1));
+        tryToOccupyCoordinatesChosen(new Coordinates(0, 3));
+        tryToOccupyCoordinatesChosen(new Coordinates(1, 2));
     }
 
     @RepeatedTest(NUMBER_OF_REPETITION)
@@ -43,7 +40,7 @@ class CPUPlayerTest {
         }
     }
 
-    private void tryToOccupyCoordinatesChosen(Coordinates coordinates) {
+    private static void tryToOccupyCoordinatesChosen(Coordinates coordinates) {
         try {
             board.occupyPosition(cpuStone, coordinates);
             cpuStone = cpuStone == Stone.BLACK ? Stone.BLACK : Stone.WHITE;
