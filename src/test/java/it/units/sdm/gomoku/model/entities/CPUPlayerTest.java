@@ -8,8 +8,8 @@ import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import static it.units.sdm.gomoku.model.entities.Board.NoMoreEmptyPositionAvailableException;
-import static it.units.sdm.gomoku.model.entities.Board.PositionAlreadyOccupiedException;
+import static it.units.sdm.gomoku.model.entities.Board.BoardIsFullException;
+import static it.units.sdm.gomoku.model.entities.Board.CellAlreadyOccupiedException;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CPUPlayerTest {
@@ -27,7 +27,7 @@ class CPUPlayerTest {
             board.occupyPosition(Stone.BLACK, new Coordinates(0, 1));
             board.occupyPosition(Stone.BLACK, new Coordinates(0, 3));
             board.occupyPosition(Stone.WHITE, new Coordinates(1, 2));
-        } catch (NoMoreEmptyPositionAvailableException | PositionAlreadyOccupiedException e) {
+        } catch (BoardIsFullException | CellAlreadyOccupiedException e) {
             e.printStackTrace();
         }
     }
@@ -36,8 +36,8 @@ class CPUPlayerTest {
     void chooseRandomEmptyCoordinatesRepeatedTest() {
         try {
             assertTrue(board.getStoneAtCoordinates(cpuPlayer.chooseRandomEmptyCoordinates(board)).isNone());
-        } catch (NoMoreEmptyPositionAvailableException e) {
-            if (board.isAnyEmptyPositionOnTheBoard()) {
+        } catch (BoardIsFullException e) {
+            if (board.isThereAnyEmptyCell()) {
                 fail(e);
             }
         }
@@ -47,7 +47,7 @@ class CPUPlayerTest {
         try {
             board.occupyPosition(cpuStone, coordinates);
             cpuStone = cpuStone == Stone.BLACK ? Stone.BLACK : Stone.WHITE;
-        } catch (PositionAlreadyOccupiedException | NoMoreEmptyPositionAvailableException e) {
+        } catch (CellAlreadyOccupiedException | BoardIsFullException e) {
             fail(e);
         }
     }
@@ -59,7 +59,7 @@ class CPUPlayerTest {
         Coordinates expected = new Coordinates(x, y);
         try {
             assertEquals(expected, cpuPlayer.chooseNextEmptyCoordinatesFromCenter(board));
-        } catch (NoMoreEmptyPositionAvailableException e) {
+        } catch (BoardIsFullException e) {
             fail(e.getMessage());
         }
     }
@@ -73,7 +73,7 @@ class CPUPlayerTest {
 
             Coordinates expected = new Coordinates(x, y);
             assertEquals(expected, cpuPlayer.chooseNextEmptyCoordinatesFromCenter(board));
-        } catch (NoMoreEmptyPositionAvailableException | PositionAlreadyOccupiedException e) {
+        } catch (BoardIsFullException | CellAlreadyOccupiedException e) {
             fail(e.getMessage());
         }
     }
@@ -94,7 +94,7 @@ class CPUPlayerTest {
                 Coordinates actual = cpuPlayer.chooseNextEmptyCoordinates(board);
                 assertEquals(expected, actual);
                 tryToOccupyCoordinatesChosen(actual);
-            } catch (NoMoreEmptyPositionAvailableException e) {
+            } catch (BoardIsFullException e) {
                 fail(e);
             }
         }
@@ -117,7 +117,7 @@ class CPUPlayerTest {
                 Coordinates actual = cpuPlayer.chooseNextEmptyCoordinatesFromCenter(board);
                 assertEquals(expected, actual);
                 tryToOccupyCoordinatesChosen(actual);
-            } catch (NoMoreEmptyPositionAvailableException e) {
+            } catch (BoardIsFullException e) {
                 fail(e);
             }
         }

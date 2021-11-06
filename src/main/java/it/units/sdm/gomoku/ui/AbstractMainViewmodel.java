@@ -22,6 +22,7 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
     public final static String userMustPlaceNewStonePropertyName = "userMustPlaceNewStone";
 
     public final static String currentPlayerPropertyName = Game.currentPlayerPropertyName;
+    public final static String lastMoveCoordinatesPropertyName = Board.lastMoveCoordinatesPropertyName;
 
     @Nullable
     private Match match;
@@ -38,10 +39,8 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
-            case Board.boardMatrixPropertyName -> {
-                Board board = (Board) evt.getNewValue();
-                firePropertyChange(Board.boardMatrixPropertyName, board);
-            }
+            case Board.lastMoveCoordinatesPropertyName -> firePropertyChange(
+                    lastMoveCoordinatesPropertyName, evt.getOldValue(), evt.getNewValue());
             case Game.isThisGameEndedPropertyName -> {
                 if ((Boolean) evt.getNewValue()) {
                     endGame();
@@ -131,12 +130,12 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
     }
 
     private void placeStone(@NotNull final Coordinates coordinates)
-            throws Board.NoMoreEmptyPositionAvailableException, Board.PositionAlreadyOccupiedException {
+            throws Board.BoardIsFullException, Board.CellAlreadyOccupiedException {
         Match.executeMoveOfPlayerInGame(getCurrentGame(), Objects.requireNonNull(coordinates));
     }
 
     public void placeStoneFromUser(@NotNull final Coordinates coordinates)
-            throws Board.NoMoreEmptyPositionAvailableException, Board.PositionAlreadyOccupiedException {
+            throws Board.BoardIsFullException, Board.CellAlreadyOccupiedException {
         if (!(getCurrentPlayer() instanceof CPUPlayer)) {
             //TODO: why two methods that do the same control?
             placeStone(coordinates);
@@ -150,7 +149,7 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
                 try {
                     Thread.sleep(delayOfCpuMove);
                     placeStone(cpuPlayer.chooseSmartEmptyCoordinates(getCurrentBoard()));
-                } catch (Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException | InterruptedException e) {
+                } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | InterruptedException e) {
                     e.printStackTrace();    // TODO : handle this
                 }
             } else {
@@ -160,7 +159,8 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
     }
 
     public void forceReFireAllCells() {
-        firePropertyChange(Board.boardMatrixPropertyName, null);
+        // TODO: Rethink this
+//        firePropertyChange(Board.lastMoveCoordinatesPropertyName, null);
     }
 
     public int getBoardSize() {
@@ -184,8 +184,8 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
         return Objects.requireNonNull(currentGame).getCurrentPlayer();
     }
 
-    public Stone getStoneOfCurrentPlayer() {
-        return Objects.requireNonNull(currentGame).getStoneOfPlayer(getCurrentPlayer());
+    public Stone.Color getColorOfCurrentPlayer() {
+        return Objects.requireNonNull(currentGame).getColorOfPlayer(getCurrentPlayer());
     }
 
     public Player getCurrentBlackPlayer() {
@@ -196,8 +196,8 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
         return Objects.requireNonNull(match).getCurrentWhitePlayer();
     }
 
-    public Stone getStoneAtCoordinatesInCurrentBoard(Coordinates coordinates) {
-        return Objects.requireNonNull(currentBoard).getStoneAtCoordinates(coordinates);
+    public Cell getCellAtCoordinatesInCurrentBoard(Coordinates coordinates) {
+        return Objects.requireNonNull(currentBoard).getCellAtCoordinates(coordinates);
     }
 
     @Nullable

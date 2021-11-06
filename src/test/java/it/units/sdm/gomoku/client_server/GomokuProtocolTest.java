@@ -79,7 +79,7 @@ class GomokuProtocolTest {
                     for (int i = 0; i < MAX_NUMBER_OF_STONE_TO_PLACE_ON_THE_BOARD; i++) {
                         try {
                             cpuPlayer.chooseRandomEmptyCoordinates(board);
-                        } catch (Board.NoMoreEmptyPositionAvailableException ignored) {
+                        } catch (Board.BoardIsFullException ignored) {
                         }
                     }
                     return board;

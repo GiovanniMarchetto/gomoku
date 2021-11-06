@@ -53,7 +53,7 @@ class GameTest {
 
         if (finishedGame) {
             try {
-                if (expectedBoard.isAnyEmptyPositionOnTheBoard()) {
+                if (expectedBoard.isThereAnyEmptyCell()) {
                     assertNotNull(game.getWinner());
                 } else {
                     assertNull(game.getWinner());
@@ -71,7 +71,7 @@ class GameTest {
         setGameFromCsv(game, matrix);
         try {
             Player winner = game.getWinner();
-            if (game.getBoard().isAnyEmptyPositionOnTheBoard()) {
+            if (game.getBoard().isThereAnyEmptyCell()) {
                 assertNotNull(winner);
             } else {
                 assertNull(winner);
