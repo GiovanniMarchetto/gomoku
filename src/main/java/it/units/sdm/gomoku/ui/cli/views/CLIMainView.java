@@ -2,6 +2,7 @@ package it.units.sdm.gomoku.ui.cli.views;
 
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.Board;
+import it.units.sdm.gomoku.model.entities.Game;
 import it.units.sdm.gomoku.model.entities.Match;
 import it.units.sdm.gomoku.mvvm_library.Observer;
 import it.units.sdm.gomoku.mvvm_library.View;
@@ -27,13 +28,63 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
 
-        final String evtName = evt.getPropertyName();   // TODO: may be a method in ObservableProperty?
-        if (Objects.equals(evtName, getViewmodelAssociatedWithView().currentGameStatus.getPropertyNameOrElseThrow())) { // TODO : code duplication  with AbstractMainViewmodel
-            switch ((AbstractMainViewmodel.CurrentGameStatus) evt.getNewValue()) {
-                case GAME_STARTED:
+//        final String evtName = evt.getPropertyName();   // TODO: may be a method in ObservableProperty?
+//        if (Objects.equals(evtName, getViewmodelAssociatedWithView().currentGameStatus.getPropertyNameOrElseThrow())) { // TODO : code duplication  with AbstractMainViewmodel
+//            switch ((AbstractMainViewmodel.CurrentGameStatus) evt.getNewValue()) {
+//                case GAME_STARTED:
+//                    System.out.println("\n\nNew game!");
+//                    break;
+//                case USER_MUST_PLACE:
+//                    try {
+//                        waitForAValidMoveOfAPlayer();
+//                    } catch (Board.BoardIsFullException e) {
+//                        // TODO : handle exception
+//                        System.err.println("Game terminated due an unexpected exception: ");
+//                        e.printStackTrace();
+//                        System.exit(1);
+//                    }
+//                    break;
+//                case GAME_ENDED:
+//                    System.out.println("Game ended");
+//                    // TODO : print summary
+//                    CLIMainViewmodel viewmodel = getViewmodelAssociatedWithView();
+//                    if (viewmodel.isMatchEnded()) {
+//
+//                        boolean isMatchEndedWithDraft = false;
+//                        try {
+//                            isMatchEndedWithDraft = viewmodel.getWinnerOfTheMatch() == null;  // TODO : viewmodel should have a method "isMatchEndedWithADraft()" to avoid "==null"
+//                        } catch (Match.MatchNotEndedException /* TODO: should be MatchNotEndedException */ e) {
+//                            Logger.getLogger(getClass().getCanonicalName())
+//                                    .log(Level.SEVERE, "Impossible to be here", e);
+//                        }
+//
+//                        if (isMatchEndedWithDraft) {
+//                            System.out.print("Extra game? Y/N: ");    // TODO: refactor with lines down?
+//                            boolean anotherGame = IOUtility.getLowercaseCharWhenValidCaseInsensitiveOrCycle('y', 'n') == 'y';
+//                            if (anotherGame) {
+//                                viewmodel.startExtraGame();
+//                            }
+//                        } else {
+//                            System.out.print("Another match? Y/N: ");
+//                            boolean anotherMatch = IOUtility.getLowercaseCharWhenValidCaseInsensitiveOrCycle('y', 'n') == 'y';
+//                            if (anotherMatch) {
+//                                viewmodel.startNewMatch();
+//                            }
+//                        }
+//                    } else {
+//                        viewmodel.startNewGame();
+//                    }
+//            }
+//        }
+
+        switch (evt.getPropertyName()) {
+            case Game.newGameStartedPropertyName -> {
+                if ((boolean) evt.getNewValue()) {
                     System.out.println("\n\nNew game!");
-                    break;
-                case USER_MUST_PLACE:
+                }
+            }
+            case AbstractMainViewmodel.userMustPlaceNewStonePropertyName -> {
+                if ((boolean) evt.getNewValue()) {
                     try {
                         waitForAValidMoveOfAPlayer();
                     } catch (Board.BoardIsFullException e) {
@@ -42,8 +93,10 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
                         e.printStackTrace();
                         System.exit(1);
                     }
-                    break;
-                case GAME_ENDED:
+                }
+            }
+            case Game.isThisGameEndedPropertyName -> {
+                if ((boolean) evt.getNewValue()) {
                     System.out.println("Game ended");
                     // TODO : print summary
                     CLIMainViewmodel viewmodel = getViewmodelAssociatedWithView();
@@ -73,6 +126,7 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
                     } else {
                         viewmodel.startNewGame();
                     }
+                }
             }
         }
 

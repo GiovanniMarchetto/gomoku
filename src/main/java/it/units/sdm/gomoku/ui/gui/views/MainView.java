@@ -79,7 +79,7 @@ public class MainView extends View<MainViewmodel> implements Observer {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (Objects.equals(evt.getPropertyName(), getViewmodelAssociatedWithView().currentGame.getPropertyValue().currentPlayer.getPropertyNameOrElseThrow())) {//TODO:message chain code smell
+        if (evt.getPropertyName().equals(MainViewmodel.currentPlayerPropertyName)) {
             SceneController.executeOnJavaFxUiThread(() -> {
                 currentPlayerLabel.setText(evt.getNewValue().toString());
                 currentPlayerCircle.setFill(
@@ -87,5 +87,14 @@ public class MainView extends View<MainViewmodel> implements Observer {
                                 ? Color.BLACK : Color.WHITE);
             });
         }
+//
+//        if (Objects.equals(evt.getPropertyName(), getViewmodelAssociatedWithView().currentGame.getPropertyValue().currentPlayer.getPropertyNameOrElseThrow())) {//TODO:message chain code smell
+//            SceneController.executeOnJavaFxUiThread(() -> {
+//                currentPlayerLabel.setText(evt.getNewValue().toString());
+//                currentPlayerCircle.setFill(
+//                        getViewmodelAssociatedWithView().getColorOfCurrentPlayer() == Stone.Color.BLACK
+//                                ? Color.BLACK : Color.WHITE);
+//            });
+//        }
     }
 }
