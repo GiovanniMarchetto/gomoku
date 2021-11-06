@@ -34,7 +34,9 @@ public class Board implements Observable, Cloneable, Serializable {
     public Board(@NotNull PositiveInteger size) {
         this.size = size;
         this.coordinatesHistory = new ArrayList<>(size.intValue());
-        this.matrix = new Cell[size.intValue()][size.intValue()];
+        this.matrix = IntStream.range(0, size.intValue())
+                .mapToObj(i -> IntStream.range(0, size.intValue()).mapToObj(j -> new Cell()).toArray(Cell[]::new))
+                .toArray(Cell[][]::new);
     }
 
     public Board(@PositiveIntegerType int size) {
@@ -45,6 +47,7 @@ public class Board implements Observable, Cloneable, Serializable {
         this.size = new PositiveInteger(board.size);
         this.coordinatesHistory = new ArrayList<>(board.coordinatesHistory);
         this.matrix = board.getBoardMatrixCopy();
+        this.lastMoveCoordinates = board.lastMoveCoordinates;
     }
 
     @PositiveIntegerType
