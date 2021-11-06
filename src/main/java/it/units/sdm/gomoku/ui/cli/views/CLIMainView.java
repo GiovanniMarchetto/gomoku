@@ -27,7 +27,7 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
 
-        final String evtName = evt.getPropertyName();   // TODO: may be a method in Property?
+        final String evtName = evt.getPropertyName();   // TODO: may be a method in ObservableProperty?
         if (Objects.equals(evtName, getViewmodelAssociatedWithView().currentGameStatus.getPropertyNameOrElseThrow())) { // TODO : code duplication  with AbstractMainViewmodel
             switch ((AbstractMainViewmodel.CurrentGameStatus) evt.getNewValue()) {
                 case GAME_STARTED:

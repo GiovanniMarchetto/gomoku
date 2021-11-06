@@ -4,6 +4,8 @@ import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.entities.*;
 import it.units.sdm.gomoku.mvvm_library.Viewmodel;
+import it.units.sdm.gomoku.property_change_handlers.ObservableProperty;
+import it.units.sdm.gomoku.property_change_handlers.PropertyObserver;
 import it.units.sdm.gomoku.ui.support.Setup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -27,19 +29,19 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
     public enum CurrentGameStatus {GAME_STARTED, USER_MUST_PLACE, USER_MUST_NOT_PLACE, GAME_ENDED}
 
     @NotNull
-    public final Property<CurrentGameStatus> currentGameStatus = new Property<>(this);//TODO : PUBLIC?
+    public final ObservableProperty<CurrentGameStatus> currentGameStatus = new ObservableProperty<>(this);//TODO : PUBLIC?
 
     @NotNull
-    public final Property<Game> currentGame = new Property<>(this); // TODO:public???
+    public final ObservableProperty<Game> currentGame = new ObservableProperty<>(this); // TODO:public???
 
     @NotNull
-    private final Property<Boolean> currentGameEnded = new Property<>(this);
+    private final ObservableProperty<Boolean> currentGameEnded = new ObservableProperty<>(this);
 
     @NotNull
-    private final Property<Player> currentPlayer = new Property<>(this);
+    private final ObservableProperty<Player> currentPlayer = new ObservableProperty<>(this);
 
     @NotNull
-    private final Property<Board> currentBoard = new Property<>(this);  // TODO : needed?
+    private final ObservableProperty<Board> currentBoard = new ObservableProperty<>(this);  // TODO : needed?
 
     public AbstractMainViewmodel() {
     }
@@ -49,7 +51,7 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
         // TODO : refactor needed
 
         final String evtName = evt.getPropertyName();
-        if (Objects.equals(evtName, currentGame.getPropertyValue().gameEnded.getPropertyNameOrElseThrow())) {    // TODO : switch may be better
+     /*   if (Objects.equals(evtName, currentGame.getPropertyValue().gameEnded.getPropertyNameOrElseThrow())) {    // TODO : switch may be better
             // TODO: message chain code smell (the property is the game itself)
 //            if (isCurrentGameEnded()) {
 //                endGame();
@@ -57,13 +59,13 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
             if ((boolean) evt.getNewValue()) {
                 endGame();
             }
-        } else if (Objects.equals(evtName, currentGame.getPropertyValue().currentPlayer.getPropertyNameOrElseThrow())) {// TODO: message chain code smell (the property is the game itself)
+        } else */if (Objects.equals(evtName, currentGame.getPropertyValue().currentPlayer.getPropertyNameOrElseThrow())) {// TODO: message chain code smell (the property is the game itself)
             currentPlayer.setPropertyValueAndFireIfPropertyChange((Player) evt.getNewValue());
             if (!isCurrentGameEnded()) {
                 placeStoneIfCPUPlayingWithDelayOrElseNotifyTheView(currentPlayer.getPropertyValue(), 0);// TODO : delay?
             }
         } else if (Objects.equals(evtName, Board.boardMatrixPropertyName)) {    // TODO : property name to be changed into a property
-            firePropertyChange(Board.boardMatrixPropertyName, evt.getNewValue()); // TODO: use a Property
+            firePropertyChange(Board.boardMatrixPropertyName, evt.getNewValue()); // TODO: use a ObservableProperty
         }
     }
 
@@ -117,6 +119,11 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
             Board newBoard = newGame.getBoard();
             observe(newGame);
             observe(newBoard);
+            new PropertyObserver<>(newGame.gameEnded, evt -> {
+                if ((boolean) evt.getNewValue()) {
+                    endGame();
+                }
+            });
             currentGame.setPropertyValueAndFireIfPropertyChange(newGame);   // TODO : property needed?
             currentBoard.setPropertyValueAndFireIfPropertyChange(newBoard);   // TODO : property needed?
             currentGameStatus.setPropertyValueAndFireIfPropertyChange(CurrentGameStatus.GAME_STARTED);

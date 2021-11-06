@@ -3,6 +3,7 @@ package it.units.sdm.gomoku.model.entities;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.mvvm_library.Observable;
+import it.units.sdm.gomoku.property_change_handlers.ObservableProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,11 +23,11 @@ public class Game implements Comparable<Game>, Observable {
     @NotNull
     private final Player blackPlayer, whitePlayer;
     @NotNull
-    public final Property<Player> currentPlayer;    // TODO : property are public...
+    public final ObservableProperty<Player> currentPlayer;    // TODO : property are public...
     @NotNull
-    public final Property<Boolean> gameEnded;
+    public final ObservableProperty<Boolean> gameEnded;
     @NotNull
-    public final Property<Boolean> newGameStarted;
+    public final ObservableProperty<Boolean> newGameStarted;
     @NotNull
     private Player winner;  // available after the end of the game
 
@@ -34,9 +35,9 @@ public class Game implements Comparable<Game>, Observable {
         this.board = new Board(Objects.requireNonNull(boardSize));
         this.blackPlayer = Objects.requireNonNull(blackPlayer);
         this.whitePlayer = Objects.requireNonNull(whitePlayer);
-        this.currentPlayer = new Property<>(blackPlayer, this);
-        this.gameEnded = new Property<>(false, this);
-        this.newGameStarted = new Property<>(false, this);
+        this.currentPlayer = new ObservableProperty<>(blackPlayer, this);
+        this.gameEnded = new ObservableProperty<>(false, this);
+        this.newGameStarted = new ObservableProperty<>(false, this);
         this.start = Instant.now();
     }
 
