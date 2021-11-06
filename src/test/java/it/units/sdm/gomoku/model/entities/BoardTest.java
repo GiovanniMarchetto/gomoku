@@ -19,6 +19,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -28,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class BoardTest {
 
-    public static final Stone[][] boardStoneFromCsv = TestUtility.readBoardStoneFromCSVFile(EnvVariables.BOARD_19X19_PROVIDER_RESOURCE_LOCATION);
+    public static final Cell[][] boardMatrixFromCsv = TestUtility.readBoardStoneFromCSVFile(EnvVariables.BOARD_19X19_PROVIDER_RESOURCE_LOCATION);
 
     private static Board board;
 
@@ -50,7 +52,7 @@ public class BoardTest {
 
     @NotNull
     public static Board createBoardWithCsvBoardStone() {
-        return TestUtility.createBoardFromBoardStone(boardStoneFromCsv, EnvVariables.BOARD_SIZE);
+        return TestUtility.createBoardFromCellMatrix(boardMatrixFromCsv, EnvVariables.BOARD_SIZE);
     }
 
     @BeforeEach
@@ -65,14 +67,21 @@ public class BoardTest {
 
     @ParameterizedTest
     @MethodSource("it.units.sdm.gomoku.utils.TestUtility#provideCoupleOfNonNegativeIntegersTillBoardSize")
-    void getStoneAtCoordinates(int x, int y) {
-        assertEquals(boardStoneFromCsv[x][y], board.getStoneAtCoordinates(new Coordinates(x, y)));
+    void getCellAtCoordinates(int x, int y) {
+        assertEquals(boardMatrixFromCsv[x][y], board.getCellAtCoordinates(new Coordinates(x, y)));
     }
 
     @ParameterizedTest
     @MethodSource("it.units.sdm.gomoku.utils.TestUtility#provideCoupleOfNonNegativeIntegersTillBoardSize")
     void getBoardMatrixCopy(int x, int y) {
-        assertEquals(boardStoneFromCsv[x][y], board.getBoardMatrixCopy()[x][y]);
+        try {
+            Method getBoardMatrixCopyMethod = Board.class.getDeclaredMethod("getBoardMatrixCopy");
+            getBoardMatrixCopyMethod.setAccessible(true);
+            Cell[][] matrixCopy = (Cell[][]) getBoardMatrixCopyMethod.invoke(board);
+            assertEquals(boardMatrixFromCsv[x][y], matrixCopy[x][y]);
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            fail(e);
+        }
     }
 
     @ParameterizedTest
@@ -90,13 +99,9 @@ public class BoardTest {
     @Test
     void isAnyEmptyPositionOnTheBoard_TestWhenShouldBeFalse() {
         board = new Board(EnvVariables.BOARD_SIZE);
-        generateCoordinates(board.getSize()).forEach(coords -> {
-            try {
-                board.occupyPosition(Stone.BLACK, coords);
-            } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
-                fail(e);
-            }
-        });
+        occupyAllPositionsIfValidPredicateWithGivenColor(board,
+                coords-> Stone.Color.BLACK,
+                coords->true);
         assertFalse(board.isThereAnyEmptyCell());
     }
 
@@ -105,17 +110,22 @@ public class BoardTest {
     void occupyPosition(int x, int y) {
         Coordinates coordinates = new Coordinates(x, y);
         try {
-            board.occupyPosition(Stone.BLACK, coordinates);
-            assertTrue(boardStoneFromCsv[x][y].isNone());
-            assertEquals(Stone.BLACK, board.getStoneAtCoordinates(coordinates));
+            Stone.Color stoneColor = Stone.Color.BLACK;
+            board.occupyPosition(stoneColor, coordinates);
+            assertTrue(wasCellEmptyAndIsNowOccupiedWithCorrectColor(boardMatrixFromCsv[x][y], coordinates, stoneColor));
         } catch (Board.BoardIsFullException e) {
             Coordinates firstCoordinateAfterFillBoard = new Coordinates(18, 17);
             assertEquals(firstCoordinateAfterFillBoard, coordinates);
         } catch (Board.CellAlreadyOccupiedException e) {
-            if (boardStoneFromCsv[x][y].isNone()) {
-                fail();
+            if (boardMatrixFromCsv[x][y].isEmpty()) {
+                fail("The cell was empty");
             }
         }
+    }
+
+    private boolean wasCellEmptyAndIsNowOccupiedWithCorrectColor(Cell cell, Coordinates coordinates, Stone.Color stoneColor) {
+        return cell.isEmpty() && Objects.equals(stoneColor,
+                Objects.requireNonNull(board.getCellAtCoordinates(coordinates).getStone()).color());
     }
 
     @ParameterizedTest
@@ -158,7 +168,7 @@ public class BoardTest {
         }
     }
 
-    private boolean isMatrixPartToListMethodCorrect(Stone[][] matrix,
+    private boolean isMatrixPartToListMethodCorrect(Cell[][] matrix,
                                                     Coordinates coords,
                                                     String methodToTestName,
                                                     BiFunction<Board, Coordinates, List<Stone>> alternativeMethod)
@@ -222,7 +232,7 @@ public class BoardTest {
 
     @ParameterizedTest
     @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfGamePlayElements")
-    void checkNConsecutiveStones(Stone[][] matrix, Coordinates coordinates, boolean expected) {
+    void checkNConsecutiveStones(Cell[][] matrix, Coordinates coordinates, boolean expected) {
         try {
             Board b = createBoardFromMatrix(matrix);
             NonNegativeInteger N = new NonNegativeInteger(5);
@@ -236,14 +246,26 @@ public class BoardTest {
         }
     }
 
-    private Board createBoardFromMatrix(Stone[][] matrix) throws Board.BoardIsFullException, Board.CellAlreadyOccupiedException {
-        Board b = new Board(matrix.length);
-        for (var coords : generateCoordinates(b.getSize()).toList()) {
-            if (!matrix[coords.getX()][coords.getY()].isNone())
-                b.occupyPosition(matrix[coords.getX()][coords.getY()], coords);
-        }
+    private Board createBoardFromMatrix(Cell[][] cellMatrix) {
+        Board b = new Board(cellMatrix.length);
+        occupyAllPositionsIfValidPredicateWithGivenColor(b,
+                coords->cellMatrix[coords.getX()][coords.getY()].getStone().color(),
+                coords -> !cellMatrix[coords.getX()][coords.getY()].isEmpty());
 
         return b;
+    }
+
+    private void occupyAllPositionsIfValidPredicateWithGivenColor(Board b, Function<Coordinates, Stone.Color> getStoneColorFromCoords, Predicate<Coordinates> predicate) {
+        generateCoordinates(b.getSize())
+                .filter(predicate)
+                .forEach(coords -> {
+                    try {
+                        //noinspection ConstantConditions // just checked
+                        b.occupyPosition(getStoneColorFromCoords.apply(coords), coords);
+                    } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
+                        fail(e);
+                    }
+                });
     }
 
 
@@ -274,7 +296,7 @@ public class BoardTest {
     }
 
     @Test
-    void testEqualsBetweenTwoDifferentBoardsWithSameNumberOfOccupiedPositions() {
+    void testEqualsBetweenTwoDifferentBoardsWithSameNumberOfOccupiedPositions() {//TODO: can be redo for simplify
         Board expectedBoard = board.clone();
         int found = 0;
         List<Coordinates> coords = generateCoordinates(board.getSize()).toList();

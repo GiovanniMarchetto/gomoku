@@ -4,6 +4,7 @@ import it.units.sdm.gomoku.EnvVariables;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.Board;
+import it.units.sdm.gomoku.model.entities.Cell;
 import it.units.sdm.gomoku.model.entities.Stone;
 import it.units.sdm.gomoku.ui.support.GamePlayElements;
 import org.jetbrains.annotations.NotNull;
@@ -31,43 +32,54 @@ public class TestUtility {
     public final static String END_GAMES = "/endGames.json";
 
     @NotNull
-    public static Board createBoardFromBoardStone(Stone[][] boardStone, PositiveInteger boardSize) {
+    public static Board createBoardFromCellMatrix(Cell[][] cellMatrix, PositiveInteger boardSize) {
         Board board = new Board(boardSize);
-        try {
-            for (int x = 0; x < boardSize.intValue(); x++) {
-                for (int y = 0; y < boardSize.intValue(); y++) {
-                    if (!boardStone[x][y].isNone())
-                        board.occupyPosition(boardStone[x][y], new Coordinates(x, y));
-                }
-            }
-        } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
-            System.err.println(e.getMessage());
-        }
+        IntStream.range(0, boardSize.intValue())
+                .forEach(x -> IntStream.range(0, boardSize.intValue())
+                        .filter(y -> !cellMatrix[x][y].isEmpty())
+                        .forEach(y -> {
+                            try {
+                                //noinspection ConstantConditions // just filtered out
+                                board.occupyPosition(cellMatrix[x][y].getStone().color(), new Coordinates(x, y));
+                            } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
+                                fail(e);
+                            }
+                        }));
         return board;
     }
 
     @NotNull
-    public static Board createBoardFromBoardStone(Stone[][] boardStone, int boardSize) {
-        return createBoardFromBoardStone(boardStone, new PositiveInteger(boardSize));
+    public static Board createBoardFromCellMatrix(Cell[][] cellMatrix, int boardSize) {
+        return createBoardFromCellMatrix(cellMatrix, new PositiveInteger(boardSize));
     }
 
     @NotNull
-    public static Stone[][] readBoardStoneFromCSVFile(@NotNull String filePath) {
+    public static Cell[][] readBoardStoneFromCSVFile(@NotNull String filePath) {
 
-        Function<String[][], Stone[][]> convertStringMatrixToStoneMatrix = stringMatrix ->
+        Function<String[][], Cell[][]> convertStringMatrixToCellMatrix = stringMatrix ->
                 Arrays.stream(stringMatrix).sequential()
                         .map(aLine -> Arrays.stream(aLine)
-                                .map(Stone::valueOf)
-                                .toArray(Stone[]::new))
-                        .toArray(Stone[][]::new);
+                                .map(TestUtility::getCellFromStoneRepresentedAsString)
+                                .toArray(Cell[]::new))
+                        .toArray(Cell[][]::new);
 
         try {
             String[][] boardAsMatrixOfStrings = IOUtility.readFromCsvToStringMatrix(Objects.requireNonNull(filePath));
-            return convertStringMatrixToStoneMatrix.apply(boardAsMatrixOfStrings);
+            return convertStringMatrixToCellMatrix.apply(boardAsMatrixOfStrings);
         } catch (IOException | URISyntaxException e) {
             fail(e);
-            return new Stone[0][0];
+            return new Cell[0][0];
         }
+    }
+
+    @NotNull
+    private static Cell getCellFromStoneRepresentedAsString(@NotNull final String stoneColorAsString) {
+        Cell cell = new Cell();
+        try {
+            cell.setStone(new Stone(Stone.Color.valueOf(stoneColorAsString)));
+        } catch (IllegalArgumentException ignored) {
+        }
+        return cell;
     }
 
     @NotNull
@@ -77,9 +89,9 @@ public class TestUtility {
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
                 switch (random.nextInt(3)) {
-                    case 0 -> s.append(Stone.BLACK);
-                    case 1 -> s.append(Stone.WHITE);
-                    default -> s.append(Stone.NONE);
+                    case 0 -> s.append(Stone.Color.BLACK);
+                    case 1 -> s.append(Stone.Color.WHITE);
+                    default -> s.append("null");
                 }
                 if (j < N - 1) {
                     s.append(CSV_SEPARATOR);
@@ -129,9 +141,10 @@ public class TestUtility {
                                         .stream().sequential()
                                         .map(row -> ((List<?>) row)
                                                 .stream()
-                                                .map(cell -> Stone.valueOf((String) cell))
-                                                .toArray(Stone[]::new))
-                                        .toArray(Stone[][]::new),
+                                                .map(obj ->(String)obj)
+                                                .map(TestUtility::getCellFromStoneRepresentedAsString)
+                                                .toArray(Cell[]::new))
+                                        .toArray(Cell[][]::new),
                                 new Coordinates(ints.get(0), ints.get(1)),
                                 (boolean) argsMap.get("expected"),
                                 (boolean) argsMap.get("finishedGame")
@@ -154,23 +167,24 @@ public class TestUtility {
     }
 
     public static int getTotalNumberOfValidStoneInTheGivenBoarsAsStringInCSVFormat(@NotNull final String boardAsCSVString) {
-        Map<Stone, Integer> countStonesPerType = getHowManyStonesPerTypeAsMapStartingFromStringRepresentingTheMatrixInCSVFormat(Objects.requireNonNull(boardAsCSVString));
+        Map<Stone.Color, Integer> countStonesPerType = getHowManyStonesPerTypeAsMapStartingFromStringRepresentingTheMatrixInCSVFormat(Objects.requireNonNull(boardAsCSVString));
         return countStonesPerType.values().stream().mapToInt(Integer::intValue).sum();
     }
 
     @NotNull
-    private static Map<Stone, Integer> getHowManyStonesPerTypeAsMapStartingFromStringRepresentingTheMatrixInCSVFormat(@NotNull final String boardAsStringMatrix) {
-        return Arrays.stream(Stone.values())
+    private static Map<Stone.Color, Integer> getHowManyStonesPerTypeAsMapStartingFromStringRepresentingTheMatrixInCSVFormat(@NotNull final String boardAsStringMatrix) {
+        return Arrays.stream(Stone.Color.values())
                 .unordered().parallel()
                 .map(stoneType -> new AbstractMap.SimpleEntry<>(
                                 stoneType,
                                 (int) getRowsAsStreamOfStringFromBoarsProvidedAsStringRepresentingTheMatrixInCSVFormat(Objects.requireNonNull(boardAsStringMatrix))
                                         .flatMap(aCell -> aCell)
-                                        .map(Stone::valueOf)
+                                        .map(TestUtility::getCellFromStoneRepresentedAsString)
+                                        .map(Cell::getStone)
+                                        .filter(Objects::nonNull)
+                                        .map(Stone::color)
                                         .filter(aCell -> aCell == stoneType)
-                                        .count()
-                        )
-                )
+                                        .count()))
                 .collect(Collectors.toConcurrentMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
