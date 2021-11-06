@@ -46,4 +46,16 @@ public class Cell implements Cloneable {
             };
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        return Objects.equals(stone, ((Cell) o).stone);
+    }
+
+    @Override
+    public int hashCode() {
+        return stone != null ? stone.hashCode() : 0;
+    }
 }
