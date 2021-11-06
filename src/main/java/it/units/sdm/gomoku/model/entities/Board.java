@@ -148,11 +148,11 @@ public class Board implements Observable, Cloneable, Serializable {
         }
         return Stream.of(rowToList(coords), columnToList(coords), fwdDiagonalToList(coords), bckDiagonalToList(coords))
                 .unordered().parallel()
-                .anyMatch(cells -> isListContainingChainOfNStones(cells, N, Objects.requireNonNull(cell)));
+                .anyMatch(cellList -> isListContainingChainOfNCells(cellList, N, Objects.requireNonNull(cell)));
     }
 
-    public static boolean isListContainingChainOfNStones(@NotNull final List<@NotNull Cell> cellList,
-                                                         NonNegativeInteger N, @NotNull final Cell cell) {
+    public static boolean isListContainingChainOfNCells(@NotNull final List<@NotNull Cell> cellList,
+                                                        NonNegativeInteger N, @NotNull final Cell cell) {
         int numberOfStonesInChain = N.intValue();
 
         if (cellList.size() < numberOfStonesInChain)
@@ -162,7 +162,7 @@ public class Board implements Observable, Cloneable, Serializable {
                 .unordered()
                 .map(x -> cellList.subList(x, x + numberOfStonesInChain)
                         .stream()
-                        .mapToInt(y -> y == cell ? 1 : 0/*type conversion*/)
+                        .mapToInt(y -> y.equals(cell) ? 1 : 0/*type conversion*/)   // TODO: check in whole project where Stone (when it was an enum) was compared using == instead of equals, because it is now replaced by class Cell and objects must be compared with equals (here there was a bug because cells were compared with ==)
                         .sum())
                 .anyMatch(aSum -> aSum >= numberOfStonesInChain);
     }
