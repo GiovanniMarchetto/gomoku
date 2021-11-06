@@ -9,6 +9,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Objects;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,25 +20,24 @@ class GameTest {
     private Game game;
 
     private void setGameFromCsv(Game voidGame, Cell[][] cellMatrix) {
-        for (int x = 0; x < cellMatrix.length; x++) {
-            for (int y = 0; y < cellMatrix.length; y++) {
-                if (!cellMatrix[x][y].isNone()) {
-                    Player playerFoundInBoard;
-                    if (cellMatrix[x][y] == Stone.BLACK) {
-                        playerFoundInBoard = cpuBlack;
-                    } else {
-                        playerFoundInBoard = cpuWhite;
-                    }
+        IntStream.range(0, cellMatrix.length)
+                .boxed()
+                .flatMap(x -> IntStream.range(0, cellMatrix.length)
+                        .mapToObj(y -> new Coordinates(x, y)))
+                .filter(coords -> !cellMatrix[coords.getX()][coords.getY()].isEmpty())
+                .forEach(coords -> {
+                    Player playerFoundInBoard =
+                            Objects.requireNonNull(cellMatrix[coords.getX()][coords.getY()].getStone()).color() == Stone.Color.BLACK    // TODO: refactor: message chain
+                                    ? cpuBlack
+                                    : cpuWhite;
                     try {
                         Method placeStoneMethod = voidGame.getClass().getDeclaredMethod("placeStone", Player.class, Coordinates.class);
                         placeStoneMethod.setAccessible(true);
-                        placeStoneMethod.invoke(voidGame, playerFoundInBoard, new Coordinates(x, y));
+                        placeStoneMethod.invoke(voidGame, playerFoundInBoard, coords);
                     } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
                         e.printStackTrace();
                     }
-                }
-            }
-        }
+                });
     }
 
     @ParameterizedTest
@@ -66,7 +67,7 @@ class GameTest {
 
     @ParameterizedTest
     @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfGamePlayElements")
-    void getWinner(Stone[][] matrix, Coordinates coordinates, boolean finishedGame) {
+    void getWinner(Cell[][] matrix, Coordinates coordinates, boolean finishedGame) {
         game = new Game(matrix.length, cpuBlack, cpuWhite);
         setGameFromCsv(game, matrix);
         try {
@@ -83,7 +84,7 @@ class GameTest {
 
     @ParameterizedTest
     @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfGamePlayElements")
-    void isThisGameEnded(Stone[][] matrix, Coordinates ignoredC, boolean ignoredB, boolean finishedGame) {
+    void isThisGameEnded(Cell[][] matrix, Coordinates ignoredC, boolean ignoredB, boolean finishedGame) {
         game = new Game(matrix.length, cpuBlack, cpuWhite);
         setGameFromCsv(game, matrix);
         assertEquals(finishedGame, game.isThisGameEnded());

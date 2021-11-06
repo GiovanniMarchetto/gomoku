@@ -10,15 +10,14 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 import static it.units.sdm.gomoku.model.entities.Board.BoardIsFullException;
 import static it.units.sdm.gomoku.model.entities.Board.CellAlreadyOccupiedException;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class CPUPlayerTest {
 
     public static final int NUMBER_OF_REPETITION = 10;
     private static final PositiveInteger BOARD_SIZE = new PositiveInteger(5);
     private static Board board = null;
-    private static Stone cpuStone = Stone.BLACK;
+    private static Stone.Color cpuStoneColor = Stone.Color.BLACK;
     private final CPUPlayer cpuPlayer = new CPUPlayer("cpuPlayer");
 
     @BeforeAll
@@ -32,17 +31,17 @@ class CPUPlayerTest {
 
     private static void tryToOccupyCoordinatesChosen(Coordinates coordinates) {
         try {
-            board.occupyPosition(cpuStone, coordinates);
-            cpuStone = cpuStone == Stone.BLACK ? Stone.BLACK : Stone.WHITE;
+            board.occupyPosition(cpuStoneColor, coordinates);
+            cpuStoneColor = cpuStoneColor == Stone.Color.BLACK ? Stone.Color.BLACK : Stone.Color.WHITE;
         } catch (CellAlreadyOccupiedException | BoardIsFullException e) {
             fail(e);
         }
     }
 
     @RepeatedTest(NUMBER_OF_REPETITION)
-    void chooseRandomEmptyCoordinatesRepeatedTest() {
+    void checkRandomChosenCoordinatesReferToEmptyCell() {
         try {
-            assertTrue(board.getStoneAtCoordinates(cpuPlayer.chooseRandomEmptyCoordinates(board)).isNone());
+            assertTrue(board.getCellAtCoordinates(cpuPlayer.chooseRandomEmptyCoordinates(board)).isEmpty());
         } catch (BoardIsFullException e) {
             if (board.isThereAnyEmptyCell()) {
                 fail(e);
@@ -67,7 +66,7 @@ class CPUPlayerTest {
     void chooseFromCenterSecondStone(int size, int x, int y) {
         board = new Board(size);
         try {
-            board.occupyPosition(Stone.BLACK, cpuPlayer.chooseNextEmptyCoordinatesFromCenter(board));
+            board.occupyPosition(Stone.Color.BLACK, cpuPlayer.chooseNextEmptyCoordinatesFromCenter(board));
 
             Coordinates expected = new Coordinates(x, y);
             assertEquals(expected, cpuPlayer.chooseNextEmptyCoordinatesFromCenter(board));

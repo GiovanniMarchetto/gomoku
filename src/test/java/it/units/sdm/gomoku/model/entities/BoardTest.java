@@ -30,14 +30,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class BoardTest {
 
-    public static final Cell[][] boardMatrixFromCsv = TestUtility.readBoardStoneFromCSVFile(EnvVariables.BOARD_19X19_PROVIDER_RESOURCE_LOCATION);
+    public static final Cell[][] boardMatrixFromCsv = TestUtility.readBoardOfCellsFromCSVFile(EnvVariables.BOARD_19X19_PROVIDER_RESOURCE_LOCATION);
 
     private static Board board;
 
     private static Stream<Arguments> getABoardAndACoordinate() {
         return getStreamOfGamePlayElements()
                 .map(Arguments::get)
-                .map(singleTestParams -> (Stone[][]) singleTestParams[0])
+                .map(singleTestParams -> (Cell[][]) singleTestParams[0])
                 .flatMap(boardMtx -> generateCoordinates(boardMtx.length)
                         .map(aCoord -> Arguments.of(boardMtx, aCoord)));
     }
@@ -100,8 +100,8 @@ public class BoardTest {
     void isAnyEmptyPositionOnTheBoard_TestWhenShouldBeFalse() {
         board = new Board(EnvVariables.BOARD_SIZE);
         occupyAllPositionsIfValidPredicateWithGivenColor(board,
-                coords-> Stone.Color.BLACK,
-                coords->true);
+                coords -> Stone.Color.BLACK,
+                coords -> true);
         assertFalse(board.isThereAnyEmptyCell());
     }
 
@@ -130,7 +130,7 @@ public class BoardTest {
 
     @ParameterizedTest
     @MethodSource("getABoardAndACoordinate")
-    void fwdDiagonalToList(Stone[][] matrix, Coordinates coords) {
+    void fwdDiagonalToList(Cell[][] matrix, Coordinates coords) {
         try {
             assertTrue(isMatrixPartToListMethodCorrect(matrix, coords, "fwdDiagonalToList", this::alternativeFwdDiagonalToList));
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
@@ -140,7 +140,7 @@ public class BoardTest {
 
     @ParameterizedTest
     @MethodSource("getABoardAndACoordinate")
-    void bckDiagonalToList(Stone[][] matrix, Coordinates coords) {
+    void bckDiagonalToList(Cell[][] matrix, Coordinates coords) {
         try {
             assertTrue(isMatrixPartToListMethodCorrect(matrix, coords, "bckDiagonalToList", this::alternativeBckDiagonalToList));
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
@@ -150,7 +150,7 @@ public class BoardTest {
 
     @ParameterizedTest
     @MethodSource("getABoardAndACoordinate")
-    void columnToList(Stone[][] matrix, Coordinates coords) {
+    void columnToList(Cell[][] matrix, Coordinates coords) {
         try {
             assertTrue(isMatrixPartToListMethodCorrect(matrix, coords, "columnToList", this::alternativeColumnToList));
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
@@ -160,7 +160,7 @@ public class BoardTest {
 
     @ParameterizedTest
     @MethodSource("getABoardAndACoordinate")
-    void rowToList(Stone[][] matrix, Coordinates coords) {
+    void rowToList(Cell[][] matrix, Coordinates coords) {
         try {
             assertTrue(isMatrixPartToListMethodCorrect(matrix, coords, "rowToList", this::alternativeRowToList));
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
@@ -171,44 +171,39 @@ public class BoardTest {
     private boolean isMatrixPartToListMethodCorrect(Cell[][] matrix,
                                                     Coordinates coords,
                                                     String methodToTestName,
-                                                    BiFunction<Board, Coordinates, List<Stone>> alternativeMethod)
+                                                    BiFunction<Board, Coordinates, List<Cell>> alternativeMethod)  // TODO: rename method / refactor needed
             throws NoSuchMethodException, Board.BoardIsFullException, Board.CellAlreadyOccupiedException, IllegalAccessException, InvocationTargetException {
 
         Method m = Board.class.getDeclaredMethod(methodToTestName, Coordinates.class);
         m.setAccessible(true);
         Board b = createBoardFromMatrix(matrix);
         @SuppressWarnings("unchecked") // invoked method returns the cast type
-        List<Stone> actual = (List<Stone>) m.invoke(b, coords);
-        List<Stone> expected = alternativeMethod.apply(b, coords);
+        List<Cell> actual = (List<Cell>) m.invoke(b, coords);
+        List<Cell> expected = alternativeMethod.apply(b, coords);
         return actual.equals(expected);
     }
 
-    List<Stone> alternativeRowToList(@NotNull final Board board, @NotNull final Coordinates coords) {
-        List<Stone> list = new ArrayList<>();
-        for (int y = 0; y < board.getSize(); y++) {
-            var c = new Coordinates(Objects.requireNonNull(coords).getX(), y);
-            list.add(board.getStoneAtCoordinates(c));
-        }
-        return list;
+    List<Cell> alternativeRowToList(@NotNull final Board board, @NotNull final Coordinates coords) {
+        // TODO : refactor needed : 4 very similar methods
+        return IntStream.range(0, board.getSize())
+                .mapToObj(yCoord -> board.getCellAtCoordinates(new Coordinates(Objects.requireNonNull(coords).getX(), yCoord)))
+                .toList();
     }
 
-    List<Stone> alternativeColumnToList(@NotNull final Board board, @NotNull final Coordinates coords) {
-        List<Stone> list = new ArrayList<>();
-        for (int x = 0; x < board.getSize(); x++) {
-            var c = new Coordinates(x, Objects.requireNonNull(coords).getY());
-            list.add(board.getStoneAtCoordinates(c));
-        }
-        return list;
+    List<Cell> alternativeColumnToList(@NotNull final Board board, @NotNull final Coordinates coords) {
+        return IntStream.range(0, board.getSize())
+                .mapToObj(xCoord -> board.getCellAtCoordinates(new Coordinates(xCoord, Objects.requireNonNull(coords).getY())))
+                .toList();
     }
 
-    List<Stone> alternativeFwdDiagonalToList(@NotNull final Board board, @NotNull final Coordinates coords) {
+    List<Cell> alternativeFwdDiagonalToList(@NotNull final Board board, @NotNull final Coordinates coords) {
         int B = board.getSize();
         int S = Objects.requireNonNull(coords).getX() + coords.getY();
         int x = Math.min(S, B - 1);
         int y = Math.max(S - (B - 1), 0);
-        ArrayList<Stone> list = new ArrayList<>();
+        ArrayList<Cell> list = new ArrayList<>();
         while (y < B && x >= 0) {
-            list.add(board.getStoneAtCoordinates(new Coordinates(x, y)));
+            list.add(board.getCellAtCoordinates(new Coordinates(x, y)));
             x--;
             y++;
         }
@@ -216,14 +211,14 @@ public class BoardTest {
         return list;
     }
 
-    List<Stone> alternativeBckDiagonalToList(@NotNull final Board board, @NotNull final Coordinates coords) {
+    List<Cell> alternativeBckDiagonalToList(@NotNull final Board board, @NotNull final Coordinates coords) {
         int B = board.getSize();
         int S = Objects.requireNonNull(coords).getX() - coords.getY();
         int x = Math.max(S, 0);
         int y = -Math.min(S, 0);
-        ArrayList<Stone> list = new ArrayList<>();
+        ArrayList<Cell> list = new ArrayList<>();
         while (x < B && y < B) {
-            list.add(board.getStoneAtCoordinates(new Coordinates(x, y)));
+            list.add(board.getCellAtCoordinates(new Coordinates(x, y)));
             x++;
             y++;
         }
@@ -238,18 +233,16 @@ public class BoardTest {
             NonNegativeInteger N = new NonNegativeInteger(5);
             assertEquals(expected, b.isCoordinatesBelongingToChainOfNStones(coordinates, N));
         } catch (IllegalArgumentException e) {
-            if (!matrix[coordinates.getX()][coordinates.getY()].isNone()) {
+            if (!matrix[coordinates.getX()][coordinates.getY()].isEmpty()) {
                 fail(e);
             }
-        } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
-            fail(e);
         }
     }
 
     private Board createBoardFromMatrix(Cell[][] cellMatrix) {
         Board b = new Board(cellMatrix.length);
         occupyAllPositionsIfValidPredicateWithGivenColor(b,
-                coords->cellMatrix[coords.getX()][coords.getY()].getStone().color(),
+                coords -> cellMatrix[coords.getX()][coords.getY()].getStone().color(),
                 coords -> !cellMatrix[coords.getX()][coords.getY()].isEmpty());
 
         return b;
@@ -260,7 +253,6 @@ public class BoardTest {
                 .filter(predicate)
                 .forEach(coords -> {
                     try {
-                        //noinspection ConstantConditions // just checked
                         b.occupyPosition(getStoneColorFromCoords.apply(coords), coords);
                     } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
                         fail(e);
@@ -301,11 +293,11 @@ public class BoardTest {
         int found = 0;
         List<Coordinates> coords = generateCoordinates(board.getSize()).toList();
         for (int i = 0; i < coords.size() && found < 2; i++) {
-            if (expectedBoard.getStoneAtCoordinates(coords.get(i)).isNone() || board.getStoneAtCoordinates(coords.get(i)).isNone()) {
+            if (expectedBoard.getStoneAtCoordinates(coords.get(i)) == null || board.getStoneAtCoordinates(coords.get(i)) == null) {
                 try {
                     switch (found) {
-                        case 0 -> expectedBoard.occupyPosition(Stone.BLACK, coords.get(i));
-                        case 1 -> board.occupyPosition(Stone.BLACK, coords.get(i));
+                        case 0 -> expectedBoard.occupyPosition(Stone.Color.BLACK, coords.get(i));
+                        case 1 -> board.occupyPosition(Stone.Color.BLACK, coords.get(i));
                         default -> {
                         }
                     }
@@ -316,7 +308,7 @@ public class BoardTest {
                 found++;
             }
         }
-        assertNotEquals(expectedBoard, board);
+        assertNotEquals(expectedBoard, board);  // TODO : is test correct?
     }
 
     @Test

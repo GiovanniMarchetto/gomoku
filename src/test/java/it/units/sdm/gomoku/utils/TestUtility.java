@@ -17,6 +17,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -28,6 +29,8 @@ import static it.units.sdm.gomoku.utils.Predicates.isNonEmptyString;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class TestUtility {
+
+    // TODO : resee tests of this class
 
     public final static String END_GAMES = "/endGames.json";
 
@@ -54,7 +57,7 @@ public class TestUtility {
     }
 
     @NotNull
-    public static Cell[][] readBoardStoneFromCSVFile(@NotNull String filePath) {
+    public static Cell[][] readBoardOfCellsFromCSVFile(@NotNull String filePath) {
 
         Function<String[][], Cell[][]> convertStringMatrixToCellMatrix = stringMatrix ->
                 Arrays.stream(stringMatrix).sequential()
@@ -141,7 +144,7 @@ public class TestUtility {
                                         .stream().sequential()
                                         .map(row -> ((List<?>) row)
                                                 .stream()
-                                                .map(obj ->(String)obj)
+                                                .map(obj -> (String) obj)
                                                 .map(TestUtility::getCellFromStoneRepresentedAsString)
                                                 .toArray(Cell[]::new))
                                         .toArray(Cell[][]::new),
@@ -162,30 +165,31 @@ public class TestUtility {
         }
     }
 
-    public static Stream<Arguments> getStreamOfGamePlayElements() {
+    public static Stream<Arguments> getStreamOfGamePlayElements() { // TODO: what is a GamePlay?
         return getStreamOfGamePlayElementsFromCSV(END_GAMES);
     }
 
-    public static int getTotalNumberOfValidStoneInTheGivenBoarsAsStringInCSVFormat(@NotNull final String boardAsCSVString) {
-        Map<Stone.Color, Integer> countStonesPerType = getHowManyStonesPerTypeAsMapStartingFromStringRepresentingTheMatrixInCSVFormat(Objects.requireNonNull(boardAsCSVString));
+    public static int getTotalNumberOfValidStoneInTheGivenBoardAsStringInCSVFormat(@NotNull final String boardAsCSVString) {
+        Map<Stone, Integer> countStonesPerType = getHowManyStonesPerColorAsMapStartingFromStringRepresentingTheMatrixInCSVFormat(Objects.requireNonNull(boardAsCSVString));
         return countStonesPerType.values().stream().mapToInt(Integer::intValue).sum();
     }
 
     @NotNull
-    private static Map<Stone.Color, Integer> getHowManyStonesPerTypeAsMapStartingFromStringRepresentingTheMatrixInCSVFormat(@NotNull final String boardAsStringMatrix) {
-        return Arrays.stream(Stone.Color.values())
+    private static Map<Stone, Integer> getHowManyStonesPerColorAsMapStartingFromStringRepresentingTheMatrixInCSVFormat(@NotNull final String boardAsStringMatrix) {
+        Stone[] possibleStoneTypes_equivalencyClass =
+                new Stone[]{new Stone(Stone.Color.BLACK), new Stone(Stone.Color.WHITE), null};
+        return Arrays.stream(possibleStoneTypes_equivalencyClass)
                 .unordered().parallel()
                 .map(stoneType -> new AbstractMap.SimpleEntry<>(
-                                stoneType,
-                                (int) getRowsAsStreamOfStringFromBoarsProvidedAsStringRepresentingTheMatrixInCSVFormat(Objects.requireNonNull(boardAsStringMatrix))
-                                        .flatMap(aCell -> aCell)
-                                        .map(TestUtility::getCellFromStoneRepresentedAsString)
-                                        .map(Cell::getStone)
-                                        .filter(Objects::nonNull)
-                                        .map(Stone::color)
-                                        .filter(aCell -> aCell == stoneType)
-                                        .count()))
-                .collect(Collectors.toConcurrentMap(Map.Entry::getKey, Map.Entry::getValue));
+                        stoneType,
+                        (int) getRowsAsStreamOfStringFromBoarsProvidedAsStringRepresentingTheMatrixInCSVFormat(Objects.requireNonNull(boardAsStringMatrix))
+                                .flatMap(aCell -> aCell)
+                                .map(TestUtility::getCellFromStoneRepresentedAsString)
+                                .map(Cell::getStone)
+                                .filter(stoneThisCell -> (stoneThisCell == null && stoneThisCell == stoneType)
+                                        || (stoneThisCell != null && stoneType!=null && stoneThisCell.equals(stoneType)))
+                                .count()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     @NotNull

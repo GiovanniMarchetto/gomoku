@@ -12,7 +12,7 @@ import static it.units.sdm.gomoku.model.custom_types.NonNegativeInteger.NonNegat
 public class ArgumentsToTestCheckNConsecutiveStones_ObjectRepresentation {
     // TODO : refactoring needed
 
-    private final Stone[][] matrix;
+    private final Stone.Color[][] matrix;
     private final Coordinates coordinates;
     private final boolean isGameEndedExpected;
 
@@ -21,18 +21,19 @@ public class ArgumentsToTestCheckNConsecutiveStones_ObjectRepresentation {
                                                                        @NonNegativeIntegerType int yCoordinateOfLastMove,
                                                                        boolean isGameEndedExpected) {
         if (Predicates.isSquareMatrixOfGivenSize.test(matrixOfStonesAsString, matrixOfStonesAsString.length)) {
+            // TODO : resee this and eventually delete
 
-            Map<Character, Stone> correspondence_firstChar_Stone = Arrays.stream(Stone.values())
-                    .map(enumValue -> new AbstractMap.SimpleEntry<>(enumValue.toString().charAt(0), enumValue))
-                    .collect(Collectors.toConcurrentMap(Map.Entry::getKey, Map.Entry::getValue));
+            Map<Character, Stone.Color> correspondence_firstChar_Stone =
+                    Arrays.stream(Stone.Color.values())
+                            .map(enumValue -> new AbstractMap.SimpleEntry<>(enumValue.toString().charAt(0), enumValue))
+                            .collect(Collectors.toConcurrentMap(Map.Entry::getKey, Map.Entry::getValue));
 
             try {
                 this.matrix = Arrays.stream(matrixOfStonesAsString)
                         .map(aRow -> Arrays.stream(aRow)
-                                .map(aCell -> correspondence_firstChar_Stone.get(aCell.charAt(0)))
-                                .toArray(Stone[]::new)
-                        )
-                        .toArray(Stone[][]::new);
+                                .map(aCellAsString -> correspondence_firstChar_Stone.get(aCellAsString.charAt(0)))
+                                .toArray(Stone.Color[]::new))
+                        .toArray(Stone.Color[][]::new);
 
                 this.coordinates = new Coordinates(xCoordinateOfLastMove, yCoordinateOfLastMove);
                 this.isGameEndedExpected = isGameEndedExpected;

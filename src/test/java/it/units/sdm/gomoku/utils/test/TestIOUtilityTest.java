@@ -1,7 +1,7 @@
 package it.units.sdm.gomoku.utils.test;
 
 import it.units.sdm.gomoku.EnvVariables;
-import it.units.sdm.gomoku.model.entities.Stone;
+import it.units.sdm.gomoku.model.entities.Cell;
 import it.units.sdm.gomoku.utils.IOUtility;
 import it.units.sdm.gomoku.utils.Predicates;
 import it.units.sdm.gomoku.utils.TestUtility;
@@ -30,17 +30,17 @@ class TestIOUtilityTest {
     @Test
     void readBoardStoneFromCSVFile_testIfMatrixOfCorrectSizeWasRead() {
         final int SIZE = 19;
-        Stone[][] board = TestUtility.readBoardStoneFromCSVFile(EnvVariables.BOARD_19X19_PROVIDER_RESOURCE_LOCATION);
+        Cell[][] board = TestUtility.readBoardOfCellsFromCSVFile(EnvVariables.BOARD_19X19_PROVIDER_RESOURCE_LOCATION);
         Assertions.assertTrue(Predicates.isSquareMatrixOfGivenSize.test(board, SIZE));
     }
 
     @Test
     void readBoardStoneFromCSVFile_testIfMatrixContainsOnlyStones() {
         final int SIZE = 19;
-        String board = Arrays.stream(TestUtility.readBoardStoneFromCSVFile(EnvVariables.BOARD_19X19_PROVIDER_RESOURCE_LOCATION))
+        String board = Arrays.stream(TestUtility.readBoardOfCellsFromCSVFile(EnvVariables.BOARD_19X19_PROVIDER_RESOURCE_LOCATION))
                 .map(aRow -> Arrays.stream(aRow).map(String::valueOf).collect(Collectors.joining(IOUtility.CSV_SEPARATOR)))
                 .collect(Collectors.joining(IOUtility.CSV_NEW_LINE));
-        int totalNumberOfValidStonesFound = TestUtility.getTotalNumberOfValidStoneInTheGivenBoarsAsStringInCSVFormat(board);
+        int totalNumberOfValidStonesFound = TestUtility.getTotalNumberOfValidStoneInTheGivenBoardAsStringInCSVFormat(board);
         int expectedTotalNumberOfValidStones = SIZE * SIZE;
         assertEquals(expectedTotalNumberOfValidStones, totalNumberOfValidStonesFound);
     }
@@ -75,7 +75,7 @@ class TestIOUtilityTest {
     void createNxNRandomBoardToStringTest_assertHavingNxNStones(int N, int randomSeed) {
         final int expectedNumberOfStonesToBePresent = N * N;
         String boardAsCSVString = TestUtility.createNxNRandomBoardToStringInCSVFormat(N, randomSeed);
-        int totalNumberOfValidStones = TestUtility.getTotalNumberOfValidStoneInTheGivenBoarsAsStringInCSVFormat(boardAsCSVString);
+        int totalNumberOfValidStones = TestUtility.getTotalNumberOfValidStoneInTheGivenBoardAsStringInCSVFormat(boardAsCSVString);
         assertEquals(expectedNumberOfStonesToBePresent, totalNumberOfValidStones);
     }
 }
