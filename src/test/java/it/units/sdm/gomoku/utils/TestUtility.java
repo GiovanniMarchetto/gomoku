@@ -40,7 +40,7 @@ public class TestUtility {
                         board.occupyPosition(boardStone[x][y], new Coordinates(x, y));
                 }
             }
-        } catch (Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
+        } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
             System.err.println(e.getMessage());
         }
         return board;

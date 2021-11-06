@@ -63,21 +63,21 @@ public class Game implements Comparable<Game>, Observable {
     }
 
     @NotNull
-    public Stone getStoneOfPlayer(@NotNull final Player player) {
-        return player.equals(blackPlayer) ? Stone.BLACK : Stone.WHITE;
+    public Stone.Color getColorOfPlayer(@NotNull final Player player) {
+        return player.equals(blackPlayer) ? Stone.Color.BLACK : Stone.Color.WHITE;
     }
 
-    public void placeNextStone(@NotNull final Coordinates coordinates)
-            throws Board.NoMoreEmptyPositionAvailableException, Board.PositionAlreadyOccupiedException {
+    public void placeStoneAndChangeTurn(@NotNull final Coordinates coordinates)
+            throws Board.BoardIsFullException, Board.CellAlreadyOccupiedException {
 
         placeStone(currentPlayer, coordinates);
         changeTurn();
     }
 
     private void placeStone(@NotNull final Player player, @NotNull final Coordinates coordinates)
-            throws Board.NoMoreEmptyPositionAvailableException, Board.PositionAlreadyOccupiedException {
+            throws Board.BoardIsFullException, Board.CellAlreadyOccupiedException {
 
-        board.occupyPosition(getStoneOfPlayer(Objects.requireNonNull(player)), Objects.requireNonNull(coordinates));
+        board.occupyPosition(getColorOfPlayer(Objects.requireNonNull(player)), Objects.requireNonNull(coordinates));
 
         setWinnerIfPlayerWon(player, coordinates);
 
@@ -114,7 +114,7 @@ public class Game implements Comparable<Game>, Observable {
     }
 
     public synchronized boolean isThisGameEnded() {
-        return winner != null || !board.isAnyEmptyPositionOnTheBoard();
+        return winner != null || !board.isThereAnyEmptyCell();
         // if there are empty positions on the board it can't be a draw
     }
 
@@ -132,6 +132,7 @@ public class Game implements Comparable<Game>, Observable {
                 board;
     }
 
+    @NotNull
     public ZonedDateTime getStart() {
         return start.atZone(ZoneId.systemDefault());
     }

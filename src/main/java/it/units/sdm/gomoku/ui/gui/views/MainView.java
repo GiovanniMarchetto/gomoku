@@ -17,6 +17,7 @@ import javafx.scene.shape.Circle;
 import java.beans.PropertyChangeEvent;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 public class MainView extends View<MainViewmodel> implements Observer {
 
@@ -63,7 +64,7 @@ public class MainView extends View<MainViewmodel> implements Observer {
         blackPlayerLabel.setText(vm.getCurrentBlackPlayer().toString());
         whitePlayerLabel.setText(vm.getCurrentWhitePlayer().toString());
         currentPlayerLabel.setText(vm.getCurrentPlayer().toString());
-        currentPlayerCircle.setFill(vm.getStoneOfCurrentPlayer() == Stone.BLACK ? Color.BLACK : Color.WHITE);
+        currentPlayerCircle.setFill(vm.getColorOfCurrentPlayer() == Stone.Color.BLACK ? Color.BLACK : Color.WHITE);
 
         ZonedDateTime startZoneDateTime = vm.getGameStartTime();
         startTime.setText("Start game: \n" +
@@ -78,11 +79,11 @@ public class MainView extends View<MainViewmodel> implements Observer {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(MainViewmodel.currentPlayerPropertyName)) {
+        if (Objects.equals(evt.getPropertyName(), getViewmodelAssociatedWithView().currentGame.getPropertyValue().currentPlayer.getPropertyNameOrElseThrow())) {//TODO:message chain code smell
             SceneController.executeOnJavaFxUiThread(() -> {
                 currentPlayerLabel.setText(evt.getNewValue().toString());
                 currentPlayerCircle.setFill(
-                        getViewmodelAssociatedWithView().getStoneOfCurrentPlayer() == Stone.BLACK
+                        getViewmodelAssociatedWithView().getColorOfCurrentPlayer() == Stone.Color.BLACK
                                 ? Color.BLACK : Color.WHITE);
             });
         }

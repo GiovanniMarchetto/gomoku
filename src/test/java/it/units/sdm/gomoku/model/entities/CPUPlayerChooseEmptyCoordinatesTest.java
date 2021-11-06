@@ -42,7 +42,7 @@ public class CPUPlayerChooseEmptyCoordinatesTest {
     private Coordinates getNextEmptyCoordinates() {
         try {
             return cpuPlayer.chooseNextEmptyCoordinatesFromCenter(board);
-        } catch (NoMoreEmptyPositionAvailableException e) {
+        } catch (BoardIsFullException e) {
             fail(e.getMessage());
             return new Coordinates(0, 0);
         }
@@ -79,7 +79,7 @@ public class CPUPlayerChooseEmptyCoordinatesTest {
     private void assertChooseEmptyCoordinates(Coordinates expected) {
         try {
             assertEquals(expected, cpuPlayer.chooseSmartEmptyCoordinates(board));
-        } catch (NoMoreEmptyPositionAvailableException e) {
+        } catch (BoardIsFullException e) {
             fail(e.getMessage());
         }
     }
@@ -87,7 +87,7 @@ public class CPUPlayerChooseEmptyCoordinatesTest {
     private void occupyCoordinateFromXAndY(int x, int y) {
         try {
             board.occupyPosition(stoneColor, new Coordinates(x, y));
-        } catch (NoMoreEmptyPositionAvailableException | PositionAlreadyOccupiedException e) {
+        } catch (BoardIsFullException | CellAlreadyOccupiedException e) {
             fail(e.getMessage());
         }
     }

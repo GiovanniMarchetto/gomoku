@@ -5,6 +5,7 @@ import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.mvvm_library.Observable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -19,24 +20,21 @@ import static it.units.sdm.gomoku.model.custom_types.PositiveInteger.PositiveInt
 
 public class Board implements Observable, Cloneable, Serializable {
 
-    public static final String boardMatrixPropertyName = "matrix";
+    public static final String lastMoveCoordinatesPropertyName = "lastMoveCoordinates";
 
     @NotNull
     private final PositiveInteger size;
     @NotNull
-    private final List<Coordinates> coordinatesHistory;
+    private final List<Coordinates> coordinatesHistory;    // TODO: SERVE?
     @NotNull
-    private final Stone[][] matrix;
+    private final Cell[][] matrix;
+    @Nullable
+    private Coordinates lastMoveCoordinates;
 
     public Board(@NotNull PositiveInteger size) {
         this.size = size;
         this.coordinatesHistory = new ArrayList<>(size.intValue());
-        this.matrix = IntStream.range(0, size.intValue())
-                .unordered().parallel()
-                .mapToObj(a -> IntStream.range(0, size.intValue())
-                        .mapToObj(x -> Stone.NONE)
-                        .toArray(Stone[]::new))
-                .toArray(Stone[][]::new);
+        this.matrix = new Cell[size.intValue()][size.intValue()];
     }
 
     public Board(@PositiveIntegerType int size) {
@@ -63,12 +61,12 @@ public class Board implements Observable, Cloneable, Serializable {
         return coordinatesHistory.size() == 0;
     }
 
-    public synchronized boolean isAnyEmptyPositionOnTheBoard() {
+    public synchronized boolean isThereAnyEmptyCell() {
         return coordinatesHistory.size() < Math.pow(size.intValue(), 2);
     }
 
-    private boolean isCoordinatesEmpty(@NotNull Coordinates coordinates) {
-        return getStoneAtCoordinates(Objects.requireNonNull(coordinates)).isNone();
+    private boolean isCellEmpty(@NotNull Coordinates coordinates) {
+        return getCellAtCoordinates(Objects.requireNonNull(coordinates)).isEmpty();
     }
 
     public boolean isCoordinatesInsideBoard(@NotNull Coordinates coordinates) {
@@ -77,25 +75,25 @@ public class Board implements Observable, Cloneable, Serializable {
         return x < size.intValue() && y < size.intValue();
     }
 
-    @NotNull
+    @Nullable
     public Stone getStoneAtCoordinates(@NotNull final Coordinates coordinates) {
         if (isCoordinatesInsideBoard(Objects.requireNonNull(coordinates))) {
-            return matrix[coordinates.getX()][coordinates.getY()];
+            return getCellAtCoordinates(coordinates).getStone();
         } else {
             throw new IndexOutOfBoundsException("Coordinate " + coordinates + " not present in the board.");
         }
     }
 
-    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    @SuppressWarnings("MethodDoesntCallSupfierMethod")
     @Override
     public Board clone() {
         return new Board(this);
     }
 
-    public Stone[][] getBoardMatrixCopy() {
+    private Cell[][] getBoardMatrixCopy() {
         return Arrays.stream(matrix)
-                .map(Stone[]::clone)
-                .toArray(Stone[][]::new);
+                .map(Cell[]::clone)
+                .toArray(Cell[][]::new);
     }
 
     @Override
@@ -108,83 +106,104 @@ public class Board implements Observable, Cloneable, Serializable {
                 && Arrays.deepEquals(matrix, otherBoard.matrix);
     }
 
-    public synchronized void occupyPosition(@NotNull Stone stone, @NotNull Coordinates coordinates)
-            throws NoMoreEmptyPositionAvailableException, PositionAlreadyOccupiedException {
-        if (isAnyEmptyPositionOnTheBoard()) {
-            if (isCoordinatesEmpty(Objects.requireNonNull(coordinates))) {
-                setStoneAtCoordinates(coordinates, Objects.requireNonNull(stone));
-                coordinatesHistory.add(coordinates);
-                firePropertyChange(boardMatrixPropertyName, this);
+    public synchronized void occupyPosition(@NotNull Stone.Color stoneColor, @NotNull Coordinates coordinates)
+            throws BoardIsFullException, CellAlreadyOccupiedException {
+        if (isThereAnyEmptyCell()) {
+            if (isCellEmpty(Objects.requireNonNull(coordinates))) {
+                setStoneAtCoordinates(coordinates, new Stone(Objects.requireNonNull(stoneColor)));
+                setLastMoveCoordinates(coordinates);
             } else {
-                throw new PositionAlreadyOccupiedException(coordinates);
+                throw new CellAlreadyOccupiedException(coordinates);
             }
         } else {
-            throw new NoMoreEmptyPositionAvailableException();
+            throw new BoardIsFullException();
         }
     }
 
-    private void setStoneAtCoordinates(@NotNull final Coordinates coordinates, @NotNull Stone stone) {
-        if (!stone.isNone()) {
-            if (isCoordinatesInsideBoard(Objects.requireNonNull(coordinates))) {
-                matrix[coordinates.getX()][coordinates.getY()] = stone;
-            } else {
-                throw new IndexOutOfBoundsException("Coordinate " + coordinates + " not present in the board.");
-            }
+    private void setStoneAtCoordinates(@NotNull final Coordinates coordinates, @Nullable Stone stone) {
+        if (isCoordinatesInsideBoard(Objects.requireNonNull(coordinates))) {
+            getCellAtCoordinates(coordinates).setStone(stone);
         } else {
-            throw new IllegalArgumentException("Stone color cannot be " + Stone.NONE);
+            throw new IndexOutOfBoundsException("Coordinate " + coordinates + " not present in the board.");
         }
-    }
-
-    public boolean isCoordinatesBelongingToChainOfNStones(@NotNull final Coordinates coords, NonNegativeInteger N) {
-        Stone stone = getStoneAtCoordinates(Objects.requireNonNull(coords));
-        if (stone.isNone()) {
-            throw new IllegalArgumentException("Given coordinates cannot refer to Stone." + stone);
-        }
-        return Stream.of(rowToList(coords), columnToList(coords), fwdDiagonalToList(coords), bckDiagonalToList(coords))
-                .unordered().parallel()
-                .anyMatch(stones -> Stone.isListContainingChainOfNStones(stones, N, stone));
     }
 
     @NotNull
-    private List<Stone> rowToList(@NotNull final Coordinates coords) {
+    public Cell getCellAtCoordinates(int x, int y) {
+        return matrix[x][y];
+    }
+
+    @NotNull
+    public Cell getCellAtCoordinates(@NotNull Coordinates coordinates) {
+        return getCellAtCoordinates(coordinates.getX(), coordinates.getY());
+    }
+
+    public boolean isCoordinatesBelongingToChainOfNStones(@NotNull final Coordinates coords, NonNegativeInteger N) {
+        Cell cell = getCellAtCoordinates(Objects.requireNonNull(coords));
+        if (cell.isEmpty()) {
+            return false;
+        }
+        return Stream.of(rowToList(coords), columnToList(coords), fwdDiagonalToList(coords), bckDiagonalToList(coords))
+                .unordered().parallel()
+                .anyMatch(cells -> isListContainingChainOfNStones(cells, N, Objects.requireNonNull(cell)));
+    }
+
+    public static boolean isListContainingChainOfNStones(@NotNull final List<@NotNull Cell> cellList,
+                                                         NonNegativeInteger N, @NotNull final Cell cell) {
+        int numberOfStonesInChain = N.intValue();
+
+        if (cellList.size() < numberOfStonesInChain)
+            return false;
+
+        return IntStream.range(0, cellList.size() - numberOfStonesInChain + 1)
+                .unordered()
+                .map(x -> cellList.subList(x, x + numberOfStonesInChain)
+                        .stream()
+                        .mapToInt(y -> y == cell ? 1 : 0/*type conversion*/)
+                        .sum())
+                .anyMatch(aSum -> aSum >= numberOfStonesInChain);
+    }
+
+    @NotNull
+    private List<Cell> rowToList(@NotNull final Coordinates coords) {
         return new ArrayList<>(Arrays.asList(matrix[Objects.requireNonNull(coords).getX()]));
     }
 
     @NotNull
-    private List<Stone> columnToList(@NotNull final Coordinates coords) {
+    private List<Cell> columnToList(@NotNull final Coordinates coords) {
         Objects.requireNonNull(coords);
         return IntStream
                 .range(0, getSize())
                 .sequential()
-                .mapToObj(x -> matrix[x][coords.getY()])
+                .mapToObj(x -> getCellAtCoordinates(x, coords.getY()))
                 .collect(Collectors.toList());
     }
 
     @NotNull
-    private List<Stone> fwdDiagonalToList(@NotNull final Coordinates coords) {
+    private List<Cell> fwdDiagonalToList(@NotNull final Coordinates coords) {
         return diagonalToList(coords, false);
     }
 
     @NotNull
-    private List<Stone> bckDiagonalToList(@NotNull final Coordinates coords) {
+    private List<Cell> bckDiagonalToList(@NotNull final Coordinates coords) {
         return diagonalToList(coords, true);
     }
 
     @NotNull
-    private List<Stone> diagonalToList(@NotNull final Coordinates coords, boolean isBackDiagonal) {
-        int B = getSize();
+    private List<Cell> diagonalToList(@NotNull final Coordinates coords, boolean isBackDiagonal) {
+        int boardSize = getSize();
         int sign = isBackDiagonal ? -1 : 1;
         int S = Objects.requireNonNull(coords).getX() + sign * coords.getY();
 
-        return IntStream.range(0, B).sequential()
-                .filter(i -> B + sign * i > sign * S && sign * i <= sign * S)
-                // sign =  1 => B + i >  S &&  i <=  S
-                // sign = -1 => B - i > -S && -i <= -S
+        return IntStream.range(0, boardSize).sequential()
+                .filter(i -> boardSize + sign * i > sign * S && sign * i <= sign * S)
+                // sign =  1 => boardSize + i >  S &&  i <=  S
+                // sign = -1 => boardSize - i > -S && -i <= -S
                 .boxed()
-                .flatMap(i -> IntStream.range(0, B).unordered()
+                .flatMap(i -> IntStream.range(0, boardSize).unordered()
                         .filter(j -> i + sign * j == S)
                         .mapToObj(j -> new Coordinates(i, j)))
-                .map(this::getStoneAtCoordinates)
+                .map(this::getCellAtCoordinates)
                 .collect(Collectors.toList());
     }
 
@@ -194,34 +213,42 @@ public class Board implements Observable, Cloneable, Serializable {
 
         return String.format("  %s%" + lengthOfSize + "s", size.intValue() < 11 ? " " : "", "") +
                 IntStream.range(0, size.intValue())
-                        .mapToObj(col ->
-                                String.format("%" + lengthOfSize + "d  ", col)
-                        ).collect(Collectors.joining()) +
+                        .mapToObj(col -> String.format("%" + lengthOfSize + "d  ", col))
+                        .collect(Collectors.joining()) +
                 System.lineSeparator() +
                 IntStream.range(0, size.intValue()).mapToObj(row ->
-                        String.format("%" + lengthOfSize + "d| ", row)
-                                + IntStream.range(0, size.intValue()).mapToObj(col -> " " +
-                                        switch (matrix[row][col]) {
-                                            case BLACK -> "X";
-                                            case WHITE -> "O";
-                                            default -> " ";
-                                        }
-                                        + String.format("%" + lengthOfSize + "s", ""))
-                                .collect(Collectors.joining())
-                                + System.lineSeparator()
-                ).collect(Collectors.joining());
+                                String.format("%" + lengthOfSize + "d| ", row)
+                                        + IntStream.range(0, size.intValue())
+                                        .mapToObj(col ->
+                                                String.format(" %s%" + lengthOfSize + "s",
+                                                        getCellAtCoordinates(row, col), ""))
+                                        .collect(Collectors.joining())
+                                        + System.lineSeparator())
+                        .collect(Collectors.joining());
     }
 
-    public static class NoMoreEmptyPositionAvailableException extends Exception {
+    @Nullable
+    public Coordinates getLastMoveCoordinates() {
+        return lastMoveCoordinates;
+    }
 
-        public NoMoreEmptyPositionAvailableException() {
+    private void setLastMoveCoordinates(@NotNull Coordinates lastMoveCoordinates) {
+        Coordinates oldValue = this.lastMoveCoordinates;
+        if (!Objects.requireNonNull(lastMoveCoordinates).equals(oldValue)) {
+            this.lastMoveCoordinates = lastMoveCoordinates;
+            coordinatesHistory.add(lastMoveCoordinates);
+            firePropertyChange(lastMoveCoordinatesPropertyName, oldValue, lastMoveCoordinates);
+        }
+    }
+
+    public static class BoardIsFullException extends Exception {
+        public BoardIsFullException() {
             super("The board is entirely filled. No more space available.");
         }
     }
 
-    public static class PositionAlreadyOccupiedException extends Exception {
-
-        public PositionAlreadyOccupiedException(@NotNull final Coordinates coordinates) {
+    public static class CellAlreadyOccupiedException extends Exception {
+        public CellAlreadyOccupiedException(@NotNull final Coordinates coordinates) {
             super(Objects.requireNonNull(coordinates) + " already occupied.");
         }
     }

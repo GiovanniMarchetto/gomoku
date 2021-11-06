@@ -3,8 +3,6 @@ package it.units.sdm.gomoku.model.entities;
 import it.units.sdm.gomoku.EnvVariables;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
-import it.units.sdm.gomoku.model.entities.Board;
-import it.units.sdm.gomoku.model.entities.Stone;
 import it.units.sdm.gomoku.utils.TestUtility;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,7 +54,7 @@ public class BoardTest {
     }
 
     @BeforeEach
-    void setup() {
+    void setUp() {
         board = createBoardWithCsvBoardStone();
     }
 
@@ -86,7 +84,7 @@ public class BoardTest {
 
     @Test
     void isAnyEmptyPositionOnTheBoard() {
-        assertTrue(board.isAnyEmptyPositionOnTheBoard());
+        assertTrue(board.isThereAnyEmptyCell());
     }
 
     @Test
@@ -95,11 +93,11 @@ public class BoardTest {
         generateCoordinates(board.getSize()).forEach(coords -> {
             try {
                 board.occupyPosition(Stone.BLACK, coords);
-            } catch (Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
+            } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
                 fail(e);
             }
         });
-        assertFalse(board.isAnyEmptyPositionOnTheBoard());
+        assertFalse(board.isThereAnyEmptyCell());
     }
 
     @ParameterizedTest
@@ -110,10 +108,10 @@ public class BoardTest {
             board.occupyPosition(Stone.BLACK, coordinates);
             assertTrue(boardStoneFromCsv[x][y].isNone());
             assertEquals(Stone.BLACK, board.getStoneAtCoordinates(coordinates));
-        } catch (Board.NoMoreEmptyPositionAvailableException e) {
+        } catch (Board.BoardIsFullException e) {
             Coordinates firstCoordinateAfterFillBoard = new Coordinates(18, 17);
             assertEquals(firstCoordinateAfterFillBoard, coordinates);
-        } catch (Board.PositionAlreadyOccupiedException e) {
+        } catch (Board.CellAlreadyOccupiedException e) {
             if (boardStoneFromCsv[x][y].isNone()) {
                 fail();
             }
@@ -125,7 +123,7 @@ public class BoardTest {
     void fwdDiagonalToList(Stone[][] matrix, Coordinates coords) {
         try {
             assertTrue(isMatrixPartToListMethodCorrect(matrix, coords, "fwdDiagonalToList", this::alternativeFwdDiagonalToList));
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
             fail(e);
         }
     }
@@ -135,7 +133,7 @@ public class BoardTest {
     void bckDiagonalToList(Stone[][] matrix, Coordinates coords) {
         try {
             assertTrue(isMatrixPartToListMethodCorrect(matrix, coords, "bckDiagonalToList", this::alternativeBckDiagonalToList));
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
             fail(e);
         }
     }
@@ -145,7 +143,7 @@ public class BoardTest {
     void columnToList(Stone[][] matrix, Coordinates coords) {
         try {
             assertTrue(isMatrixPartToListMethodCorrect(matrix, coords, "columnToList", this::alternativeColumnToList));
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
             fail(e);
         }
     }
@@ -155,7 +153,7 @@ public class BoardTest {
     void rowToList(Stone[][] matrix, Coordinates coords) {
         try {
             assertTrue(isMatrixPartToListMethodCorrect(matrix, coords, "rowToList", this::alternativeRowToList));
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
             fail(e);
         }
     }
@@ -164,7 +162,7 @@ public class BoardTest {
                                                     Coordinates coords,
                                                     String methodToTestName,
                                                     BiFunction<Board, Coordinates, List<Stone>> alternativeMethod)
-            throws NoSuchMethodException, Board.NoMoreEmptyPositionAvailableException, Board.PositionAlreadyOccupiedException, IllegalAccessException, InvocationTargetException {
+            throws NoSuchMethodException, Board.BoardIsFullException, Board.CellAlreadyOccupiedException, IllegalAccessException, InvocationTargetException {
 
         Method m = Board.class.getDeclaredMethod(methodToTestName, Coordinates.class);
         m.setAccessible(true);
@@ -233,12 +231,12 @@ public class BoardTest {
             if (!matrix[coordinates.getX()][coordinates.getY()].isNone()) {
                 fail(e);
             }
-        } catch (Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
+        } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
             fail(e);
         }
     }
 
-    private Board createBoardFromMatrix(Stone[][] matrix) throws Board.NoMoreEmptyPositionAvailableException, Board.PositionAlreadyOccupiedException {
+    private Board createBoardFromMatrix(Stone[][] matrix) throws Board.BoardIsFullException, Board.CellAlreadyOccupiedException {
         Board b = new Board(matrix.length);
         for (var coords : generateCoordinates(b.getSize()).toList()) {
             if (!matrix[coords.getX()][coords.getY()].isNone())
@@ -289,7 +287,7 @@ public class BoardTest {
                         default -> {
                         }
                     }
-                } catch (Board.NoMoreEmptyPositionAvailableException | Board.PositionAlreadyOccupiedException e) {
+                } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
                     e.printStackTrace();
                 }
 
