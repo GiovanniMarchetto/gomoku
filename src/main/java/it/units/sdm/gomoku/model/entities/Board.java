@@ -105,6 +105,7 @@ public class Board implements Observable, Cloneable, Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         Board otherBoard = (Board) o;
         return size.equals(otherBoard.size)
+                && Objects.equals(lastMoveCoordinates, otherBoard.lastMoveCoordinates)
                 && coordinatesHistory.size() == otherBoard.coordinatesHistory.size()
                 && Arrays.deepEquals(matrix, otherBoard.matrix);
     }
