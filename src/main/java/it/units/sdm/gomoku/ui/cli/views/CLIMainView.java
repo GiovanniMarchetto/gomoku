@@ -2,7 +2,6 @@ package it.units.sdm.gomoku.ui.cli.views;
 
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.Board;
-import it.units.sdm.gomoku.model.entities.Game;
 import it.units.sdm.gomoku.model.entities.Match;
 import it.units.sdm.gomoku.mvvm_library.Observer;
 import it.units.sdm.gomoku.mvvm_library.View;
@@ -13,6 +12,7 @@ import it.units.sdm.gomoku.ui.cli.viewmodels.CLIMainViewmodel;
 import it.units.sdm.gomoku.ui.gui.viewmodels.StartViewmodel;
 
 import java.beans.PropertyChangeEvent;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,14 +27,13 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
 
-        switch (evt.getPropertyName()) {
-            case Game.newGameStartedPropertyName -> {
-                if ((boolean) evt.getNewValue()) {
+        final String evtName = evt.getPropertyName();   // TODO: may be a method in Property?
+        if (Objects.equals(evtName, getViewmodelAssociatedWithView().currentGameStatus.getPropertyNameOrElseThrow())) { // TODO : code duplication  with AbstractMainViewmodel
+            switch ((AbstractMainViewmodel.CurrentGameStatus) evt.getNewValue()) {
+                case GAME_STARTED:
                     System.out.println("\n\nNew game!");
-                }
-            }
-            case AbstractMainViewmodel.userMustPlaceNewStonePropertyName -> {
-                if ((boolean) evt.getNewValue()) {
+                    break;
+                case USER_MUST_PLACE:
                     try {
                         waitForAValidMoveOfAPlayer();
                     } catch (Board.BoardIsFullException e) {
@@ -43,10 +42,8 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
                         e.printStackTrace();
                         System.exit(1);
                     }
-                }
-            }
-            case Game.isThisGameEndedPropertyName -> {
-                if ((boolean) evt.getNewValue()) {
+                    break;
+                case GAME_ENDED:
                     System.out.println("Game ended");
                     // TODO : print summary
                     CLIMainViewmodel viewmodel = getViewmodelAssociatedWithView();
@@ -76,9 +73,9 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
                     } else {
                         viewmodel.startNewGame();
                     }
-                }
             }
         }
+
     }
 
     private void waitForAValidMoveOfAPlayer() throws Board.BoardIsFullException {  // TODO : not tested
