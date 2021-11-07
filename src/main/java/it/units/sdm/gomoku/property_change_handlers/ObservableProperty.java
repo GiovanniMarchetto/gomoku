@@ -29,14 +29,14 @@ public class ObservableProperty<T> implements Observable {  // TODO : to be test
     }
 
     @NotNull
-    public String getPropertyName() {
-        return propertyName;
-    }
-
-    @NotNull
     public ObservableProperty<T> setPropertyValue(@Nullable final T propertyValue) {
         this.propertyValue = propertyValue;
         return this;
+    }
+
+    @NotNull
+    public String getPropertyName() {
+        return propertyName;
     }
 
     @NotNull

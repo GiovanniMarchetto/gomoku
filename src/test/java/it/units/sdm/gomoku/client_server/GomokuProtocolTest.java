@@ -8,7 +8,6 @@ import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
 import it.units.sdm.gomoku.model.entities.HumanPlayer;
-import it.units.sdm.gomoku.model.entities.Player;
 import it.units.sdm.gomoku.ui.support.BoardSizes;
 import it.units.sdm.gomoku.ui.support.Setup;
 import org.jetbrains.annotations.NotNull;
@@ -88,6 +87,26 @@ class GomokuProtocolTest {
                 .map(Arguments::of);
     }
 
+    @Nullable
+    private static Status getNextProtocolStatusOrNullIfLast(@NotNull final Status currentStatus) {
+        Status[] allStatuses = Status.values();
+        int currentStatusIndex =
+                IntStream.range(0, allStatuses.length)
+                        .sequential()
+                        .filter(index -> allStatuses[index] == Objects.requireNonNull(currentStatus))
+                        .findFirst()
+                        .orElseThrow();
+        if (isLastStatus(allStatuses, currentStatusIndex)) {
+            return null;
+        } else {
+            return allStatuses[currentStatusIndex + 1];
+        }
+    }
+
+    private static boolean isLastStatus(Status[] allStatuses, int currentStatusIndex) {
+        return currentStatusIndex == allStatuses.length - 1;
+    }
+
     @BeforeEach
     void setUp() {
         currentStatus = Status.values()[0];
@@ -121,7 +140,7 @@ class GomokuProtocolTest {
         // TODO : refactor needed
         AtomicReference<Exception> eventuallyThrownException = new AtomicReference<>();
         final int FAKE_SERVER_PORT = 20000;
-        try (ServerSocket fakeServerAccepting2Clients = new ServerSocket(FAKE_SERVER_PORT);) {
+        try (ServerSocket fakeServerAccepting2Clients = new ServerSocket(FAKE_SERVER_PORT)) {
             Thread fakeServerThread = new Thread(() -> {
                 for (int numberOfAcceptedClients = 0; numberOfAcceptedClients < 2; numberOfAcceptedClients++) {
                     try {
@@ -331,25 +350,5 @@ class GomokuProtocolTest {
                 .getDeclaredField(Objects.requireNonNull(fieldName));
         field.setAccessible(true);
         return field;
-    }
-
-    @Nullable
-    private static Status getNextProtocolStatusOrNullIfLast(@NotNull final Status currentStatus) {
-        Status[] allStatuses = Status.values();
-        int currentStatusIndex =
-                IntStream.range(0, allStatuses.length)
-                        .sequential()
-                        .filter(index -> allStatuses[index] == Objects.requireNonNull(currentStatus))
-                        .findFirst()
-                        .orElseThrow();
-        if (isLastStatus(allStatuses, currentStatusIndex)) {
-            return null;
-        } else {
-            return allStatuses[currentStatusIndex + 1];
-        }
-    }
-
-    private static boolean isLastStatus(Status[] allStatuses, int currentStatusIndex) {
-        return currentStatusIndex == allStatuses.length - 1;
     }
 }

@@ -25,9 +25,8 @@ public class GomokuProtocol implements Protocol {
 
     public static final int SERVER_PORT_NUMBER = 9999;
     public static final int NUMBER_OF_PLAYERS = 2;
+    private static final Logger loggerOfThisClass = Logger.getLogger(GomokuProtocol.class.getCanonicalName());
     private Status currentStatus = Status.WAITING_FOR_FIRST_CLIENT_CONNECTION;
-
-    private static Logger loggerOfThisClass = Logger.getLogger(GomokuProtocol.class.getCanonicalName());
     private volatile Socket client1Socket;   // field filled with reflection
     private volatile Socket client2Socket;   // field filled with reflection
     private volatile Socket currentClientPlayerSocket = null;   // TODO : may be set as constructor parameter

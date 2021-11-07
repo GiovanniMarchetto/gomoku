@@ -28,17 +28,6 @@ public class CPUPlayer extends Player {
         super(name);
     }
 
-    @Override
-    public void makeMove(@NotNull final Game currentGame) throws BoardIsFullException {
-        Coordinates coordinates = chooseSmartEmptyCoordinates(Objects.requireNonNull(currentGame).getBoard());
-        try {
-            Thread.sleep(DELAY_BEFORE_PLACING_STONE_MILLIS);
-            currentGame.placeStoneAndChangeTurn(coordinates);
-        } catch (Board.CellAlreadyOccupiedException | InterruptedException e) {
-            e.printStackTrace(); // TODO: handle this: this should never happen (I think?)
-        }
-    }
-
     public CPUPlayer() {
         super(CPU_DEFAULT_NAME + numberOfCpuPlayers.incrementAndGet());
     }
@@ -64,6 +53,17 @@ public class CPUPlayer extends Player {
                         .stream()
                 )
                 .anyMatch(counter -> counter == numberOfConsecutive.intValue());
+    }
+
+    @Override
+    public void makeMove(@NotNull final Game currentGame) throws BoardIsFullException {
+        Coordinates coordinates = chooseSmartEmptyCoordinates(Objects.requireNonNull(currentGame).getBoard());
+        try {
+            Thread.sleep(DELAY_BEFORE_PLACING_STONE_MILLIS);
+            currentGame.placeStoneAndChangeTurn(coordinates);
+        } catch (Board.CellAlreadyOccupiedException | InterruptedException e) {
+            e.printStackTrace(); // TODO: handle this: this should never happen (I think?)
+        }
     }
 
     @NotNull

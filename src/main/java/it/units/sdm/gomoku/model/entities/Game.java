@@ -15,13 +15,10 @@ import java.util.Objects;
 public class Game implements Comparable<Game>, Observable {
 
 
-    public enum Status {STARTED, ENDED}
-
-    @NotNull
-    private final ObservableProperty<Status> gameStatus;
-
     @NotNull
     public static final PositiveInteger NUMBER_OF_CONSECUTIVE_STONE_FOR_WINNING = new PositiveInteger(5);
+    @NotNull
+    private final ObservableProperty<Status> gameStatus;
     //    @NotNull
 //    public static final String isThisGameEndedPropertyName = "isThisGameEnded";
 //    @NotNull
@@ -36,7 +33,6 @@ public class Game implements Comparable<Game>, Observable {
     private final ObservableProperty<Player> currentPlayer;
     @Nullable
     private Player winner;  // available after the end of the game
-
     public Game(@NotNull PositiveInteger boardSize, @NotNull Player blackPlayer, @NotNull Player whitePlayer) {
         this.board = new Board(Objects.requireNonNull(boardSize));
         this.blackPlayer = Objects.requireNonNull(blackPlayer);
@@ -143,6 +139,8 @@ public class Game implements Comparable<Game>, Observable {
     public ZonedDateTime getStart() {
         return start.atZone(ZoneId.systemDefault());
     }
+
+    public enum Status {STARTED, ENDED}
 
     public static class GameNotEndedException extends Exception {
         public GameNotEndedException() {

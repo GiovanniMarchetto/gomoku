@@ -24,15 +24,12 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
     public final static String userMustPlaceNewStonePropertyName = "userMustPlaceNewStone";
 
     public final static String lastMoveCoordinatesPropertyName = Board.lastMoveCoordinatesPropertyName;
-
-    @Nullable
-    private Match match;
-
     @NotNull
     private final ObservableProperty<Player> currentPlayerProperty = new ObservableProperty<>();
-
     @NotNull
     private final ObservableProperty<Game.Status> currentGameStatus = new ObservableProperty<>();
+    @Nullable
+    private Match match;
     //
 //    @NotNull
 //    public final ObservableProperty<Game> currentGame = new ObservableProperty<>(this); // TODO:public???
