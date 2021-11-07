@@ -4,6 +4,6 @@ public record Stone(Color color) {
 
     public enum Color {
         BLACK,
-        WHITE;
+        WHITE
     }
 }

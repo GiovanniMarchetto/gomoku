@@ -8,15 +8,14 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 public class PropertyObserver<T> implements Observer {
+    // TODO : to be tested
 
     private final Consumer<PropertyChangeEvent> actionOnPropertyChange;
-    private final ObservableProperty<T> observedProperty;
 
     public PropertyObserver(@NotNull final ObservableProperty<T> observedProperty,
                             @NotNull final Consumer<PropertyChangeEvent> actionOnPropertyChange) {
         this.actionOnPropertyChange = Objects.requireNonNull(actionOnPropertyChange);
-        this.observedProperty = Objects.requireNonNull(observedProperty);
-        this.observedProperty.addPropertyChangeListener(this);
+        observe(Objects.requireNonNull(observedProperty));
     }
 
     @Override
