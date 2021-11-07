@@ -4,6 +4,7 @@ import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.mvvm_library.Observable;
+import it.units.sdm.gomoku.property_change_handlers.ObservableProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,16 +21,14 @@ import static it.units.sdm.gomoku.model.custom_types.PositiveInteger.PositiveInt
 
 public class Board implements Observable, Cloneable, Serializable {
 
-    public static final String lastMoveCoordinatesPropertyName = "lastMoveCoordinates";
-
     @NotNull
     private final PositiveInteger size;
     @NotNull
     private final List<Coordinates> coordinatesHistory;    // TODO: SERVE?
     @NotNull
     private final Cell[][] matrix;
-    @Nullable
-    private Coordinates lastMoveCoordinates;
+    @NotNull
+    private final ObservableProperty<Coordinates> lastMoveCoordinatesProperty;
 
     public Board(@NotNull PositiveInteger size) {
         this.size = size;
@@ -37,6 +36,7 @@ public class Board implements Observable, Cloneable, Serializable {
         this.matrix = IntStream.range(0, size.intValue())
                 .mapToObj(i -> IntStream.range(0, size.intValue()).mapToObj(j -> new Cell()).toArray(Cell[]::new))
                 .toArray(Cell[][]::new);
+        this.lastMoveCoordinatesProperty = new ObservableProperty<>();
     }
 
     public Board(@PositiveIntegerType int size) {
@@ -47,7 +47,7 @@ public class Board implements Observable, Cloneable, Serializable {
         this.size = new PositiveInteger(board.size);
         this.coordinatesHistory = new ArrayList<>(board.coordinatesHistory);
         this.matrix = board.getBoardMatrixCopy();
-        this.lastMoveCoordinates = board.lastMoveCoordinates;
+        this.lastMoveCoordinatesProperty = board.lastMoveCoordinatesProperty.clone();
     }
 
     public static boolean isListContainingChainOfNCells(@NotNull final List<@NotNull Cell> cellList,
@@ -103,7 +103,7 @@ public class Board implements Observable, Cloneable, Serializable {
         }
     }
 
-    @SuppressWarnings("MethodDoesntCallSupfierMethod")
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
     @Override
     public Board clone() {
         return new Board(this);
@@ -121,17 +121,28 @@ public class Board implements Observable, Cloneable, Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         Board otherBoard = (Board) o;
         return size.equals(otherBoard.size)
-                && Objects.equals(lastMoveCoordinates, otherBoard.lastMoveCoordinates)
-                && coordinatesHistory.size() == otherBoard.coordinatesHistory.size()
+                && lastMoveCoordinatesProperty.equals(otherBoard.lastMoveCoordinatesProperty)
+                && coordinatesHistory.equals(otherBoard.coordinatesHistory) // TODO : board equality should consider coordinate history?
                 && Arrays.deepEquals(matrix, otherBoard.matrix);
     }
+
+//    @Override
+//    public int hashCode() { // TODO : check if creates problems with hashmaps (hashCode method should be present according to equals() contract)
+//        int result = size.hashCode();
+//        result = 31 * result + coordinatesHistory.hashCode();
+//        result = 31 * result + Arrays.deepHashCode(matrix);
+//        result = 31 * result + lastMoveCoordinatesProperty.hashCode();
+//        return result;
+//    }
 
     public synchronized void occupyPosition(@NotNull Stone.Color stoneColor, @NotNull Coordinates coordinates)
             throws BoardIsFullException, CellAlreadyOccupiedException {
         if (isThereAnyEmptyCell()) {
             if (isCellEmpty(Objects.requireNonNull(coordinates))) {
                 setStoneAtCoordinates(coordinates, new Stone(Objects.requireNonNull(stoneColor)));
-                setLastMoveCoordinates(coordinates);
+                coordinatesHistory
+                        .add(lastMoveCoordinatesProperty.setPropertyValueAndFireIfPropertyChange(coordinates)
+                                .getPropertyValue());
             } else {
                 throw new CellAlreadyOccupiedException(coordinates);
             }
@@ -231,18 +242,9 @@ public class Board implements Observable, Cloneable, Serializable {
                         .collect(Collectors.joining());
     }
 
-    @Nullable
-    public Coordinates getLastMoveCoordinates() {
-        return lastMoveCoordinates;
-    }
-
-    private void setLastMoveCoordinates(@NotNull Coordinates lastMoveCoordinates) {
-        Coordinates oldValue = this.lastMoveCoordinates;
-        if (!Objects.requireNonNull(lastMoveCoordinates).equals(oldValue)) {
-            this.lastMoveCoordinates = lastMoveCoordinates;
-            coordinatesHistory.add(lastMoveCoordinates);
-            firePropertyChange(lastMoveCoordinatesPropertyName, oldValue, lastMoveCoordinates);
-        }
+    @NotNull
+    public ObservableProperty<Coordinates> getLastMoveCoordinatesProperty() {
+        return lastMoveCoordinatesProperty;
     }
 
     public static class BoardIsFullException extends Exception {

@@ -5,7 +5,7 @@ import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.entities.Cell;
 import it.units.sdm.gomoku.model.entities.Stone;
 import it.units.sdm.gomoku.mvvm_library.Observer;
-import it.units.sdm.gomoku.ui.AbstractMainViewmodel;
+import it.units.sdm.gomoku.property_change_handlers.PropertyObserver;
 import it.units.sdm.gomoku.ui.gui.viewmodels.MainViewmodel;
 import javafx.application.Platform;
 import javafx.geometry.HPos;
@@ -46,6 +46,16 @@ public class GomokuCell implements Observer {
         this.boardSize = boardSize;
         initializeGroup();
         observe(mainViewmodel);
+        new PropertyObserver<>(mainViewmodel.getLastMoveCoordinatesProperty(), evt -> {
+            Coordinates lastCoords = (Coordinates) Objects.requireNonNull(evt.getNewValue());
+            if (lastCoords.equals(coordinates)) {
+                Platform.runLater(() -> setCell(Objects.requireNonNull(mainViewmodel.getCellAtCoordinatesInCurrentBoard(lastCoords))));
+            }
+            Coordinates penultimateCoords = (Coordinates) evt.getOldValue();
+            if (penultimateCoords != null && penultimateCoords.equals(coordinates)) {
+                Platform.runLater(this::resetStrokeToPlacedStone);
+            }
+        });
     }
 
     private double getRadius() {
@@ -237,17 +247,6 @@ public class GomokuCell implements Observer {
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
             case radiusPropertyName -> setRadius((double) evt.getNewValue());
-            case AbstractMainViewmodel.lastMoveCoordinatesPropertyName -> {
-                Coordinates lastCoords = (Coordinates) Objects.requireNonNull(evt.getNewValue());
-                if (lastCoords.equals(coordinates)) {
-                    Platform.runLater(() -> setCell(Objects.requireNonNull(mainViewmodel.getCellAtCoordinatesInCurrentBoard(lastCoords))));
-                }
-
-                Coordinates penultimateCoords = (Coordinates) evt.getOldValue();
-                if (penultimateCoords != null && penultimateCoords.equals(coordinates)) {
-                    Platform.runLater(this::resetStrokeToPlacedStone);
-                }
-            }
         }
     }
 }

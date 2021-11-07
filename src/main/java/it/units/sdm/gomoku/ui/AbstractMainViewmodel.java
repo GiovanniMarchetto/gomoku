@@ -20,13 +20,14 @@ import java.util.stream.Collectors;
 
 public abstract class AbstractMainViewmodel extends Viewmodel {
 
-    public final static String lastMoveCoordinatesPropertyName = Board.lastMoveCoordinatesPropertyName;
     @NotNull
-    private final ObservableProperty<Player> currentPlayerProperty = new ObservableProperty<>();
+    private final ObservableProperty<Player> currentPlayerProperty;
     @NotNull
-    private final ObservableProperty<Game.Status> currentGameStatusProperty = new ObservableProperty<>();
+    private final ObservableProperty<Game.Status> currentGameStatusProperty;
     @NotNull
-    private final ObservableProperty<Boolean> userMustPlaceNewStoneProperty = new ObservableProperty<>();
+    private final ObservableProperty<Boolean> userMustPlaceNewStoneProperty;
+    @NotNull
+    private final ObservableProperty<Coordinates> lastMoveCoordinatesProperty;
     @Nullable
     private Match match;
     //
@@ -42,11 +43,16 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
     private Board currentBoard;
 
     public AbstractMainViewmodel() {
+        this.currentPlayerProperty = new ObservableProperty<>();
+        this.currentGameStatusProperty = new ObservableProperty<>();
+        this.userMustPlaceNewStoneProperty = new ObservableProperty<>();
+        this.lastMoveCoordinatesProperty = new ObservableProperty<>();
     }
 
     protected void initializeNewGame() {
         try {
             currentGame = Objects.requireNonNull(match).startNewGame();
+            currentBoard = currentGame.getBoard();
             new PropertyObserver<>(currentGame.getCurrentPlayer(), evt -> {
                 currentPlayerProperty.setPropertyValueAndFireIfPropertyChange((Player) evt.getNewValue());
                 if (!isCurrentGameEnded()) {
@@ -65,41 +71,21 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
                     endGame();
                 }
             });
+            new PropertyObserver<>(currentBoard.getLastMoveCoordinatesProperty(), evt -> {
+                lastMoveCoordinatesProperty.setPropertyValueAndFireIfPropertyChange((Coordinates) evt.getNewValue());
+            });
 
-            currentBoard = currentGame.getBoard();
-            observe(currentGame);
+            observe(currentGame);   // TODO : should fade away
             observe(currentBoard);
 
         } catch (Match.MatchEndedException e) {
-            e.printStackTrace();
+            e.printStackTrace();    // TODO : handle this exception
         }
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-//        // TODO : refactor needed
-//
-//        final String evtName = evt.getPropertyName();
-//     /*   if (Objects.equals(evtName, currentGame.getPropertyValue().gameEnded.getPropertyNameOrElseThrow())) {    // TODO : switch may be better
-//            // TODO: message chain code smell (the property is the game itself)
-////            if (isCurrentGameEnded()) {
-////                endGame();
-////            }
-//            if ((boolean) evt.getNewValue()) {
-//                endGame();
-//            }  else */if (Objects.equals(evtName, currentGame.getPropertyValue().currentPlayer.getPropertyNameOrElseThrow())) {// TODO: message chain code smell (the property is the game itself)
-//            currentPlayer.setPropertyValueAndFireIfPropertyChange((Player) evt.getNewValue());
-//            if (!isCurrentGameEnded()) {
-//                placeStoneIfCPUPlayingWithDelayOrElseNotifyTheView(currentPlayer.getPropertyValue(), 0);// TODO : delay?
-//            }
-//        } else if (Objects.equals(evtName, Board.boardMatrixPropertyName)) {    // TODO : property name to be changed into a property
-//            firePropertyChange(Board.boardMatrixPropertyName, evt.getNewValue()); // TODO: use a Property
-//        } else if (Objects.equals(evtName, Board.boardMatrixPropertyName)) {    // TODO : property name to be changed into a property
-//            firePropertyChange(Board.boardMatrixPropertyName, evt.getNewValue()); // TODO: use a ObservableProperty
-//        }
         switch (evt.getPropertyName()) {
-            case Board.lastMoveCoordinatesPropertyName -> firePropertyChange(
-                    lastMoveCoordinatesPropertyName, evt.getOldValue(), evt.getNewValue());
             case HumanPlayer.coordinatesRequiredToContinuePropertyName -> userMustPlaceNewStoneProperty.setPropertyValueAndFireIfPropertyChange((boolean) evt.getNewValue());
         }
     }
@@ -214,6 +200,11 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
     @NotNull
     public ObservableProperty<Boolean> getUserMustPlaceNewStoneProperty() {
         return this.userMustPlaceNewStoneProperty;
+    }
+
+    @NotNull
+    public ObservableProperty<Coordinates> getLastMoveCoordinatesProperty() {
+        return this.lastMoveCoordinatesProperty;
     }
 
     public Stone.Color getColorOfCurrentPlayer() {
