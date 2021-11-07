@@ -8,6 +8,8 @@ import java.util.Objects;
 
 public class ObservableProperty<T> implements Observable {  // TODO : to be tested
 
+    // TODO : test all events to work properly
+
     private static int numberOfInstances = Integer.MIN_VALUE;
 
     @NotNull
@@ -16,13 +18,9 @@ public class ObservableProperty<T> implements Observable {  // TODO : to be test
     @Nullable
     private T propertyValue;
 
-    public ObservableProperty(@Nullable final T propertyValue) {
-        this.propertyValue = propertyValue;
-        this.propertyName = String.valueOf(numberOfInstances++);
-    }
-
     public ObservableProperty() {
-        this(null);
+        this.propertyValue = null;
+        this.propertyName = String.valueOf(numberOfInstances++);
     }
 
     @Nullable
