@@ -211,7 +211,7 @@ public class GomokuCell implements Observer {
         });
 
         rectangle.setOnMousePressed(event -> {
-            if (cell.isEmpty() && event.isPrimaryButtonDown()) {
+            if (cell.isEmpty() && event.isPrimaryButtonDown() && vm.isUserMustPlaceNewStone()) {
                 try {
                     vm.placeStoneFromUser(coordinates);
                 } catch (Board.BoardIsFullException |
@@ -235,7 +235,7 @@ public class GomokuCell implements Observer {
             case radiusPropertyName -> setRadius((double) evt.getNewValue());
             case AbstractMainViewmodel.lastMoveCoordinatesPropertyName -> {
                 Coordinates lastCoords = (Coordinates) Objects.requireNonNull(evt.getNewValue());
-                if(lastCoords.equals(coordinates)) {
+                if (lastCoords.equals(coordinates)) {
                     Platform.runLater(() -> setCell(Objects.requireNonNull(vm.getCellAtCoordinatesInCurrentBoard(lastCoords))));
                 }
 

@@ -4,8 +4,6 @@ import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.entities.*;
 import it.units.sdm.gomoku.mvvm_library.Viewmodel;
-import it.units.sdm.gomoku.property_change_handlers.ObservableProperty;
-import it.units.sdm.gomoku.property_change_handlers.PropertyObserver;
 import it.units.sdm.gomoku.ui.support.Setup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -50,6 +48,8 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
     @Nullable
     private Board currentBoard;
 
+    private boolean userMustPlaceNewStone = false;
+
     public AbstractMainViewmodel() {
     }
 
@@ -88,58 +88,69 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
                 Player oldValue = (Player) evt.getOldValue();
                 firePropertyChange(currentPlayerPropertyName, oldValue, currentPlayer);
                 if (!isCurrentGameEnded()) {
-                    placeStoneIfCPUPlayingWithDelayOrElseNotifyTheView(currentPlayer, 0);
+//                    placeStoneIfCPUPlayingWithDelayOrElseNotifyTheView(currentPlayer, 0);
+                    runOnSeparateThread(() -> {
+                        try {
+                            currentPlayer.makeMove(getCurrentGame());
+                        } catch (Board.BoardIsFullException e) {
+                            e.printStackTrace(); // TODO: handle this: this should never happen (I think?)
+                        }
+                    });
                 }
             }
+            case HumanPlayer.coordinatesRequiredToContinuePropertyName -> setUserMustPlaceNewStone((boolean) evt.getNewValue());
         }
     }
 
-        public void triggerFirstMove () {
+    public void triggerFirstMove() {
         if (currentGame == null) {
-                throw new NullPointerException("Cannot invoke this method before starting the game (current game is null)");
-            }
-            placeStoneIfCPUPlayingWithDelayOrElseNotifyTheView(getCurrentPlayer(), 0);
+            throw new NullPointerException("Cannot invoke this method before starting the game (current game is null)");
         }
+        currentGame.triggerFirstMove();
+//        placeStoneIfCPUPlayingWithDelayOrElseNotifyTheView(getCurrentPlayer(), 0);
+    }
 
-        public void createMatchFromSetupAndStartGame (Setup setup){
-            setMatch(new Match(setup));
-            startNewGame();
-        }
+    public void createMatchFromSetupAndStartGame(Setup setup) {
+        setMatch(new Match(setup));
+        observe(getCurrentBlackPlayer());
+        observe(getCurrentWhitePlayer());
+        startNewGame();
+    }
 
-        public abstract void startNewMatch ();
+    public abstract void startNewMatch();
 
-        public void startNewGame () {
-            initializeNewGame();
-        }
+    public void startNewGame() {
+        initializeNewGame();
+    }
 
-        public void startExtraGame () {
-            addAnExtraGameToThisMatch();
-            startNewGame();
-        }
+    public void startExtraGame() {
+        addAnExtraGameToThisMatch();
+        startNewGame();
+    }
 
-        protected void addAnExtraGameToThisMatch () {
-            Objects.requireNonNull(match).addAnExtraGame();
-        }
+    protected void addAnExtraGameToThisMatch() {
+        Objects.requireNonNull(match).addAnExtraGame();
+    }
 
-        public synchronized boolean isMatchEnded () {
-            return Objects.requireNonNull(match).isEnded();
-        }
+    public synchronized boolean isMatchEnded() {
+        return Objects.requireNonNull(match).isEnded();
+    }
 
-        protected synchronized boolean isCurrentGameEnded () {
+    protected synchronized boolean isCurrentGameEnded() {
         return Objects.requireNonNull(currentGame).isThisGameEnded();
-        }
+    }
 
-        protected void setMatch (@NotNull Match match){
-            this.match = Objects.requireNonNull(match);
-        }
+    protected void setMatch(@NotNull Match match) {
+        this.match = Objects.requireNonNull(match);
+    }
 
-        @NotNull
-        public String getCurrentBoardAsString () {
+    @NotNull
+    public String getCurrentBoardAsString() {
         return Objects.requireNonNull(currentBoard).toString();
-        }
+    }
 
-        protected void initializeNewGame () {
-            try {
+    protected void initializeNewGame() {
+        try {
 //            Game newGame = Objects.requireNonNull(match).startNewGame();
 //            Board newBoard = newGame.getBoard();
 //            observe(newGame);
@@ -157,109 +168,101 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
             observe(currentGame);
             observe(currentBoard);
             firePropertyChange(Game.newGameStartedPropertyName, false, true);
-            } catch (Match.MatchEndedException e) {
-                e.printStackTrace();
-            }
+        } catch (Match.MatchEndedException e) {
+            e.printStackTrace();
         }
+    }
 
-        public void endGame () {
+    public void endGame() {
         stopObserving(Objects.requireNonNull(currentGame));
         stopObserving(Objects.requireNonNull(currentBoard));
         firePropertyChange(Game.isThisGameEndedPropertyName, false, true);
-        }
+    }
 
-        @NotNull
-        protected Game getCurrentGame () {
+    @NotNull
+    protected Game getCurrentGame() {
         return Objects.requireNonNull(currentGame);
-        }
+    }
 
-        @NotNull
-        protected Board getCurrentBoard () {
+    @NotNull
+    protected Board getCurrentBoard() {
         return Objects.requireNonNull(currentBoard);
-        }
+    }
 
-        private void placeStone ( @NotNull final Coordinates coordinates)
+    public void placeStoneFromUser(@NotNull final Coordinates coordinates)
             throws Board.BoardIsFullException, Board.CellAlreadyOccupiedException {
-            Match.executeMoveOfPlayerInGame(getCurrentGame(), Objects.requireNonNull(coordinates));
+        if (isUserMustPlaceNewStone()) {
+            HumanPlayer currentHumanPlayer = (HumanPlayer) Objects.requireNonNull(getCurrentPlayer());
+            currentHumanPlayer.placeStone(coordinates);
         }
+    }
 
-        public void placeStoneFromUser ( @NotNull final Coordinates coordinates)
-            throws Board.BoardIsFullException, Board.CellAlreadyOccupiedException {
-            if (!(getCurrentPlayer() instanceof CPUPlayer)) {
-                //TODO: why two methods that do the same control?
-                placeStone(coordinates);
-            }
-        }
-
-        private void placeStoneIfCPUPlayingWithDelayOrElseNotifyTheView (Player currentPlayer,int delayOfCpuMove){
-            //TODO: why currentPlayer and not getCurrentPlayer?
-            runOnSeparateThread(() -> {
-                if (currentPlayer instanceof CPUPlayer cpuPlayer) {
-                    try {
-                        Thread.sleep(delayOfCpuMove);
-                        placeStone(cpuPlayer.chooseSmartEmptyCoordinates(getCurrentBoard()));
-                } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | InterruptedException e) {
-                        e.printStackTrace();    // TODO : handle this
-                    }
-                } else {
-                firePropertyChange(userMustPlaceNewStonePropertyName, false, true); // TODO : where is the property?
-                }
-            });
-        }
-
-        public void forceReFireAllCells () {
+    public void forceReFireAllCells() {
         // TODO: Rethink this
 //        firePropertyChange(Board.lastMoveCoordinatesPropertyName, null);
-        }
+    }
 
-        public int getBoardSize () {
-            try {
+    public int getBoardSize() {
+        try {
             return Objects.requireNonNull(currentBoard).getSize();
-            } catch (NullPointerException e) {
-                Logger.getLogger(getClass().getCanonicalName())
-                        .severe("The board is null but should not.\n\t" +
-                                Arrays.stream(e.getStackTrace())
-                                        .map(StackTraceElement::toString)
-                                        .collect(Collectors.joining("\n\t")));
-                throw e;
-            }
+        } catch (NullPointerException e) {
+            Logger.getLogger(getClass().getCanonicalName())
+                    .severe("The board is null but should not.\n\t" +
+                            Arrays.stream(e.getStackTrace())
+                                    .map(StackTraceElement::toString)
+                                    .collect(Collectors.joining("\n\t")));
+            throw e;
         }
+    }
 
-        public Map<Player, NonNegativeInteger> getScoreOfMatch () {
-            return Objects.requireNonNull(match).getScore();
-        }
+    public Map<Player, NonNegativeInteger> getScoreOfMatch() {
+        return Objects.requireNonNull(match).getScore();
+    }
 
-        public Player getCurrentPlayer () {
+    @Nullable
+    public Player getCurrentPlayer() {
         return Objects.requireNonNull(currentGame).getCurrentPlayer();
-        }
+    }
 
     public Stone.Color getColorOfCurrentPlayer() {
-        return Objects.requireNonNull(currentGame).getColorOfPlayer(getCurrentPlayer());
-        }
+        return Objects.requireNonNull(currentGame).getColorOfPlayer(Objects.requireNonNull(getCurrentPlayer()));
+    }
 
-        public Player getCurrentBlackPlayer () {
-            return Objects.requireNonNull(match).getCurrentBlackPlayer();
-        }
+    public Player getCurrentBlackPlayer() {
+        return Objects.requireNonNull(match).getCurrentBlackPlayer();
+    }
 
-        public Player getCurrentWhitePlayer () {
-            return Objects.requireNonNull(match).getCurrentWhitePlayer();
-        }
+    public Player getCurrentWhitePlayer() {
+        return Objects.requireNonNull(match).getCurrentWhitePlayer();
+    }
 
     public Cell getCellAtCoordinatesInCurrentBoard(Coordinates coordinates) {
         return Objects.requireNonNull(currentBoard).getCellAtCoordinates(coordinates);
-        }
+    }
 
-        @Nullable
-        public Player getWinnerOfTheMatch () throws Match.MatchNotEndedException {
-            return Objects.requireNonNull(match).getWinner();
-        }
+    @Nullable
+    public Player getWinnerOfTheMatch() throws Match.MatchNotEndedException {
+        return Objects.requireNonNull(match).getWinner();
+    }
 
-        @Nullable
-        public Player getWinnerOfTheGame () throws Game.GameNotEndedException {
+    @Nullable
+    public Player getWinnerOfTheGame() throws Game.GameNotEndedException {
         return Objects.requireNonNull(currentGame).getWinner();
-        }
+    }
 
-        public ZonedDateTime getGameStartTime () {
+    public ZonedDateTime getGameStartTime() {
         return Objects.requireNonNull(currentGame).getStart();
+    }
+
+    public boolean isUserMustPlaceNewStone() {
+        return this.userMustPlaceNewStone;
+    }
+
+    private void setUserMustPlaceNewStone(boolean userMustPlaceNewStone) {
+        var oldValue = this.userMustPlaceNewStone;
+        if (userMustPlaceNewStone != oldValue) {
+            this.userMustPlaceNewStone = userMustPlaceNewStone;
+            firePropertyChange(userMustPlaceNewStonePropertyName, oldValue, userMustPlaceNewStone);
         }
     }
+}

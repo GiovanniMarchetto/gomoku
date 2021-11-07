@@ -3,7 +3,6 @@ package it.units.sdm.gomoku.model.entities;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.mvvm_library.Observable;
-import it.units.sdm.gomoku.property_change_handlers.ObservableProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,7 +33,7 @@ public class Game implements Comparable<Game>, Observable {
 //    public final ObservableProperty<Boolean> gameEnded;
 //    @NotNull
 //    public final ObservableProperty<Boolean> newGameStarted;
-    @NotNull
+    @Nullable
     private Player currentPlayer;
     @Nullable
     private Player winner;  // available after the end of the game
@@ -46,7 +45,6 @@ public class Game implements Comparable<Game>, Observable {
 //        this.currentPlayer = new ObservableProperty<>(blackPlayer, this);
 //        this.gameEnded = new ObservableProperty<>(false, this);
 //        this.newGameStarted = new ObservableProperty<>(false, this);
-        this.currentPlayer = blackPlayer;
         this.start = Instant.now();
     }
 
@@ -54,14 +52,18 @@ public class Game implements Comparable<Game>, Observable {
         this(new PositiveInteger(boardSize), blackPlayer, whitePlayer);
     }
 
-    @NotNull
+    public void triggerFirstMove() {
+        setCurrentPlayer(blackPlayer);
+    }
+
+    @Nullable
     public Player getCurrentPlayer() {
         return currentPlayer;
     }
 
     private void setCurrentPlayer(@NotNull final Player currentPlayer) {
         Player oldValue = this.currentPlayer;
-        if (!oldValue.equals(Objects.requireNonNull(currentPlayer))) {
+        if (!Objects.requireNonNull(currentPlayer).equals(oldValue)) {
             this.currentPlayer = currentPlayer;
             firePropertyChange(currentPlayerPropertyName, oldValue, currentPlayer);
         }
@@ -80,7 +82,7 @@ public class Game implements Comparable<Game>, Observable {
     public void placeStoneAndChangeTurn(@NotNull final Coordinates coordinates)
             throws Board.BoardIsFullException, Board.CellAlreadyOccupiedException {
 
-        placeStone(currentPlayer, coordinates);
+        placeStone(Objects.requireNonNull(currentPlayer), coordinates);
         changeTurn();
     }
 

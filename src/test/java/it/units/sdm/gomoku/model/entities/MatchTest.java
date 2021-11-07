@@ -61,6 +61,7 @@ class MatchTest {
         try {
             for (int numberOfGame = 0; numberOfGame < NUMBER_OF_GAMES; numberOfGame++) {
                 Game currentGame = match.startNewGame();
+                currentGame.triggerFirstMove(); // TODO: this should be done everywhere when starting a new game
                 while (!currentGame.isThisGameEnded()) {
                     currentGame.placeStoneAndChangeTurn(cpu1.chooseNextEmptyCoordinates(currentGame.getBoard()));
                 }

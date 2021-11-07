@@ -2,6 +2,7 @@ package it.units.sdm.gomoku.ui.gui.viewmodels;
 
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
+import it.units.sdm.gomoku.model.entities.HumanPlayer;
 import it.units.sdm.gomoku.model.entities.Player;
 import it.units.sdm.gomoku.mvvm_library.Viewmodel;
 import it.units.sdm.gomoku.ui.AbstractMainViewmodel;
@@ -44,8 +45,8 @@ public class StartViewmodel extends Viewmodel {
     }
 
     private Setup createSetup() {
-        Player player1 = isPlayer1CPU() ? new CPUPlayer(getPlayer1Name()) : new Player(getPlayer1Name());
-        Player player2 = isPlayer2CPU() ? new CPUPlayer(getPlayer2Name()) : new Player(getPlayer2Name());
+        Player player1 = isPlayer1CPU() ? new CPUPlayer(getPlayer1Name()) : new HumanPlayer(getPlayer1Name());
+        Player player2 = isPlayer2CPU() ? new CPUPlayer(getPlayer2Name()) : new HumanPlayer(getPlayer2Name());
         return new Setup(player1, player2, new PositiveInteger(Integer.parseInt(getNumberOfGames())), getSelectedBoardSizeValue());
     }
 

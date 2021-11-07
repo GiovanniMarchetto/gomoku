@@ -19,12 +19,24 @@ import static it.units.sdm.gomoku.model.entities.Board.BoardIsFullException;
 
 public class CPUPlayer extends Player {
 
+    private final static int DELAY_BEFORE_PLACING_STONE_MILLIS = 0;
     private final static String CPU_DEFAULT_NAME = "CPU";
     private final static NonNegativeInteger numberOfCpuPlayers = new NonNegativeInteger();
     private final Random rand = new Random();
 
     public CPUPlayer(@NotNull String name) {
         super(name);
+    }
+
+    @Override
+    public void makeMove(@NotNull final Game currentGame) throws BoardIsFullException {
+        Coordinates coordinates = chooseSmartEmptyCoordinates(Objects.requireNonNull(currentGame).getBoard());
+        try {
+            Thread.sleep(DELAY_BEFORE_PLACING_STONE_MILLIS);
+            currentGame.placeStoneAndChangeTurn(coordinates);
+        } catch (Board.CellAlreadyOccupiedException | InterruptedException e) {
+            e.printStackTrace(); // TODO: handle this: this should never happen (I think?)
+        }
     }
 
     public CPUPlayer() {

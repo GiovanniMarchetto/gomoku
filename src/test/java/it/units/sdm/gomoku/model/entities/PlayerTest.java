@@ -11,7 +11,7 @@ class PlayerTest {
     @ParameterizedTest
     @CsvFileSource(resources = EnvVariables.PLAYERS_NAME_PROVIDER_RESOURCE_LOCATION)
     void testToString(String name) {
-        Player player = new Player(name);
+        Player player = new HumanPlayer(name);
         assertEquals(player.toString(), name);
     }
 }
