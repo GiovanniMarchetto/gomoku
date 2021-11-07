@@ -56,3 +56,15 @@ gradle.projectsEvaluated {
 run {
     standardInput = System.in   // set standard input
 }
+//
+//run {
+//    standardInput = System.in   // set standard input
+//    args 'cli-passedFromGradle'
+//}
+//
+////allprojects {
+////    //THIS IS WHAT YOU ARE ADDING
+////    project.ext {
+////        mustUseCLI = 'cli-passedFromGradle';
+////    }
+////}
