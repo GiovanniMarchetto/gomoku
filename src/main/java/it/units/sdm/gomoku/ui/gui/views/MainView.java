@@ -43,7 +43,7 @@ public class MainView extends View<MainViewmodel> implements Observer {
 
     public MainView() {
         super(GUIMain.guiMainViewmodel);
-        getViewmodelAssociatedWithView().addPropertyChangeListener(this);
+        getViewmodelAssociatedWithView().beObservedBy(this);
     }
 
     @FXML

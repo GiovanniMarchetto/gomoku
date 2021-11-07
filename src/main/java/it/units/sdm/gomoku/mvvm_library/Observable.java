@@ -1,6 +1,5 @@
 package it.units.sdm.gomoku.mvvm_library;
 
-import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,12 +26,12 @@ public interface Observable {
         return getSupportOrCreateIfNotExist.get();
     }
 
-    default void addPropertyChangeListener(PropertyChangeListener pcl) {    // TODO : rename in addObserver, which must take Observer parameter instead of PropertyChangeListener
-        getSupportOf(this).addPropertyChangeListener(pcl);
+    default void beObservedBy(Observer observer) {
+        getSupportOf(this).addPropertyChangeListener(observer);
     }
 
-    default void removePropertyChangeListener(PropertyChangeListener pcl) {
-        getSupportOf(this).removePropertyChangeListener(pcl);
+    default void stopBeingObservedBy(Observer observer) {
+        getSupportOf(this).removePropertyChangeListener(observer);
     }
 
     default void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
