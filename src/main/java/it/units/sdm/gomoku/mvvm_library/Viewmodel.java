@@ -9,7 +9,7 @@ public abstract class Viewmodel implements
         Observable /* Viewmodel is observed by the View */ {
 
     protected void runOnSeparateThread(@NotNull final Runnable runnable) {
-           new Thread(runnable).start();
+        new Thread(runnable).start();
     }
 
     public abstract void propertyChange(PropertyChangeEvent evt);

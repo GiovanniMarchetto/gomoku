@@ -50,6 +50,22 @@ public class Board implements Observable, Cloneable, Serializable {
         this.lastMoveCoordinates = board.lastMoveCoordinates;
     }
 
+    public static boolean isListContainingChainOfNCells(@NotNull final List<@NotNull Cell> cellList,
+                                                        NonNegativeInteger N, @NotNull final Cell cell) {
+        int numberOfStonesInChain = N.intValue();
+
+        if (cellList.size() < numberOfStonesInChain)
+            return false;
+
+        return IntStream.range(0, cellList.size() - numberOfStonesInChain + 1)
+                .unordered()
+                .map(x -> cellList.subList(x, x + numberOfStonesInChain)
+                        .stream()
+                        .mapToInt(y -> y.equals(cell) ? 1 : 0/*type conversion*/)   // TODO: check in whole project where Stone (when it was an enum) was compared using == instead of equals, because it is now replaced by class Cell and objects must be compared with equals (here there was a bug because cells were compared with ==)
+                        .sum())
+                .anyMatch(aSum -> aSum >= numberOfStonesInChain);
+    }
+
     @PositiveIntegerType
     public int getSize() {
         return size.intValue();
@@ -150,22 +166,6 @@ public class Board implements Observable, Cloneable, Serializable {
         return Stream.of(rowToList(coords), columnToList(coords), fwdDiagonalToList(coords), bckDiagonalToList(coords))
                 .unordered().parallel()
                 .anyMatch(cellList -> isListContainingChainOfNCells(cellList, N, Objects.requireNonNull(cell)));
-    }
-
-    public static boolean isListContainingChainOfNCells(@NotNull final List<@NotNull Cell> cellList,
-                                                        NonNegativeInteger N, @NotNull final Cell cell) {
-        int numberOfStonesInChain = N.intValue();
-
-        if (cellList.size() < numberOfStonesInChain)
-            return false;
-
-        return IntStream.range(0, cellList.size() - numberOfStonesInChain + 1)
-                .unordered()
-                .map(x -> cellList.subList(x, x + numberOfStonesInChain)
-                        .stream()
-                        .mapToInt(y -> y.equals(cell) ? 1 : 0/*type conversion*/)   // TODO: check in whole project where Stone (when it was an enum) was compared using == instead of equals, because it is now replaced by class Cell and objects must be compared with equals (here there was a bug because cells were compared with ==)
-                        .sum())
-                .anyMatch(aSum -> aSum >= numberOfStonesInChain);
     }
 
     @NotNull
