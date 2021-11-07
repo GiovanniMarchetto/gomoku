@@ -17,7 +17,6 @@ import javafx.scene.shape.Circle;
 import java.beans.PropertyChangeEvent;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Objects;
 
 public class MainView extends View<MainViewmodel> implements Observer {
 
@@ -63,8 +62,6 @@ public class MainView extends View<MainViewmodel> implements Observer {
 
         blackPlayerLabel.setText(vm.getCurrentBlackPlayer().toString());
         whitePlayerLabel.setText(vm.getCurrentWhitePlayer().toString());
-        currentPlayerLabel.setText(vm.getCurrentPlayer().toString());
-        currentPlayerCircle.setFill(vm.getColorOfCurrentPlayer() == Stone.Color.BLACK ? Color.BLACK : Color.WHITE);
 
         ZonedDateTime startZoneDateTime = vm.getGameStartTime();
         startTime.setText("Start game: \n" +

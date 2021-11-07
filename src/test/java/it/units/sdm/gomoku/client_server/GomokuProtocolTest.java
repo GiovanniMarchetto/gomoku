@@ -7,6 +7,7 @@ import it.units.sdm.gomoku.client_server.server.GomokuServer;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
+import it.units.sdm.gomoku.model.entities.HumanPlayer;
 import it.units.sdm.gomoku.model.entities.Player;
 import it.units.sdm.gomoku.ui.support.BoardSizes;
 import it.units.sdm.gomoku.ui.support.Setup;
@@ -55,10 +56,10 @@ class GomokuProtocolTest {
                                     boolean trueIfIsPartialSetup = i % 2 == 0;
                                     return Arguments.of(
                                             new Setup(
-                                                    new Player("Player1_" + boardSizeVal),
+                                                    new HumanPlayer("Player1_" + boardSizeVal),
                                                     trueIfIsPartialSetup
                                                             ? null
-                                                            : new Player("Player2_" + boardSizeVal),
+                                                            : new HumanPlayer("Player2_" + boardSizeVal),
                                                     new PositiveInteger(i),
                                                     boardSizeVal),
                                             trueIfIsPartialSetup);
@@ -225,7 +226,7 @@ class GomokuProtocolTest {
         setCurrentProtocolStatus(currentStatus);
         switch (currentStatus) {
             case WAITING_FOR_FIRST_CLIENT_CONNECTION -> waitingForFirstClientConnection();
-            case WAITING_FOR_PARTIAL_SETUP -> setPartialSetup(new Setup(new Player("p1"), null, new PositiveInteger(), BoardSizes.NORMAL.getBoardSize()), true);
+            case WAITING_FOR_PARTIAL_SETUP -> setPartialSetup(new Setup(new HumanPlayer("p1"), null, new PositiveInteger(), BoardSizes.NORMAL.getBoardSize()), true);
             // default -> fail(new UnsupportedOperationException("Unhandled status \"" + currentStatus + "\"")); // TODO : handle protocol status update
         }
 //        assertEquals(getNextProtocolStatusOrNullIfLast(currentStatus), getCurrentProtocolStatusOrNullIfExceptionThrown());  // TODO : handle protocol status update

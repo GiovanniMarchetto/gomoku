@@ -69,6 +69,7 @@ public class Match {
         return players;
     }
 
+    @Deprecated
     public static void executeMoveOfPlayerInGame(@NotNull Game game, @NotNull Coordinates coordinatesOfTheMove)
             throws Board.BoardIsFullException, Board.CellAlreadyOccupiedException {
         game.placeStoneAndChangeTurn(coordinatesOfTheMove);
