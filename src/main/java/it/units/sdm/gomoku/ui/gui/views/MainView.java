@@ -1,8 +1,10 @@
 package it.units.sdm.gomoku.ui.gui.views;
 
+import it.units.sdm.gomoku.model.entities.Player;
 import it.units.sdm.gomoku.model.entities.Stone;
 import it.units.sdm.gomoku.mvvm_library.Observer;
 import it.units.sdm.gomoku.mvvm_library.View;
+import it.units.sdm.gomoku.property_change_handlers.PropertyObserver;
 import it.units.sdm.gomoku.ui.gui.GUIMain;
 import it.units.sdm.gomoku.ui.gui.SceneController;
 import it.units.sdm.gomoku.ui.gui.viewmodels.MainViewmodel;
@@ -50,6 +52,14 @@ public class MainView extends View<MainViewmodel> implements Observer {
 
         MainViewmodel vm = getViewmodelAssociatedWithView();
 
+        PropertyObserver<Player> currentPlayer = new PropertyObserver<>(vm.getCurrentPlayerProperty(), evt ->
+                SceneController.executeOnJavaFxUiThread(() -> {
+                    currentPlayerLabel.setText(evt.getNewValue().toString());
+                    currentPlayerCircle.setFill(
+                            getViewmodelAssociatedWithView().getColorOfCurrentPlayer() == Stone.Color.BLACK
+                                    ? Color.BLACK : Color.WHITE);
+                }));
+
         double discardSafeMisure = 50;
         double discardHeight = topGridPane.getPrefHeight();// 50;
         double discardWidth = rightGridPane.getPrefWidth();// 100;
@@ -76,14 +86,6 @@ public class MainView extends View<MainViewmodel> implements Observer {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(MainViewmodel.currentPlayerPropertyName)) {
-            SceneController.executeOnJavaFxUiThread(() -> {
-                currentPlayerLabel.setText(evt.getNewValue().toString());
-                currentPlayerCircle.setFill(
-                        getViewmodelAssociatedWithView().getColorOfCurrentPlayer() == Stone.Color.BLACK
-                                ? Color.BLACK : Color.WHITE);
-            });
-        }
 //
 //        if (Objects.equals(evt.getPropertyName(), getViewmodelAssociatedWithView().currentGame.getPropertyValue().currentPlayer.getPropertyNameOrElseThrow())) {//TODO:message chain code smell
 //            SceneController.executeOnJavaFxUiThread(() -> {

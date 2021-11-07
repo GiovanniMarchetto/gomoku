@@ -3,6 +3,7 @@ package it.units.sdm.gomoku.model.entities;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.mvvm_library.Observable;
+import it.units.sdm.gomoku.property_change_handlers.ObservableProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,22 +20,22 @@ public class Game implements Comparable<Game>, Observable {
     public static final String isThisGameEndedPropertyName = "isThisGameEnded";
     @NotNull
     public static final String newGameStartedPropertyName = "newGameStarted";
-    @NotNull
-    public static final String currentPlayerPropertyName = "currentPlayer";
+    //    @NotNull
+//    public static final String currentPlayerPropertyName = "currentPlayer";
     @NotNull
     private final Board board;
     @NotNull
     private final Instant start;
     @NotNull
     private final Player blackPlayer, whitePlayer;
-//    @NotNull
-//    public final ObservableProperty<Player> currentPlayer;    // TODO : property are public...
-//    @NotNull
+    @NotNull
+    private final ObservableProperty<Player> currentPlayer;
+    //    @NotNull
 //    public final ObservableProperty<Boolean> gameEnded;
 //    @NotNull
 //    public final ObservableProperty<Boolean> newGameStarted;
-    @Nullable
-    private Player currentPlayer;
+//    @Nullable
+//    private Player currentPlayer;
     @Nullable
     private Player winner;  // available after the end of the game
 
@@ -42,7 +43,7 @@ public class Game implements Comparable<Game>, Observable {
         this.board = new Board(Objects.requireNonNull(boardSize));
         this.blackPlayer = Objects.requireNonNull(blackPlayer);
         this.whitePlayer = Objects.requireNonNull(whitePlayer);
-//        this.currentPlayer = new ObservableProperty<>(blackPlayer, this);
+        this.currentPlayer = new ObservableProperty<>();
 //        this.gameEnded = new ObservableProperty<>(false, this);
 //        this.newGameStarted = new ObservableProperty<>(false, this);
         this.start = Instant.now();
@@ -53,21 +54,27 @@ public class Game implements Comparable<Game>, Observable {
     }
 
     public void triggerFirstMove() {
-        setCurrentPlayer(blackPlayer);
+        currentPlayer.setPropertyValueAndFireIfPropertyChange(blackPlayer);
+//        setCurrentPlayer(blackPlayer);
     }
 
-    @Nullable
-    public Player getCurrentPlayer() {
+    @NotNull
+    public ObservableProperty<Player> getCurrentPlayer() {
         return currentPlayer;
     }
 
-    private void setCurrentPlayer(@NotNull final Player currentPlayer) {
-        Player oldValue = this.currentPlayer;
-        if (!Objects.requireNonNull(currentPlayer).equals(oldValue)) {
-            this.currentPlayer = currentPlayer;
-            firePropertyChange(currentPlayerPropertyName, oldValue, currentPlayer);
-        }
-    }
+    //    @Nullable
+//    public Player getCurrentPlayer() {
+//        return currentPlayer;
+//    }
+//
+//    private void setCurrentPlayer(@NotNull final Player currentPlayer) {
+//        Player oldValue = this.currentPlayer;
+//        if (!Objects.requireNonNull(currentPlayer).equals(oldValue)) {
+//            this.currentPlayer = currentPlayer;
+//            firePropertyChange(currentPlayerPropertyName, oldValue, currentPlayer);
+//        }
+//    }
 
     @NotNull
     public Board getBoard() {
@@ -81,8 +88,8 @@ public class Game implements Comparable<Game>, Observable {
 
     public void placeStoneAndChangeTurn(@NotNull final Coordinates coordinates)
             throws Board.BoardIsFullException, Board.CellAlreadyOccupiedException {
-
-        placeStone(Objects.requireNonNull(currentPlayer), coordinates);
+        placeStone(Objects.requireNonNull(currentPlayer.getPropertyValue()), coordinates);
+//        placeStone(Objects.requireNonNull(currentPlayer), coordinates);
         changeTurn();
     }
 
@@ -90,17 +97,18 @@ public class Game implements Comparable<Game>, Observable {
             throws Board.BoardIsFullException, Board.CellAlreadyOccupiedException {
 
         board.occupyPosition(getColorOfPlayer(Objects.requireNonNull(player)), Objects.requireNonNull(coordinates));
-
         setWinnerIfPlayerWon(player, coordinates);
-
         if (isThisGameEnded()) {
             firePropertyChange(isThisGameEndedPropertyName, false, true);
         }
     }
 
     private void changeTurn() {
-        setCurrentPlayer(currentPlayer == blackPlayer ? whitePlayer : blackPlayer);
+        currentPlayer.setPropertyValueAndFireIfPropertyChange(currentPlayer.getPropertyValue() == blackPlayer ? whitePlayer : blackPlayer);
     }
+//    private void changeTurn() {
+//        setCurrentPlayer(currentPlayer == blackPlayer ? whitePlayer : blackPlayer);
+//    }
 
     private void setWinnerIfPlayerWon(@NotNull Player player, @NotNull Coordinates coordinates) {
         if (hasThePlayerWonThisGame(coordinates)) {

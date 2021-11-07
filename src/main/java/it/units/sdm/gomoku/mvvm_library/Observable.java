@@ -27,7 +27,7 @@ public interface Observable {
         return getSupportOrCreateIfNotExist.get();
     }
 
-    default void addPropertyChangeListener(PropertyChangeListener pcl) {
+    default void addPropertyChangeListener(PropertyChangeListener pcl) {    // TODO : rename in addObserver, which must take Observer parameter instead of PropertyChangeListener
         getSupportOf(this).addPropertyChangeListener(pcl);
     }
 

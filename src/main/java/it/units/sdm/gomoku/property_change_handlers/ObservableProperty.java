@@ -10,7 +10,10 @@ public class ObservableProperty<T> implements Observable {  // TODO : to be test
 
     private static int numberOfInstances = Integer.MIN_VALUE;
 
+    @NotNull
     private final String propertyName;
+
+    @Nullable
     private T propertyValue;
 
     public ObservableProperty(@Nullable final T propertyValue) {

@@ -4,6 +4,8 @@ import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.entities.*;
 import it.units.sdm.gomoku.mvvm_library.Viewmodel;
+import it.units.sdm.gomoku.property_change_handlers.ObservableProperty;
+import it.units.sdm.gomoku.property_change_handlers.PropertyObserver;
 import it.units.sdm.gomoku.ui.support.Setup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,13 +23,15 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
     // TODO : correct to declare here this variable?
     public final static String userMustPlaceNewStonePropertyName = "userMustPlaceNewStone";
 
-    public final static String currentPlayerPropertyName = Game.currentPlayerPropertyName;
     public final static String lastMoveCoordinatesPropertyName = Board.lastMoveCoordinatesPropertyName;
 
     @Nullable
     private Match match;
 
-    public enum CurrentGameStatus {GAME_STARTED, USER_MUST_PLACE, USER_MUST_NOT_PLACE, GAME_ENDED}
+    @NotNull
+    private final ObservableProperty<Player> currentPlayerProperty = new ObservableProperty<>();
+
+//    public enum CurrentGameStatus {GAME_STARTED, USER_MUST_PLACE, USER_MUST_NOT_PLACE, GAME_ENDED}
 
     //    @NotNull
 //    public final ObservableProperty<CurrentGameStatus> currentGameStatus = new ObservableProperty<>(this);//TODO : PUBLIC?
@@ -39,9 +43,6 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
 //    private final ObservableProperty<Boolean> currentGameEnded = new ObservableProperty<>(this);
     @Nullable
     private Game currentGame;
-
-    //    @NotNull
-//    private final ObservableProperty<Player> currentPlayer = new ObservableProperty<>(this);
 //
 //    @NotNull
 //    private final ObservableProperty<Board> currentBoard = new ObservableProperty<>(this);  // TODO : needed?
@@ -81,21 +82,6 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
             case Game.isThisGameEndedPropertyName -> {
                 if ((Boolean) evt.getNewValue()) {
                     endGame();
-                }
-            }
-            case Game.currentPlayerPropertyName -> {
-                Player currentPlayer = (Player) evt.getNewValue();
-                Player oldValue = (Player) evt.getOldValue();
-                firePropertyChange(currentPlayerPropertyName, oldValue, currentPlayer);
-                if (!isCurrentGameEnded()) {
-//                    placeStoneIfCPUPlayingWithDelayOrElseNotifyTheView(currentPlayer, 0);
-                    runOnSeparateThread(() -> {
-                        try {
-                            currentPlayer.makeMove(getCurrentGame());
-                        } catch (Board.BoardIsFullException e) {
-                            e.printStackTrace(); // TODO: handle this: this should never happen (I think?)
-                        }
-                    });
                 }
             }
             case HumanPlayer.coordinatesRequiredToContinuePropertyName -> setUserMustPlaceNewStone((boolean) evt.getNewValue());
@@ -164,6 +150,18 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
 //            currentBoard.setPropertyValueAndFireIfPropertyChange(newBoard);   // TODO : property needed?
 //            currentGameStatus.setPropertyValueAndFireIfPropertyChange(CurrentGameStatus.GAME_STARTED);
             currentGame = Objects.requireNonNull(match).startNewGame();
+            PropertyObserver<Player> currentPlayerObserver = new PropertyObserver<>(currentGame.getCurrentPlayer(), evt -> {
+                currentPlayerProperty.setPropertyValueAndFireIfPropertyChange((Player) evt.getNewValue());
+                if (!isCurrentGameEnded()) {
+                    runOnSeparateThread(() -> {
+                        try {
+                            Objects.requireNonNull(currentPlayerProperty.getPropertyValue()).makeMove(getCurrentGame());
+                        } catch (Board.BoardIsFullException e) {
+                            e.printStackTrace(); // TODO: handle this: this should never happen (I think?)
+                        }
+                    });
+                }
+            });
             currentBoard = currentGame.getBoard();
             observe(currentGame);
             observe(currentBoard);
@@ -176,6 +174,7 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
     public void endGame() {
         stopObserving(Objects.requireNonNull(currentGame));
         stopObserving(Objects.requireNonNull(currentBoard));
+        // TODO : stop observing old properties
         firePropertyChange(Game.isThisGameEndedPropertyName, false, true);
     }
 
@@ -221,7 +220,11 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
 
     @Nullable
     public Player getCurrentPlayer() {
-        return Objects.requireNonNull(currentGame).getCurrentPlayer();
+        return Objects.requireNonNull(currentGame).getCurrentPlayer().getPropertyValue();
+    }
+    @NotNull
+    public ObservableProperty<Player> getCurrentPlayerProperty() {
+        return currentPlayerProperty;
     }
 
     public Stone.Color getColorOfCurrentPlayer() {
