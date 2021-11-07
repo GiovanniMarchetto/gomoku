@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 public class Cell implements Cloneable {
-    // TODO: TEST THIS
+
     @Nullable
     private volatile Stone stone;
 
@@ -30,6 +30,7 @@ public class Cell implements Cloneable {
         return this.stone == null;
     }
 
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
     @Override
     public Cell clone() {
         return new Cell(this);
@@ -56,6 +57,7 @@ public class Cell implements Cloneable {
 
     @Override
     public int hashCode() {
+        //noinspection ConstantConditions // already check
         return stone != null ? stone.hashCode() : 0;
     }
 }
