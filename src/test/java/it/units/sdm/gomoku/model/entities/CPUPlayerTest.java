@@ -15,33 +15,46 @@ import static org.junit.jupiter.api.Assertions.*;
 class CPUPlayerTest {
 
     public static final int NUMBER_OF_REPETITION = 10;
-    private static final PositiveInteger BOARD_SIZE = new PositiveInteger(5);
+    private static final PositiveInteger BOARD_SIZE_5 = new PositiveInteger(5);
+    private static final PositiveInteger BOARD_SIZE_4 = new PositiveInteger(4);
     private static Board board = null;
     private static Stone.Color cpuStoneColor = Stone.Color.BLACK;
     private final CPUPlayer cpuPlayer = new CPUPlayer("cpuPlayer");
 
-    @BeforeAll
-    static void resetBoard() {
-        board = new Board(BOARD_SIZE);
-
-        tryToOccupyCoordinatesChosen(new Coordinates(0, 1));
-        tryToOccupyCoordinatesChosen(new Coordinates(0, 3));
-        tryToOccupyCoordinatesChosen(new Coordinates(1, 2));
-    }
-
-    private static void tryToOccupyCoordinatesChosen(Coordinates coordinates) {
+    private static void tryToOccupyCoordinatesChosen(int x, int y) {
         try {
-            board.occupyPosition(cpuStoneColor, coordinates);
+            board.occupyPosition(cpuStoneColor, new Coordinates(x,y));
             cpuStoneColor = cpuStoneColor == Stone.Color.BLACK ? Stone.Color.BLACK : Stone.Color.WHITE;
         } catch (CellAlreadyOccupiedException | BoardIsFullException e) {
             fail(e);
         }
     }
 
+    private void checkAndOccupyCell(int x, int y, Coordinates actual) {
+        Coordinates expected = new Coordinates(x, y);
+        assertEquals(expected, actual);
+        tryToOccupyCoordinatesChosen(x,y);
+    }
+
+    private void checkFromCenterAndOccupyCell(int x, int y) {
+        try {
+            checkAndOccupyCell(x, y, cpuPlayer.chooseNextEmptyCoordinatesFromCenter(board));
+        } catch (BoardIsFullException e) {
+            fail(e);
+        }
+    }
+
+    @BeforeAll
+    static void resetBoard() {
+        board = new Board(BOARD_SIZE_5);
+    }
+
     @RepeatedTest(NUMBER_OF_REPETITION)
     void checkRandomChosenCoordinatesReferToEmptyCell() {
         try {
-            assertTrue(board.getCellAtCoordinates(cpuPlayer.chooseRandomEmptyCoordinates(board)).isEmpty());
+            Coordinates actual = cpuPlayer.chooseRandomEmptyCoordinates(board);
+            assertTrue(board.getCellAtCoordinates(actual).isEmpty());
+            tryToOccupyCoordinatesChosen(actual.getX(),actual.getY());
         } catch (BoardIsFullException e) {
             if (board.isThereAnyEmptyCell()) {
                 fail(e);
@@ -49,76 +62,69 @@ class CPUPlayerTest {
         }
     }
 
-    @ParameterizedTest
-    @CsvSource({"2, 0,0", "4, 1,1", "5, 2,2", "9, 4,4"})
-    void chooseFromCenterFirstStone(int size, int x, int y) {
-        board = new Board(size);
-        Coordinates expected = new Coordinates(x, y);
-        try {
-            assertEquals(expected, cpuPlayer.chooseNextEmptyCoordinatesFromCenter(board));
-        } catch (BoardIsFullException e) {
-            fail(e.getMessage());
-        }
-    }
-
-    @ParameterizedTest
-    @CsvSource({"2, 0,1", "4, 1,2", "5, 1,1", "9, 3,3"})
-    void chooseFromCenterSecondStone(int size, int x, int y) {
-        board = new Board(size);
-        try {
-            board.occupyPosition(Stone.Color.BLACK, cpuPlayer.chooseNextEmptyCoordinatesFromCenter(board));
-
-            Coordinates expected = new Coordinates(x, y);
-            assertEquals(expected, cpuPlayer.chooseNextEmptyCoordinatesFromCenter(board));
-        } catch (BoardIsFullException | CellAlreadyOccupiedException e) {
-            fail(e.getMessage());
-        }
-    }
-
     @Nested
-    class NextEmptyCoordinatesTest {
+    class firstEmpty {
 
         @BeforeAll
-        static void tearDown() {
+        static void setup() {
             resetBoard();
         }
 
         @ParameterizedTest
-        @CsvSource({"0,0", "0,2", "0,4", "1,0"})
+        @CsvSource({"0,0", "0,1", "0,2", "0,3", "0,4", "1,0"})
         void chooseNextEmptyCoordinates(int x, int y) {
-            Coordinates expected = new Coordinates(x, y);
             try {
-                Coordinates actual = cpuPlayer.chooseNextEmptyCoordinates(board);
-                assertEquals(expected, actual);
-                tryToOccupyCoordinatesChosen(actual);
+                checkAndOccupyCell(x, y, cpuPlayer.chooseNextEmptyCoordinates(board));
             } catch (BoardIsFullException e) {
                 fail(e);
             }
         }
-
     }
 
     @Nested
-    class NextEmptyCoordinatesFromCenter {
-
+    class fromCenter4x4 {
         @BeforeAll
-        static void tearDown() {
+        static void resetBoard() {
+            board = new Board(BOARD_SIZE_4);
+        }
+
+        @ParameterizedTest
+        @CsvSource({"1,1", "1,2", "2,1", "2,2", "0,1", "0,2", "1,0", "1,3", "2,0", "2,3", "3,1", "3,2", "0,0", "0,3", "3,0", "3,3"})
+        void chooseFromCenterBoard4x4(int x, int y) {
+            checkFromCenterAndOccupyCell(x, y);
+        }
+    }
+
+    @Nested
+    class fromCenter5x5 {
+        @BeforeAll
+        static void setup() {
             resetBoard();
         }
 
         @ParameterizedTest
-        @CsvSource({"2,2", "1,1", "1,3", "2,1", "2,3"})
-        void chooseNextEmptyCoordinatesFromCenter(int x, int y) {
-            Coordinates expected = new Coordinates(x, y);
-            try {
-                Coordinates actual = cpuPlayer.chooseNextEmptyCoordinatesFromCenter(board);
-                assertEquals(expected, actual);
-                tryToOccupyCoordinatesChosen(actual);
-            } catch (BoardIsFullException e) {
-                fail(e);
-            }
+        @CsvSource({"2,2", "1,2", "2,1", "2,3", "3,2", "1,1", "1,3", "3,1", "3,3", "0,2",
+                "2,0", "2,4", "4,2", "0,1", "0,3", "1,0", "1,4", "3,0", "3,4", "4,1",
+                "4,3", "0,0", "0,4", "4,0", "4,4"})
+        void chooseFromCenterBoard5x5(int x, int y) {
+            checkFromCenterAndOccupyCell(x, y);
         }
-
     }
 
+    @Nested
+    class fromCenter5x5WithSomeOccupy {
+        @BeforeAll
+        static void occupyThreeCells() {
+            resetBoard();
+            tryToOccupyCoordinatesChosen(0,1);
+            tryToOccupyCoordinatesChosen(0,3);
+            tryToOccupyCoordinatesChosen(1,2);
+        }
+
+        @ParameterizedTest
+        @CsvSource({"2,2", "2,1", "2,3", "3,2", "1,1"})
+        void chooseNextEmptyCoordinatesFromCenter(int x, int y) {
+            checkFromCenterAndOccupyCell(x, y);
+        }
+    }
 }

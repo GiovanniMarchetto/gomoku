@@ -28,17 +28,6 @@ public class CPUPlayer extends Player {
         super(name);
     }
 
-    @Override
-    public void makeMove(@NotNull final Game currentGame) throws BoardIsFullException {
-        Coordinates coordinates = chooseSmartEmptyCoordinates(Objects.requireNonNull(currentGame).getBoard());
-        try {
-            Thread.sleep(DELAY_BEFORE_PLACING_STONE_MILLIS);
-            currentGame.placeStoneAndChangeTurn(coordinates);
-        } catch (Board.CellAlreadyOccupiedException | InterruptedException e) {
-            e.printStackTrace(); // TODO: handle this: this should never happen (I think?)
-        }
-    }
-
     public CPUPlayer() {
         super(CPU_DEFAULT_NAME + numberOfCpuPlayers.incrementAndGet());
     }
@@ -64,6 +53,17 @@ public class CPUPlayer extends Player {
                         .stream()
                 )
                 .anyMatch(counter -> counter == numberOfConsecutive.intValue());
+    }
+
+    @Override
+    public void makeMove(@NotNull final Game currentGame) throws BoardIsFullException {
+        Coordinates coordinates = chooseSmartEmptyCoordinates(Objects.requireNonNull(currentGame).getBoard());
+        try {
+            Thread.sleep(DELAY_BEFORE_PLACING_STONE_MILLIS);
+            currentGame.placeStoneAndChangeTurn(coordinates);
+        } catch (Board.CellAlreadyOccupiedException | InterruptedException e) {
+            e.printStackTrace(); // TODO: handle this: this should never happen (I think?)
+        }
     }
 
     @NotNull
@@ -101,17 +101,13 @@ public class CPUPlayer extends Player {
 
     @NotNull
     public Coordinates chooseNextEmptyCoordinatesFromCenter(@NotNull Board board) throws BoardIsFullException {
-        int s = board.getSize();
-        int n = (int) Math.ceil(s / 2.0) - 1;
+        int boardSize = board.getSize();
+        double centerValue = boardSize / 2.0 - 0.5;
+
         if (board.isThereAnyEmptyCell()) {
-            for (int i = n; i >= 0; i--) {
-                for (int x = i; x < s - i; x++) {
-                    for (int y = i; y < s - i; y++) {
-                        var coords = new Coordinates(x, y);
-                        if (board.getCellAtCoordinates(coords).isEmpty()) return coords;
-                    }
-                }
-            }
+            //noinspection OptionalGetWithoutIsPresent // because is yet checked with isThereAnyEmptyCell
+            return getStreamOfEmptyCoordinates(board).min((o1, o2) ->
+                    (int) (getWeightRespectToCenter(centerValue,o1)- getWeightRespectToCenter(centerValue,o2))).get();
         }
         throw new BoardIsFullException();
     }
@@ -123,6 +119,10 @@ public class CPUPlayer extends Player {
             return emptyCoordinates.get(rand.nextInt(emptyCoordinates.size()));
         }
         return chooseNextEmptyCoordinates(board);
+    }
+
+    private double getWeightRespectToCenter(double center, Coordinates coordinates){
+        return Math.pow(Math.abs(center-coordinates.getX()),2)+Math.pow(Math.abs(center-coordinates.getY()),2);
     }
 
     private Stream<Coordinates> getStreamOfEmptyCoordinates(@NotNull Board board) {
