@@ -185,7 +185,7 @@ public class GomokuCell implements Observer {
 
     private void initializeCircle() {
         circle = new Circle(getRadius());
-        cell = new Cell();
+        setCell(new Cell());
         group.getChildren().add(circle);
     }
 
