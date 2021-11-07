@@ -45,7 +45,7 @@ public class GomokuCell implements Observer {
         this.radius = initialRadius;
         this.boardSize = boardSize;
         initializeGroup();
-        vm.beObservedBy(this);
+        observe(vm);
     }
 
     private double getRadius() {

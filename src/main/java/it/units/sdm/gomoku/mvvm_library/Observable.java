@@ -1,13 +1,17 @@
 package it.units.sdm.gomoku.mvvm_library;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.beans.PropertyChangeSupport;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 public interface Observable {
 
-    static PropertyChangeSupport getSupportOf(Observable observable) {
+    static PropertyChangeSupport getSupportOf(@NotNull final Observable observable) {
+        // support is "a list of listeners (~observers)" for a property (~observable)
 
         Supplier<PropertyChangeSupport> getSupportOrCreateIfNotExist = new Supplier<>() {
             private static final Map<Observable, PropertyChangeSupport> supports =
@@ -15,7 +19,7 @@ public interface Observable {
 
             @Override
             public PropertyChangeSupport get() {
-                PropertyChangeSupport support = supports.get(observable);
+                PropertyChangeSupport support = supports.get(Objects.requireNonNull(observable));
                 if (support == null) {
                     support = new PropertyChangeSupport(observable);
                     supports.put(observable, support);
@@ -24,14 +28,6 @@ public interface Observable {
             }
         };
         return getSupportOrCreateIfNotExist.get();
-    }
-
-    default void beObservedBy(Observer observer) {
-        getSupportOf(this).addPropertyChangeListener(observer);
-    }
-
-    default void stopBeingObservedBy(Observer observer) {
-        getSupportOf(this).removePropertyChangeListener(observer);
     }
 
     default void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
