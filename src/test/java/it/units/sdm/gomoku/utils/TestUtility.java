@@ -6,7 +6,7 @@ import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.entities.Cell;
 import it.units.sdm.gomoku.model.entities.Stone;
-import it.units.sdm.gomoku.ui.support.GamePlayElements;
+import it.units.sdm.gomoku.ui.support.MoveControlRecord;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -17,7 +17,6 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -127,7 +126,12 @@ public class TestUtility {
     }
 
     @NotNull
-    public static Stream<Arguments> getStreamOfGamePlayElementsFromCSV(@NotNull String filePath) {
+    public static Stream<Arguments> getStreamOfMoveControlRecordFields() {
+        return getStreamOfMoveControlRecordFieldsFromJSON(END_GAMES);
+    }
+
+    @NotNull
+    public static Stream<Arguments> getStreamOfMoveControlRecordFieldsFromJSON(@NotNull String filePath) {
         try {
             String json = Files.readString(Paths.get(Objects.requireNonNull(TestUtility.class.getResource(filePath)).toURI()));
             JSONObject jsonObject = new JSONObject(json);
@@ -139,7 +143,7 @@ public class TestUtility {
 
                         List<Integer> ints = ((List<?>) argsMap.get("coordinates")).stream().map(x -> (int) x).collect(Collectors.toList());
 
-                        GamePlayElements gamePlayElements = new GamePlayElements(
+                        MoveControlRecord moveControlRecord = new MoveControlRecord(
                                 ((List<?>) (argsMap).get("matrix"))
                                         .stream().sequential()
                                         .map(row -> ((List<?>) row)
@@ -154,19 +158,15 @@ public class TestUtility {
                         );
 
                         return Arguments.of(
-                                gamePlayElements.matrix(),
-                                gamePlayElements.coordinatesToControl(),
-                                gamePlayElements.isWinChainFromCoordinates(),
-                                gamePlayElements.isFinishedGame());
+                                moveControlRecord.matrix(),
+                                moveControlRecord.coordinatesToControl(),
+                                moveControlRecord.isWinChainFromCoordinates(),
+                                moveControlRecord.isFinishedGame());
                     });
         } catch (IOException | URISyntaxException e) {
             fail(e);
             return Stream.empty();
         }
-    }
-
-    public static Stream<Arguments> getStreamOfGamePlayElements() { // TODO: what is a GamePlay?
-        return getStreamOfGamePlayElementsFromCSV(END_GAMES);
     }
 
     public static int getTotalNumberOfValidStoneInTheGivenBoardAsStringInCSVFormat(@NotNull final String boardAsCSVString) {
@@ -187,7 +187,7 @@ public class TestUtility {
                                 .map(TestUtility::getCellFromStoneRepresentedAsString)
                                 .map(Cell::getStone)
                                 .filter(stoneThisCell -> (stoneThisCell == null && stoneThisCell == stoneType)
-                                        || (stoneThisCell != null && stoneType!=null && stoneThisCell.equals(stoneType)))
+                                        || (stoneThisCell != null && stoneThisCell.equals(stoneType)))
                                 .count()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }

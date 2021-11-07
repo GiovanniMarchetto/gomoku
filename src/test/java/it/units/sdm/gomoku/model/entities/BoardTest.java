@@ -25,7 +25,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static it.units.sdm.gomoku.model.custom_types.PositiveInteger.PositiveIntegerType;
-import static it.units.sdm.gomoku.utils.TestUtility.getStreamOfGamePlayElements;
+import static it.units.sdm.gomoku.utils.TestUtility.getStreamOfMoveControlRecordFields;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class BoardTest {
@@ -35,7 +35,7 @@ public class BoardTest {
     private static Board board;
 
     private static Stream<Arguments> getABoardAndACoordinate() {
-        return getStreamOfGamePlayElements()
+        return getStreamOfMoveControlRecordFields()
                 .map(Arguments::get)
                 .map(singleTestParams -> (Cell[][]) singleTestParams[0])
                 .flatMap(boardMtx -> generateCoordinates(boardMtx.length)
@@ -226,7 +226,7 @@ public class BoardTest {
     }
 
     @ParameterizedTest
-    @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfGamePlayElements")
+    @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfMoveControlRecordFields")
     void checkNConsecutiveStones(Cell[][] matrix, Coordinates coordinates, boolean expected) {
         try {
             Board b = createBoardFromMatrix(matrix);
@@ -241,6 +241,7 @@ public class BoardTest {
 
     private Board createBoardFromMatrix(Cell[][] cellMatrix) {
         Board b = new Board(cellMatrix.length);
+        //noinspection ConstantConditions //check in the method
         occupyAllPositionsIfValidPredicateWithGivenColor(b,
                 coords -> cellMatrix[coords.getX()][coords.getY()].getStone().color(),
                 coords -> !cellMatrix[coords.getX()][coords.getY()].isEmpty());

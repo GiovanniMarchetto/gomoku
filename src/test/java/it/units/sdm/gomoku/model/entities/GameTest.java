@@ -41,7 +41,7 @@ class GameTest {
     }
 
     @ParameterizedTest
-    @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfGamePlayElements")
+    @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfMoveControlRecordFields")
     void placeStone(Cell[][] matrix, Coordinates coordinates, boolean finishedGame) throws NoSuchFieldException, IllegalAccessException {
         game = new Game(matrix.length, cpuBlack, cpuWhite);
         setGameFromCsv(game, matrix);
@@ -66,7 +66,7 @@ class GameTest {
     }
 
     @ParameterizedTest
-    @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfGamePlayElements")
+    @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfMoveControlRecordFields")
     void getWinner(Cell[][] matrix, Coordinates coordinates, boolean finishedGame) {
         game = new Game(matrix.length, cpuBlack, cpuWhite);
         setGameFromCsv(game, matrix);
@@ -83,7 +83,7 @@ class GameTest {
     }
 
     @ParameterizedTest
-    @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfGamePlayElements")
+    @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfMoveControlRecordFields")
     void isThisGameEnded(Cell[][] matrix, Coordinates ignoredC, boolean ignoredB, boolean finishedGame) {
         game = new Game(matrix.length, cpuBlack, cpuWhite);
         setGameFromCsv(game, matrix);
