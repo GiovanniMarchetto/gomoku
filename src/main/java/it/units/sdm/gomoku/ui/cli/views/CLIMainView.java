@@ -22,8 +22,9 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
     public CLIMainView(StartViewmodel startViewmodel) {  // TODO : event-based flux of program to be tested
         super(CLIMain.cliMainViewmodel);
         observe(startViewmodel);    //startviewmodel fires newGameStarted property
-        observe(getViewmodelAssociatedWithView());  // TODO : rethink about this (should View abstract class implement Observer to observer its corresponding Viewmodel)
-        new PropertyObserver<>(getViewmodelAssociatedWithView().getCurrentGameStatus(), evt -> {
+        CLIMainViewmodel cliMainViewmodel = getViewmodelAssociatedWithView();
+        observe(cliMainViewmodel);  // TODO : rethink about this (should View abstract class implement Observer to observer its corresponding Viewmodel)
+        new PropertyObserver<>(cliMainViewmodel.getCurrentGameStatusProperty(), evt -> {
             switch ((Game.Status) evt.getNewValue()) {
                 case STARTED -> System.out.println("\n\nNew game!");
                 case ENDED -> {
@@ -59,75 +60,22 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
                 }
             }
         });
+        new PropertyObserver<>(cliMainViewmodel.getUserMustPlaceNewStoneProperty(), evt -> {
+            if ((boolean) evt.getNewValue()) {
+                try {
+                    waitForAValidMoveOfAPlayer();
+                } catch (Board.BoardIsFullException e) {
+                    // TODO : handle exception
+                    System.err.println("Game terminated due to an unexpected exception: ");
+                    e.printStackTrace();
+                    System.exit(1);
+                }
+            }
+        });
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-
-//        final String evtName = evt.getPropertyName();   // TODO: may be a method in ObservableProperty?
-//        if (Objects.equals(evtName, getViewmodelAssociatedWithView().currentGameStatus.getPropertyNameOrElseThrow())) { // TODO : code duplication  with AbstractMainViewmodel
-//            switch ((AbstractMainViewmodel.Status) evt.getNewValue()) {
-//                case GAME_STARTED:
-//                    System.out.println("\n\nNew game!");
-//                    break;
-//                case USER_MUST_PLACE:
-//                    try {
-//                        waitForAValidMoveOfAPlayer();
-//                    } catch (Board.BoardIsFullException e) {
-//                        // TODO : handle exception
-//                        System.err.println("Game terminated due an unexpected exception: ");
-//                        e.printStackTrace();
-//                        System.exit(1);
-//                    }
-//                    break;
-//                case GAME_ENDED:
-//                    System.out.println("Game ended");
-//                    // TODO : print summary
-//                    CLIMainViewmodel viewmodel = getViewmodelAssociatedWithView();
-//                    if (viewmodel.isMatchEnded()) {
-//
-//                        boolean isMatchEndedWithDraft = false;
-//                        try {
-//                            isMatchEndedWithDraft = viewmodel.getWinnerOfTheMatch() == null;  // TODO : viewmodel should have a method "isMatchEndedWithADraft()" to avoid "==null"
-//                        } catch (Match.MatchNotEndedException /* TODO: should be MatchNotEndedException */ e) {
-//                            Logger.getLogger(getClass().getCanonicalName())
-//                                    .log(Level.SEVERE, "Impossible to be here", e);
-//                        }
-//
-//                        if (isMatchEndedWithDraft) {
-//                            System.out.print("Extra game? Y/N: ");    // TODO: refactor with lines down?
-//                            boolean anotherGame = IOUtility.getLowercaseCharWhenValidCaseInsensitiveOrCycle('y', 'n') == 'y';
-//                            if (anotherGame) {
-//                                viewmodel.startExtraGame();
-//                            }
-//                        } else {
-//                            System.out.print("Another match? Y/N: ");
-//                            boolean anotherMatch = IOUtility.getLowercaseCharWhenValidCaseInsensitiveOrCycle('y', 'n') == 'y';
-//                            if (anotherMatch) {
-//                                viewmodel.startNewMatch();
-//                            }
-//                        }
-//                    } else {
-//                        viewmodel.startNewGame();
-//                    }
-//            }
-//        }
-
-        switch (evt.getPropertyName()) {
-            case AbstractMainViewmodel.userMustPlaceNewStonePropertyName -> {
-                if ((boolean) evt.getNewValue()) {
-                    try {
-                        waitForAValidMoveOfAPlayer();
-                    } catch (Board.BoardIsFullException e) {
-                        // TODO : handle exception
-                        System.err.println("Game terminated due an unexpected exception: ");
-                        e.printStackTrace();
-                        System.exit(1);
-                    }
-                }
-            }
-        }
-
     }
 
     private void waitForAValidMoveOfAPlayer() throws Board.BoardIsFullException {  // TODO : not tested

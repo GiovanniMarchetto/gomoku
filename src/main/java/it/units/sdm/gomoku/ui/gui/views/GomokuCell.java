@@ -25,7 +25,7 @@ public class GomokuCell implements Observer {
     public static final String radiusPropertyName = "radius";
 
     private final int boardSize;
-    private final MainViewmodel vm;
+    private final MainViewmodel mainViewmodel;
     private final Coordinates coordinates;
 
     private double radius;
@@ -39,13 +39,13 @@ public class GomokuCell implements Observer {
 
     private Group group;
 
-    public GomokuCell(MainViewmodel vm, Coordinates coordinates, double initialRadius, int boardSize) {
-        this.vm = vm;
+    public GomokuCell(MainViewmodel mainViewmodel, Coordinates coordinates, double initialRadius, int boardSize) {
+        this.mainViewmodel = mainViewmodel;
         this.coordinates = coordinates;
         this.radius = initialRadius;
         this.boardSize = boardSize;
         initializeGroup();
-        observe(vm);
+        observe(mainViewmodel);
     }
 
     private double getRadius() {
@@ -211,9 +211,9 @@ public class GomokuCell implements Observer {
         });
 
         rectangle.setOnMousePressed(event -> {
-            if (cell.isEmpty() && event.isPrimaryButtonDown() && vm.isUserMustPlaceNewStone()) {
+            if (cell.isEmpty() && event.isPrimaryButtonDown() && userCanPlace()) {
                 try {
-                    vm.placeStoneFromUser(coordinates);
+                    mainViewmodel.placeStoneFromUser(coordinates);
                 } catch (Board.BoardIsFullException |
                         Board.CellAlreadyOccupiedException e) {
                     e.printStackTrace();    // TODO : handle this exception (should never happen)
@@ -221,11 +221,15 @@ public class GomokuCell implements Observer {
                     // force update stone (in GUI) at current coordinates, or...
 //                    setCell(vm.getCellAtCoordinatesInCurrentBoard(coordinates));
                     // ... force update all stones
-                    vm.forceReFireAllCells();
+                    mainViewmodel.forceReFireAllCells();
 
                 }
             }
         });
+    }
+
+    private boolean userCanPlace() {
+        return Boolean.TRUE.equals(mainViewmodel.getUserMustPlaceNewStoneProperty().getPropertyValue());
     }
 
 
@@ -236,7 +240,7 @@ public class GomokuCell implements Observer {
             case AbstractMainViewmodel.lastMoveCoordinatesPropertyName -> {
                 Coordinates lastCoords = (Coordinates) Objects.requireNonNull(evt.getNewValue());
                 if (lastCoords.equals(coordinates)) {
-                    Platform.runLater(() -> setCell(Objects.requireNonNull(vm.getCellAtCoordinatesInCurrentBoard(lastCoords))));
+                    Platform.runLater(() -> setCell(Objects.requireNonNull(mainViewmodel.getCellAtCoordinatesInCurrentBoard(lastCoords))));
                 }
 
                 Coordinates penultimateCoords = (Coordinates) evt.getOldValue();
