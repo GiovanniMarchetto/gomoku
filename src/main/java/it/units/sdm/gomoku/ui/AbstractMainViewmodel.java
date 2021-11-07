@@ -25,6 +25,8 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
     private final ObservableProperty<Player> currentPlayerProperty = new ObservableProperty<>();
     @NotNull
     private final ObservableProperty<Game.Status> currentGameStatusProperty = new ObservableProperty<>();
+    @NotNull
+    private final ObservableProperty<Boolean> userMustPlaceNewStoneProperty = new ObservableProperty<>();
     @Nullable
     private Match match;
     //
@@ -38,10 +40,6 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
 //    private final ObservableProperty<Board> currentBoard = new ObservableProperty<>(this);  // TODO : needed?
     @Nullable
     private Board currentBoard;
-
-    @NotNull
-    private ObservableProperty<Boolean> userMustPlaceNewStoneProperty = new ObservableProperty<>();
-//    private boolean userMustPlaceNewStone = false;
 
     public AbstractMainViewmodel() {
     }
