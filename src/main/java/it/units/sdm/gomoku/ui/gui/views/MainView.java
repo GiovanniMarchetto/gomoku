@@ -1,6 +1,5 @@
 package it.units.sdm.gomoku.ui.gui.views;
 
-import it.units.sdm.gomoku.model.entities.Player;
 import it.units.sdm.gomoku.model.entities.Stone;
 import it.units.sdm.gomoku.mvvm_library.Observer;
 import it.units.sdm.gomoku.mvvm_library.View;
@@ -52,7 +51,7 @@ public class MainView extends View<MainViewmodel> implements Observer {
 
         MainViewmodel vm = getViewmodelAssociatedWithView();
 
-        PropertyObserver<Player> currentPlayer = new PropertyObserver<>(vm.getCurrentPlayerProperty(), evt ->
+        new PropertyObserver<>(vm.getCurrentPlayerProperty(), evt ->
                 SceneController.executeOnJavaFxUiThread(() -> {
                     currentPlayerLabel.setText(evt.getNewValue().toString());
                     currentPlayerCircle.setFill(

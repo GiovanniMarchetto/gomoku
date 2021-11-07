@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 public class PropertyObserver<T> implements Observer {
+    // TODO : to be tested
 
     private final Consumer<PropertyChangeEvent> actionOnPropertyChange;
 
