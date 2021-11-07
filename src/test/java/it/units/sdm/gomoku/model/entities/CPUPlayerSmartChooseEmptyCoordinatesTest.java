@@ -4,6 +4,8 @@ import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.stream.IntStream;
 
@@ -12,7 +14,7 @@ import static it.units.sdm.gomoku.model.entities.Board.CellAlreadyOccupiedExcept
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class CPUPlayerChooseEmptyCoordinatesTest {
+public class CPUPlayerSmartChooseEmptyCoordinatesTest {
 
     private static final int BOARD_SIZE = 5;
     private static Board board = null;
@@ -27,7 +29,7 @@ public class CPUPlayerChooseEmptyCoordinatesTest {
     @Test
     void emptyBoard() {
         Coordinates expected = getNextEmptyCoordinates();
-        assertChooseEmptyCoordinates(expected);
+        tryToAssertSmartChooseEmptyCoordinates(expected);
     }
 
     @Test
@@ -35,7 +37,7 @@ public class CPUPlayerChooseEmptyCoordinatesTest {
         occupyCoordinateFromXAndY(0, 0);
 
         Coordinates expected = getNextEmptyCoordinates();
-        assertChooseEmptyCoordinates(expected);
+        tryToAssertSmartChooseEmptyCoordinates(expected);
 
     }
 
@@ -49,32 +51,16 @@ public class CPUPlayerChooseEmptyCoordinatesTest {
         }
     }
 
-//    // TODO : check this tests which are failing
-//    @Test
-//    void chainOfTwo() {
-//        occupyNStonesInARow(2, 0);
-//        Coordinates expected = new Coordinates(0, 2); // TODO : are you sure this is the expected coordinates?
-//        assertChooseEmptyCoordinates(expected);
-//    }
-//
-//    @Test
-//    void chainOfThree() {
-//        occupyNStonesInARow(2, 0);
-//        occupyNStonesInARow(3, 1);
-//        Coordinates expected = new Coordinates(1, 3); // TODO : are you sure this is the expected coordinates?
-//        assertChooseEmptyCoordinates(expected);
-//    }
-//
-//    @Test
-//    void chainOfFour() {
-//        occupyNStonesInARow(2, 0);
-//        occupyNStonesInARow(3, 1);
-//        occupyNStonesInARow(4, 2);
-//        Coordinates expected = new Coordinates(2, 4); // TODO : are you sure this is the expected coordinates?
-//        assertChooseEmptyCoordinates(expected);
-//    }   // TODO: refactor needed: parameterize "chainOfN(int N)"
+    @ParameterizedTest
+    @ValueSource(ints = {2, 3, 4})
+    void chainOfN(int N) {
+        final int minChain = 2;
+        IntStream.rangeClosed(minChain, N).forEach(i -> occupyNStonesInARow(i, i - minChain));
+        Coordinates expected = new Coordinates(N - minChain, N);
+        tryToAssertSmartChooseEmptyCoordinates(expected);
+    }
 
-    private void assertChooseEmptyCoordinates(Coordinates expected) {
+    private void tryToAssertSmartChooseEmptyCoordinates(Coordinates expected) {
         try {
             assertEquals(expected, cpuPlayer.chooseSmartEmptyCoordinates(board));
         } catch (BoardIsFullException e) {

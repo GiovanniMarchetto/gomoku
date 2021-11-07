@@ -43,32 +43,25 @@ public class CPUPlayer extends Player {
         super(CPU_DEFAULT_NAME + numberOfCpuPlayers.incrementAndGet());
     }
 
-    private static boolean isHeadOfAChainOfStones(Board board, Coordinates startCoordinates,
+    private static boolean isHeadOfAChainOfStones(Board board, Coordinates headCoordinates,
                                                   PositiveInteger numberOfConsecutive) {
         int[] directionFactorXs = {0, 0, 1, -1, 1, -1, 1, -1};
         int[] directionFactorYs = {1, -1, 0, 0, 1, -1, -1, 1};
 
         return IntStream.range(0, directionFactorXs.length)
                 .mapToObj(i -> new Pair<>(directionFactorXs[i], directionFactorYs[i]))
-                .map(aDirectionFactor -> {
-                            List<Stone> stoneList = IntStream.range(1, numberOfConsecutive.intValue() + 1)
-                                    .mapToObj(i -> new Pair<>(
-                                            startCoordinates.getX() + i * aDirectionFactor.getKey(),
-                                            startCoordinates.getY() + i * aDirectionFactor.getValue()))
-                                    .filter(pair -> pair.getKey() >= 0 && pair.getValue() >= 0)
-                                    .map(validPair -> new Coordinates(validPair.getKey(), validPair.getValue()))
-                                    .filter(board::isCoordinatesInsideBoard)
-                                    .map(board::getStoneAtCoordinates)
-                                    .filter(Objects::nonNull)
-                                    .collect(Collectors.toList());
-                            if (stoneList.size() != 0) {
-                                return stoneList.stream()
-                                        .filter(stone -> stone == stoneList.get(0))
-                                        .count();
-                            } else {
-                                return 0L;
-                            }
-                        }
+                .flatMap(aDirectionFactor -> IntStream.rangeClosed(1, numberOfConsecutive.intValue())
+                        .mapToObj(i -> new Pair<>(
+                                headCoordinates.getX() + i * aDirectionFactor.getKey(),
+                                headCoordinates.getY() + i * aDirectionFactor.getValue()))
+                        .filter(pair -> pair.getKey() >= 0 && pair.getValue() >= 0)
+                        .map(validPair -> new Coordinates(validPair.getKey(), validPair.getValue()))
+                        .filter(board::isCoordinatesInsideBoard)
+                        .map(board::getStoneAtCoordinates)
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.groupingBy(Stone::color, Collectors.counting()))
+                        .values()
+                        .stream()
                 )
                 .anyMatch(counter -> counter == numberOfConsecutive.intValue());
     }
