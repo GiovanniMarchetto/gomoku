@@ -49,30 +49,29 @@ public class CPUPlayerChooseEmptyCoordinatesTest {
         }
     }
 
-//    // TODO : check this tests which are failing
-//    @Test
-//    void chainOfTwo() {
-//        occupyNStonesInARow(2, 0);
-//        Coordinates expected = new Coordinates(0, 2); // TODO : are you sure this is the expected coordinates?
-//        assertChooseEmptyCoordinates(expected);
-//    }
-//
-//    @Test
-//    void chainOfThree() {
-//        occupyNStonesInARow(2, 0);
-//        occupyNStonesInARow(3, 1);
-//        Coordinates expected = new Coordinates(1, 3); // TODO : are you sure this is the expected coordinates?
-//        assertChooseEmptyCoordinates(expected);
-//    }
-//
-//    @Test
-//    void chainOfFour() {
-//        occupyNStonesInARow(2, 0);
-//        occupyNStonesInARow(3, 1);
-//        occupyNStonesInARow(4, 2);
-//        Coordinates expected = new Coordinates(2, 4); // TODO : are you sure this is the expected coordinates?
-//        assertChooseEmptyCoordinates(expected);
-//    }   // TODO: refactor needed: parameterize "chainOfN(int N)"
+    @Test
+    void chainOfTwo() {
+        occupyNStonesInARow(2, 0);
+        Coordinates expected = new Coordinates(0, 2);
+        assertChooseEmptyCoordinates(expected);
+    }
+
+    @Test
+    void chainOfThree() {
+        occupyNStonesInARow(2, 0);
+        occupyNStonesInARow(3, 1);
+        Coordinates expected = new Coordinates(1, 3);
+        assertChooseEmptyCoordinates(expected);
+    }
+
+    @Test
+    void chainOfFour() {
+        occupyNStonesInARow(2, 0);
+        occupyNStonesInARow(3, 1);
+        occupyNStonesInARow(4, 2);
+        Coordinates expected = new Coordinates(2, 4);
+        assertChooseEmptyCoordinates(expected);
+    }   // TODO: refactor needed: parameterize "chainOfN(int N)"
 
     private void assertChooseEmptyCoordinates(Coordinates expected) {
         try {

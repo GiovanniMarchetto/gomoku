@@ -39,7 +39,7 @@ public class CPUPlayer extends Player {
         return IntStream.range(0, directionFactorXs.length)
                 .mapToObj(i -> new Pair<>(directionFactorXs[i], directionFactorYs[i]))
                 .map(aDirectionFactor -> {
-                            List<Stone> stoneList = IntStream.range(1, numberOfConsecutive.intValue() + 1)
+                            List<Stone> stoneList = IntStream.rangeClosed(1, numberOfConsecutive.intValue())
                                     .mapToObj(i -> new Pair<>(
                                             startCoordinates.getX() + i * aDirectionFactor.getKey(),
                                             startCoordinates.getY() + i * aDirectionFactor.getValue()))
@@ -49,9 +49,9 @@ public class CPUPlayer extends Player {
                                     .map(board::getStoneAtCoordinates)
                                     .filter(Objects::nonNull)
                                     .collect(Collectors.toList());
-                            if (stoneList.size() != 0) {
+                            if (stoneList.size() > 0) {
                                 return stoneList.stream()
-                                        .filter(stone -> stone == stoneList.get(0))
+                                        .filter(stone -> stone.equals(stoneList.get(0)))
                                         .count();
                             } else {
                                 return 0L;
