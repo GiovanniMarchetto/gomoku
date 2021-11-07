@@ -20,8 +20,6 @@ import java.util.stream.Collectors;
 
 public abstract class AbstractMainViewmodel extends Viewmodel {
 
-//    public final static String userMustPlaceNewStonePropertyName = "userMustPlaceNewStone";
-
     public final static String lastMoveCoordinatesPropertyName = Board.lastMoveCoordinatesPropertyName;
     @NotNull
     private final ObservableProperty<Player> currentPlayerProperty = new ObservableProperty<>();
