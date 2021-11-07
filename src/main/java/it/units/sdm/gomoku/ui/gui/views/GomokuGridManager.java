@@ -72,7 +72,7 @@ public class GomokuGridManager implements Observable {
 
     private void addCell(int row, int col) {
         GomokuCell gc = new GomokuCell(vm, new Coordinates(row, col), radius, boardSize);
-        this.beObservedBy(gc);
+        gc.observe(this);
         ObservableList<Node> children = gc.getGroup().getChildren();
 
         IntStream.range(0, children.size())

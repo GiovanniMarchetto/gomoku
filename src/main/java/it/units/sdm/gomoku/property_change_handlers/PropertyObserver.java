@@ -15,7 +15,7 @@ public class PropertyObserver<T> implements Observer {
     public PropertyObserver(@NotNull final ObservableProperty<T> observedProperty,
                             @NotNull final Consumer<PropertyChangeEvent> actionOnPropertyChange) {
         this.actionOnPropertyChange = Objects.requireNonNull(actionOnPropertyChange);
-        Objects.requireNonNull(observedProperty).beObservedBy(this);
+        observe(Objects.requireNonNull(observedProperty));
     }
 
     @Override

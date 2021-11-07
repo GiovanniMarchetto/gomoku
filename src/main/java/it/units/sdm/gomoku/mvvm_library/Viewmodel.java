@@ -14,11 +14,4 @@ public abstract class Viewmodel implements
 
     public abstract void propertyChange(PropertyChangeEvent evt);
 
-    public void observe(Observable observable) {
-        observable.beObservedBy(this);
-    }
-
-    public void stopObserving(Observable observable) {
-        observable.stopBeingObservedBy(this);
-    }
 }

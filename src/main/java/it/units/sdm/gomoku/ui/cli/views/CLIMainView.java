@@ -21,8 +21,8 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
 
     public CLIMainView(StartViewmodel startViewmodel) {  // TODO : event-based flux of program to be tested
         super(CLIMain.cliMainViewmodel);
-        startViewmodel.beObservedBy(this);//startviewmodel fires newGameStarted property
-        getViewmodelAssociatedWithView().beObservedBy(this);// TODO : rethink about this (should View abstract class implement Observer to observer its corresponding Viewmodel)
+        observe(startViewmodel);    //startviewmodel fires newGameStarted property
+        observe(getViewmodelAssociatedWithView());  // TODO : rethink about this (should View abstract class implement Observer to observer its corresponding Viewmodel)
         new PropertyObserver<>(getViewmodelAssociatedWithView().getCurrentGameStatus(), evt -> {
             switch ((Game.Status) evt.getNewValue()) {
                 case STARTED -> System.out.println("\n\nNew game!");
