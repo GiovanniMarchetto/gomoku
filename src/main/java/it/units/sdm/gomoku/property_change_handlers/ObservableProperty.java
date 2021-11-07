@@ -16,7 +16,7 @@ public class ObservableProperty<T> implements Observable, Cloneable {  // TODO :
     private final String propertyName;
 
     @Nullable
-    private T propertyValue;
+    private volatile T propertyValue;   // TODO : volatile needed?
 
     public ObservableProperty() {
         this.propertyValue = null;
@@ -29,7 +29,7 @@ public class ObservableProperty<T> implements Observable, Cloneable {  // TODO :
     }
 
     @NotNull
-    public ObservableProperty<T> setPropertyValueWithoutNotifying(@Nullable final T propertyValue) {
+    public synchronized ObservableProperty<T> setPropertyValueWithoutNotifying(@Nullable final T propertyValue) {   // TODO : synchronized needed?
         this.propertyValue = propertyValue;
         return this;
     }
@@ -40,7 +40,7 @@ public class ObservableProperty<T> implements Observable, Cloneable {  // TODO :
     }
 
     @NotNull
-    public ObservableProperty<T> setPropertyValueAndFireIfPropertyChange(@Nullable final T propertyNewValue) {
+    public synchronized ObservableProperty<T> setPropertyValueAndFireIfPropertyChange(@Nullable final T propertyNewValue) {   // TODO : synchronized needed?
         T oldValue = getPropertyValue();
         if (!Objects.equals(oldValue, propertyNewValue)) {
             setPropertyValueWithoutNotifying(propertyNewValue);
@@ -68,8 +68,8 @@ public class ObservableProperty<T> implements Observable, Cloneable {  // TODO :
         return Objects.equals(propertyValue, that.propertyValue);
     }
 
-    @Override
-    public int hashCode() {
-        return propertyValue != null ? propertyValue.hashCode() : 0;
-    }
+//    @Override
+//    public int hashCode() {   // TODO : equal objects must have equal hash codes - IMPORTANT: this implementation break properties and slow VERY VERY VERY MUCH test execution
+//        return propertyValue != null ? propertyValue.hashCode() : 0;
+//    }
 }
