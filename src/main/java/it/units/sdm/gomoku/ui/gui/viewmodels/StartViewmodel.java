@@ -19,7 +19,6 @@ public class StartViewmodel extends Viewmodel {
 
     // TODO : add nullable/notnull annotations and final to method params
 
-    public static final String player1CPUPropertyName = "player1CPU";
     public static final String player2CPUPropertyName = "player2CPU";
     public static final String numberOfGamesPropertyName = "numberOfGames";
     public static final String selectedBoardSizePropertyName = "selectedBoardSize";
@@ -30,12 +29,12 @@ public class StartViewmodel extends Viewmodel {
 
     private final AbstractMainViewmodel mainViewmodel;
 
-    private String player1Name;
-    private String player2Name;
-    private boolean player1CPU;
-    private boolean player2CPU;
-    private String selectedBoardSize;
-    private String numberOfGames;
+    private volatile String player1Name;
+    private volatile String player2Name;
+    private volatile boolean player1CPU;
+    private volatile boolean player2CPU;
+    private volatile String selectedBoardSize;
+    private volatile String numberOfGames;
 
     public StartViewmodel(AbstractMainViewmodel mainViewmodel) {
         this.mainViewmodel = mainViewmodel;
@@ -73,11 +72,7 @@ public class StartViewmodel extends Viewmodel {
     }
 
     public void setPlayer1CPU(boolean player1CPU) {
-        boolean oldValue = this.player1CPU;
-        if (player1CPU != oldValue) {
-            this.player1CPU = player1CPU;
-            firePropertyChange(player1CPUPropertyName, oldValue, player1CPU);
-        }
+        this.player1CPU = player1CPU;
     }
 
     public boolean isPlayer2CPU() {
@@ -124,7 +119,6 @@ public class StartViewmodel extends Viewmodel {
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
-            case player1CPUPropertyName -> setPlayer1CPU((Boolean) evt.getNewValue());
             case player2CPUPropertyName -> setPlayer2CPU((Boolean) evt.getNewValue());
             case selectedBoardSizePropertyName -> setSelectedBoardSize((String) evt.getNewValue());
             case numberOfGamesPropertyName -> setNumberOfGames((String) evt.getNewValue());

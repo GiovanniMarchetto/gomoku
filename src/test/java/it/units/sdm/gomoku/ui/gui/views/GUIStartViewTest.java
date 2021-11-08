@@ -6,6 +6,7 @@ import it.units.sdm.gomoku.ui.gui.viewmodels.StartViewmodel;
 import it.units.sdm.gomoku.utils.TestUtility;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -91,9 +92,34 @@ class GUIStartViewTest {
                             .getFieldAlreadyMadeAccessible(guiStartView.getClass(), textfieldNameInView)
                             .get(guiStartView);
             playerNameTextField.textProperty().set(newPlayerName);
-//            TestUtility.setFieldValue(fieldNameInViewmodel, newPlayerName, guiStartViewmodel);
 
             assertEquals(TestUtility.getFieldValue(fieldNameInViewmodel, guiStartViewmodel), newPlayerName);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            fail(e);
+        }
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "true, true, player1CPUCheckBox, player1CPU",
+            "true, false, player1CPUCheckBox, player1CPU",
+            "false, true, player1CPUCheckBox, player1CPU",
+            "false, false, player1CPUCheckBox, player1CPU"
+    })
+    void updatePlayerIsCPUCheckboxInViewShouldAutomaticallyUpdateFieldInViewmodel(
+            boolean wasCPUBeforeUpdate, boolean isCPUAfterUpdate,
+            String checkboxNameInView, String fieldNameInViewmodel) {
+        try {
+            TestUtility.setFieldValue(fieldNameInViewmodel, wasCPUBeforeUpdate, guiStartViewmodel);
+
+            CheckBox isCPUSelectedCheckBox =
+                    (CheckBox) TestUtility
+                            .getFieldAlreadyMadeAccessible(guiStartView.getClass(), checkboxNameInView)
+                            .get(guiStartView);
+            isCPUSelectedCheckBox.setSelected(wasCPUBeforeUpdate); // set old state before firing property change
+            isCPUSelectedCheckBox.setSelected(isCPUAfterUpdate);
+
+            assertEquals(TestUtility.getFieldValue(fieldNameInViewmodel, guiStartViewmodel), isCPUAfterUpdate);
         } catch (IllegalAccessException | NoSuchFieldException e) {
             fail(e);
         }
