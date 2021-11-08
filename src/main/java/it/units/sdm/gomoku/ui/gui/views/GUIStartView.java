@@ -2,6 +2,7 @@ package it.units.sdm.gomoku.ui.gui.views;
 
 import it.units.sdm.gomoku.mvvm_library.View;
 import it.units.sdm.gomoku.ui.gui.viewmodels.StartViewmodel;
+import javafx.beans.property.Property;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -17,6 +18,8 @@ import static it.units.sdm.gomoku.ui.gui.viewmodels.StartViewmodel.*;
 
 
 public class GUIStartView extends View<StartViewmodel> {
+
+    // TODO : add notnull / nullable annotations and final in method params
 
     @FXML
     private Button startMatchButton;
@@ -78,7 +81,11 @@ public class GUIStartView extends View<StartViewmodel> {
     }
 
     private void addTextPropertyListener(TextField textField, Consumer<String> actionOnChange) {
-        textField.textProperty().addListener((ignored_observable, ignored_oldValue, newValue) -> {
+        addPropertyListener(textField.textProperty(), actionOnChange);
+    }
+
+    private <T> void addPropertyListener(Property<T> property, Consumer<T> actionOnChange) {
+        property.addListener((ignored_observable, ignored_oldValue, newValue) -> {
             disableStartMatchButtonIfInvalidInputFieldValues();
             actionOnChange.accept(newValue);
         });
