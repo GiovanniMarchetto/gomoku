@@ -57,7 +57,7 @@ public class ObservableProperty<T> implements Observable, Cloneable {  // TODO :
         return clone;
     }
 
-    public boolean equalsValue(@NotNull final ObservableProperty<T> otherProperty) {
+    public boolean valueEquals(@NotNull final ObservableProperty<T> otherProperty) {
         return Objects.equals(propertyValue, Objects.requireNonNull(otherProperty).propertyValue);
     }
 

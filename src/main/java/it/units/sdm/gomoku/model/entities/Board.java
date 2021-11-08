@@ -121,7 +121,7 @@ public class Board implements Observable, Cloneable, Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         Board otherBoard = (Board) o;
         return size.equals(otherBoard.size)
-                && lastMoveCoordinatesProperty.equalsValue(otherBoard.lastMoveCoordinatesProperty)
+                && lastMoveCoordinatesProperty.valueEquals(otherBoard.lastMoveCoordinatesProperty)
                 && coordinatesHistory.equals(otherBoard.coordinatesHistory) // TODO : board equality should consider coordinate history?
                 && Arrays.deepEquals(matrix, otherBoard.matrix);
     }
