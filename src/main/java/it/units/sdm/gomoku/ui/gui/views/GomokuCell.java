@@ -22,6 +22,8 @@ import java.util.Objects;
 
 public class GomokuCell implements Observer {
 
+    // TODO : add nullable/notnull annotations
+
     public static final String radiusPropertyName = "radius";
 
     private final int boardSize;
