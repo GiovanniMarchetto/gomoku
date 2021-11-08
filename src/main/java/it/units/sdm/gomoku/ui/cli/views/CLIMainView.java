@@ -43,14 +43,12 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
 
                         if (isMatchEndedWithDraft) {
                             System.out.print("Extra game? Y/N: ");    // TODO: refactor with lines down?
-                            boolean anotherGame = IOUtility.getLowercaseCharWhenValidCaseInsensitiveOrCycle('y', 'n') == 'y';
-                            if (anotherGame) {
+                            if (IOUtility.isYesFromStdin()) {
                                 viewmodel.startExtraGame();
                             }
                         } else {
                             System.out.print("Another match? Y/N: ");
-                            boolean anotherMatch = IOUtility.getLowercaseCharWhenValidCaseInsensitiveOrCycle('y', 'n') == 'y';
-                            if (anotherMatch) {
+                            if (IOUtility.isYesFromStdin()) {
                                 viewmodel.startNewMatch();
                             }
                         }
