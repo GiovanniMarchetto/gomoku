@@ -174,7 +174,6 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
 
     public void forceReFireAllCells() {
         // TODO: Rethink this
-//        firePropertyChange(Board.lastMoveCoordinatesPropertyName, null);
     }
 
     public int getBoardSize() {
