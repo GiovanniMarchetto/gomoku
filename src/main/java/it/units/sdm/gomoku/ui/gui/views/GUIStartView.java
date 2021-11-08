@@ -44,13 +44,9 @@ public class GUIStartView extends View<StartViewmodel> {
     private void initialize() {// TODO : refactor this method
         boardSizeChoiceBox.getItems().addAll(boardSizes);
         boardSizeChoiceBox.setValue(boardSizes.get(boardSizes.size() / 2));
-
         firePropertyChangeForDefaultValues();
-
         disableStartMatchButtonIfInvalidInputFieldValues();
-
         addListenerForFirePropertyChange();
-
         allowOnlyNumberInNumberOfGamesTextField();
     }
 
