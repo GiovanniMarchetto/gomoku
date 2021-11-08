@@ -57,19 +57,8 @@ public class ObservableProperty<T> implements Observable, Cloneable {  // TODO :
         return clone;
     }
 
-    /**
-     * @return true if property values are equal, compared with {@link Objects#equals(Object, Object)}.
-     */
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ObservableProperty<?> that = (ObservableProperty<?>) o;
-        return Objects.equals(propertyValue, that.propertyValue);
+    public boolean equalsValue(@NotNull final ObservableProperty<T> otherProperty) {
+        return Objects.equals(propertyValue, Objects.requireNonNull(otherProperty).propertyValue);
     }
 
-//    @Override
-//    public int hashCode() {   // TODO : equal objects must have equal hash codes - IMPORTANT: this implementation break properties and slow VERY VERY VERY MUCH test execution
-//        return propertyValue != null ? propertyValue.hashCode() : 0;
-//    }
 }

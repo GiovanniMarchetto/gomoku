@@ -116,24 +116,25 @@ public class Board implements Observable, Cloneable, Serializable {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(Object o) {   // TODO to be tested
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Board otherBoard = (Board) o;
         return size.equals(otherBoard.size)
-                && lastMoveCoordinatesProperty.equals(otherBoard.lastMoveCoordinatesProperty)
+                && lastMoveCoordinatesProperty.equalsValue(otherBoard.lastMoveCoordinatesProperty)
                 && coordinatesHistory.equals(otherBoard.coordinatesHistory) // TODO : board equality should consider coordinate history?
                 && Arrays.deepEquals(matrix, otherBoard.matrix);
     }
 
-//    @Override
-//    public int hashCode() { // TODO : check if creates problems with hashmaps (hashCode method should be present according to equals() contract)
-//        int result = size.hashCode();
-//        result = 31 * result + coordinatesHistory.hashCode();
-//        result = 31 * result + Arrays.deepHashCode(matrix);
-//        result = 31 * result + lastMoveCoordinatesProperty.hashCode();
-//        return result;
-//    }
+    @Override
+    public int hashCode() { // TODO : check if creates problems with hashmaps (hashCode method should be present according to equals() contract)
+        // TODO to be tested
+        int result = size.hashCode();
+        result = 31 * result + coordinatesHistory.hashCode();
+        result = 31 * result + Arrays.deepHashCode(matrix);
+        result = 31 * result + lastMoveCoordinatesProperty.hashCode();
+        return result;
+    }
 
     public synchronized void occupyPosition(@NotNull Stone.Color stoneColor, @NotNull Coordinates coordinates)
             throws BoardIsFullException, CellAlreadyOccupiedException {
