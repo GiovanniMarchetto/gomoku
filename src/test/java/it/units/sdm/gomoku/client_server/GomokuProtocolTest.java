@@ -10,6 +10,7 @@ import it.units.sdm.gomoku.model.entities.CPUPlayer;
 import it.units.sdm.gomoku.model.entities.HumanPlayer;
 import it.units.sdm.gomoku.ui.support.BoardSizes;
 import it.units.sdm.gomoku.ui.support.Setup;
+import it.units.sdm.gomoku.utils.TestUtility;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
@@ -144,8 +145,8 @@ class GomokuProtocolTest {
             Thread fakeServerThread = new Thread(() -> {
                 for (int numberOfAcceptedClients = 0; numberOfAcceptedClients < 2; numberOfAcceptedClients++) {
                     try {
-                        getFieldAlreadyMadeAccessible(gomokuProtocol.getClass(),
-                                "client" + (numberOfAcceptedClients + 1) + "Socket")
+                        TestUtility.getFieldAlreadyMadeAccessible(gomokuProtocol.getClass(),
+                                        "client" + (numberOfAcceptedClients + 1) + "Socket")
                                 .set(gomokuProtocol, fakeServerAccepting2Clients.accept());
                     } catch (IOException | NoSuchFieldException | IllegalAccessException e) {
                         eventuallyThrownException.set(e);
@@ -226,7 +227,7 @@ class GomokuProtocolTest {
 
     private boolean isPartialSetup() {
         try {
-            Field setupFieldSavedInProtocolInstance = getFieldAlreadyMadeAccessible(gomokuProtocol.getClass(), "setup");
+            Field setupFieldSavedInProtocolInstance = TestUtility.getFieldAlreadyMadeAccessible(gomokuProtocol.getClass(), "setup");
             if (setupFieldSavedInProtocolInstance.get(gomokuProtocol) instanceof Setup castedSetup) {
                 return gomokuProtocol.isPartialSetup(castedSetup)
                         && !gomokuProtocol.isFinalizedSetup(castedSetup);
@@ -339,16 +340,6 @@ class GomokuProtocolTest {
 
     @NotNull
     private Field getCurrentProtocolStatusField() throws NoSuchFieldException {
-        return getFieldAlreadyMadeAccessible(gomokuProtocol.getClass(), "currentStatus");
-    }
-
-    @NotNull
-    private Field getFieldAlreadyMadeAccessible(@NotNull final Class<?> clazz,
-                                                @NotNull final String fieldName)
-            throws NoSuchFieldException {
-        Field field = Objects.requireNonNull(clazz)
-                .getDeclaredField(Objects.requireNonNull(fieldName));
-        field.setAccessible(true);
-        return field;
+        return TestUtility.getFieldAlreadyMadeAccessible(gomokuProtocol.getClass(), "currentStatus");
     }
 }

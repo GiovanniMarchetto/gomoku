@@ -48,15 +48,9 @@ public class SceneController {
                     return new AbstractMap.SimpleEntry<ViewName, Supplier<Scene>>(viewName, () -> {
                         try {
                             FXMLLoader fxmlLoader = new FXMLLoader(viewEntry.getValue());
-                            sceneWidth = sceneWidth != 0 ? stage.getScene().getWidth() : initialSceneWidth;
-                            sceneHeight = sceneHeight != 0 ? stage.getScene().getHeight() : initialSceneHeight;
-                            StackPane parentPane = new StackPane();
-                            parentPane.getChildren().add(fxmlLoader.load());
-                            var scene = new Scene(parentPane, sceneWidth, sceneHeight);
-                            if (fxmlLoader.getController() instanceof View view) {
-                                view.onViewInitialized();
-                            }
-                            return scene;
+                            sceneWidth = sceneWidth > 0 ? stage.getScene().getWidth() : initialSceneWidth;
+                            sceneHeight = sceneHeight > 0 ? stage.getScene().getHeight() : initialSceneHeight;
+                            return createScene(fxmlLoader, sceneWidth, sceneHeight);
                         } catch (IOException e) {
                             Logger.getLogger(getClass().getCanonicalName())
                                     .severe("I/O Exception in " + getClass().getCanonicalName() +
@@ -75,6 +69,17 @@ public class SceneController {
         stage.setMinHeight(stageMinHeight);
         passToNewScene(ViewName.START_VIEW);
         singleInstance = this;
+    }
+
+    @NotNull
+    private static Scene createScene(@NotNull final FXMLLoader fxmlLoader, double sceneWidth, double sceneHeight) throws IOException {
+        StackPane parentPane = new StackPane();
+        parentPane.getChildren().add(fxmlLoader.load());
+        var scene = new Scene(Objects.requireNonNull(parentPane), sceneWidth, sceneHeight);
+        if (fxmlLoader.getController() instanceof View view) {
+            view.onViewInitialized();
+        }
+        return scene;
     }
 
     @SafeVarargs

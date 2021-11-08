@@ -19,7 +19,6 @@ public class StartViewmodel extends Viewmodel {
 
     // TODO : add nullable/notnull annotations and final to method params
 
-    public static final String player2NamePropertyName = "player2Name";
     public static final String player1CPUPropertyName = "player1CPU";
     public static final String player2CPUPropertyName = "player2CPU";
     public static final String numberOfGamesPropertyName = "numberOfGames";
@@ -66,11 +65,7 @@ public class StartViewmodel extends Viewmodel {
     }
 
     public void setPlayer2Name(String player2Name) {
-        String oldValue = this.player2Name;
-        if (!Objects.requireNonNull(player2Name).equals(oldValue)) {
-            this.player2Name = player2Name;
-            firePropertyChange(player2NamePropertyName, oldValue, player2Name);
-        }
+        this.player2Name = Objects.requireNonNull(player2Name);
     }
 
     public boolean isPlayer1CPU() {
@@ -129,7 +124,6 @@ public class StartViewmodel extends Viewmodel {
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
-            case player2NamePropertyName -> setPlayer2Name((String) evt.getNewValue());
             case player1CPUPropertyName -> setPlayer1CPU((Boolean) evt.getNewValue());
             case player2CPUPropertyName -> setPlayer2CPU((Boolean) evt.getNewValue());
             case selectedBoardSizePropertyName -> setSelectedBoardSize((String) evt.getNewValue());

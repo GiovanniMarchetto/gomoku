@@ -13,6 +13,7 @@ import org.json.JSONObject;
 import org.junit.jupiter.params.provider.Arguments;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -197,6 +198,17 @@ public class TestUtility {
         return Arrays.stream(Objects.requireNonNull(boardAsStringInCSVFormat).split(CSV_NEW_LINE))
                 .filter(isNonEmptyString)
                 .map(aLine -> Arrays.stream(aLine.split(CSV_SEPARATOR)));
+    }
+
+
+    @NotNull
+    public static Field getFieldAlreadyMadeAccessible(@NotNull final Class<?> clazz,
+                                                      @NotNull final String fieldName)
+            throws NoSuchFieldException {   // TODO : use this method wherever needed
+        Field field = Objects.requireNonNull(clazz)
+                .getDeclaredField(Objects.requireNonNull(fieldName));
+        field.setAccessible(true);
+        return field;
     }
 
 }
