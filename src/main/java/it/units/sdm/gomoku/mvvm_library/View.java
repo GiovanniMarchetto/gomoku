@@ -6,7 +6,7 @@ public abstract class View<T extends Viewmodel> implements Observable {  // TODO
 
     public View(T viewmodelAssociatedWithView) {
         this.viewmodelAssociatedWithView = viewmodelAssociatedWithView;
-        getViewmodelAssociatedWithView().observe(this);     // bind viewModel -> view
+        this.viewmodelAssociatedWithView.observe(this);     // bind viewModel -> view
     }
 
     public T getViewmodelAssociatedWithView() {
