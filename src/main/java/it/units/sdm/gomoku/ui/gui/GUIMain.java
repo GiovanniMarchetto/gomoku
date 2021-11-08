@@ -9,6 +9,10 @@ import static it.units.sdm.gomoku.ui.gui.SceneController.ViewName.*;
 
 public class GUIMain extends Application {
 
+    public static final String START_VIEW_FXML_FILE_NAME = "start-view.fxml";
+    public static final String MAIN_VIEW_FXML_FILE_NAME = "main-view.fxml";
+    public static final String SUMMARY_VIEW_FXML_FILE_NAME = "summary-view.fxml";
+
     public static final MainViewmodel guiMainViewmodel = new MainViewmodel();
     private static final String FXML_LOCATION_PATH = "views/";
     private final static int initialSceneWidthInPx = 630;
@@ -25,9 +29,9 @@ public class GUIMain extends Application {
     public void start(Stage stage) {
         SceneController.initialize(stage, stageTitle, initialSceneWidthInPx, initialSceneHeightInPx,
                 stageMinWidth, stageMinHeight,
-                new Pair<>(START_VIEW, FXML_LOCATION_PATH + "start-view.fxml"),
-                new Pair<>(MAIN_VIEW, FXML_LOCATION_PATH + "main-view.fxml"),
-                new Pair<>(SUMMARY_VIEW, FXML_LOCATION_PATH + "summary-view.fxml")
+                new Pair<>(START_VIEW, FXML_LOCATION_PATH + START_VIEW_FXML_FILE_NAME),
+                new Pair<>(MAIN_VIEW, FXML_LOCATION_PATH + MAIN_VIEW_FXML_FILE_NAME),
+                new Pair<>(SUMMARY_VIEW, FXML_LOCATION_PATH + SUMMARY_VIEW_FXML_FILE_NAME)
         );
         stage.show();
     }
