@@ -19,7 +19,7 @@ import java.beans.PropertyChangeEvent;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class MainView extends View<MainViewmodel> implements Observer {
+public class GUIMainView extends View<MainViewmodel> implements Observer {
 
     @FXML
     private Label currentPlayerLabel;
@@ -41,7 +41,7 @@ public class MainView extends View<MainViewmodel> implements Observer {
     @FXML
     private Label startTime;
 
-    public MainView() {
+    public GUIMainView() {
         super(GUIMain.guiMainViewmodel);
         observe(getViewmodelAssociatedWithView());
     }

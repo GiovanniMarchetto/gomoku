@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Circle?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="mainAnchorPane" xmlns="http://javafx.com/javafx/11.0.2"
-            fx:controller="it.units.sdm.gomoku.ui.gui.views.MainView">
+            fx:controller="it.units.sdm.gomoku.ui.gui.views.GUIMainView">
 
     <!--TODO: CHANGE COLORS-->
 
