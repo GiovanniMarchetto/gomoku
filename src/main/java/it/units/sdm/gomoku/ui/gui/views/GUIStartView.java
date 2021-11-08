@@ -44,7 +44,7 @@ public class GUIStartView extends View<StartViewmodel> {
 
         firePropertyChangeForDefaultValues();
 
-        checkFieldsAndEnableButton();
+        disableStartMatchButtonIfInvalidInputFieldValues();
 
         addListenerForFirePropertyChange();
 
@@ -72,14 +72,14 @@ public class GUIStartView extends View<StartViewmodel> {
 
     private void addTextPropertyListener(TextField textField, String propertyName) {
         textField.textProperty().addListener((observable, oldValue, newValue) -> {
-            checkFieldsAndEnableButton();
+            disableStartMatchButtonIfInvalidInputFieldValues();
             firePropertyChange(propertyName, oldValue, newValue);
         });
     }
 
     private void addTextPropertyListener(TextField textField, Consumer<String> actionOnChange) {
         textField.textProperty().addListener((ignored_observable, ignored_oldValue, newValue) -> {
-            checkFieldsAndEnableButton();
+            disableStartMatchButtonIfInvalidInputFieldValues();
             actionOnChange.accept(newValue);
         });
     }
@@ -98,11 +98,11 @@ public class GUIStartView extends View<StartViewmodel> {
             if (!newValue.matches("\\d*")) {
                 numberOfGamesTextField.setText(newValue.replaceAll("[^\\d]", ""));
             }
-            checkFieldsAndEnableButton();
+            disableStartMatchButtonIfInvalidInputFieldValues();
         });
     }
 
-    private void checkFieldsAndEnableButton() {
+    private void disableStartMatchButtonIfInvalidInputFieldValues() {
         startMatchButton.setDisable(
                 player1NameTextField.getText().isEmpty()
                         || player2NameTextField.getText().isEmpty()
