@@ -10,6 +10,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import static it.units.sdm.gomoku.ui.gui.GUIMain.guiMainViewmodel;
 import static it.units.sdm.gomoku.ui.gui.viewmodels.StartViewmodel.*;
@@ -51,7 +52,7 @@ public class GUIStartView extends View<StartViewmodel> {
     }
 
     private void addListenerForFirePropertyChange() {
-        addPlayer1NamePropertyListener(player1NameTextField);
+        addTextPropertyListener(player1NameTextField, player1NewName -> getViewmodelAssociatedWithView().setPlayer1Name(player1NewName));
         addTextPropertyListener(player2NameTextField, player2NamePropertyName);
         addSelectedPropertyListener(player1CPUCheckBox, player1CPUPropertyName);
         addSelectedPropertyListener(player2CPUCheckBox, player2CPUPropertyName);
@@ -76,10 +77,10 @@ public class GUIStartView extends View<StartViewmodel> {
         });
     }
 
-    private void addPlayer1NamePropertyListener(TextField textField) {
+    private void addTextPropertyListener(TextField textField, Consumer<String> actionOnChange) {
         textField.textProperty().addListener((ignored_observable, ignored_oldValue, newValue) -> {
             checkFieldsAndEnableButton();
-            getViewmodelAssociatedWithView().setPlayer1Name(newValue);
+            actionOnChange.accept(newValue);
         });
     }
 
