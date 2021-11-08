@@ -55,7 +55,7 @@ public class GUIStartView extends View<StartViewmodel> {
         addTextPropertyListener(player1NameTextField, newName -> getViewmodelAssociatedWithView().setPlayer1Name(newName));
         addTextPropertyListener(player2NameTextField, newName -> getViewmodelAssociatedWithView().setPlayer2Name(newName));
         addSelectedPropertyListener(player1CPUCheckBox, isSelected -> getViewmodelAssociatedWithView().setPlayer1CPU(isSelected));
-        addSelectedPropertyListener(player2CPUCheckBox, player2CPUPropertyName);
+        addSelectedPropertyListener(player2CPUCheckBox, isSelected -> getViewmodelAssociatedWithView().setPlayer2CPU(isSelected));
         boardSizeChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
                 firePropertyChange(selectedBoardSizePropertyName, oldValue, newValue));
         addTextPropertyListener(numberOfGamesTextField, numberOfGamesPropertyName);
@@ -66,7 +66,7 @@ public class GUIStartView extends View<StartViewmodel> {
         getViewmodelAssociatedWithView().setPlayer1Name(player1NameTextField.getText());
         getViewmodelAssociatedWithView().setPlayer2Name(player2NameTextField.getText());
         getViewmodelAssociatedWithView().setPlayer1CPU(player1CPUCheckBox.isSelected());
-        firePropertyChange(player2CPUPropertyName, player2CPUCheckBox.isSelected());
+        getViewmodelAssociatedWithView().setPlayer2CPU(player2CPUCheckBox.isSelected());
         firePropertyChange(selectedBoardSizePropertyName, boardSizeChoiceBox.getValue());
         firePropertyChange(numberOfGamesPropertyName, numberOfGamesTextField.getText());
     }

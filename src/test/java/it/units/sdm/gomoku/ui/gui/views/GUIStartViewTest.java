@@ -109,7 +109,11 @@ class GUIStartViewTest {
             "true, true, player1CPUCheckBox, player1CPU",
             "true, false, player1CPUCheckBox, player1CPU",
             "false, true, player1CPUCheckBox, player1CPU",
-            "false, false, player1CPUCheckBox, player1CPU"
+            "false, false, player1CPUCheckBox, player1CPU",
+            "true, true, player2CPUCheckBox, player2CPU",       // TODO : refactor with @MethodSource?
+            "true, false, player2CPUCheckBox, player2CPU",
+            "false, true, player2CPUCheckBox, player2CPU",
+            "false, false, player2CPUCheckBox, player2CPU"
     })
     void updatePlayerIsCPUCheckboxInViewShouldAutomaticallyUpdateFieldInViewmodel(
             boolean wasCPUBeforeUpdate, boolean isCPUAfterUpdate,
@@ -131,6 +135,7 @@ class GUIStartViewTest {
             @NotNull final String fieldNameInViewmodel, @NotNull final Consumer<T> propertyValueSetterInView)
             throws NoSuchFieldException, IllegalAccessException {
         TestUtility.setFieldValue(Objects.requireNonNull(fieldNameInViewmodel), oldValue, Objects.requireNonNull(guiStartViewmodel));
+        assert TestUtility.getFieldValue(fieldNameInViewmodel, guiStartViewmodel).equals(oldValue);
         Objects.requireNonNull(propertyValueSetterInView).accept(oldValue); // set old state before firing property change
         propertyValueSetterInView.accept(newValue);
         assertEquals(TestUtility.getFieldValue(fieldNameInViewmodel, guiStartViewmodel), newValue);

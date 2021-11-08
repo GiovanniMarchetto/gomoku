@@ -11,7 +11,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
-import static it.units.sdm.gomoku.ui.gui.viewmodels.StartViewmodel.*;
+import static it.units.sdm.gomoku.ui.gui.viewmodels.StartViewmodel.numberOfGamesPropertyName;
+import static it.units.sdm.gomoku.ui.gui.viewmodels.StartViewmodel.selectedBoardSizePropertyName;
 
 public class CLIStartView extends View<StartViewmodel> {// TODO : refactor this class and test
 
@@ -22,19 +23,19 @@ public class CLIStartView extends View<StartViewmodel> {// TODO : refactor this 
                 getViewmodelAssociatedWithView().setPlayer1Name("CPU1");
                 getViewmodelAssociatedWithView().setPlayer2Name("CPU2");
                 getViewmodelAssociatedWithView().setPlayer1CPU(true);
-                firePropertyChange(player2CPUPropertyName, true);
+                getViewmodelAssociatedWithView().setPlayer2CPU(true);
             }
             case PERSON_VS_CPU -> {
                 getViewmodelAssociatedWithView().setPlayer1Name(askAndGetPlayerName(1));
                 getViewmodelAssociatedWithView().setPlayer2Name("CPU");
                 getViewmodelAssociatedWithView().setPlayer1CPU(false);
-                firePropertyChange(player2CPUPropertyName, true);
+                getViewmodelAssociatedWithView().setPlayer2CPU(true);
             }
             case PERSON_VS_PERSON -> {
                 getViewmodelAssociatedWithView().setPlayer1Name(askAndGetPlayerName(1));
                 getViewmodelAssociatedWithView().setPlayer2Name(askAndGetPlayerName(2));
                 getViewmodelAssociatedWithView().setPlayer1CPU(false);
-                firePropertyChange(player2CPUPropertyName, false);
+                getViewmodelAssociatedWithView().setPlayer2CPU(false);
             }
         }
         firePropertyChange(selectedBoardSizePropertyName, askAndGetBoardSize());

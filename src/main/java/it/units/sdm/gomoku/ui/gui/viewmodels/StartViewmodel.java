@@ -19,7 +19,6 @@ public class StartViewmodel extends Viewmodel {
 
     // TODO : add nullable/notnull annotations and final to method params
 
-    public static final String player2CPUPropertyName = "player2CPU";
     public static final String numberOfGamesPropertyName = "numberOfGames";
     public static final String selectedBoardSizePropertyName = "selectedBoardSize";
 
@@ -29,7 +28,7 @@ public class StartViewmodel extends Viewmodel {
 
     private final AbstractMainViewmodel mainViewmodel;
 
-    private volatile String player1Name;
+    private volatile String player1Name;    // TODO : volatile fields?
     private volatile String player2Name;
     private volatile boolean player1CPU;
     private volatile boolean player2CPU;
@@ -80,11 +79,7 @@ public class StartViewmodel extends Viewmodel {
     }
 
     public void setPlayer2CPU(boolean player2CPU) {
-        boolean oldValue = this.player2CPU;
-        if (player2CPU != oldValue) {
-            this.player2CPU = player2CPU;
-            firePropertyChange(player2CPUPropertyName, oldValue, player2CPU);
-        }
+        this.player2CPU = player2CPU;
     }
 
     public String getSelectedBoardSize() {
@@ -119,7 +114,6 @@ public class StartViewmodel extends Viewmodel {
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
-            case player2CPUPropertyName -> setPlayer2CPU((Boolean) evt.getNewValue());
             case selectedBoardSizePropertyName -> setSelectedBoardSize((String) evt.getNewValue());
             case numberOfGamesPropertyName -> setNumberOfGames((String) evt.getNewValue());
         }
