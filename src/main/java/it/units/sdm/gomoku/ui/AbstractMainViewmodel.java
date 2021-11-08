@@ -127,6 +127,15 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
         return Objects.requireNonNull(match).isEnded();
     }
 
+    public synchronized boolean isMatchEndedWithADraft() throws Match.MatchNotEndedException {
+        if (isMatchEnded()) {
+            return Objects.requireNonNull(match).isADraft();
+        }else {
+            throw new Match.MatchNotEndedException();
+        }
+    }
+
+
     protected synchronized boolean isCurrentGameEnded() {
         return Objects.requireNonNull(currentGame).isThisGameEnded();
     }
@@ -210,18 +219,22 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
         return this.lastMoveCoordinatesProperty;
     }
 
+    @NotNull
     public Stone.Color getColorOfCurrentPlayer() {
         return Objects.requireNonNull(currentGame).getColorOfPlayer(Objects.requireNonNull(getCurrentPlayer()));
     }
 
+    @NotNull
     public Player getCurrentBlackPlayer() {
         return Objects.requireNonNull(match).getCurrentBlackPlayer();
     }
 
+    @NotNull
     public Player getCurrentWhitePlayer() {
         return Objects.requireNonNull(match).getCurrentWhitePlayer();
     }
 
+    @NotNull
     public Cell getCellAtCoordinatesInCurrentBoard(Coordinates coordinates) {
         return Objects.requireNonNull(currentBoard).getCellAtCoordinates(coordinates);
     }
@@ -236,6 +249,7 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
         return Objects.requireNonNull(currentGame).getWinner();
     }
 
+    @NotNull
     public ZonedDateTime getGameStartTime() {
         return Objects.requireNonNull(currentGame).getStart();
     }

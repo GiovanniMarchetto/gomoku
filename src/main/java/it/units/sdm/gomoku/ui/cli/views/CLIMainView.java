@@ -4,10 +4,10 @@ import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.entities.Game;
 import it.units.sdm.gomoku.model.entities.Match;
+import it.units.sdm.gomoku.model.entities.Player;
 import it.units.sdm.gomoku.mvvm_library.Observer;
 import it.units.sdm.gomoku.mvvm_library.View;
 import it.units.sdm.gomoku.property_change_handlers.PropertyObserver;
-import it.units.sdm.gomoku.ui.AbstractMainViewmodel;
 import it.units.sdm.gomoku.ui.cli.CLIMain;
 import it.units.sdm.gomoku.ui.cli.IOUtility;
 import it.units.sdm.gomoku.ui.cli.viewmodels.CLIMainViewmodel;
@@ -28,29 +28,40 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
             switch ((Game.Status) evt.getNewValue()) {
                 case STARTED -> System.out.println("\n\nNew game!");
                 case ENDED -> {
-                    System.out.println("Game ended");
-                    // TODO : print summary
-                    CLIMainViewmodel viewmodel = getViewmodelAssociatedWithView();
-                    if (viewmodel.isMatchEnded()) {
+                    System.out.println("Game ended\n");
 
-                        boolean isMatchEndedWithDraft = false;
+                    CLIMainViewmodel viewmodel = getViewmodelAssociatedWithView();
+                    try {
+                        Player winnerOfGame = viewmodel.getWinnerOfTheGame();
+                        System.out.println("The game is finish with: " +
+                                (winnerOfGame != null ? "WIN of" + winnerOfGame : "DRAFT"));
+                    } catch (Game.GameNotEndedException ignored) {
+                    }
+
+                    System.out.println("\nThe match score now is:\n" + viewmodel.getScoreOfMatch());
+
+                    if (viewmodel.isMatchEnded()) {
                         try {
-                            isMatchEndedWithDraft = viewmodel.getWinnerOfTheMatch() == null;  // TODO : viewmodel should have a method "isMatchEndedWithADraft()" to avoid "==null"
-                        } catch (Match.MatchNotEndedException /* TODO: should be MatchNotEndedException */ e) {
-                            Logger.getLogger(getClass().getCanonicalName())
-                                    .log(Level.SEVERE, "Impossible to be here", e);
+                            if (viewmodel.isMatchEndedWithADraft()) {
+                                System.out.print("Extra game? Y/N: ");
+                                if (IOUtility.isYesFromStdin()) {
+                                    viewmodel.startExtraGame();
+                                }
+                            }
+                        } catch (Match.MatchNotEndedException ignored) {
                         }
 
-                        if (isMatchEndedWithDraft) {
-                            System.out.print("Extra game? Y/N: ");    // TODO: refactor with lines down?
-                            boolean anotherGame = IOUtility.getLowercaseCharWhenValidCaseInsensitiveOrCycle('y', 'n') == 'y';
-                            if (anotherGame) {
-                                viewmodel.startExtraGame();
+                        if (viewmodel.isMatchEnded()) {
+                            Player winnerOfMatch = null;
+                            try {
+                                winnerOfMatch = viewmodel.getWinnerOfTheMatch();
+                            } catch (Match.MatchNotEndedException ignored) {
                             }
-                        } else {
+                            System.out.println("The match is finish with: " +
+                                    (winnerOfMatch != null ? "WIN of" + winnerOfMatch : "DRAFT"));
+
                             System.out.print("Another match? Y/N: ");
-                            boolean anotherMatch = IOUtility.getLowercaseCharWhenValidCaseInsensitiveOrCycle('y', 'n') == 'y';
-                            if (anotherMatch) {
+                            if (IOUtility.isYesFromStdin()) {
                                 viewmodel.startNewMatch();
                             }
                         }
@@ -79,10 +90,10 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
     }
 
     private void waitForAValidMoveOfAPlayer() throws Board.BoardIsFullException {  // TODO : not tested
-        int rowCoord = 0, colCoord = 0;
+        int rowCoord, colCoord;
         boolean validMove = false;
 
-        AbstractMainViewmodel viewmodel = getViewmodelAssociatedWithView();
+        CLIMainViewmodel viewmodel = getViewmodelAssociatedWithView();
 
         System.out.println(viewmodel.getCurrentBoardAsString());
         System.out.println("Turn of " + viewmodel.getCurrentPlayer());   // TODO : not showed for CPU player
