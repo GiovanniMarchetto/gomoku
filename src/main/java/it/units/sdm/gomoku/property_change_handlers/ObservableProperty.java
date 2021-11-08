@@ -16,7 +16,7 @@ public class ObservableProperty<T> implements Observable, Cloneable {  // TODO :
     private final String propertyName;
 
     @Nullable
-    private volatile T propertyValue;   // TODO : volatile needed?
+    private volatile T propertyValue;   // TODO : volatile needed? Atomic reference better?
 
     public ObservableProperty() {
         this.propertyValue = null;
