@@ -10,7 +10,7 @@ import javafx.scene.control.TextField;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -51,6 +51,16 @@ class GUIStartViewTest {
         }
     }
 
+//    @Test
+//    void startMatchButtonOnMouseClicked() {
+//        // TODO: all input fields must be valid and already set in viewmodel and view must change
+//    }
+//
+//    @Test
+//    void initialize() {
+//        // TODO : assert the correct view is shown with correct input field values and same values saved in Viewmodel
+//    }
+
     private static void setUpJavaFXRuntime() throws InterruptedException {
         if (!isJavaFxRunning.get()) {
             isJavaFxRunning.set(true);
@@ -66,51 +76,24 @@ class GUIStartViewTest {
         Platform.setImplicitExit(false);
     }
 
-//    @Test
-//    void startMatchButtonOnMouseClicked() {
-//        // TODO: all input fields must be valid and already set in viewmodel and view must change
-//    }
-//
-//    @Test
-//    void initialize() {
-//        // TODO : assert the correct view is shown with correct input field values and same values saved in Viewmodel
-//    }
-
     @ParameterizedTest
-    @ValueSource(strings = {"Foo", "Bar"})
-    void setPlayer1Name(String newPlayer1Name) {
-        String whateverNameDifferentThanThanInputParam = newPlayer1Name + "_different";
-        guiStartViewmodel.setPlayer1Name(whateverNameDifferentThanThanInputParam);
-        String oldNameSavedInViewmodel = guiStartViewmodel.getPlayer1Name();
-        assert !oldNameSavedInViewmodel.equals(newPlayer1Name);
+    @CsvSource({"Foo, player1NameTextField, player1Name", "Foo, player2NameTextField, player2Name"})
+    void updatePlayerNameInViewShouldAutomaticallyUpdateFieldInViewmodel(
+            String newPlayerName, String textfieldNameInView, String fieldNameInViewmodel) {
+        final String whateverNameDifferentThanThanInputParam = TestUtility.getStringDifferentFromGivenOne(newPlayerName);
         try {
-            TextField player1NameTextField =
-                    (TextField) TestUtility
-                            .getFieldAlreadyMadeAccessible(guiStartView.getClass(), "player1NameTextField")
-                            .get(guiStartView);
-            player1NameTextField.textProperty().set(newPlayer1Name);
-            guiStartViewmodel.setPlayer1Name(newPlayer1Name);
-            assertEquals(guiStartViewmodel.getPlayer1Name(), newPlayer1Name);
-        } catch (IllegalAccessException | NoSuchFieldException e) {
-            fail(e);
-        }
-    }
+            TestUtility.setFieldValue(fieldNameInViewmodel, whateverNameDifferentThanThanInputParam, guiStartViewmodel);
+            String oldNameSavedInViewmodel = (String) TestUtility.getFieldValue(fieldNameInViewmodel, guiStartViewmodel);
+            assert !oldNameSavedInViewmodel.equals(newPlayerName);
 
-    @ParameterizedTest
-    @ValueSource(strings = {"Foo", "Bar"})
-    void setPlayer2Name(String newPlayer2Name) {
-        String whateverNameDifferentThanThanInputParam = newPlayer2Name + "_different";
-        guiStartViewmodel.setPlayer1Name(whateverNameDifferentThanThanInputParam);
-        String oldNameSavedInViewmodel = guiStartViewmodel.getPlayer1Name();
-        assert !oldNameSavedInViewmodel.equals(newPlayer2Name);
-        try {
-            TextField player1NameTextField =
+            TextField playerNameTextField =
                     (TextField) TestUtility
-                            .getFieldAlreadyMadeAccessible(guiStartView.getClass(), "player2NameTextField")
+                            .getFieldAlreadyMadeAccessible(guiStartView.getClass(), textfieldNameInView)
                             .get(guiStartView);
-            player1NameTextField.textProperty().set(newPlayer2Name);
-            guiStartViewmodel.setPlayer1Name(newPlayer2Name);
-            assertEquals(guiStartViewmodel.getPlayer2Name(), newPlayer2Name);
+            playerNameTextField.textProperty().set(newPlayerName);
+//            TestUtility.setFieldValue(fieldNameInViewmodel, newPlayerName, guiStartViewmodel);
+
+            assertEquals(TestUtility.getFieldValue(fieldNameInViewmodel, guiStartViewmodel), newPlayerName);
         } catch (IllegalAccessException | NoSuchFieldException e) {
             fail(e);
         }
