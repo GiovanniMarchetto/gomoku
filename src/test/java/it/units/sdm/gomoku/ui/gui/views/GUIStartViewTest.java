@@ -32,7 +32,8 @@ class GUIStartViewTest {
     void setUp() {
         try {
             setUpJavaFXRuntime();
-            Method sceneCreatorMethod = SceneController.class.getDeclaredMethod("createScene", FXMLLoader.class, double.class, double.class);
+            Method sceneCreatorMethod = SceneController.class.getDeclaredMethod(
+                    "createScene", FXMLLoader.class, double.class, double.class);
             sceneCreatorMethod.setAccessible(true);
             FXMLLoader fxmlLoader = new FXMLLoader(GUIStartView.class.getResource(GUIMain.START_VIEW_FXML_FILE_NAME));
             sceneCreatorMethod.invoke(null, fxmlLoader, 0, 0);
@@ -78,19 +79,23 @@ class GUIStartViewTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"Foo, player1NameTextField, player1Name", "Foo, player2NameTextField, player2Name"})
+    @CsvSource({
+            "One, One, player1NameTextField, player1Name",
+            "One, Two, player1NameTextField, player1Name",
+            "Two, One, player2NameTextField, player2Name",
+            "Two, Two, player2NameTextField, player2Name"
+    })
     void updatePlayerNameInViewShouldAutomaticallyUpdateFieldInViewmodel(
-            String newPlayerName, String textfieldNameInView, String fieldNameInViewmodel) {
-        final String whateverNameDifferentThanThanInputParam = TestUtility.getStringDifferentFromGivenOne(newPlayerName);
+            String oldPlayerName, String newPlayerName, String textfieldNameInView, String fieldNameInViewmodel) {
+        // TODO : refactor: this method is very similar to the next one
         try {
-            TestUtility.setFieldValue(fieldNameInViewmodel, whateverNameDifferentThanThanInputParam, guiStartViewmodel);
-            String oldNameSavedInViewmodel = (String) TestUtility.getFieldValue(fieldNameInViewmodel, guiStartViewmodel);
-            assert !oldNameSavedInViewmodel.equals(newPlayerName);
+            TestUtility.setFieldValue(fieldNameInViewmodel, oldPlayerName, guiStartViewmodel);
 
             TextField playerNameTextField =
                     (TextField) TestUtility
                             .getFieldAlreadyMadeAccessible(guiStartView.getClass(), textfieldNameInView)
                             .get(guiStartView);
+            playerNameTextField.textProperty().set(oldPlayerName);
             playerNameTextField.textProperty().set(newPlayerName);
 
             assertEquals(TestUtility.getFieldValue(fieldNameInViewmodel, guiStartViewmodel), newPlayerName);
