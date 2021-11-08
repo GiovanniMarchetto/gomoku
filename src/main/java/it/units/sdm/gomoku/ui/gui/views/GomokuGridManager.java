@@ -2,6 +2,7 @@ package it.units.sdm.gomoku.ui.gui.views;
 
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.mvvm_library.Observable;
+import it.units.sdm.gomoku.property_change_handlers.ObservableProperty;
 import it.units.sdm.gomoku.ui.gui.viewmodels.MainViewmodel;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
@@ -16,13 +17,18 @@ import java.util.stream.IntStream;
 
 public class GomokuGridManager implements Observable {
 
+
+    @NotNull
+    private final ObservableProperty<Double> gomokuStoneRadiusProperty;
+
+    //TODO : add nullable/notnull annotations
+
     private final MainViewmodel vm;
     private final int boardSize;
     private final GridPane gridPane;
     private final Pane parentPane;
     private final double discardWidth;
     private final double discardHeight;
-    private double radius;
 
     public GomokuGridManager(MainViewmodel vm, Pane parentPane, double discardWidth, double discardHeight) {
         this.vm = vm;
@@ -30,6 +36,7 @@ public class GomokuGridManager implements Observable {
         this.parentPane = parentPane;
         this.discardWidth = discardWidth;
         this.discardHeight = discardHeight;
+        gomokuStoneRadiusProperty = new ObservableProperty<>();
         gridPane = new GridPane();
 
         parentPane.heightProperty().addListener(onPaneSizeChange());
@@ -71,7 +78,7 @@ public class GomokuGridManager implements Observable {
     }
 
     private void addCell(int row, int col) {
-        GomokuCell gc = new GomokuCell(vm, new Coordinates(row, col), radius, boardSize);
+        GomokuCell gc = new GomokuCell(vm, new Coordinates(row, col), gomokuStoneRadiusProperty/*TODO : here we are passing a private property...*/, boardSize);
         gc.observe(this);
         ObservableList<Node> children = gc.getGroup().getChildren();
 
@@ -83,14 +90,9 @@ public class GomokuGridManager implements Observable {
         double spaceInHeightForGrid = parentPane.getHeight() - discardHeight;
         double spaceInWidthForGrid = parentPane.getWidth() - discardWidth;
         double minSideOfTotalSpaceForGrid = Math.min(spaceInHeightForGrid, spaceInWidthForGrid);
-
         if (minSideOfTotalSpaceForGrid == 0) return;
-
-        double oldRadiusValue = radius;
         double newRadiusValue = minSideOfTotalSpaceForGrid / (boardSize * 2.5);
-        radius = newRadiusValue;
-
-        firePropertyChange(GomokuCell.radiusPropertyName, oldRadiusValue, newRadiusValue);
+        gomokuStoneRadiusProperty.setPropertyValueAndFireIfPropertyChange(newRadiusValue);
     }
 
     public GridPane getGridPane() {

@@ -5,6 +5,7 @@ import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.entities.Cell;
 import it.units.sdm.gomoku.model.entities.Stone;
 import it.units.sdm.gomoku.mvvm_library.Observer;
+import it.units.sdm.gomoku.property_change_handlers.ObservableProperty;
 import it.units.sdm.gomoku.property_change_handlers.PropertyObserver;
 import it.units.sdm.gomoku.ui.gui.viewmodels.MainViewmodel;
 import javafx.application.Platform;
@@ -16,24 +17,21 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import org.jetbrains.annotations.NotNull;
 
 import java.beans.PropertyChangeEvent;
 import java.util.Objects;
 
 public class GomokuCell implements Observer {
 
-    // TODO : add nullable/notnull annotations
-
-    public static final String radiusPropertyName = "radius";
-
+    // TODO : add nullable/notnull annotations and final params in methods
     private final int boardSize;
     private final MainViewmodel mainViewmodel;
     private final Coordinates coordinates;
 
-    private double radius;
-
     private Cell cell;
 
+    private double radius;
     private Rectangle rectangle;
     private Line lineH;
     private Line lineV;
@@ -41,11 +39,11 @@ public class GomokuCell implements Observer {
 
     private Group group;
 
-    public GomokuCell(MainViewmodel mainViewmodel, Coordinates coordinates, double initialRadius, int boardSize) {
+    public GomokuCell(MainViewmodel mainViewmodel, Coordinates coordinates, @NotNull final ObservableProperty<Double> stoneRadiusProperty, int boardSize) {
         this.mainViewmodel = mainViewmodel;
         this.coordinates = coordinates;
-        this.radius = initialRadius;
         this.boardSize = boardSize;
+        this.radius = stoneRadiusProperty.getPropertyValue() == null ? 0 : stoneRadiusProperty.getPropertyValue();
         initializeGroup();
         observe(mainViewmodel);
         new PropertyObserver<>(mainViewmodel.getLastMoveCoordinatesProperty(), evt -> {
@@ -58,6 +56,7 @@ public class GomokuCell implements Observer {
                 Platform.runLater(this::resetStrokeToPlacedStone);
             }
         });
+        new PropertyObserver<>(stoneRadiusProperty, evt -> setRadius((double) evt.getNewValue()));
     }
 
     private double getRadius() {
@@ -247,8 +246,5 @@ public class GomokuCell implements Observer {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        switch (evt.getPropertyName()) {
-            case radiusPropertyName -> setRadius((double) evt.getNewValue());
-        }
     }
 }
