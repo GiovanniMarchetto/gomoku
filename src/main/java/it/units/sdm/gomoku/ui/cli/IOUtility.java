@@ -98,6 +98,11 @@ public class IOUtility {
         return inputValue;
     }
 
+    public static boolean isYesFromStdin() {
+        return getLowercaseCharWhenValidCaseInsensitiveOrCycle('y', 'n') == 'y';
+    }
+
+
     public static boolean isInteger(String s) {
         try {
             Integer.parseInt(Objects.requireNonNull(s));
