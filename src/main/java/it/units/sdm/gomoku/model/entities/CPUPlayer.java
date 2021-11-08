@@ -20,8 +20,11 @@ import static it.units.sdm.gomoku.model.entities.Board.BoardIsFullException;
 public class CPUPlayer extends Player {
 
     private final static int DELAY_BEFORE_PLACING_STONE_MILLIS = 0;
+    @NotNull
     private final static String CPU_DEFAULT_NAME = "CPU";
+    @NotNull
     private final static NonNegativeInteger numberOfCpuPlayers = new NonNegativeInteger();
+    @NotNull
     private final Random rand = new Random();
 
     // TODO : add field with difficulty (e.g., a threshold as double in [0,1]: generate random in [0,1] and if generated random value is > threshold => place stone smartly, else place stone randomly/naively
@@ -127,6 +130,7 @@ public class CPUPlayer extends Player {
         return Math.pow(Math.abs(center-coordinates.getX()),2)+Math.pow(Math.abs(center-coordinates.getY()),2);
     }
 
+    @NotNull
     private Stream<Coordinates> getStreamOfEmptyCoordinates(@NotNull Board board) {
         return IntStream.range(0, board.getSize()).boxed()
                 .flatMap(x -> IntStream.range(0, board.getSize())
