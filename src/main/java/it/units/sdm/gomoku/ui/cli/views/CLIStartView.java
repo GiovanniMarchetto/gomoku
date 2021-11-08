@@ -19,19 +19,19 @@ public class CLIStartView extends View<StartViewmodel> {// TODO : refactor this 
         super(startViewmodel);
         switch (askAndGetNumberOfPlayers()) {
             case CPU_VS_CPU -> {
-                firePropertyChange(player1NamePropertyName, "CPU1");
+                getViewmodelAssociatedWithView().setPlayer1Name("CPU1");
                 firePropertyChange(player2NamePropertyName, "CPU2");
                 firePropertyChange(player1CPUPropertyName, true);
                 firePropertyChange(player2CPUPropertyName, true);
             }
             case PERSON_VS_CPU -> {
-                firePropertyChange(player1NamePropertyName, askAndGetPlayerName(1));
+                getViewmodelAssociatedWithView().setPlayer1Name(askAndGetPlayerName(1));
                 firePropertyChange(player2NamePropertyName, "CPU");
                 firePropertyChange(player1CPUPropertyName, false);
                 firePropertyChange(player2CPUPropertyName, true);
             }
             case PERSON_VS_PERSON -> {
-                firePropertyChange(player1NamePropertyName, askAndGetPlayerName(1));
+                getViewmodelAssociatedWithView().setPlayer1Name(askAndGetPlayerName(1));
                 firePropertyChange(player2NamePropertyName, askAndGetPlayerName(2));
                 firePropertyChange(player1CPUPropertyName, false);
                 firePropertyChange(player2CPUPropertyName, false);

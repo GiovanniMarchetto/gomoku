@@ -8,6 +8,7 @@ import it.units.sdm.gomoku.mvvm_library.Viewmodel;
 import it.units.sdm.gomoku.ui.AbstractMainViewmodel;
 import it.units.sdm.gomoku.ui.support.BoardSizes;
 import it.units.sdm.gomoku.ui.support.Setup;
+import org.jetbrains.annotations.NotNull;
 
 import java.beans.PropertyChangeEvent;
 import java.util.Arrays;
@@ -16,7 +17,8 @@ import java.util.Objects;
 
 public class StartViewmodel extends Viewmodel {
 
-    public static final String player1NamePropertyName = "player1Name";
+    // TODO : add nullable/notnull annotations and final to method params
+
     public static final String player2NamePropertyName = "player2Name";
     public static final String player1CPUPropertyName = "player1CPU";
     public static final String player2CPUPropertyName = "player2CPU";
@@ -55,12 +57,8 @@ public class StartViewmodel extends Viewmodel {
         return player1Name;
     }
 
-    public void setPlayer1Name(String player1Name) {
-        String oldValue = this.player1Name;
-        if (!Objects.requireNonNull(player1Name).equals(oldValue)) {
-            this.player1Name = player1Name;
-            firePropertyChange(player1NamePropertyName, oldValue, player1Name);
-        }
+    public void setPlayer1Name(@NotNull final String player1Name) {
+        this.player1Name = Objects.requireNonNull(player1Name);
     }
 
     public String getPlayer2Name() {
@@ -131,7 +129,6 @@ public class StartViewmodel extends Viewmodel {
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
-            case player1NamePropertyName -> setPlayer1Name((String) evt.getNewValue());
             case player2NamePropertyName -> setPlayer2Name((String) evt.getNewValue());
             case player1CPUPropertyName -> setPlayer1CPU((Boolean) evt.getNewValue());
             case player2CPUPropertyName -> setPlayer2CPU((Boolean) evt.getNewValue());

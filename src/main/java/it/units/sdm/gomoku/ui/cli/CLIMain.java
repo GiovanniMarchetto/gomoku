@@ -28,7 +28,7 @@ public class CLIMain implements Observable {
 
     public static void init() throws IOException {  // TODO  : refactor/rename
         StartViewmodel startViewmodel = new StartViewmodel(cliMainViewmodel);
-        new CLIMainView(startViewmodel);    // CLIMainView instance must be created before CLIStartView (otherwise it does not observe property events fired by the StartViewmodel invoked in StartView)
+        new CLIMainView(startViewmodel);    // CLIMainView instance must be created before CLIStartView (otherwise it does not observe property events fired by the StartViewmodel invoked in GUIStartView)
         new CLIStartView(startViewmodel);
     }
 }

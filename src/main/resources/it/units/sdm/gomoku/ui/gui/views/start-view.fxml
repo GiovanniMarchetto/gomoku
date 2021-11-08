@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 <GridPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/11.0.2"
-          fx:controller="it.units.sdm.gomoku.ui.gui.views.StartView"
+          fx:controller="it.units.sdm.gomoku.ui.gui.views.GUIStartView"
           alignment="CENTER" hgap="5" vgap="10"
           style="-fx-background-color: #4e6c4e;">
 

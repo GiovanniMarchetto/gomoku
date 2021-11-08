@@ -15,11 +15,10 @@ import static it.units.sdm.gomoku.ui.gui.GUIMain.guiMainViewmodel;
 import static it.units.sdm.gomoku.ui.gui.viewmodels.StartViewmodel.*;
 
 
-public class StartView extends View<StartViewmodel> {
+public class GUIStartView extends View<StartViewmodel> {
 
     @FXML
     private Button startMatchButton;
-
     @FXML
     private TextField player1NameTextField;
     @FXML
@@ -33,7 +32,7 @@ public class StartView extends View<StartViewmodel> {
     @FXML
     private TextField numberOfGamesTextField;
 
-    public StartView() {
+    public GUIStartView() {
         super(new StartViewmodel(guiMainViewmodel));
     }
 
@@ -52,17 +51,17 @@ public class StartView extends View<StartViewmodel> {
     }
 
     private void addListenerForFirePropertyChange() {
-        addTextPropertyListener(player1NameTextField, player1NamePropertyName);
+        addPlayer1NamePropertyListener(player1NameTextField);
         addTextPropertyListener(player2NameTextField, player2NamePropertyName);
-        addCheckBoxListener(player1CPUCheckBox, player1CPUPropertyName);
-        addCheckBoxListener(player2CPUCheckBox, player2CPUPropertyName);
+        addSelectedPropertyListener(player1CPUCheckBox, player1CPUPropertyName);
+        addSelectedPropertyListener(player2CPUCheckBox, player2CPUPropertyName);
         boardSizeChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
                 firePropertyChange(selectedBoardSizePropertyName, oldValue, newValue));
         addTextPropertyListener(numberOfGamesTextField, numberOfGamesPropertyName);
     }
 
     private void firePropertyChangeForDefaultValues() {
-        firePropertyChange(player1NamePropertyName, player1NameTextField.getText());
+        getViewmodelAssociatedWithView().setPlayer1Name(player1NameTextField.getText());
         firePropertyChange(player2NamePropertyName, player2NameTextField.getText());
         firePropertyChange(player1CPUPropertyName, player1CPUCheckBox.isSelected());
         firePropertyChange(player2CPUPropertyName, player2CPUCheckBox.isSelected());
@@ -77,7 +76,14 @@ public class StartView extends View<StartViewmodel> {
         });
     }
 
-    private void addCheckBoxListener(CheckBox checkBox, String propertyName) {
+    private void addPlayer1NamePropertyListener(TextField textField) {
+        textField.textProperty().addListener((ignored_observable, ignored_oldValue, newValue) -> {
+            checkFieldsAndEnableButton();
+            getViewmodelAssociatedWithView().setPlayer1Name(newValue);
+        });
+    }
+
+    private void addSelectedPropertyListener(CheckBox checkBox, String propertyName) {
         checkBox.selectedProperty().addListener((observable, oldValue, newValue) ->
                 firePropertyChange(propertyName, oldValue, newValue));
     }
