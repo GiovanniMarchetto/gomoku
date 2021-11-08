@@ -27,16 +27,6 @@ class GUIStartViewTest {
     private GUIStartView guiStartView;
     private StartViewmodel guiStartViewmodel;
 
-    private static void setUpJavaFXRuntime() throws InterruptedException {
-        CountDownLatch latch = new CountDownLatch(1);
-        Platform.startup(latch::countDown);
-        latch.await(1, TimeUnit.SECONDS);   // Time to keep JavaFX running? // TODO: investigate on this
-    }
-
-    private static void tearDownJavaFXRuntime() throws InterruptedException {
-        Platform.exit();
-    }
-
     @BeforeEach
     void setUp() {
         try {
@@ -52,16 +42,6 @@ class GUIStartViewTest {
         }
     }
 
-//    @Test
-//    void startMatchButtonOnMouseClicked() {
-//        // TODO: all input fields must be valid and already set in viewmodel and view must change
-//    }
-//
-//    @Test
-//    void initialize() {
-//        // TODO : assert the correct view is shown with correct input field values and same values saved in Viewmodel
-//    }
-
     @AfterEach
     void tearDown() {
         try {
@@ -70,6 +50,7 @@ class GUIStartViewTest {
             fail(e);
         }
     }
+
 
     @ParameterizedTest
     @ValueSource(strings = {"Foo, Bar"})
@@ -90,5 +71,27 @@ class GUIStartViewTest {
             fail(e);
         }
     }
+
+//    @Test
+//    void startMatchButtonOnMouseClicked() {
+//        // TODO: all input fields must be valid and already set in viewmodel and view must change
+//    }
+//
+//    @Test
+//    void initialize() {
+//        // TODO : assert the correct view is shown with correct input field values and same values saved in Viewmodel
+//    }
+
+
+    private static void setUpJavaFXRuntime() throws InterruptedException {
+        CountDownLatch latch = new CountDownLatch(1);
+        Platform.startup(latch::countDown);
+        latch.await(1, TimeUnit.SECONDS);   // Time to keep JavaFX running? // TODO: investigate on this
+    }
+
+    private static void tearDownJavaFXRuntime() throws InterruptedException {
+        Platform.exit();
+    }
+
 
 }
