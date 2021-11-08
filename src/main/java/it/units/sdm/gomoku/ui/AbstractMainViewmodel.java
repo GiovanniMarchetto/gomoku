@@ -53,27 +53,33 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
         try {
             currentGame = Objects.requireNonNull(match).startNewGame();
             currentBoard = currentGame.getBoard();
-            new PropertyObserver<>(currentGame.getCurrentPlayer(), evt -> {
-                currentPlayerProperty.setPropertyValueAndFireIfPropertyChange((Player) evt.getNewValue());
-                if (!isCurrentGameEnded()) {
-                    runOnSeparateThread(() -> {
-                        try {
-                            Objects.requireNonNull(currentPlayerProperty.getPropertyValue()).makeMove(getCurrentGame());
-                        } catch (Board.BoardIsFullException e) {
-                            e.printStackTrace(); // TODO: handle this: this should never happen (I think?)
+            new PropertyObserver<>(
+                    currentGame.getCurrentPlayer(),
+                    evt -> {
+                        currentPlayerProperty.setPropertyValueAndFireIfPropertyChange((Player) evt.getNewValue());
+                        if (!isCurrentGameEnded()) {
+                            runOnSeparateThread(() -> {
+                                try {
+                                    Objects.requireNonNull(currentPlayerProperty.getPropertyValue()).makeMove(getCurrentGame());
+                                } catch (Board.BoardIsFullException e) {
+                                    e.printStackTrace(); // TODO: handle this: this should never happen (I think?)
+                                }
+                            });
                         }
                     });
-                }
-            });
-            new PropertyObserver<>(currentGame.getGameStatus(), evt -> {
-                currentGameStatusProperty.setPropertyValueAndFireIfPropertyChange((Game.Status) evt.getNewValue());
-                if (evt.getNewValue().equals(Game.Status.ENDED)) {
-                    endGame();
-                }
-            });
-            new PropertyObserver<>(currentBoard.getLastMoveCoordinatesProperty(), evt -> {
-                lastMoveCoordinatesProperty.setPropertyValueAndFireIfPropertyChange((Coordinates) evt.getNewValue());
-            });
+            new PropertyObserver<>(
+                    currentGame.getGameStatus(),
+                    evt -> {
+                        currentGameStatusProperty.setPropertyValueAndFireIfPropertyChange((Game.Status) evt.getNewValue());
+                        if (evt.getNewValue().equals(Game.Status.ENDED)) {
+                            endGame();
+                        }
+                    });
+            new PropertyObserver<>(currentBoard.getLastMoveCoordinatesProperty(),
+                    evt -> lastMoveCoordinatesProperty.setPropertyValueAndFireIfPropertyChange((Coordinates) evt.getNewValue()));
+            Arrays.asList(getCurrentBlackPlayer(), getCurrentWhitePlayer())
+                    .forEach(player -> new PropertyObserver<>(player.getCoordinatesRequiredToContinueProperty(),
+                            evt -> userMustPlaceNewStoneProperty.setPropertyValueAndFireIfPropertyChange((boolean) evt.getNewValue())));
 
             observe(currentGame);   // TODO : should fade away
             observe(currentBoard);
@@ -85,9 +91,6 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        switch (evt.getPropertyName()) {
-            case HumanPlayer.coordinatesRequiredToContinuePropertyName -> userMustPlaceNewStoneProperty.setPropertyValueAndFireIfPropertyChange((boolean) evt.getNewValue());
-        }
     }
 
     public void triggerFirstMove() {
