@@ -118,21 +118,17 @@ public class Match {
 
     @Nullable
     public Player getWinner() throws MatchNotEndedException {
-        if (isEnded()) {
-            if (isADraft()) {
-                return null;
-            } else {
-                return getScoreOfPlayer(currentBlackPlayer).compareTo(getScoreOfPlayer(currentWhitePlayer)) > 0
-                        ? currentBlackPlayer
-                        : currentWhitePlayer;
-            }
+        if (isADraft()) {
+            return null;
         } else {
-            throw new MatchNotEndedException();
+            return getScoreOfPlayer(currentBlackPlayer).compareTo(getScoreOfPlayer(currentWhitePlayer)) > 0
+                    ? currentBlackPlayer
+                    : currentWhitePlayer;
         }
     }
 
     @NotNull
-    public NonNegativeInteger getScoreOfPlayer(@NotNull Player player) {
+    private NonNegativeInteger getScoreOfPlayer(@NotNull Player player) {
         return new NonNegativeInteger(
                 (int) gameList.stream()
                         .filter(aGame -> {
@@ -161,9 +157,14 @@ public class Match {
         return currentWhitePlayer;
     }
 
-    public boolean isADraft() {
-        return isEnded() && getScoreOfPlayer(getCurrentBlackPlayer())
-                .equals(getScoreOfPlayer(getCurrentWhitePlayer()));
+    public boolean isADraft() throws MatchNotEndedException {
+        //TODO: IS NOT DRAFT IS DRAW! (English error)
+        if (isEnded()) {
+            return getScoreOfPlayer(getCurrentBlackPlayer())
+                    .equals(getScoreOfPlayer(getCurrentWhitePlayer()));
+        } else {
+            throw new MatchNotEndedException();
+        }
     }
 
     public boolean isEnded() {
