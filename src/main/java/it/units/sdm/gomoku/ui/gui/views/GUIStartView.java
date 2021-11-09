@@ -44,7 +44,7 @@ public class GUIStartView extends View<StartViewmodel> {
     private void initialize() {// TODO : refactor this method
         boardSizeChoiceBox.getItems().addAll(boardSizes);
         boardSizeChoiceBox.setValue(boardSizes.get(boardSizes.size() / 2));
-        firePropertyChangeForDefaultValues();
+        setDefaultValuesInViewmodel();
         allowOnlyNumberInNumberOfGamesTextField();
         disableStartMatchButtonIfInvalidInputFieldValues();
         addListenerForFirePropertyChange();
@@ -60,7 +60,7 @@ public class GUIStartView extends View<StartViewmodel> {
         addTextPropertyListener(numberOfGamesTextField, newNumberOfGames -> getViewmodelAssociatedWithView().setNumberOfGames(newNumberOfGames));
     }
 
-    private void firePropertyChangeForDefaultValues() {
+    private void setDefaultValuesInViewmodel() {
         // TODO : maybe refactor needed
         getViewmodelAssociatedWithView().setPlayer1Name(player1NameTextField.getText());
         getViewmodelAssociatedWithView().setPlayer2Name(player2NameTextField.getText());
