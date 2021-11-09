@@ -3,7 +3,7 @@ package it.units.sdm.gomoku.ui.gui.views;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.mvvm_library.Observable;
 import it.units.sdm.gomoku.property_change_handlers.ObservableProperty;
-import it.units.sdm.gomoku.ui.gui.viewmodels.MainViewmodel;
+import it.units.sdm.gomoku.ui.gui.viewmodels.GUIMainViewmodel;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
@@ -23,14 +23,14 @@ public class GomokuGridManager implements Observable {
 
     //TODO : add nullable/notnull annotations
 
-    private final MainViewmodel vm;
+    private final GUIMainViewmodel vm;
     private final int boardSize;
     private final GridPane gridPane;
     private final Pane parentPane;
     private final double discardWidth;
     private final double discardHeight;
 
-    public GomokuGridManager(MainViewmodel vm, Pane parentPane, double discardWidth, double discardHeight) {
+    public GomokuGridManager(GUIMainViewmodel vm, Pane parentPane, double discardWidth, double discardHeight) {
         this.vm = vm;
         this.boardSize = vm.getBoardSize();
         this.parentPane = parentPane;

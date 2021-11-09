@@ -2,14 +2,13 @@ package it.units.sdm.gomoku.ui.gui.views;
 
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.property_change_handlers.ObservableProperty;
-import it.units.sdm.gomoku.ui.gui.viewmodels.MainViewmodel;
+import it.units.sdm.gomoku.ui.gui.viewmodels.GUIMainViewmodel;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.beans.PropertyChangeEvent;
 import java.lang.reflect.Field;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -26,7 +25,7 @@ public class GomokuCellFirstCellTest {
     void setUp() {
         var stoneRadiusProperty = new ObservableProperty<Double>();
         stoneRadiusProperty.setPropertyValueWithoutNotifying(radius);
-        gomokuCell = new GomokuCell(new MainViewmodel(), coordinatesFirstCell, stoneRadiusProperty, boardSize);
+        gomokuCell = new GomokuCell(new GUIMainViewmodel(), coordinatesFirstCell, stoneRadiusProperty, boardSize);
     }
 
     @Test
