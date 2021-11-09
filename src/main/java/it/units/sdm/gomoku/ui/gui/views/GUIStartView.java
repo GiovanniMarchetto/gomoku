@@ -89,7 +89,7 @@ public class GUIStartView extends View<StartViewmodel> {
         });
     }
 
-    public void startMatchButtonOnMouseClicked(MouseEvent e) {
+    public void startMatchButtonOnMouseClicked(MouseEvent e) {  // TODO : to test
         getViewmodelAssociatedWithView().startMatch();
     }
 

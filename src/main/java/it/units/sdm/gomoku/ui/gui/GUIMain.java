@@ -1,6 +1,6 @@
 package it.units.sdm.gomoku.ui.gui;
 
-import it.units.sdm.gomoku.ui.gui.viewmodels.MainViewmodel;
+import it.units.sdm.gomoku.ui.gui.viewmodels.GUIMainViewmodel;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.util.Pair;
@@ -13,7 +13,7 @@ public class GUIMain extends Application {
     public static final String MAIN_VIEW_FXML_FILE_NAME = "main-view.fxml";
     public static final String SUMMARY_VIEW_FXML_FILE_NAME = "summary-view.fxml";
 
-    public static final MainViewmodel guiMainViewmodel = new MainViewmodel();
+    public static final GUIMainViewmodel guiMainViewmodel = new GUIMainViewmodel();
     private static final String FXML_LOCATION_PATH = "views/";
     private final static int initialSceneWidthInPx = 630;
     private final static int initialSceneHeightInPx = 580;

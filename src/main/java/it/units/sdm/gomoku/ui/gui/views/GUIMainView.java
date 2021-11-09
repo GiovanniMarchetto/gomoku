@@ -6,7 +6,7 @@ import it.units.sdm.gomoku.mvvm_library.View;
 import it.units.sdm.gomoku.property_change_handlers.PropertyObserver;
 import it.units.sdm.gomoku.ui.gui.GUIMain;
 import it.units.sdm.gomoku.ui.gui.SceneController;
-import it.units.sdm.gomoku.ui.gui.viewmodels.MainViewmodel;
+import it.units.sdm.gomoku.ui.gui.viewmodels.GUIMainViewmodel;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
@@ -19,7 +19,7 @@ import java.beans.PropertyChangeEvent;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class GUIMainView extends View<MainViewmodel> implements Observer {
+public class GUIMainView extends View<GUIMainViewmodel> implements Observer {
 
     @FXML
     private Label currentPlayerLabel;
@@ -49,7 +49,7 @@ public class GUIMainView extends View<MainViewmodel> implements Observer {
     @FXML
     private void initialize() {
 
-        MainViewmodel vm = getViewmodelAssociatedWithView();
+        GUIMainViewmodel vm = getViewmodelAssociatedWithView();
 
         new PropertyObserver<>(vm.getCurrentPlayerProperty(), evt ->
                 SceneController.executeOnJavaFxUiThread(() -> {

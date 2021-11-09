@@ -3,7 +3,7 @@ package it.units.sdm.gomoku.ui.gui.views;
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
 import it.units.sdm.gomoku.model.entities.Match;
 import it.units.sdm.gomoku.ui.AbstractMainViewmodel;
-import it.units.sdm.gomoku.ui.gui.viewmodels.MainViewmodel;
+import it.units.sdm.gomoku.ui.gui.viewmodels.GUIMainViewmodel;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import org.junit.jupiter.api.Test;
@@ -18,10 +18,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class GomokuGridManagerTest {
 
-    private MainViewmodel vm;
+    private GUIMainViewmodel vm;
 
     void setupMainViewmodel() {
-        vm = new MainViewmodel();
+        vm = new GUIMainViewmodel();
         CPUPlayer p1 = new CPUPlayer("First");
         CPUPlayer p2 = new CPUPlayer("Second");
         int boardSize = 19, numberOfGames = 3;

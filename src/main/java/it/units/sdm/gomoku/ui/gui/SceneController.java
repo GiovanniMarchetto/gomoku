@@ -105,7 +105,7 @@ public class SceneController {
         if (wasAlreadyInstantiated()) {
             return singleInstance;
         } else {
-            throw new IllegalStateException(SceneController.class.getCanonicalName() + " not instantiated.");
+            throw new SceneControllerNotInstantiatedException(SceneController.class.getCanonicalName() + " not instantiated.");
         }
     }
 
@@ -180,10 +180,16 @@ public class SceneController {
         }
     }
 
-
     public enum ViewName {
         START_VIEW,
         MAIN_VIEW,
         SUMMARY_VIEW
+    }
+
+    public static class SceneControllerNotInstantiatedException extends IllegalStateException {
+        //   TODO : test ?
+        public SceneControllerNotInstantiatedException(@NotNull final String errorMessage) {
+            super(Objects.requireNonNull(errorMessage));
+        }
     }
 }

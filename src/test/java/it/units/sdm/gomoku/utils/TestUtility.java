@@ -205,14 +205,29 @@ public class TestUtility {
 
     @NotNull
     public static Field getFieldAlreadyMadeAccessible(@NotNull final Class<?> clazz,
-                                                      @NotNull final String fieldName)
+                                                      @NotNull final String fieldName)  // TODO : test
             throws NoSuchFieldException {   // TODO : use this method wherever needed
-        Field field = Objects.requireNonNull(clazz)
-                .getDeclaredField(Objects.requireNonNull(fieldName));
+        Field field = getInheritedFields(Objects.requireNonNull(clazz))
+                .stream()
+                .filter(aField -> aField.getName().equals(Objects.requireNonNull(fieldName)))
+                .findFirst()
+                .orElseThrow(NoSuchFieldException::new);
         field.setAccessible(true);
         return field;
     }
 
+    @NotNull
+    private static List<Field> getInheritedFields(@Nullable final Class<?> clazz) {
+        List<Field> result = new ArrayList<>();
+        for (Class<?> derivedClass = clazz;
+             derivedClass != null && derivedClass != Object.class;
+             derivedClass = derivedClass.getSuperclass()) {
+            Collections.addAll(result, derivedClass.getDeclaredFields());
+        }
+        return result;
+    }
+
+    @Nullable
     public static <T> Object getFieldValue(@NotNull final String fieldName, @NotNull final T objectInstance)
             throws NoSuchFieldException, IllegalAccessException {   // TODO : test
         return getFieldAlreadyMadeAccessible(

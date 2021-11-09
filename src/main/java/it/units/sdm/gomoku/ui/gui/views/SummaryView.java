@@ -4,7 +4,7 @@ import it.units.sdm.gomoku.model.entities.Game;
 import it.units.sdm.gomoku.model.entities.Match;
 import it.units.sdm.gomoku.model.entities.Player;
 import it.units.sdm.gomoku.mvvm_library.View;
-import it.units.sdm.gomoku.ui.gui.viewmodels.MainViewmodel;
+import it.units.sdm.gomoku.ui.gui.viewmodels.GUIMainViewmodel;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -13,7 +13,7 @@ import javafx.scene.layout.VBox;
 
 import static it.units.sdm.gomoku.ui.gui.GUIMain.guiMainViewmodel;
 
-public class SummaryView extends View<MainViewmodel> {
+public class SummaryView extends View<GUIMainViewmodel> {
     @FXML
     private Button newMatchButton;
     @FXML
@@ -36,7 +36,7 @@ public class SummaryView extends View<MainViewmodel> {
 
     @FXML
     private void initialize() {
-        MainViewmodel vm = getViewmodelAssociatedWithView();
+        GUIMainViewmodel vm = getViewmodelAssociatedWithView();
 
         continueButton.managedProperty().bind(continueButton.visibleProperty());
         extraGameButton.managedProperty().bind(extraGameButton.visibleProperty());

@@ -3,7 +3,7 @@ package it.units.sdm.gomoku.ui.gui.viewmodels;
 import it.units.sdm.gomoku.ui.AbstractMainViewmodel;
 import it.units.sdm.gomoku.ui.gui.SceneController;
 
-public class MainViewmodel extends AbstractMainViewmodel {
+public class GUIMainViewmodel extends AbstractMainViewmodel {
 
     @Override
     public void endGame() {
