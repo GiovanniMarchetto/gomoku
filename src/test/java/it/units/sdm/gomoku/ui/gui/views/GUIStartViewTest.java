@@ -1,7 +1,7 @@
 package it.units.sdm.gomoku.ui.gui.views;
 
 import it.units.sdm.gomoku.EnvVariables;
-import it.units.sdm.gomoku.RunnableWhichCanThrow;
+import it.units.sdm.gomoku.ThrowingRunnable;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
@@ -323,7 +323,7 @@ class GUIStartViewTest {
     void createMatchWhenClickButtonIfValidFields(Setup setup, boolean validSetup) {
         AtomicReference<ReflectiveOperationException> eventuallyThrownException = new AtomicReference<>();  // TODO: create interface "SupplierThatThrows" to avoid this mechanism and replace all occurrences of this "pattern"
         eventuallyThrownException.set(null);
-        RunnableWhichCanThrow<ReflectiveOperationException> throwIfExceptionWasThrown = () -> {
+        ThrowingRunnable<ReflectiveOperationException> throwIfExceptionWasThrown = () -> {
             if (eventuallyThrownException.get() != null) {
                 throw eventuallyThrownException.get();
             }
