@@ -85,7 +85,7 @@ public class Game implements Comparable<Game>, Observable {
 
         board.occupyPosition(getColorOfPlayer(Objects.requireNonNull(player)), Objects.requireNonNull(coordinates));
         setWinnerIfPlayerWon(player, coordinates);
-        if (isThisGameEnded()) {
+        if (isEnded()) {
             gameStatus.setPropertyValueAndFireIfPropertyChange(Status.ENDED);
         }
     }
@@ -106,7 +106,7 @@ public class Game implements Comparable<Game>, Observable {
 
     @Nullable
     public Player getWinner() throws GameNotEndedException {
-        if (isThisGameEnded()) {
+        if (isEnded()) {
             return winner;
         } else {
             throw new GameNotEndedException();
@@ -117,7 +117,7 @@ public class Game implements Comparable<Game>, Observable {
         this.winner = Objects.requireNonNull(winner);
     }
 
-    public synchronized boolean isThisGameEnded() {
+    public synchronized boolean isEnded() {
         return winner != null || !board.isThereAnyEmptyCell();
         // if there are empty positions on the board it can't be a draw
     }

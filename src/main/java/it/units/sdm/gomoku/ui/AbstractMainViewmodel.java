@@ -136,7 +136,7 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
 
 
     protected synchronized boolean isCurrentGameEnded() {
-        return Objects.requireNonNull(currentGame).isThisGameEnded();
+        return Objects.requireNonNull(currentGame).isEnded();
     }
 
     protected void setMatch(@NotNull Match match) {

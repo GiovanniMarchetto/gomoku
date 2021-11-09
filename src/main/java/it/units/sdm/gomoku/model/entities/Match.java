@@ -84,6 +84,7 @@ public class Match {
     @NotNull
     public Game startNewGame() throws MatchEndedException, MaxNumberOfGamesException {
         if (gameList.size() < getNumberOfGames()) {
+//                if (!isCurrentGameEnded())
             if (!isEnded()) {
                 //TODO: need exception for lastGame not Ended?
                 if (gameList.size() > 0) {
@@ -165,10 +166,20 @@ public class Match {
     }
 
     public boolean isEnded() {
+        return isCurrentGameEnded()
+                && gameList.size() >= getNumberOfGames();
+    }
+
+    private boolean isCurrentGameEnded() {
+        final Game currentGame = getCurrentGame();
+        return currentGame != null && currentGame.isEnded();
+    }
+
+    @Nullable
+    private Game getCurrentGame() {
         int numberOfGamesPlayed = gameList.size();
-        if (numberOfGamesPlayed == 0) return false;
-        return gameList.get(numberOfGamesPlayed - 1).isThisGameEnded()
-                && numberOfGamesPlayed >= getNumberOfGames();
+        if (numberOfGamesPlayed == 0) return null;
+        return gameList.get(numberOfGamesPlayed - 1);
     }
 
     public static class MatchEndedException extends Exception {

@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -45,24 +44,18 @@ class MatchTest {
     }
 
     @Test
-    void matchEndedException() {
-        try {
-            for (int numberOfGame = 0; numberOfGame < NUMBER_OF_GAMES; numberOfGame++) {
-                Game currentGame = match.startNewGame();
-                currentGame.start(); // TODO: this should be done everywhere when starting a new game
-                disputeGame(currentGame);
-                while (!currentGame.isThisGameEnded()) {
-                    currentGame.placeStoneAndChangeTurn(cpu1.chooseNextEmptyCoordinates(currentGame.getBoard()));
-                }
-            }
-        } catch (Match.MatchEndedException | Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Match.MaxNumberOfGamesException e) {
-            fail(e.getMessage());
+    void maxNumberOfGamesException() {
+        for (int i = 0; i < NUMBER_OF_GAMES; i++) {
+            startNewGameComplete();
+            disputeGame(currentGame);
         }
 
         try {
             match.startNewGame();
-            fail();
-        } catch (Match.MatchEndedException | Match.MaxNumberOfGamesException ignored) {
+            fail("Is over the number of games!");
+        } catch (Match.MaxNumberOfGamesException ignored) {
+        } catch (Match.MatchEndedException e) {
+            fail(e);
         }
     }
 
@@ -83,21 +76,21 @@ class MatchTest {
 
     @Test
     void getScorePlayer1Win() {
-        startAndDisputeNewGameAndWinBlackPlayer();
+        startAndDisputeNewGameAndEndEithWinOfBlackPlayer();
         assertCpusScore(1, 0);
     }
 
     @Test
     void getScoreTwoPlays() {
         getScorePlayer1Win();
-        startAndDisputeNewGameAndWinBlackPlayer();
+
+        startAndDisputeNewGameAndEndEithWinOfBlackPlayer();
         assertCpusScore(1, 1);
     }
 
     @Test
     void getScoreWithDraw() {
         startAndDisputeNewGameAndEndWithDraft();
-
         assertCpusScore(0, 0);
     }
 
@@ -118,7 +111,7 @@ class MatchTest {
 
     private void disputeGame(Game game) {
         CPUPlayer cpuPlayer = new CPUPlayer();
-        while (!game.isThisGameEnded()) {
+        while (!game.isEnded()) {
             try {
                 game.placeStoneAndChangeTurn(cpuPlayer.chooseSmartEmptyCoordinates(game.getBoard()));
             } catch (Board.CellAlreadyOccupiedException | Board.BoardIsFullException e) {
@@ -127,7 +120,7 @@ class MatchTest {
         }
     }
 
-    private void startAndDisputeNewGameAndWinBlackPlayer() {
+    private void startAndDisputeNewGameAndEndEithWinOfBlackPlayer() {
         startNewGameComplete();
 
         try {
@@ -147,19 +140,19 @@ class MatchTest {
 
     private void startAndDisputeNewGameAndEndWithDraft() {
         startNewGameComplete();
-
-        IntStream.range(0, boardSizeTest).forEach(x ->
-                IntStream.range(0, boardSizeTest).forEach(y -> {
-                    if (x % 3 == 0 && y == 0) {
-                        try {
-                            currentGame.placeStoneAndChangeTurn(new Coordinates(x, y));
-                        } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
-                            fail(e);
-                        }
+        for (int x = 0; x < boardSizeTest; x++) {
+            for (int y = 0; y < boardSizeTest; y++) {
+                if (x % 3 == 0 && y == 0) {
+                    try {
+                        currentGame.placeStoneAndChangeTurn(new Coordinates(x, y));
+                    } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
+                        fail(e);
                     }
-                }));
+                }
+            }
+        }
 
-        while (!currentGame.isThisGameEnded()) {
+        while (!currentGame.isEnded()) {
             try {
                 currentGame.placeStoneAndChangeTurn(cpu1.chooseNextEmptyCoordinates(currentGame.getBoard()));
             } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
