@@ -52,12 +52,12 @@ public class GUIStartView extends View<StartViewmodel> {
 
     private void addListenerForFirePropertyChange() {
         // TODO : maybe refactor needed
-        addTextPropertyListener(player1NameTextField, newName -> getViewmodelAssociatedWithView().setPlayer1Name(newName));
-        addTextPropertyListener(player2NameTextField, newName -> getViewmodelAssociatedWithView().setPlayer2Name(newName));
-        addSelectedPropertyListener(player1CPUCheckBox, isSelected -> getViewmodelAssociatedWithView().setPlayer1CPU(isSelected));
-        addSelectedPropertyListener(player2CPUCheckBox, isSelected -> getViewmodelAssociatedWithView().setPlayer2CPU(isSelected));
-        addSelectedItemPropertyListener(boardSizeChoiceBox, selectedItem -> getViewmodelAssociatedWithView().setSelectedBoardSize(selectedItem));
-        addTextPropertyListener(numberOfGamesTextField, newNumberOfGames -> getViewmodelAssociatedWithView().setNumberOfGames(newNumberOfGames));
+        addTextPropertyListener(player1NameTextField, getViewmodelAssociatedWithView()::setPlayer1Name);
+        addTextPropertyListener(player2NameTextField, getViewmodelAssociatedWithView()::setPlayer2Name);
+        addSelectedPropertyListener(player1CPUCheckBox, getViewmodelAssociatedWithView()::setPlayer1CPU);
+        addSelectedPropertyListener(player2CPUCheckBox, getViewmodelAssociatedWithView()::setPlayer2CPU);
+        addSelectedItemPropertyListener(boardSizeChoiceBox, getViewmodelAssociatedWithView()::setSelectedBoardSize);
+        addTextPropertyListener(numberOfGamesTextField, getViewmodelAssociatedWithView()::setNumberOfGames);
     }
 
     private void setDefaultValuesInViewmodel() {

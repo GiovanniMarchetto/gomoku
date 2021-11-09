@@ -116,7 +116,7 @@ class GUIStartViewTest {
                             .get(guiStartView);
             assertSynchronizationBetweenViewAndViewmodel(
                     oldPlayerName, newPlayerName, fieldNameInViewmodel,
-                    propertyValue -> playerNameTextField.textProperty().set(propertyValue));
+                    playerNameTextField.textProperty()::set);
         } catch (IllegalAccessException | NoSuchFieldException e) {
             fail(e);
         }
@@ -213,7 +213,7 @@ class GUIStartViewTest {
                             .get(guiStartView);
             assertSynchronizationBetweenViewAndViewmodel(
                     String.valueOf(oldNumberOfGames), String.valueOf(newNumberOfGames), fieldNameInViewmodel,
-                    propertyValue -> numberOfGamesTextField.textProperty().set(propertyValue));
+                    numberOfGamesTextField.textProperty()::set);
         } catch (IllegalAccessException | NoSuchFieldException e) {
             fail(e);
         }
