@@ -77,21 +77,27 @@ public class Match {
     }
 
     public void addAnExtraGame() {
+        //TODO: need or startExtraGame with exception for lastGame not Ended?
         numberOfGames.incrementAndGet();
     }
 
 
     @NotNull
-    public Game startNewGame() throws MatchEndedException {
-        if (!isEnded()) {
-            if (gameList.size() > 0) {
-                invertCurrentPlayersColors();
+    public Game startNewGame() throws MatchEndedException, MaxNumberOfGamesException {
+        if (gameList.size() < getNumberOfGames()) {
+            if (!isEnded()) {
+                //TODO: need exception for lastGame not Ended?
+                if (gameList.size() > 0) {
+                    invertCurrentPlayersColors();
+                }
+                Game newGame = new Game(boardSize, currentBlackPlayer, currentWhitePlayer);
+                gameList.add(newGame);
+                return newGame;
+            } else {
+                throw new MatchEndedException();
             }
-            Game newGame = new Game(boardSize, currentBlackPlayer, currentWhitePlayer);
-            gameList.add(newGame);
-            return newGame;
         } else {
-            throw new MatchEndedException();
+            throw new MaxNumberOfGamesException();
         }
     }
 
@@ -170,5 +176,9 @@ public class Match {
     }
 
     public static class MatchNotEndedException extends Exception {
+    }
+
+    public static class MaxNumberOfGamesException extends Exception {
+
     }
 }
