@@ -1,11 +1,18 @@
 package it.units.sdm.gomoku.ui.gui.views;
 
 import it.units.sdm.gomoku.EnvVariables;
+import it.units.sdm.gomoku.RunnableWhichCanThrow;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
+import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
+import it.units.sdm.gomoku.model.entities.CPUPlayer;
+import it.units.sdm.gomoku.model.entities.HumanPlayer;
+import it.units.sdm.gomoku.model.entities.Match;
+import it.units.sdm.gomoku.ui.AbstractMainViewmodel;
 import it.units.sdm.gomoku.ui.StartViewmodel;
 import it.units.sdm.gomoku.ui.gui.GUIMain;
 import it.units.sdm.gomoku.ui.gui.SceneController;
 import it.units.sdm.gomoku.ui.support.BoardSizes;
+import it.units.sdm.gomoku.ui.support.Setup;
 import it.units.sdm.gomoku.utils.TestUtility;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -28,22 +35,26 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static it.units.sdm.gomoku.ui.StartViewmodel.boardSizes;
+import static it.units.sdm.gomoku.ui.support.Setup.getSetupFromMatch;
+import static org.junit.jupiter.api.Assertions.*;
 
 class GUIStartViewTest {
 
-    // TODO : missing tests
+    // TODO : missing tests + very long class code smell
 
     private GUIStartView guiStartView;
     private StartViewmodel guiStartViewmodel;
@@ -100,26 +111,15 @@ class GUIStartViewTest {
         Platform.setImplicitExit(false);
     }
 
-    @ParameterizedTest
-    @CsvSource({
-            "One, One, player1NameTextField, player1Name",
-            "One, Two, player1NameTextField, player1Name",
-            "Two, One, player2NameTextField, player2Name",
-            "Two, Two, player2NameTextField, player2Name"
-    })
-    void updatePlayerNameInViewShouldAutomaticallyUpdateFieldInViewmodel(
-            String oldPlayerName, String newPlayerName, String textfieldNameInView, String fieldNameInViewmodel) {
-        try {
-            TextField playerNameTextField =
-                    (TextField) TestUtility
-                            .getFieldAlreadyMadeAccessible(guiStartView.getClass(), textfieldNameInView)
-                            .get(guiStartView);
-            assertSynchronizationBetweenViewAndViewmodel(
-                    oldPlayerName, newPlayerName, fieldNameInViewmodel,
-                    playerNameTextField.textProperty()::set);
-        } catch (IllegalAccessException | NoSuchFieldException e) {
-            fail(e);
-        }
+    @NotNull
+    private static Stream<Arguments> pairOfPositiveIntegerSupplier() {
+        Set<Integer> ints = Objects.requireNonNull(readIntegersFromCSV());
+        return ints.stream().unordered().parallel()
+                .filter(NonNegativeInteger::isValid)
+                .flatMap(i ->
+                        ints.stream().unordered().parallel()
+                                .filter(PositiveInteger::isValid)
+                                .map(j -> Arguments.of(i, j)));
     }
 
     @NotNull
@@ -130,14 +130,15 @@ class GUIStartViewTest {
     }
 
     @NotNull
-    private static Stream<Arguments> pairOfNonNegativeIntegerSupplier() {
-        Set<Integer> ints = Objects.requireNonNull(readIntegersFromCSV());
-        return ints.stream().unordered().parallel()
-                .filter(NonNegativeInteger::isValid)
-                .flatMap(i ->
-                        ints.stream().unordered().parallel()
-                                .filter(NonNegativeInteger::isValid)
-                                .map(j -> Arguments.of(i, j)));
+    private static Stream<Arguments> setupsSupplierAndFlagIfValid() {   // TODO : add a number of valid/invalid setups
+        return Stream.of(
+                Arguments.of(
+                        new Setup(
+                                new HumanPlayer("One"),
+                                new HumanPlayer("Two"),
+                                new PositiveInteger(1),
+                                BoardSizes.NORMAL.getBoardSize()),
+                        true));
     }
 
     @Nullable
@@ -161,16 +162,32 @@ class GUIStartViewTest {
     }
 
     @ParameterizedTest
+    @CsvSource({
+            "One, One, player1NameTextField, player1Name",
+            "One, Two, player1NameTextField, player1Name",
+            "Two, One, player2NameTextField, player2Name",
+            "Two, Two, player2NameTextField, player2Name"
+    })
+    void updatePlayerNameInViewShouldAutomaticallyUpdateFieldInViewmodel(
+            String oldPlayerName, String newPlayerName, String textfieldNameInView, String fieldNameInViewmodel) {
+        try {
+            TextField playerNameTextField = getTextField(textfieldNameInView);
+            assertSynchronizationBetweenViewAndViewmodel(
+                    oldPlayerName, newPlayerName, fieldNameInViewmodel,
+                    playerNameTextField.textProperty()::set);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            fail(e);
+        }
+    }
+
+    @ParameterizedTest
     @MethodSource("pairOfIntegerSupplier")
     void numberOfGamesInViewShouldAcceptOnlyNonNegativeInteger(
             int oldNumberOfGamesAlreadySet, int newNumberOfGamesInsertedByUser) {
         final String textfieldNameInView = "numberOfGamesTextField";
         final String fieldNameInViewmodel = "numberOfGames";
         try {
-            TextField numberOfGamesTextField =
-                    (TextField) TestUtility
-                            .getFieldAlreadyMadeAccessible(guiStartView.getClass(), textfieldNameInView)
-                            .get(guiStartView);
+            TextField numberOfGamesTextField = getTextField(textfieldNameInView);
             setOldValueInViewmodelAndTheSetNewValueInView(
                     String.valueOf(oldNumberOfGamesAlreadySet), String.valueOf(newNumberOfGamesInsertedByUser),
                     fieldNameInViewmodel,
@@ -201,22 +218,25 @@ class GUIStartViewTest {
     }
 
     @ParameterizedTest
-    @MethodSource("pairOfNonNegativeIntegerSupplier")
+    @MethodSource("pairOfPositiveIntegerSupplier")
     void updatingNumberOfGamesInViewShouldAutomaticallyUpdateFieldInViewmodel(
             int oldNumberOfGames, int newNumberOfGames) {
         final String textfieldNameInView = "numberOfGamesTextField";
         final String fieldNameInViewmodel = "numberOfGames";
         try {
-            TextField numberOfGamesTextField =
-                    (TextField) TestUtility
-                            .getFieldAlreadyMadeAccessible(guiStartView.getClass(), textfieldNameInView)
-                            .get(guiStartView);
+            TextField numberOfGamesTextField = getTextField(textfieldNameInView);
             assertSynchronizationBetweenViewAndViewmodel(
                     String.valueOf(oldNumberOfGames), String.valueOf(newNumberOfGames), fieldNameInViewmodel,
                     numberOfGamesTextField.textProperty()::set);
         } catch (IllegalAccessException | NoSuchFieldException e) {
             fail(e);
         }
+    }
+
+    private TextField getTextField(String textfieldNameInView) throws IllegalAccessException, NoSuchFieldException {
+        return (TextField) TestUtility
+                .getFieldAlreadyMadeAccessible(guiStartView.getClass(), textfieldNameInView)
+                .get(guiStartView);
     }
 
     @ParameterizedTest
@@ -234,10 +254,7 @@ class GUIStartViewTest {
             boolean wasCPUBeforeUpdate, boolean isCPUAfterUpdate,
             String checkboxNameInView, String fieldNameInViewmodel) {
         try {
-            CheckBox isCPUSelectedCheckBox =
-                    (CheckBox) TestUtility
-                            .getFieldAlreadyMadeAccessible(guiStartView.getClass(), checkboxNameInView)
-                            .get(guiStartView);
+            CheckBox isCPUSelectedCheckBox = getIsCPUCheckBox(checkboxNameInView);
             assertSynchronizationBetweenViewAndViewmodel(
                     wasCPUBeforeUpdate, isCPUAfterUpdate, fieldNameInViewmodel, isCPUSelectedCheckBox::setSelected);
         } catch (IllegalAccessException | NoSuchFieldException e) {
@@ -259,7 +276,17 @@ class GUIStartViewTest {
         assertEquals(TestUtility.getFieldValue(fieldNameInViewmodel, guiStartViewmodel), newValue);
     }
 
-    private <T> void setOldValueInViewmodelAndTheSetNewValueInView(@Nullable T oldValue, @Nullable T newValue, @NotNull String fieldNameInViewmodel, @NotNull Consumer<T> propertyValueSetterInView) throws NoSuchFieldException, IllegalAccessException {
+    @NotNull
+    private CheckBox getIsCPUCheckBox(String checkboxNameInView) throws IllegalAccessException, NoSuchFieldException {
+        return (CheckBox) TestUtility
+                .getFieldAlreadyMadeAccessible(guiStartView.getClass(), checkboxNameInView)
+                .get(guiStartView);
+    }
+
+    private <T> void setOldValueInViewmodelAndTheSetNewValueInView(
+            @Nullable T oldValue, @Nullable T newValue, @NotNull String fieldNameInViewmodel,
+            @NotNull Consumer<T> propertyValueSetterInView)
+            throws NoSuchFieldException, IllegalAccessException {
         TestUtility.setFieldValue(Objects.requireNonNull(fieldNameInViewmodel), oldValue, Objects.requireNonNull(guiStartViewmodel));
         assert TestUtility.getFieldValue(fieldNameInViewmodel, guiStartViewmodel).equals(oldValue);
         Objects.requireNonNull(propertyValueSetterInView).accept(oldValue); // set old state before firing property change
@@ -270,19 +297,81 @@ class GUIStartViewTest {
     @MethodSource("boardSizeNewAndOldValuesSupplier")
     void updatingBoardSizeInViewShouldAutomaticallyUpdateFieldInViewmodel(
             BoardSizes oldBoardSize, BoardSizes newBoardSize) {
-        final String choiceboxNameInView = "boardSizeChoiceBox";
         final String fieldNameInViewmodel = "selectedBoardSize";
         try {
-            @SuppressWarnings("unchecked")  // this choiceBox has string values // TODO : can be generalized?
-            ChoiceBox<String> boardSizeChoiceBox =
-                    (ChoiceBox<String>) TestUtility
-                            .getFieldAlreadyMadeAccessible(guiStartView.getClass(), choiceboxNameInView)
-                            .get(guiStartView);
+            ChoiceBox<String> boardSizeChoiceBox = getBoardSizeChoiceBox();
             assertSynchronizationBetweenViewAndViewmodel(
                     oldBoardSize.getExposedValueOf(), newBoardSize.getExposedValueOf(), fieldNameInViewmodel, boardSizeChoiceBox::setValue);
         } catch (IllegalAccessException | NoSuchFieldException e) {
             fail(e);
         }
+    }
+
+    @NotNull
+    private ChoiceBox<String> getBoardSizeChoiceBox() throws IllegalAccessException, NoSuchFieldException {
+        final String choiceboxNameInView = "boardSizeChoiceBox";
+        @SuppressWarnings("unchecked")  // this choiceBox has string values // TODO : can be generalized?
+        ChoiceBox<String> boardSizeChoiceBox =
+                (ChoiceBox<String>) TestUtility
+                        .getFieldAlreadyMadeAccessible(guiStartView.getClass(), choiceboxNameInView)
+                        .get(guiStartView);
+        return boardSizeChoiceBox;
+    }
+
+    @ParameterizedTest
+    @MethodSource("setupsSupplierAndFlagIfValid")
+    void createMatchWhenClickButtonIfValidFields(Setup setup, boolean validSetup) {
+        AtomicReference<ReflectiveOperationException> eventuallyThrownException = new AtomicReference<>();  // TODO: create interface "SupplierThatThrows" to avoid this mechanism and replace all occurrences of this "pattern"
+        eventuallyThrownException.set(null);
+        RunnableWhichCanThrow<ReflectiveOperationException> throwIfExceptionWasThrown = () -> {
+            if (eventuallyThrownException.get() != null) {
+                throw eventuallyThrownException.get();
+            }
+        };
+        Function<AbstractMainViewmodel, Match> getCurrentMatchOrNullIfExceptionThrown = mainViewmodel -> {
+            try {
+                return (Match) TestUtility.getFieldValue("match", mainViewmodel);
+            } catch (IllegalAccessException | NoSuchFieldException e) {
+                eventuallyThrownException.set(e);
+                return null;
+            }
+        };
+        try {
+            AbstractMainViewmodel mainViewmodel = (AbstractMainViewmodel) TestUtility
+                    .getFieldValue("mainViewmodel", guiStartViewmodel);
+            Match matchBeforeUserConfirmFieldsInStartView = getCurrentMatchOrNullIfExceptionThrown.apply(mainViewmodel);
+            throwIfExceptionWasThrown.run();
+            assert matchBeforeUserConfirmFieldsInStartView == null;
+            setFieldsInViewFromSetup(setup);
+            try {
+                guiStartView.startMatchButtonOnMouseClicked(null);// whatever ("null" or "Foo" included) parameter is ok  // TODO: re-see this
+            } catch (SceneController.SceneControllerNotInstantiatedException ignored) {
+            }
+            Match matchAfterUserConfirmFieldsInStartView = getCurrentMatchOrNullIfExceptionThrown.apply(mainViewmodel);
+            throwIfExceptionWasThrown.run();
+            if (validSetup) {
+                assertEquals(setup, getSetupFromMatch(matchAfterUserConfirmFieldsInStartView));
+
+                // TODO : move in separate test: after starting new game, gamelist has exactly 1 (the first just started) game
+                assertEquals(1, ((List<?>) Objects.requireNonNull(
+                        TestUtility.getFieldValue("gameList", matchAfterUserConfirmFieldsInStartView))).size());
+            } else {
+                assertNull(matchAfterUserConfirmFieldsInStartView);
+            }
+        } catch (ReflectiveOperationException e) {
+            fail(e);
+        }
+
+    }
+
+    private void setFieldsInViewFromSetup(Setup setup) throws NoSuchFieldException, IllegalAccessException {
+        // TODO : refactor may needed
+        getTextField("player1NameTextField").textProperty().set(setup.player1().getName());
+        getTextField("player2NameTextField").textProperty().set(setup.player2().getName());
+        getIsCPUCheckBox("player1CPUCheckBox").setSelected(setup.player1() instanceof CPUPlayer);
+        getIsCPUCheckBox("player2CPUCheckBox").setSelected(setup.player2() instanceof CPUPlayer);
+        getBoardSizeChoiceBox().setValue(boardSizes.get(boardSizes.size() / 2));
+        getTextField("numberOfGamesTextField").textProperty().set(setup.numberOfGames().toString());
     }
 
 }
