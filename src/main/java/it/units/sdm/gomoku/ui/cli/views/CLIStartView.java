@@ -12,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 import static it.units.sdm.gomoku.ui.gui.viewmodels.StartViewmodel.numberOfGamesPropertyName;
-import static it.units.sdm.gomoku.ui.gui.viewmodels.StartViewmodel.selectedBoardSizePropertyName;
 
 public class CLIStartView extends View<StartViewmodel> {// TODO : refactor this class and test
 
@@ -38,7 +37,7 @@ public class CLIStartView extends View<StartViewmodel> {// TODO : refactor this 
                 getViewmodelAssociatedWithView().setPlayer2CPU(false);
             }
         }
-        firePropertyChange(selectedBoardSizePropertyName, askAndGetBoardSize());
+        getViewmodelAssociatedWithView().setSelectedBoardSize(askAndGetBoardSize());
         firePropertyChange(numberOfGamesPropertyName, askAndGetNumberOfGames());
 
         getViewmodelAssociatedWithView().startMatch();

@@ -3,23 +3,29 @@ package it.units.sdm.gomoku.ui.gui.views;
 import it.units.sdm.gomoku.ui.gui.GUIMain;
 import it.units.sdm.gomoku.ui.gui.SceneController;
 import it.units.sdm.gomoku.ui.gui.viewmodels.StartViewmodel;
+import it.units.sdm.gomoku.ui.support.BoardSizes;
 import it.units.sdm.gomoku.utils.TestUtility;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -130,6 +136,12 @@ class GUIStartViewTest {
         }
     }
 
+    private static Stream<Arguments> boardSizeNewAndOldValuesSupplier() {
+        return Arrays.stream(BoardSizes.values())
+                .flatMap(boardSizeOldValue -> Arrays.stream(BoardSizes.values())
+                        .map(boardSizeNewValue -> Arguments.of(boardSizeOldValue, boardSizeNewValue)));
+    }
+
     private <T> void assertSynchronizationBetweenViewAndViewmodel(
             @Nullable final T oldValue, @Nullable final T newValue,
             @NotNull final String fieldNameInViewmodel, @NotNull final Consumer<T> propertyValueSetterInView)
@@ -139,6 +151,25 @@ class GUIStartViewTest {
         Objects.requireNonNull(propertyValueSetterInView).accept(oldValue); // set old state before firing property change
         propertyValueSetterInView.accept(newValue);
         assertEquals(TestUtility.getFieldValue(fieldNameInViewmodel, guiStartViewmodel), newValue);
+    }
+
+    @ParameterizedTest
+    @MethodSource("boardSizeNewAndOldValuesSupplier")
+    void updatingBoardSizeInViewShouldAutomaticallyUpdateFieldInViewmodel(
+            BoardSizes oldBoardSize, BoardSizes newBoardSize) {
+        final String choiceboxNameInView = "boardSizeChoiceBox";
+        final String fieldNameInViewmodel = "selectedBoardSize";
+        try {
+            //noinspection unchecked
+            ChoiceBox<String> boardSizeChoiceBox =
+                    (ChoiceBox<String>) TestUtility
+                            .getFieldAlreadyMadeAccessible(guiStartView.getClass(), choiceboxNameInView)
+                            .get(guiStartView);
+            assertSynchronizationBetweenViewAndViewmodel(
+                    oldBoardSize.getExposedValueOf(), newBoardSize.getExposedValueOf(), fieldNameInViewmodel, boardSizeChoiceBox::setValue);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            fail(e);
+        }
     }
 
 }

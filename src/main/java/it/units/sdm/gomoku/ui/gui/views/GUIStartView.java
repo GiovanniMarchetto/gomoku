@@ -2,7 +2,7 @@ package it.units.sdm.gomoku.ui.gui.views;
 
 import it.units.sdm.gomoku.mvvm_library.View;
 import it.units.sdm.gomoku.ui.gui.viewmodels.StartViewmodel;
-import javafx.beans.property.Property;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -14,7 +14,8 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 import static it.units.sdm.gomoku.ui.gui.GUIMain.guiMainViewmodel;
-import static it.units.sdm.gomoku.ui.gui.viewmodels.StartViewmodel.*;
+import static it.units.sdm.gomoku.ui.gui.viewmodels.StartViewmodel.boardSizes;
+import static it.units.sdm.gomoku.ui.gui.viewmodels.StartViewmodel.numberOfGamesPropertyName;
 
 
 public class GUIStartView extends View<StartViewmodel> {
@@ -56,8 +57,7 @@ public class GUIStartView extends View<StartViewmodel> {
         addTextPropertyListener(player2NameTextField, newName -> getViewmodelAssociatedWithView().setPlayer2Name(newName));
         addSelectedPropertyListener(player1CPUCheckBox, isSelected -> getViewmodelAssociatedWithView().setPlayer1CPU(isSelected));
         addSelectedPropertyListener(player2CPUCheckBox, isSelected -> getViewmodelAssociatedWithView().setPlayer2CPU(isSelected));
-        boardSizeChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
-                firePropertyChange(selectedBoardSizePropertyName, oldValue, newValue));
+        addSelectedItemPropertyListener(boardSizeChoiceBox, selectedItem -> getViewmodelAssociatedWithView().setSelectedBoardSize(selectedItem));
         addTextPropertyListener(numberOfGamesTextField, numberOfGamesPropertyName);
     }
 
@@ -67,7 +67,7 @@ public class GUIStartView extends View<StartViewmodel> {
         getViewmodelAssociatedWithView().setPlayer2Name(player2NameTextField.getText());
         getViewmodelAssociatedWithView().setPlayer1CPU(player1CPUCheckBox.isSelected());
         getViewmodelAssociatedWithView().setPlayer2CPU(player2CPUCheckBox.isSelected());
-        firePropertyChange(selectedBoardSizePropertyName, boardSizeChoiceBox.getValue());
+        getViewmodelAssociatedWithView().setSelectedBoardSize(boardSizeChoiceBox.getValue());
         firePropertyChange(numberOfGamesPropertyName, numberOfGamesTextField.getText());
     }
 
@@ -91,7 +91,11 @@ public class GUIStartView extends View<StartViewmodel> {
         addPropertyListener(checkBox.selectedProperty(), actionOnChange);
     }
 
-    private <T> void addPropertyListener(Property<T> property, Consumer<T> actionOnChange) {
+    private <T> void addSelectedItemPropertyListener(ChoiceBox<T> choiceBox, Consumer<T> actionOnChange) {
+        addPropertyListener(choiceBox.getSelectionModel().selectedItemProperty(), actionOnChange);
+    }
+
+    private <T> void addPropertyListener(ObservableValue<T> property, Consumer<T> actionOnChange) {
         property.addListener((ignored_observable, ignored_oldValue, newValue) -> {
             disableStartMatchButtonIfInvalidInputFieldValues();
             actionOnChange.accept(newValue);

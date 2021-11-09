@@ -19,8 +19,7 @@ public class StartViewmodel extends Viewmodel {
 
     // TODO : add nullable/notnull annotations and final to method params
 
-    public static final String numberOfGamesPropertyName = "numberOfGames";
-    public static final String selectedBoardSizePropertyName = "selectedBoardSize";
+    public static final String numberOfGamesPropertyName = "numberOfGames";         // TODO : delete this
 
     public static final List<String> boardSizes = Arrays.stream(BoardSizes.values())
             .map(BoardSizes::toString)
@@ -62,7 +61,7 @@ public class StartViewmodel extends Viewmodel {
         return player2Name;
     }
 
-    public void setPlayer2Name(String player2Name) {
+    public void setPlayer2Name(@NotNull final String player2Name) {
         this.player2Name = Objects.requireNonNull(player2Name);
     }
 
@@ -86,12 +85,8 @@ public class StartViewmodel extends Viewmodel {
         return selectedBoardSize;
     }
 
-    public void setSelectedBoardSize(String selectedBoardSize) {
-        String oldValue = this.selectedBoardSize;
-        if (!Objects.requireNonNull(selectedBoardSize).equals(oldValue)) {
-            this.selectedBoardSize = selectedBoardSize;
-            firePropertyChange(selectedBoardSizePropertyName, oldValue, selectedBoardSize);
-        }
+    public void setSelectedBoardSize(@NotNull final String selectedBoardSize) {
+        this.selectedBoardSize = Objects.requireNonNull(selectedBoardSize);
     }
 
     public PositiveInteger getSelectedBoardSizeValue() {
@@ -114,7 +109,6 @@ public class StartViewmodel extends Viewmodel {
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
-            case selectedBoardSizePropertyName -> setSelectedBoardSize((String) evt.getNewValue());
             case numberOfGamesPropertyName -> setNumberOfGames((String) evt.getNewValue());
         }
     }
