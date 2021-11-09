@@ -106,4 +106,11 @@ class NonNegativeIntegerTest {
         assertEquals(value1 >= value2, nonNegativeInteger1.compareTo(nonNegativeInteger2) >= 0);
     }
 
+    @ParameterizedTest
+    @CsvFileSource(resources = EnvVariables.INTS_PROVIDER_RESOURCE_LOCATION)
+    void checkValidity(int valueToCheckIfIsNonNegativeInteger) {
+        assertEquals(
+                valueToCheckIfIsNonNegativeInteger >= 0,
+                NonNegativeInteger.isValid(valueToCheckIfIsNonNegativeInteger));
+    }
 }

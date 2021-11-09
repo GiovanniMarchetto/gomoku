@@ -13,11 +13,15 @@ public class NonNegativeInteger extends Number implements Comparable<Number> {
     private int value;
 
     public NonNegativeInteger(@NonNegativeIntegerType int value) {
-        if (value >= 0) {
+        if (isValid(value)) {
             this.value = value;
         } else {
             throw new IllegalArgumentException("The value must be non negative.");
         }
+    }
+
+    public static boolean isValid(int value) {
+        return value >= 0;
     }
 
     @SuppressWarnings("CopyConstructorMissesField") // It checks if input param is not null before copying the field

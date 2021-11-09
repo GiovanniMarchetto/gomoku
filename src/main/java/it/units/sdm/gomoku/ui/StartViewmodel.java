@@ -1,11 +1,10 @@
-package it.units.sdm.gomoku.ui.gui.viewmodels;
+package it.units.sdm.gomoku.ui;
 
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
 import it.units.sdm.gomoku.model.entities.HumanPlayer;
 import it.units.sdm.gomoku.model.entities.Player;
 import it.units.sdm.gomoku.mvvm_library.Viewmodel;
-import it.units.sdm.gomoku.ui.AbstractMainViewmodel;
 import it.units.sdm.gomoku.ui.support.BoardSizes;
 import it.units.sdm.gomoku.ui.support.Setup;
 import org.jetbrains.annotations.NotNull;
@@ -17,9 +16,7 @@ import java.util.Objects;
 
 public class StartViewmodel extends Viewmodel {
 
-    // TODO : add nullable/notnull annotations and final to method params
-
-    public static final String numberOfGamesPropertyName = "numberOfGames";         // TODO : delete this
+    // TODO : add nullable/notnull annotations and final to method params and test
 
     public static final List<String> boardSizes = Arrays.stream(BoardSizes.values())
             .map(BoardSizes::toString)
@@ -97,19 +94,12 @@ public class StartViewmodel extends Viewmodel {
         return numberOfGames;
     }
 
-    public void setNumberOfGames(String numberOfGames) {
-        String oldValue = this.numberOfGames;
-        if (!Objects.requireNonNull(numberOfGames).equals(oldValue)) {
-            this.numberOfGames = numberOfGames;
-            firePropertyChange(numberOfGamesPropertyName, oldValue, numberOfGames);
-        }
+    public void setNumberOfGames(@NotNull final String numberOfGames) {
+        this.numberOfGames = Objects.requireNonNull(numberOfGames);
     }
     //endregion
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        switch (evt.getPropertyName()) {
-            case numberOfGamesPropertyName -> setNumberOfGames((String) evt.getNewValue());
-        }
     }
 }
