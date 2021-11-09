@@ -197,11 +197,24 @@ class MatchTest {
     }
 
     @Test
+    void isADraftMatchNotEnded() {
+        try {
+            match.isADraft();
+            fail("Not throw MatchNotEndedException");
+        } catch (Match.MatchNotEndedException ignored) {
+        }
+    }
+
+    @Test
     void isADraft() {
         for (int i = 0; i < NUMBER_OF_GAMES; i++) {
             startGameAndDraft();
         }
-        assertTrue(match.isADraft());
+        try {
+            assertTrue(match.isADraft());
+        } catch (Match.MatchNotEndedException e) {
+            fail(e);
+        }
     }
 
     @Test
@@ -210,7 +223,11 @@ class MatchTest {
         for (int i = 1; i < NUMBER_OF_GAMES; i++) {
             startGameAndDraft();
         }
-        assertFalse(match.isADraft());
+        try {
+            assertFalse(match.isADraft());
+        } catch (Match.MatchNotEndedException e) {
+            fail(e);
+        }
     }
 
     //region Private support methods
