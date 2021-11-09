@@ -47,7 +47,7 @@ class MatchTest {
     void maxNumberOfGamesException() {
         for (int i = 0; i < NUMBER_OF_GAMES; i++) {
             startNewGameComplete();
-            disputeGame(currentGame);
+            disputeGameWithSmartAlgorithm();
         }
 
         try {
@@ -75,26 +75,145 @@ class MatchTest {
     }
 
     @Test
-    void getScorePlayer1Win() {
-        startAndDisputeNewGameAndEndEithWinOfBlackPlayer();
+    void getScoreAfterPlayer1Win() {
+        startGameAndPlayerWin(cpu1);
         assertCpusScore(1, 0);
     }
 
     @Test
-    void getScoreTwoPlays() {
-        getScorePlayer1Win();
-
-        startAndDisputeNewGameAndEndEithWinOfBlackPlayer();
-        assertCpusScore(1, 1);
+    void getScoreAfterPlayer2Win() {
+        startGameAndPlayerWin(cpu2);
+        assertCpusScore(0, 1);
     }
 
     @Test
-    void getScoreWithDraw() {
-        startAndDisputeNewGameAndEndWithDraft();
+    void getScoreAfterADrawGame() {
+        startGameAndDraft();
         assertCpusScore(0, 0);
     }
 
+    @Test
+    void getWinnerIfMatchNotEnded() {
+        try {
+            match.getWinner();
+            fail("Match not ended");
+        } catch (Match.MatchNotEndedException ignored) {
+        }
+    }
 
+    @Test
+    void getWinnerWithADraw() {
+        try {
+            for (int i = 0; i < NUMBER_OF_GAMES; i++) {
+                startGameAndDraft();
+            }
+            assertNull(match.getWinner());
+        } catch (Match.MatchNotEndedException e) {
+            fail(e);
+        }
+    }
+
+    @Test
+    void getWinnerWithCPU1Win() {
+        try {
+            for (int i = 0; i < NUMBER_OF_GAMES; i++) {
+                startGameAndPlayerWin(cpu1);
+            }
+            assertEquals(cpu1, match.getWinner());
+        } catch (Match.MatchNotEndedException e) {
+            fail(e);
+        }
+    }
+
+    @Test
+    void getWinnerWithCPU2Win() {
+        try {
+            for (int i = 0; i < NUMBER_OF_GAMES; i++) {
+                startGameAndPlayerWin(cpu2);
+            }
+            assertEquals(cpu2, match.getWinner());
+        } catch (Match.MatchNotEndedException e) {
+            fail(e);
+        }
+    }
+
+    @Test
+    void getNumberOfGames() {
+        assertEquals(NUMBER_OF_GAMES, match.getNumberOfGames());
+    }
+
+    @Test
+    void getCurrentBlackPlayer() {
+        assertEquals(cpu1, match.getCurrentBlackPlayer());
+    }
+
+    @Test
+    void getCurrentWhitePlayer() {
+        assertEquals(cpu2, match.getCurrentWhitePlayer());
+    }
+
+    @Test
+    void isEndedAtStartMatch() {
+        assertFalse(match.isEnded());
+    }
+
+    @Test
+    void isEndedAfterAGame() {
+        //noinspection ConstantConditions
+        if (NUMBER_OF_GAMES != 1) {
+            startGameAndDraft();
+            assertFalse(match.isEnded());
+        }
+    }
+
+    @Test
+    void isEndedAfterStartLastGame() {
+        for (int i = 0; i < NUMBER_OF_GAMES - 1; i++) {
+            startGameAndDraft();
+        }
+        startNewGameComplete();
+        assertFalse(match.isEnded());
+    }
+
+    @Test
+    void isEndedNormalFlow() {
+        isEndedAfterStartLastGame();
+        disputeGameWithSmartAlgorithm();
+        assertTrue(match.isEnded());
+    }
+
+    @Test
+    void isEndedAfterAddExtraGame() {
+        isEndedNormalFlow();
+        match.addAnExtraGame();
+        assertFalse(match.isEnded());
+    }
+
+    @Test
+    void isEndedAfterEndExtraGame() {
+        isEndedAfterAddExtraGame();
+        startGameAndDraft();
+        assertTrue(match.isEnded());
+    }
+
+    @Test
+    void isADraft() {
+        for (int i = 0; i < NUMBER_OF_GAMES; i++) {
+            startGameAndDraft();
+        }
+        assertTrue(match.isADraft());
+    }
+
+    @Test
+    void isNotADraft() {
+        startGameAndPlayerWin(cpu1);
+        for (int i = 1; i < NUMBER_OF_GAMES; i++) {
+            startGameAndDraft();
+        }
+        assertFalse(match.isADraft());
+    }
+
+    //region Private support methods
     private void assertCpusScore(int n1, int n2) {
         assertEquals(n1, match.getScore().get(cpu1).intValue());
         assertEquals(n2, match.getScore().get(cpu2).intValue());
@@ -109,18 +228,18 @@ class MatchTest {
         }
     }
 
-    private void disputeGame(Game game) {
+    private void disputeGameWithSmartAlgorithm() {
         CPUPlayer cpuPlayer = new CPUPlayer();
-        while (!game.isEnded()) {
+        while (!currentGame.isEnded()) {
             try {
-                game.placeStoneAndChangeTurn(cpuPlayer.chooseSmartEmptyCoordinates(game.getBoard()));
+                currentGame.placeStoneAndChangeTurn(cpuPlayer.chooseSmartEmptyCoordinates(currentGame.getBoard()));
             } catch (Board.CellAlreadyOccupiedException | Board.BoardIsFullException e) {
                 fail(e);
             }
         }
     }
 
-    private void startAndDisputeNewGameAndEndEithWinOfBlackPlayer() {
+    private void startGameAndPlayerWin(Player player) {
         startNewGameComplete();
 
         try {
@@ -128,17 +247,23 @@ class MatchTest {
                 currentGame.placeStoneAndChangeTurn(new Coordinates(i, 0));
                 currentGame.placeStoneAndChangeTurn(new Coordinates(i, 1));
             }
-            currentGame.placeStoneAndChangeTurn(new Coordinates(4, 0));
 
-            if (currentGame.getWinner() != match.getCurrentBlackPlayer()) {
-                fail("The winner is not the black palyer");
+            if (player == currentGame.getCurrentPlayer().getPropertyValue()) {
+                currentGame.placeStoneAndChangeTurn(new Coordinates(4, 0));
+            } else {
+                currentGame.placeStoneAndChangeTurn(new Coordinates(0, 2));
+                currentGame.placeStoneAndChangeTurn(new Coordinates(4, 1));
+            }
+
+            if (currentGame.getWinner() != player) {
+                fail("The winner is not the correct player");
             }
         } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Game.GameNotEndedException e) {
             fail(e);
         }
     }
 
-    private void startAndDisputeNewGameAndEndWithDraft() {
+    private void startGameAndDraft() {
         startNewGameComplete();
         for (int x = 0; x < boardSizeTest; x++) {
             for (int y = 0; y < boardSizeTest; y++) {
@@ -169,5 +294,6 @@ class MatchTest {
         }
     }
 
+    //endregion
 
 }
