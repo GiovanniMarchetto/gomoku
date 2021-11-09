@@ -19,8 +19,6 @@ public class StartViewmodel extends Viewmodel {
 
     // TODO : add nullable/notnull annotations and final to method params
 
-    public static final String numberOfGamesPropertyName = "numberOfGames";         // TODO : delete this
-
     public static final List<String> boardSizes = Arrays.stream(BoardSizes.values())
             .map(BoardSizes::toString)
             .toList();
@@ -97,19 +95,12 @@ public class StartViewmodel extends Viewmodel {
         return numberOfGames;
     }
 
-    public void setNumberOfGames(String numberOfGames) {
-        String oldValue = this.numberOfGames;
-        if (!Objects.requireNonNull(numberOfGames).equals(oldValue)) {
-            this.numberOfGames = numberOfGames;
-            firePropertyChange(numberOfGamesPropertyName, oldValue, numberOfGames);
-        }
+    public void setNumberOfGames(@NotNull final String numberOfGames) {
+        this.numberOfGames = Objects.requireNonNull(numberOfGames);
     }
     //endregion
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        switch (evt.getPropertyName()) {
-            case numberOfGamesPropertyName -> setNumberOfGames((String) evt.getNewValue());
-        }
     }
 }

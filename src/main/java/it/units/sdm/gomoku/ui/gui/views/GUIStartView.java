@@ -15,7 +15,6 @@ import java.util.function.Consumer;
 
 import static it.units.sdm.gomoku.ui.gui.GUIMain.guiMainViewmodel;
 import static it.units.sdm.gomoku.ui.gui.viewmodels.StartViewmodel.boardSizes;
-import static it.units.sdm.gomoku.ui.gui.viewmodels.StartViewmodel.numberOfGamesPropertyName;
 
 
 public class GUIStartView extends View<StartViewmodel> {
@@ -58,7 +57,7 @@ public class GUIStartView extends View<StartViewmodel> {
         addSelectedPropertyListener(player1CPUCheckBox, isSelected -> getViewmodelAssociatedWithView().setPlayer1CPU(isSelected));
         addSelectedPropertyListener(player2CPUCheckBox, isSelected -> getViewmodelAssociatedWithView().setPlayer2CPU(isSelected));
         addSelectedItemPropertyListener(boardSizeChoiceBox, selectedItem -> getViewmodelAssociatedWithView().setSelectedBoardSize(selectedItem));
-        addTextPropertyListener(numberOfGamesTextField, numberOfGamesPropertyName);
+        addTextPropertyListener(numberOfGamesTextField, newNumberOfGames -> getViewmodelAssociatedWithView().setNumberOfGames(newNumberOfGames));
     }
 
     private void firePropertyChangeForDefaultValues() {
@@ -68,23 +67,11 @@ public class GUIStartView extends View<StartViewmodel> {
         getViewmodelAssociatedWithView().setPlayer1CPU(player1CPUCheckBox.isSelected());
         getViewmodelAssociatedWithView().setPlayer2CPU(player2CPUCheckBox.isSelected());
         getViewmodelAssociatedWithView().setSelectedBoardSize(boardSizeChoiceBox.getValue());
-        firePropertyChange(numberOfGamesPropertyName, numberOfGamesTextField.getText());
-    }
-
-    private void addTextPropertyListener(TextField textField, String propertyName) {
-        textField.textProperty().addListener((observable, oldValue, newValue) -> {
-            disableStartMatchButtonIfInvalidInputFieldValues();
-            firePropertyChange(propertyName, oldValue, newValue);
-        });
+        getViewmodelAssociatedWithView().setNumberOfGames(numberOfGamesTextField.getText());
     }
 
     private void addTextPropertyListener(TextField textField, Consumer<String> actionOnChange) {
         addPropertyListener(textField.textProperty(), actionOnChange);
-    }
-
-    private void addSelectedPropertyListener(CheckBox checkBox, String propertyName) {
-        checkBox.selectedProperty().addListener((observable, oldValue, newValue) ->
-                firePropertyChange(propertyName, oldValue, newValue));
     }
 
     private void addSelectedPropertyListener(CheckBox checkBox, Consumer<Boolean> actionOnChange) {
@@ -107,20 +94,31 @@ public class GUIStartView extends View<StartViewmodel> {
     }
 
     private void allowOnlyNumberInNumberOfGamesTextField() {
-        numberOfGamesTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("\\d*")) {
-                numberOfGamesTextField.setText(newValue.replaceAll("[^\\d]", ""));
-            }
-            disableStartMatchButtonIfInvalidInputFieldValues();
-        });
+        try {
+            numberOfGamesTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+                if (!newValue.matches("\\d*")) {
+                    numberOfGamesTextField.setText(newValue.replaceAll("[^\\d]", ""));
+                }
+                disableStartMatchButtonIfInvalidInputFieldValues();
+            });
+        } catch (NumberFormatException ignored) {
+            // TODO : handle this exception? / test method opportunely ?
+        }
     }
 
     private void disableStartMatchButtonIfInvalidInputFieldValues() {
+        // TODO : test
+        boolean invalidNumberOfGamesValue;
+        try {
+            invalidNumberOfGamesValue = Integer.parseInt(numberOfGamesTextField.getText()) == 0;
+        } catch (NumberFormatException e) {
+            invalidNumberOfGamesValue = true;
+        }
         startMatchButton.setDisable(
                 player1NameTextField.getText().isEmpty()
                         || player2NameTextField.getText().isEmpty()
                         || Objects.equals(player1NameTextField.getText(), player2NameTextField.getText())
                         || numberOfGamesTextField.getText().isEmpty()
-                        || Integer.parseInt(numberOfGamesTextField.getText()) == 0);
+                        || invalidNumberOfGamesValue);
     }
 }
