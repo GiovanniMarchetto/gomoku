@@ -98,7 +98,6 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
             throw new NullPointerException("Cannot invoke this method before starting the game (current game is null)");
         }
         currentGame.start();
-//        placeStoneIfCPUPlayingWithDelayOrElseNotifyTheView(getCurrentPlayer(), 0);
     }
 
     public void createMatchFromSetupAndStartGame(Setup setup) {
@@ -144,24 +143,13 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
         this.match = Objects.requireNonNull(match);
     }
 
-    @NotNull
-    public String getCurrentBoardAsString() {
-        return Objects.requireNonNull(currentBoard).toString();
-    }
-
     public void endGame() {
         stopObserving(Objects.requireNonNull(currentGame));
         stopObserving(Objects.requireNonNull(currentBoard));
     }
 
-    @NotNull
-    protected Game getCurrentGame() {
-        return Objects.requireNonNull(currentGame);
-    }
-
-    @NotNull
-    protected Board getCurrentBoard() {
-        return Objects.requireNonNull(currentBoard);
+    public void forceReFireAllCells() {
+        // TODO: Rethink this
     }
 
     public void placeStoneFromUser(@NotNull final Coordinates coordinates)
@@ -172,8 +160,19 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
         }
     }
 
-    public void forceReFireAllCells() {
-        // TODO: Rethink this
+    @NotNull
+    public String getCurrentBoardAsString() {
+        return Objects.requireNonNull(currentBoard).toString();
+    }
+
+    @NotNull
+    protected Game getCurrentGame() {
+        return Objects.requireNonNull(currentGame);
+    }
+
+    @NotNull
+    protected Board getCurrentBoard() {
+        return Objects.requireNonNull(currentBoard);
     }
 
     public int getBoardSize() {
