@@ -2,7 +2,7 @@ package it.units.sdm.gomoku.ui.gui.views;
 
 import it.units.sdm.gomoku.mvvm_library.View;
 import it.units.sdm.gomoku.ui.gui.viewmodels.StartViewmodel;
-import javafx.beans.property.Property;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -14,7 +14,8 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 import static it.units.sdm.gomoku.ui.gui.GUIMain.guiMainViewmodel;
-import static it.units.sdm.gomoku.ui.gui.viewmodels.StartViewmodel.*;
+import static it.units.sdm.gomoku.ui.gui.viewmodels.StartViewmodel.boardSizes;
+import static it.units.sdm.gomoku.ui.gui.viewmodels.StartViewmodel.numberOfGamesPropertyName;
 
 
 public class GUIStartView extends View<StartViewmodel> {
@@ -52,12 +53,11 @@ public class GUIStartView extends View<StartViewmodel> {
 
     private void addListenerForFirePropertyChange() {
         // TODO : maybe refactor needed
-        addTextPropertyListener(player1NameTextField, player1NewName -> getViewmodelAssociatedWithView().setPlayer1Name(player1NewName));
-        addTextPropertyListener(player2NameTextField, player2NewName -> getViewmodelAssociatedWithView().setPlayer2Name(player2NewName));
-        addSelectedPropertyListener(player1CPUCheckBox, player1CPUPropertyName);
-        addSelectedPropertyListener(player2CPUCheckBox, player2CPUPropertyName);
-        boardSizeChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
-                firePropertyChange(selectedBoardSizePropertyName, oldValue, newValue));
+        addTextPropertyListener(player1NameTextField, newName -> getViewmodelAssociatedWithView().setPlayer1Name(newName));
+        addTextPropertyListener(player2NameTextField, newName -> getViewmodelAssociatedWithView().setPlayer2Name(newName));
+        addSelectedPropertyListener(player1CPUCheckBox, isSelected -> getViewmodelAssociatedWithView().setPlayer1CPU(isSelected));
+        addSelectedPropertyListener(player2CPUCheckBox, isSelected -> getViewmodelAssociatedWithView().setPlayer2CPU(isSelected));
+        addSelectedItemPropertyListener(boardSizeChoiceBox, selectedItem -> getViewmodelAssociatedWithView().setSelectedBoardSize(selectedItem));
         addTextPropertyListener(numberOfGamesTextField, numberOfGamesPropertyName);
     }
 
@@ -65,9 +65,9 @@ public class GUIStartView extends View<StartViewmodel> {
         // TODO : maybe refactor needed
         getViewmodelAssociatedWithView().setPlayer1Name(player1NameTextField.getText());
         getViewmodelAssociatedWithView().setPlayer2Name(player2NameTextField.getText());
-        firePropertyChange(player1CPUPropertyName, player1CPUCheckBox.isSelected());
-        firePropertyChange(player2CPUPropertyName, player2CPUCheckBox.isSelected());
-        firePropertyChange(selectedBoardSizePropertyName, boardSizeChoiceBox.getValue());
+        getViewmodelAssociatedWithView().setPlayer1CPU(player1CPUCheckBox.isSelected());
+        getViewmodelAssociatedWithView().setPlayer2CPU(player2CPUCheckBox.isSelected());
+        getViewmodelAssociatedWithView().setSelectedBoardSize(boardSizeChoiceBox.getValue());
         firePropertyChange(numberOfGamesPropertyName, numberOfGamesTextField.getText());
     }
 
@@ -82,16 +82,24 @@ public class GUIStartView extends View<StartViewmodel> {
         addPropertyListener(textField.textProperty(), actionOnChange);
     }
 
-    private <T> void addPropertyListener(Property<T> property, Consumer<T> actionOnChange) {
+    private void addSelectedPropertyListener(CheckBox checkBox, String propertyName) {
+        checkBox.selectedProperty().addListener((observable, oldValue, newValue) ->
+                firePropertyChange(propertyName, oldValue, newValue));
+    }
+
+    private void addSelectedPropertyListener(CheckBox checkBox, Consumer<Boolean> actionOnChange) {
+        addPropertyListener(checkBox.selectedProperty(), actionOnChange);
+    }
+
+    private <T> void addSelectedItemPropertyListener(ChoiceBox<T> choiceBox, Consumer<T> actionOnChange) {
+        addPropertyListener(choiceBox.getSelectionModel().selectedItemProperty(), actionOnChange);
+    }
+
+    private <T> void addPropertyListener(ObservableValue<T> property, Consumer<T> actionOnChange) {
         property.addListener((ignored_observable, ignored_oldValue, newValue) -> {
             disableStartMatchButtonIfInvalidInputFieldValues();
             actionOnChange.accept(newValue);
         });
-    }
-
-    private void addSelectedPropertyListener(CheckBox checkBox, String propertyName) {
-        checkBox.selectedProperty().addListener((observable, oldValue, newValue) ->
-                firePropertyChange(propertyName, oldValue, newValue));
     }
 
     public void startMatchButtonOnMouseClicked(MouseEvent e) {

@@ -8,12 +8,14 @@ import it.units.sdm.gomoku.model.entities.Cell;
 import it.units.sdm.gomoku.model.entities.Stone;
 import it.units.sdm.gomoku.ui.support.MoveControlRecord;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.params.provider.Arguments;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -211,4 +213,47 @@ public class TestUtility {
         return field;
     }
 
+    public static <T> Object getFieldValue(@NotNull final String fieldName, @NotNull final T objectInstance)
+            throws NoSuchFieldException, IllegalAccessException {   // TODO : test
+        return getFieldAlreadyMadeAccessible(
+                Objects.requireNonNull(objectInstance).getClass(), Objects.requireNonNull(fieldName))
+                .get(objectInstance);
+    }
+
+    public static <T, S> void setFieldValue(
+            @NotNull final String fieldName, @Nullable final S newValue, @NotNull final T objectInstance)
+            throws NoSuchFieldException, IllegalAccessException {   // TODO : test
+        getFieldAlreadyMadeAccessible(
+                Objects.requireNonNull(objectInstance).getClass(), Objects.requireNonNull(fieldName))
+                .set(objectInstance, newValue);
+    }
+
+    public static <T> Object invokeMethodOnObject(
+            @NotNull final T targetObject, @NotNull final String methodName, @Nullable Object... paramsToMethod)
+            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {  // TODO : test
+        Class<?>[] paramTypes =
+                Arrays.stream(paramsToMethod).sequential()
+                        .filter(Objects::nonNull)
+                        .map(Object::getClass)
+                        .toArray(Class<?>[]::new);
+        return Objects.requireNonNull(targetObject).getClass()
+                .getDeclaredMethod(Objects.requireNonNull(methodName), paramTypes)
+                .invoke(targetObject, paramsToMethod);
+    }
+
+    @NotNull
+    public static String trimAndCapitalizeFirstLetterAndGetOrDoNothingIfEmpty(@NotNull final String inputString) {
+        // TODO : test
+        String outputString = inputString.trim();
+        if (outputString.isBlank()) {
+            return inputString;
+        }
+        return outputString.substring(0, 1).toUpperCase() +
+                (outputString.length() > 1 ? inputString.substring(1) : "");
+    }
+
+    @NotNull
+    public static String getStringDifferentFromGivenOne(String inputString) {   // TODO : test
+        return inputString + "_whateverTrailingStringJustToMakeTheGivenStringDifferent";
+    }
 }

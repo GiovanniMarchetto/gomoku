@@ -3,18 +3,29 @@ package it.units.sdm.gomoku.ui.gui.views;
 import it.units.sdm.gomoku.ui.gui.GUIMain;
 import it.units.sdm.gomoku.ui.gui.SceneController;
 import it.units.sdm.gomoku.ui.gui.viewmodels.StartViewmodel;
+import it.units.sdm.gomoku.ui.support.BoardSizes;
 import it.units.sdm.gomoku.utils.TestUtility;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -31,7 +42,8 @@ class GUIStartViewTest {
     void setUp() {
         try {
             setUpJavaFXRuntime();
-            Method sceneCreatorMethod = SceneController.class.getDeclaredMethod("createScene", FXMLLoader.class, double.class, double.class);
+            Method sceneCreatorMethod = SceneController.class.getDeclaredMethod(
+                    "createScene", FXMLLoader.class, double.class, double.class);
             sceneCreatorMethod.setAccessible(true);
             FXMLLoader fxmlLoader = new FXMLLoader(GUIStartView.class.getResource(GUIMain.START_VIEW_FXML_FILE_NAME));
             sceneCreatorMethod.invoke(null, fxmlLoader, 0, 0);
@@ -51,6 +63,16 @@ class GUIStartViewTest {
         }
     }
 
+//    @Test
+//    void startMatchButtonOnMouseClicked() {
+//        // TODO: all input fields must be valid and already set in viewmodel and view must change
+//    }
+//
+//    @Test
+//    void initialize() {
+//        // TODO : assert the correct view is shown with correct input field values and same values saved in Viewmodel
+//    }
+
     private static void setUpJavaFXRuntime() throws InterruptedException {
         if (!isJavaFxRunning.get()) {
             isJavaFxRunning.set(true);
@@ -66,51 +88,85 @@ class GUIStartViewTest {
         Platform.setImplicitExit(false);
     }
 
-//    @Test
-//    void startMatchButtonOnMouseClicked() {
-//        // TODO: all input fields must be valid and already set in viewmodel and view must change
-//    }
-//
-//    @Test
-//    void initialize() {
-//        // TODO : assert the correct view is shown with correct input field values and same values saved in Viewmodel
-//    }
-
     @ParameterizedTest
-    @ValueSource(strings = {"Foo", "Bar"})
-    void setPlayer1Name(String newPlayer1Name) {
-        String whateverNameDifferentThanThanInputParam = newPlayer1Name + "_different";
-        guiStartViewmodel.setPlayer1Name(whateverNameDifferentThanThanInputParam);
-        String oldNameSavedInViewmodel = guiStartViewmodel.getPlayer1Name();
-        assert !oldNameSavedInViewmodel.equals(newPlayer1Name);
+    @CsvSource({
+            "One, One, player1NameTextField, player1Name",
+            "One, Two, player1NameTextField, player1Name",
+            "Two, One, player2NameTextField, player2Name",
+            "Two, Two, player2NameTextField, player2Name"
+    })
+    void updatePlayerNameInViewShouldAutomaticallyUpdateFieldInViewmodel(
+            String oldPlayerName, String newPlayerName, String textfieldNameInView, String fieldNameInViewmodel) {
         try {
-            TextField player1NameTextField =
+            TextField playerNameTextField =
                     (TextField) TestUtility
-                            .getFieldAlreadyMadeAccessible(guiStartView.getClass(), "player1NameTextField")
+                            .getFieldAlreadyMadeAccessible(guiStartView.getClass(), textfieldNameInView)
                             .get(guiStartView);
-            player1NameTextField.textProperty().set(newPlayer1Name);
-            guiStartViewmodel.setPlayer1Name(newPlayer1Name);
-            assertEquals(guiStartViewmodel.getPlayer1Name(), newPlayer1Name);
+            assertSynchronizationBetweenViewAndViewmodel(
+                    oldPlayerName, newPlayerName, fieldNameInViewmodel,
+                    propertyValue -> playerNameTextField.textProperty().set(propertyValue));
         } catch (IllegalAccessException | NoSuchFieldException e) {
             fail(e);
         }
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"Foo", "Bar"})
-    void setPlayer2Name(String newPlayer2Name) {
-        String whateverNameDifferentThanThanInputParam = newPlayer2Name + "_different";
-        guiStartViewmodel.setPlayer1Name(whateverNameDifferentThanThanInputParam);
-        String oldNameSavedInViewmodel = guiStartViewmodel.getPlayer1Name();
-        assert !oldNameSavedInViewmodel.equals(newPlayer2Name);
+    @CsvSource({
+            "true, true, player1CPUCheckBox, player1CPU",
+            "true, false, player1CPUCheckBox, player1CPU",
+            "false, true, player1CPUCheckBox, player1CPU",
+            "false, false, player1CPUCheckBox, player1CPU",
+            "true, true, player2CPUCheckBox, player2CPU",       // TODO : refactor with @MethodSource?
+            "true, false, player2CPUCheckBox, player2CPU",
+            "false, true, player2CPUCheckBox, player2CPU",
+            "false, false, player2CPUCheckBox, player2CPU"
+    })
+    void updatePlayerIsCPUCheckboxInViewShouldAutomaticallyUpdateFieldInViewmodel(
+            boolean wasCPUBeforeUpdate, boolean isCPUAfterUpdate,
+            String checkboxNameInView, String fieldNameInViewmodel) {
         try {
-            TextField player1NameTextField =
-                    (TextField) TestUtility
-                            .getFieldAlreadyMadeAccessible(guiStartView.getClass(), "player2NameTextField")
+            CheckBox isCPUSelectedCheckBox =
+                    (CheckBox) TestUtility
+                            .getFieldAlreadyMadeAccessible(guiStartView.getClass(), checkboxNameInView)
                             .get(guiStartView);
-            player1NameTextField.textProperty().set(newPlayer2Name);
-            guiStartViewmodel.setPlayer1Name(newPlayer2Name);
-            assertEquals(guiStartViewmodel.getPlayer2Name(), newPlayer2Name);
+            assertSynchronizationBetweenViewAndViewmodel(
+                    wasCPUBeforeUpdate, isCPUAfterUpdate, fieldNameInViewmodel, isCPUSelectedCheckBox::setSelected);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            fail(e);
+        }
+    }
+
+    private static Stream<Arguments> boardSizeNewAndOldValuesSupplier() {
+        return Arrays.stream(BoardSizes.values())
+                .flatMap(boardSizeOldValue -> Arrays.stream(BoardSizes.values())
+                        .map(boardSizeNewValue -> Arguments.of(boardSizeOldValue, boardSizeNewValue)));
+    }
+
+    private <T> void assertSynchronizationBetweenViewAndViewmodel(
+            @Nullable final T oldValue, @Nullable final T newValue,
+            @NotNull final String fieldNameInViewmodel, @NotNull final Consumer<T> propertyValueSetterInView)
+            throws NoSuchFieldException, IllegalAccessException {
+        TestUtility.setFieldValue(Objects.requireNonNull(fieldNameInViewmodel), oldValue, Objects.requireNonNull(guiStartViewmodel));
+        assert TestUtility.getFieldValue(fieldNameInViewmodel, guiStartViewmodel).equals(oldValue);
+        Objects.requireNonNull(propertyValueSetterInView).accept(oldValue); // set old state before firing property change
+        propertyValueSetterInView.accept(newValue);
+        assertEquals(TestUtility.getFieldValue(fieldNameInViewmodel, guiStartViewmodel), newValue);
+    }
+
+    @ParameterizedTest
+    @MethodSource("boardSizeNewAndOldValuesSupplier")
+    void updatingBoardSizeInViewShouldAutomaticallyUpdateFieldInViewmodel(
+            BoardSizes oldBoardSize, BoardSizes newBoardSize) {
+        final String choiceboxNameInView = "boardSizeChoiceBox";
+        final String fieldNameInViewmodel = "selectedBoardSize";
+        try {
+            //noinspection unchecked
+            ChoiceBox<String> boardSizeChoiceBox =
+                    (ChoiceBox<String>) TestUtility
+                            .getFieldAlreadyMadeAccessible(guiStartView.getClass(), choiceboxNameInView)
+                            .get(guiStartView);
+            assertSynchronizationBetweenViewAndViewmodel(
+                    oldBoardSize.getExposedValueOf(), newBoardSize.getExposedValueOf(), fieldNameInViewmodel, boardSizeChoiceBox::setValue);
         } catch (IllegalAccessException | NoSuchFieldException e) {
             fail(e);
         }

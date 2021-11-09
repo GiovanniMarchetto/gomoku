@@ -19,10 +19,7 @@ public class StartViewmodel extends Viewmodel {
 
     // TODO : add nullable/notnull annotations and final to method params
 
-    public static final String player1CPUPropertyName = "player1CPU";
-    public static final String player2CPUPropertyName = "player2CPU";
-    public static final String numberOfGamesPropertyName = "numberOfGames";
-    public static final String selectedBoardSizePropertyName = "selectedBoardSize";
+    public static final String numberOfGamesPropertyName = "numberOfGames";         // TODO : delete this
 
     public static final List<String> boardSizes = Arrays.stream(BoardSizes.values())
             .map(BoardSizes::toString)
@@ -30,12 +27,12 @@ public class StartViewmodel extends Viewmodel {
 
     private final AbstractMainViewmodel mainViewmodel;
 
-    private String player1Name;
-    private String player2Name;
-    private boolean player1CPU;
-    private boolean player2CPU;
-    private String selectedBoardSize;
-    private String numberOfGames;
+    private volatile String player1Name;    // TODO : volatile fields?
+    private volatile String player2Name;
+    private volatile boolean player1CPU;
+    private volatile boolean player2CPU;
+    private volatile String selectedBoardSize;
+    private volatile String numberOfGames;
 
     public StartViewmodel(AbstractMainViewmodel mainViewmodel) {
         this.mainViewmodel = mainViewmodel;
@@ -64,7 +61,7 @@ public class StartViewmodel extends Viewmodel {
         return player2Name;
     }
 
-    public void setPlayer2Name(String player2Name) {
+    public void setPlayer2Name(@NotNull final String player2Name) {
         this.player2Name = Objects.requireNonNull(player2Name);
     }
 
@@ -73,11 +70,7 @@ public class StartViewmodel extends Viewmodel {
     }
 
     public void setPlayer1CPU(boolean player1CPU) {
-        boolean oldValue = this.player1CPU;
-        if (player1CPU != oldValue) {
-            this.player1CPU = player1CPU;
-            firePropertyChange(player1CPUPropertyName, oldValue, player1CPU);
-        }
+        this.player1CPU = player1CPU;
     }
 
     public boolean isPlayer2CPU() {
@@ -85,23 +78,15 @@ public class StartViewmodel extends Viewmodel {
     }
 
     public void setPlayer2CPU(boolean player2CPU) {
-        boolean oldValue = this.player2CPU;
-        if (player2CPU != oldValue) {
-            this.player2CPU = player2CPU;
-            firePropertyChange(player2CPUPropertyName, oldValue, player2CPU);
-        }
+        this.player2CPU = player2CPU;
     }
 
     public String getSelectedBoardSize() {
         return selectedBoardSize;
     }
 
-    public void setSelectedBoardSize(String selectedBoardSize) {
-        String oldValue = this.selectedBoardSize;
-        if (!Objects.requireNonNull(selectedBoardSize).equals(oldValue)) {
-            this.selectedBoardSize = selectedBoardSize;
-            firePropertyChange(selectedBoardSizePropertyName, oldValue, selectedBoardSize);
-        }
+    public void setSelectedBoardSize(@NotNull final String selectedBoardSize) {
+        this.selectedBoardSize = Objects.requireNonNull(selectedBoardSize);
     }
 
     public PositiveInteger getSelectedBoardSizeValue() {
@@ -124,9 +109,6 @@ public class StartViewmodel extends Viewmodel {
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
-            case player1CPUPropertyName -> setPlayer1CPU((Boolean) evt.getNewValue());
-            case player2CPUPropertyName -> setPlayer2CPU((Boolean) evt.getNewValue());
-            case selectedBoardSizePropertyName -> setSelectedBoardSize((String) evt.getNewValue());
             case numberOfGamesPropertyName -> setNumberOfGames((String) evt.getNewValue());
         }
     }

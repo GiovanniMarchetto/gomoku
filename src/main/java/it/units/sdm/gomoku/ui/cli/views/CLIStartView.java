@@ -11,33 +11,33 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
-import static it.units.sdm.gomoku.ui.gui.viewmodels.StartViewmodel.*;
+import static it.units.sdm.gomoku.ui.gui.viewmodels.StartViewmodel.numberOfGamesPropertyName;
 
-public class CLIStartView extends View<StartViewmodel> {// TODO : refactor this class
+public class CLIStartView extends View<StartViewmodel> {// TODO : refactor this class and test
 
     public CLIStartView(StartViewmodel startViewmodel) {
         super(startViewmodel);
-        switch (askAndGetNumberOfPlayers()) {
+        switch (askAndGetNumberOfPlayers()) {   // TODO : all tests are missing (see GUIStartViewTest)
             case CPU_VS_CPU -> {
                 getViewmodelAssociatedWithView().setPlayer1Name("CPU1");
                 getViewmodelAssociatedWithView().setPlayer2Name("CPU2");
-                firePropertyChange(player1CPUPropertyName, true);
-                firePropertyChange(player2CPUPropertyName, true);
+                getViewmodelAssociatedWithView().setPlayer1CPU(true);
+                getViewmodelAssociatedWithView().setPlayer2CPU(true);
             }
             case PERSON_VS_CPU -> {
                 getViewmodelAssociatedWithView().setPlayer1Name(askAndGetPlayerName(1));
                 getViewmodelAssociatedWithView().setPlayer2Name("CPU");
-                firePropertyChange(player1CPUPropertyName, false);
-                firePropertyChange(player2CPUPropertyName, true);
+                getViewmodelAssociatedWithView().setPlayer1CPU(false);
+                getViewmodelAssociatedWithView().setPlayer2CPU(true);
             }
             case PERSON_VS_PERSON -> {
                 getViewmodelAssociatedWithView().setPlayer1Name(askAndGetPlayerName(1));
                 getViewmodelAssociatedWithView().setPlayer2Name(askAndGetPlayerName(2));
-                firePropertyChange(player1CPUPropertyName, false);
-                firePropertyChange(player2CPUPropertyName, false);
+                getViewmodelAssociatedWithView().setPlayer1CPU(false);
+                getViewmodelAssociatedWithView().setPlayer2CPU(false);
             }
         }
-        firePropertyChange(selectedBoardSizePropertyName, askAndGetBoardSize());
+        getViewmodelAssociatedWithView().setSelectedBoardSize(askAndGetBoardSize());
         firePropertyChange(numberOfGamesPropertyName, askAndGetNumberOfGames());
 
         getViewmodelAssociatedWithView().startMatch();
