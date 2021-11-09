@@ -2,8 +2,8 @@ package it.units.sdm.gomoku.ui.cli.views;
 
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.mvvm_library.View;
+import it.units.sdm.gomoku.ui.StartViewmodel;
 import it.units.sdm.gomoku.ui.cli.IOUtility;
-import it.units.sdm.gomoku.ui.gui.viewmodels.StartViewmodel;
 import it.units.sdm.gomoku.ui.support.BoardSizes;
 import it.units.sdm.gomoku.ui.support.ExposedEnum;
 import it.units.sdm.gomoku.ui.support.MatchTypes;

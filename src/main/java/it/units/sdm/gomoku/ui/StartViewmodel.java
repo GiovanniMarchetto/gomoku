@@ -1,11 +1,10 @@
-package it.units.sdm.gomoku.ui.gui.viewmodels;
+package it.units.sdm.gomoku.ui;
 
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
 import it.units.sdm.gomoku.model.entities.HumanPlayer;
 import it.units.sdm.gomoku.model.entities.Player;
 import it.units.sdm.gomoku.mvvm_library.Viewmodel;
-import it.units.sdm.gomoku.ui.AbstractMainViewmodel;
 import it.units.sdm.gomoku.ui.support.BoardSizes;
 import it.units.sdm.gomoku.ui.support.Setup;
 import org.jetbrains.annotations.NotNull;
@@ -17,7 +16,7 @@ import java.util.Objects;
 
 public class StartViewmodel extends Viewmodel {
 
-    // TODO : add nullable/notnull annotations and final to method params
+    // TODO : add nullable/notnull annotations and final to method params and test
 
     public static final List<String> boardSizes = Arrays.stream(BoardSizes.values())
             .map(BoardSizes::toString)

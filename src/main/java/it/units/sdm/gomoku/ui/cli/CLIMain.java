@@ -1,10 +1,10 @@
 package it.units.sdm.gomoku.ui.cli;
 
 import it.units.sdm.gomoku.mvvm_library.Observable;
+import it.units.sdm.gomoku.ui.StartViewmodel;
 import it.units.sdm.gomoku.ui.cli.viewmodels.CLIMainViewmodel;
 import it.units.sdm.gomoku.ui.cli.views.CLIMainView;
 import it.units.sdm.gomoku.ui.cli.views.CLIStartView;
-import it.units.sdm.gomoku.ui.gui.viewmodels.StartViewmodel;
 
 import java.io.IOException;
 import java.util.logging.Level;

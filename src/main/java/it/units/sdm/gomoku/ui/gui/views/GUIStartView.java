@@ -1,7 +1,7 @@
 package it.units.sdm.gomoku.ui.gui.views;
 
 import it.units.sdm.gomoku.mvvm_library.View;
-import it.units.sdm.gomoku.ui.gui.viewmodels.StartViewmodel;
+import it.units.sdm.gomoku.ui.StartViewmodel;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -13,8 +13,8 @@ import javafx.scene.input.MouseEvent;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import static it.units.sdm.gomoku.ui.StartViewmodel.boardSizes;
 import static it.units.sdm.gomoku.ui.gui.GUIMain.guiMainViewmodel;
-import static it.units.sdm.gomoku.ui.gui.viewmodels.StartViewmodel.boardSizes;
 
 
 public class GUIStartView extends View<StartViewmodel> {

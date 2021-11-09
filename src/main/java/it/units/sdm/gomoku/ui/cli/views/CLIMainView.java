@@ -8,10 +8,10 @@ import it.units.sdm.gomoku.model.entities.Player;
 import it.units.sdm.gomoku.mvvm_library.Observer;
 import it.units.sdm.gomoku.mvvm_library.View;
 import it.units.sdm.gomoku.property_change_handlers.PropertyObserver;
+import it.units.sdm.gomoku.ui.StartViewmodel;
 import it.units.sdm.gomoku.ui.cli.CLIMain;
 import it.units.sdm.gomoku.ui.cli.IOUtility;
 import it.units.sdm.gomoku.ui.cli.viewmodels.CLIMainViewmodel;
-import it.units.sdm.gomoku.ui.gui.viewmodels.StartViewmodel;
 
 import java.beans.PropertyChangeEvent;
 import java.util.logging.Level;
