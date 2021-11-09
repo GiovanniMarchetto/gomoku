@@ -32,6 +32,7 @@ public class Match {
     @NotNull
     private Player currentWhitePlayer;
 
+    // TODO : ctor may take Setup instance as input param?
     public Match(@NotNull final PositiveInteger boardSize, @NotNull final PositiveInteger numberOfGames,
                  @NotNull @Length(length = 2) final Player... players) {
         this(Objects.requireNonNull(boardSize), Objects.requireNonNull(numberOfGames),
