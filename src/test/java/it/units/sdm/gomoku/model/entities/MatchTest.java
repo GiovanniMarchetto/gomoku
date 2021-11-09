@@ -5,15 +5,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class MatchTest {
 
-    private final int boardSizeTest = 19;
+    private final int boardSizeTest = 5;
     private final CPUPlayer cpu1 = new CPUPlayer("First Captain Gomoku");
     private final CPUPlayer cpu2 = new CPUPlayer("Second Iron Keroro");
     private final int NUMBER_OF_GAMES = 3;
@@ -30,29 +29,18 @@ class MatchTest {
         try {
             Field fieldGameList = match.getClass().getDeclaredField("gameList");
             fieldGameList.setAccessible(true);
-            Object gameListFromField = fieldGameList.get(match);
-            assert gameListFromField instanceof List<?>;
-            assert ((List<?>) gameListFromField).stream().filter(aGame -> aGame instanceof Game).count() == 0L;
-            @SuppressWarnings("unchecked")  // casting just checked elementwise
-            List<Game> gameList = (List<Game>) gameListFromField;
+            @SuppressWarnings("unchecked")
+            List<Game> gameList = (List<Game>) fieldGameList.get(match);
+
             assertTrue(gameList.isEmpty());
 
             currentGame = match.startNewGame();
             assertEquals(gameList.get(0), currentGame);
 
-            Field fieldBlackPlayer = match.getClass().getDeclaredField("currentBlackPlayer");
-            fieldBlackPlayer.setAccessible(true);
-            Player currentBlackPlayer = (Player) fieldBlackPlayer.get(match);
-
-            assertEquals(cpu1, currentBlackPlayer);
-
-            Field fieldWhitePlayer = match.getClass().getDeclaredField("currentWhitePlayer");
-            fieldWhitePlayer.setAccessible(true);
-            Player currentWhitePlayer = (Player) fieldWhitePlayer.get(match);
-            assertEquals(cpu2, currentWhitePlayer);
-
-        } catch (NoSuchFieldException | IllegalAccessException | Match.MatchEndedException e) {
-            e.printStackTrace();
+            assertEquals(cpu1, match.getCurrentBlackPlayer());
+            assertEquals(cpu2, match.getCurrentWhitePlayer());
+        } catch (NoSuchFieldException | IllegalAccessException | Match.MatchEndedException | Match.MaxNumberOfGamesException e) {
+            fail(e);
         }
     }
 
@@ -62,18 +50,19 @@ class MatchTest {
             for (int numberOfGame = 0; numberOfGame < NUMBER_OF_GAMES; numberOfGame++) {
                 Game currentGame = match.startNewGame();
                 currentGame.start(); // TODO: this should be done everywhere when starting a new game
+                disputeGame(currentGame);
                 while (!currentGame.isThisGameEnded()) {
                     currentGame.placeStoneAndChangeTurn(cpu1.chooseNextEmptyCoordinates(currentGame.getBoard()));
                 }
             }
-        } catch (Match.MatchEndedException | Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
+        } catch (Match.MatchEndedException | Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Match.MaxNumberOfGamesException e) {
             fail(e.getMessage());
         }
 
         try {
             match.startNewGame();
             fail();
-        } catch (Match.MatchEndedException ignored) {
+        } catch (Match.MatchEndedException | Match.MaxNumberOfGamesException ignored) {
         }
     }
 
@@ -86,7 +75,7 @@ class MatchTest {
     void getScoreAfterStart() {
         try {
             match.startNewGame();
-        } catch (Match.MatchEndedException e) {
+        } catch (Match.MatchEndedException | Match.MaxNumberOfGamesException e) {
             fail(e);
         }
         assertCpusScore(0, 0);
@@ -94,71 +83,98 @@ class MatchTest {
 
     @Test
     void getScorePlayer1Win() {
-        playerWinGameAndAssertFinalScore(cpu1, 1, 0);
-    }
-
-    @Test
-    void getScorePlayer2Win() {
-        playerWinGameAndAssertFinalScore(cpu2, 0, 1);
+        startAndDisputeNewGameAndWinBlackPlayer();
+        assertCpusScore(1, 0);
     }
 
     @Test
     void getScoreTwoPlays() {
         getScorePlayer1Win();
-        playerWinGameAndAssertFinalScore(cpu2, 1, 1);
-    }
-
-    private void playerWinGameAndAssertFinalScore(CPUPlayer cpuPlayer, int score1, int score2) {
-        try {
-            currentGame = match.startNewGame();
-        } catch (Match.MatchEndedException e) {
-            fail(e);
-        }
-        for (int i = 0; i < 5; i++) {
-            cpuPlaceStoneNextEmptyCoordinates(cpuPlayer);
-        }
-        assertCpusScore(score1, score2);
+        startAndDisputeNewGameAndWinBlackPlayer();
+        assertCpusScore(1, 1);
     }
 
     @Test
     void getScoreWithDraw() {
-        try {
-            currentGame = match.startNewGame();
-        } catch (Match.MatchEndedException e) {
-            fail(e);
-        }
-        CPUPlayer cpuPlayer;
-        int rowRest, colRest;
-
-        for (int row = 0; row < boardSizeTest; row++) {
-            rowRest = row % 4;
-            for (int col = 0; col < boardSizeTest; col++) {
-                colRest = col % 2;
-                if (rowRest == 0 || rowRest == 1) {
-                    cpuPlayer = colRest == 0 ? cpu1 : cpu2;
-                } else {
-                    cpuPlayer = colRest == 0 ? cpu2 : cpu1;
-                }
-                cpuPlaceStoneNextEmptyCoordinates(cpuPlayer);
-            }
-        }
+        startAndDisputeNewGameAndEndWithDraft();
 
         assertCpusScore(0, 0);
     }
 
-    private void cpuPlaceStoneNextEmptyCoordinates(CPUPlayer cpuPlayer) {
-        try {
-            Method placeStoneMethod = currentGame.getClass().getDeclaredMethod("placeStone", Player.class, Coordinates.class);
-            placeStoneMethod.setAccessible(true);
-            placeStoneMethod.invoke(currentGame, cpuPlayer, cpu1.chooseNextEmptyCoordinates(currentGame.getBoard()));
-        } catch (Board.BoardIsFullException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
 
     private void assertCpusScore(int n1, int n2) {
         assertEquals(n1, match.getScore().get(cpu1).intValue());
         assertEquals(n2, match.getScore().get(cpu2).intValue());
     }
+
+    private void startNewGameComplete() {
+        try {
+            currentGame = match.startNewGame();
+            currentGame.start();
+        } catch (Match.MatchEndedException | Match.MaxNumberOfGamesException e) {
+            fail(e);
+        }
+    }
+
+    private void disputeGame(Game game) {
+        CPUPlayer cpuPlayer = new CPUPlayer();
+        while (!game.isThisGameEnded()) {
+            try {
+                game.placeStoneAndChangeTurn(cpuPlayer.chooseSmartEmptyCoordinates(game.getBoard()));
+            } catch (Board.CellAlreadyOccupiedException | Board.BoardIsFullException e) {
+                fail(e);
+            }
+        }
+    }
+
+    private void startAndDisputeNewGameAndWinBlackPlayer() {
+        startNewGameComplete();
+
+        try {
+            for (int i = 0; i < 4; i++) {
+                currentGame.placeStoneAndChangeTurn(new Coordinates(i, 0));
+                currentGame.placeStoneAndChangeTurn(new Coordinates(i, 1));
+            }
+            currentGame.placeStoneAndChangeTurn(new Coordinates(4, 0));
+
+            if (currentGame.getWinner() != match.getCurrentBlackPlayer()) {
+                fail("The winner is not the black palyer");
+            }
+        } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Game.GameNotEndedException e) {
+            fail(e);
+        }
+    }
+
+    private void startAndDisputeNewGameAndEndWithDraft() {
+        startNewGameComplete();
+
+        IntStream.range(0, boardSizeTest).forEach(x ->
+                IntStream.range(0, boardSizeTest).forEach(y -> {
+                    if (x % 3 == 0 && y == 0) {
+                        try {
+                            currentGame.placeStoneAndChangeTurn(new Coordinates(x, y));
+                        } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
+                            fail(e);
+                        }
+                    }
+                }));
+
+        while (!currentGame.isThisGameEnded()) {
+            try {
+                currentGame.placeStoneAndChangeTurn(cpu1.chooseNextEmptyCoordinates(currentGame.getBoard()));
+            } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
+                fail(e);
+            }
+        }
+
+        try {
+            if (currentGame.getWinner() != null) {
+                fail("NOT A DRAFT");
+            }
+        } catch (Game.GameNotEndedException e) {
+            fail(e);
+        }
+    }
+
 
 }
