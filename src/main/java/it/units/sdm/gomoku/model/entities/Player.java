@@ -8,6 +8,8 @@ import java.util.Objects;
 
 public abstract class Player implements Observable {
 
+    // TODO : test
+
     @NotNull
     private final String name;
 
@@ -22,9 +24,14 @@ public abstract class Player implements Observable {
 
     public abstract void makeMove(@NotNull final Game currentGame) throws Board.BoardIsFullException;
 
+    @NotNull
+    public String getName() {
+        return name;
+    }
+
     @Override
     public String toString() {
-        return name;
+        return getName();
     }
 
     @NotNull
@@ -34,5 +41,17 @@ public abstract class Player implements Observable {
 
     protected void setCoordinatesRequired(final boolean coordinatesRequired) {
         coordinatesRequiredToContinueProperty.setPropertyValueAndFireIfPropertyChange(coordinatesRequired);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        return name.equals(((Player) o).name);
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
     }
 }
