@@ -132,7 +132,7 @@ public class Match {
     }
 
     @NotNull
-    public NonNegativeInteger getScoreOfPlayer(@NotNull Player player) {
+    private NonNegativeInteger getScoreOfPlayer(@NotNull Player player) {
         return new NonNegativeInteger(
                 (int) gameList.stream()
                         .filter(aGame -> {
