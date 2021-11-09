@@ -19,7 +19,7 @@ public abstract class Player implements Observable {
     protected Player(@NotNull String name) {
         this.name = Objects.requireNonNull(name);
         coordinatesRequiredToContinueProperty = new ObservableProperty<>();
-        coordinatesRequiredToContinueProperty.setPropertyValueAndFireIfPropertyChange(false);
+        coordinatesRequiredToContinueProperty.setPropertyValueWithoutNotifying(false);
     }
 
     public abstract void makeMove(@NotNull final Game currentGame) throws Board.BoardIsFullException;
