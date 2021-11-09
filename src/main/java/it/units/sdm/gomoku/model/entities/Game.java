@@ -50,7 +50,7 @@ public class Game implements Comparable<Game>, Observable {
     }
 
     public void start() {
-        gameStatus.setPropertyValueAndFireIfPropertyChange(Status.STARTED);
+        gameStatus.setPropertyValueAndFireIfPropertyChange(Status.STARTED); // TODO : rename all properties "*" in "*Property"
         currentPlayer.setPropertyValueAndFireIfPropertyChange(blackPlayer);
     }
 

@@ -34,7 +34,7 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
                     try {
                         Player winnerOfGame = viewmodel.getWinnerOfTheGame();
                         System.out.println("The game is finish with: " +
-                                (winnerOfGame != null ? "WIN of" + winnerOfGame : "DRAFT"));
+                                (winnerOfGame != null ? "WIN of " + winnerOfGame : "a DRAW"));
                     } catch (Game.GameNotEndedException ignored) {
                     }
 
@@ -42,7 +42,7 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
 
                     if (viewmodel.isMatchEnded()) {
                         try {
-                            if (viewmodel.isMatchEndedWithADraft()) {
+                            if (viewmodel.isMatchEndedWithADraft()) {   // TODO: replace all occurrences of "*draft*" with "*draw*" (remember: don't search only entire word matching)
                                 System.out.print("Extra game? Y/N: ");
                                 if (IOUtility.isYesFromStdin()) {
                                     viewmodel.startExtraGame();

@@ -102,7 +102,7 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
 
     public void createMatchFromSetupAndStartGame(Setup setup) {
         setMatch(new Match(setup));
-        observe(getCurrentBlackPlayer());
+        observe(getCurrentBlackPlayer());   // TODO : comment observe(..) method usages
         observe(getCurrentWhitePlayer());
         startNewGame();
     }
