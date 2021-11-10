@@ -17,6 +17,8 @@ class GameTest {
     private final PositiveInteger BOARD_SIZE = new PositiveInteger(5);
     private final CPUPlayer cpuBlack = new CPUPlayer();
     private final CPUPlayer cpuWhite = new CPUPlayer();
+    private final Coordinates firstCoordinates = new Coordinates(0, 0);
+    private final Coordinates secondCoordinates = new Coordinates(0, 1);
     private Game game;
 
     @BeforeEach
@@ -93,27 +95,33 @@ class GameTest {
 
     @Test
     void placeStoneBeforeStart() {
-        final Coordinates coordinates = new Coordinates(0, 0);
         try {
-            GameTestUtility.tryToPlaceStoneAndChangeTurn(coordinates, game);
+            GameTestUtility.tryToPlaceStoneAndChangeTurn(firstCoordinates, game);
         } catch (NullPointerException ignored) {
-            assertTrue(game.getBoard().getCellAtCoordinates(coordinates).isEmpty());
+            assertTrue(game.getBoard().getCellAtCoordinates(firstCoordinates).isEmpty());
         }
     }
 
     @Test
     void placeStoneAfterStart() {
         game.start();
-        final Coordinates coordinates = new Coordinates(0, 0);
-        GameTestUtility.tryToPlaceStoneAndChangeTurn(coordinates, game);
-        assertFalse(game.getBoard().getCellAtCoordinates(coordinates).isEmpty());
+        GameTestUtility.tryToPlaceStoneAndChangeTurn(firstCoordinates, game);
+        assertFalse(game.getBoard().getCellAtCoordinates(firstCoordinates).isEmpty());
     }
 
     @Test
     void changeTurnAfterFirstPlaceStone() {
         game.start();
-        final Coordinates coordinates = new Coordinates(0, 0);
-        GameTestUtility.tryToPlaceStoneAndChangeTurn(coordinates, game);
+        GameTestUtility.tryToPlaceStoneAndChangeTurn(firstCoordinates, game);
         assertEquals(cpuWhite, game.getCurrentPlayer().getPropertyValue());
     }
+
+    @Test
+    void changeTurnAfterSecondPlaceStone() {
+        changeTurnAfterFirstPlaceStone();
+        GameTestUtility.tryToPlaceStoneAndChangeTurn(secondCoordinates, game);
+        assertEquals(cpuBlack, game.getCurrentPlayer().getPropertyValue());
+    }
+
+
 }
