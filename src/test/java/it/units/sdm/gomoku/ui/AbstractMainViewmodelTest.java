@@ -85,6 +85,11 @@ class AbstractMainViewmodelTest {
     }
 
     @Test
+    void startNewGameAfterEndMatch() {
+        //TODO: the startNewGame must pass the exception?
+    }
+
+    @Test
     void startExtraGame() {
         abstractMainViewmodel.startNewMatch();
         Game oldGame = abstractMainViewmodel.getCurrentGame();
