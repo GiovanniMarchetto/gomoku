@@ -17,8 +17,7 @@ public class CLISceneController {   // TODO : refactor (common things with GUI)
     // TODO : test
 
     private static CLISceneController singleInstance;
-    private final CLIMainViewmodel cliMainViewmodel;
-    private final Map<CLIViewName, Supplier<View<?>>> views;
+    private static View<?> currentView;
 
     private CLISceneController() {
         cliMainViewmodel = new CLIMainViewmodel();
@@ -26,6 +25,9 @@ public class CLISceneController {   // TODO : refactor (common things with GUI)
         views.put(CLIViewName.CLI_START_VIEW, () -> new CLIStartView(new StartViewmodel(cliMainViewmodel)));
         views.put(CLIViewName.CLI_MAIN_VIEW, () -> new CLIMainView(cliMainViewmodel));
     }
+
+    private final CLIMainViewmodel cliMainViewmodel;
+    private final Map<CLIViewName, Supplier<View<?>>> views;
 
     public static void initialize() {
         // TODO : very similar to SceneController.initialize()
@@ -49,11 +51,12 @@ public class CLISceneController {   // TODO : refactor (common things with GUI)
     }
 
     public static void passToNewView(@NotNull final CLIViewName viewName) {
-        getInstance().getView(Objects.requireNonNull(viewName));
+        currentView = getInstance().getView(Objects.requireNonNull(viewName));
+        currentView.onViewInitialized();
     }
 
-    private void getView(@NotNull final CLIViewName viewName) {
-        views.get(Objects.requireNonNull(viewName)).get();
+    private View<?> getView(@NotNull final CLIViewName viewName) {
+        return views.get(Objects.requireNonNull(viewName)).get();
     }
 
     public enum CLIViewName {CLI_START_VIEW, CLI_MAIN_VIEW}
