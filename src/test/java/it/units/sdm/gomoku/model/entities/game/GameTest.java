@@ -108,4 +108,12 @@ class GameTest {
         GameTestUtility.tryToPlaceStoneAndChangeTurn(coordinates, game);
         assertFalse(game.getBoard().getCellAtCoordinates(coordinates).isEmpty());
     }
+
+    @Test
+    void changeTurnAfterFirstPlaceStone() {
+        game.start();
+        final Coordinates coordinates = new Coordinates(0, 0);
+        GameTestUtility.tryToPlaceStoneAndChangeTurn(coordinates, game);
+        assertEquals(cpuWhite, game.getCurrentPlayer().getPropertyValue());
+    }
 }
