@@ -58,22 +58,30 @@ public class GameTestUtility {
 
     public static void disputeGameAndPlayerWin(Game game, Player player) {
         try {
-            for (int i = 0; i < 4; i++) {
-                game.placeStoneAndChangeTurn(new Coordinates(i, 0));
-                game.placeStoneAndChangeTurn(new Coordinates(i, 1));
-            }
+            placeTwoChainOfFourIn0And1Columns(game);
 
             if (player == game.getCurrentPlayer().getPropertyValue()) {
-                game.placeStoneAndChangeTurn(new Coordinates(4, 0));
+                tryToPlaceStoneAndChangeTurn(new Coordinates(4, 0), game);
             } else {
-                game.placeStoneAndChangeTurn(new Coordinates(0, 2));
-                game.placeStoneAndChangeTurn(new Coordinates(4, 1));
+                tryToPlaceStoneAndChangeTurn(new Coordinates(0, 2), game);
+                tryToPlaceStoneAndChangeTurn(new Coordinates(4, 1), game);
             }
 
             if (game.getWinner() != player) {
                 fail("The winner is not the correct player");
             }
-        } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Game.GameNotEndedException | Game.GameEndedException e) {
+        } catch (Game.GameNotEndedException e) {
+            fail(e);
+        }
+    }
+
+    static void placeTwoChainOfFourIn0And1Columns(Game game) {
+        try {
+            for (int i = 0; i < 4; i++) {
+                game.placeStoneAndChangeTurn(new Coordinates(i, 0));
+                game.placeStoneAndChangeTurn(new Coordinates(i, 1));
+            }
+        } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Game.GameEndedException e) {
             fail(e);
         }
     }

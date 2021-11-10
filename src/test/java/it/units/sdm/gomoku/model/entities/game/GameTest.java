@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
 
+import static it.units.sdm.gomoku.model.entities.game.GameTestUtility.placeTwoChainOfFourIn0And1Columns;
+import static it.units.sdm.gomoku.model.entities.game.GameTestUtility.tryToPlaceStoneAndChangeTurn;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GameTest {
@@ -160,10 +162,22 @@ class GameTest {
 
     @Test
     void changeTurnAfterSecondPlaceStone() {
-        changeTurnAfterFirstPlaceStone();
+        game.start();
+        GameTestUtility.tryToPlaceStoneAndChangeTurn(firstCoordinates, game);
         GameTestUtility.tryToPlaceStoneAndChangeTurn(secondCoordinates, game);
         assertEquals(cpuBlack, game.getCurrentPlayer().getPropertyValue());
     }
 
+    @Test
+    void setWinnerIfIsTheWinMove() {
+        game.start();
+        placeTwoChainOfFourIn0And1Columns(game);
+        tryToPlaceStoneAndChangeTurn(new Coordinates(4, 0), game);
+        try {
+            assertEquals(cpuBlack, game.getWinner());
+        } catch (Game.GameNotEndedException e) {
+            fail(e);
+        }
+    }
 
 }
