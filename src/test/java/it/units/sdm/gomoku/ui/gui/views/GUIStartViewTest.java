@@ -7,7 +7,7 @@ import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
 import it.units.sdm.gomoku.model.entities.HumanPlayer;
 import it.units.sdm.gomoku.model.entities.Match;
-import it.units.sdm.gomoku.ui.AbstractMainViewmodel;
+import it.units.sdm.gomoku.ui.MainViewmodel;
 import it.units.sdm.gomoku.ui.StartViewmodel;
 import it.units.sdm.gomoku.ui.gui.GUIMain;
 import it.units.sdm.gomoku.ui.gui.SceneController;
@@ -328,7 +328,7 @@ class GUIStartViewTest {
                 throw eventuallyThrownException.get();
             }
         };
-        Function<AbstractMainViewmodel, Match> getCurrentMatchOrNullIfExceptionThrown = mainViewmodel -> {
+        Function<MainViewmodel, Match> getCurrentMatchOrNullIfExceptionThrown = mainViewmodel -> {
             try {
                 return (Match) TestUtility.getFieldValue("match", mainViewmodel);
             } catch (IllegalAccessException | NoSuchFieldException e) {
@@ -337,7 +337,7 @@ class GUIStartViewTest {
             }
         };
         try {
-            AbstractMainViewmodel mainViewmodel = (AbstractMainViewmodel) TestUtility
+            MainViewmodel mainViewmodel = (MainViewmodel) TestUtility
                     .getFieldValue("mainViewmodel", guiStartViewmodel);
             Match matchBeforeUserConfirmFieldsInStartView = getCurrentMatchOrNullIfExceptionThrown.apply(mainViewmodel);
             throwIfExceptionWasThrown.run();

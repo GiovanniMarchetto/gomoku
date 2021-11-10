@@ -1,9 +1,9 @@
 package it.units.sdm.gomoku.ui.gui.viewmodels;
 
-import it.units.sdm.gomoku.ui.AbstractMainViewmodel;
+import it.units.sdm.gomoku.ui.MainViewmodel;
 import it.units.sdm.gomoku.ui.gui.SceneController;
 
-public class GUIMainViewmodel extends AbstractMainViewmodel {
+public class GUIMainViewmodel extends MainViewmodel {
 
     @Override
     public void endGame() {
