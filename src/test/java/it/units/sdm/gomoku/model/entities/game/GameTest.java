@@ -239,4 +239,15 @@ class GameTest {
             fail(e);
         }
     }
+
+    @Test
+    void compareTo() {
+        try {
+            Thread.sleep(0, 1000);//1 microsecond
+        } catch (InterruptedException e) {
+            fail(e);
+        }
+        Game gameNewer = new Game(BOARD_SIZE, cpuBlack, cpuWhite);
+        assertTrue(game.compareTo(gameNewer) < 0);
+    }
 }
