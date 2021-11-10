@@ -122,7 +122,7 @@ class MainViewmodelTest {
     }
 
     @Test
-    void isMatchEndedWithADraft() {
+    void isMatchEndedWithADraw() {
         //TODO
     }
 

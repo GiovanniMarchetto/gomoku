@@ -127,7 +127,7 @@ class GameTest {
     }
 
     @Test
-    void getWinnerWithDraft() {
+    void getWinnerWithDraw() {
         game.start();
         try {
             GameTestUtility.disputeGameAndDraw(game, BOARD_SIZE);

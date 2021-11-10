@@ -126,8 +126,8 @@ public abstract class MainViewmodel extends Viewmodel {
         return Objects.requireNonNull(match).isEnded();
     }
 
-    public synchronized boolean isMatchEndedWithADraft() throws Match.MatchNotEndedException {
-        return Objects.requireNonNull(match).isADraft();
+    public synchronized boolean isMatchEndedWithADraw() throws Match.MatchNotEndedException {
+        return Objects.requireNonNull(match).isADraw();
     }
 
 
