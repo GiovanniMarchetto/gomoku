@@ -250,4 +250,21 @@ class GameTest {
         Game gameNewer = new Game(BOARD_SIZE, cpuBlack, cpuWhite);
         assertTrue(game.compareTo(gameNewer) < 0);
     }
+
+    @Test
+    void testToString() {
+        game.start();
+        disputeGameWithSmartAlgorithm(game);
+        String expected = "";
+        try {
+            expected = "Game started at " + game.getStart() + "\n" +
+                    cpuBlack + " -> BLACK, " +
+                    cpuWhite + " -> WHITE" + "\n" +
+                    "Winner: " + game.getWinner() + "\n" +
+                    game.getBoard();
+        } catch (Game.GameNotEndedException e) {
+            fail(e);
+        }
+        assertEquals(expected, game.toString());
+    }
 }
