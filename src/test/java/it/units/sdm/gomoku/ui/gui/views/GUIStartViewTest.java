@@ -175,7 +175,7 @@ class GUIStartViewTest {
         final String fieldNameInViewmodel = "numberOfGames";
         try {
             TextField numberOfGamesTextField = getTextField(textfieldNameInView);
-            setOldValueInViewmodelAndTheSetNewValueInView(
+            setOldValueInViewmodelAndThenSetNewValueInView(
                     String.valueOf(oldNumberOfGamesAlreadySet), String.valueOf(newNumberOfGamesInsertedByUser),
                     fieldNameInViewmodel,
                     numberOfGamesTextField.textProperty()::setValue);
@@ -259,7 +259,7 @@ class GUIStartViewTest {
             @Nullable final T oldValue, @Nullable final T newValue,
             @NotNull final String fieldNameInViewmodel, @NotNull final Consumer<T> propertyValueSetterInView)
             throws NoSuchFieldException, IllegalAccessException {
-        setOldValueInViewmodelAndTheSetNewValueInView(oldValue, newValue, fieldNameInViewmodel, propertyValueSetterInView);
+        setOldValueInViewmodelAndThenSetNewValueInView(oldValue, newValue, fieldNameInViewmodel, propertyValueSetterInView);
         assertEquals(TestUtility.getFieldValue(fieldNameInViewmodel, guiStartViewmodel), newValue);
     }
 
@@ -270,7 +270,7 @@ class GUIStartViewTest {
                 .get(guiStartView);
     }
 
-    private <T> void setOldValueInViewmodelAndTheSetNewValueInView(
+    private <T> void setOldValueInViewmodelAndThenSetNewValueInView(
             @Nullable T oldValue, @Nullable T newValue, @NotNull String fieldNameInViewmodel,
             @NotNull Consumer<T> propertyValueSetterInView)
             throws NoSuchFieldException, IllegalAccessException {
