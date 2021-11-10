@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -21,10 +20,10 @@ public class CLIProgramFluxTest {
 
     private static final Supplier<CLISceneController> cliSceneControllerInstanceGetter = () -> {
         try {
-            Method cliSceneControllerInstanceGetterMethod = CLISceneController.class.getDeclaredMethod("getInstance");
-            cliSceneControllerInstanceGetterMethod.setAccessible(true);
-            return (CLISceneController) cliSceneControllerInstanceGetterMethod.invoke(null);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            return (CLISceneController) TestUtility
+                    .getMethodAlreadyMadeAccessible(CLISceneController.class, "getInstance")
+                    .invoke(null);
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchFieldException e) {
             fail(e);
             return null;
         }
@@ -38,15 +37,14 @@ public class CLIProgramFluxTest {
     @Test
     void launchApplicationAndCheckSceneControllerInstantiation() {
         try {
-            Method launcher = CLIMain.class.getDeclaredMethod("launch");
-            launcher.setAccessible(true);
-            Method wasSceneControllerAlreadyInstantiatedMethod = CLISceneController.class.getDeclaredMethod("wasAlreadyInstantiated");
-            wasSceneControllerAlreadyInstantiatedMethod.setAccessible(true);
             try {
-                launcher.invoke(null);
+                TestUtility.getMethodAlreadyMadeAccessible(CLIMain.class, "launch")
+                        .invoke(null);
             } catch (Exception ignored) {
             }
-            assertTrue((boolean) wasSceneControllerAlreadyInstantiatedMethod.invoke(null));
+            assertTrue((boolean) TestUtility
+                    .getMethodAlreadyMadeAccessible(CLISceneController.class, "wasAlreadyInstantiated")
+                    .invoke(null));
         } catch (Exception e) {
             fail(e);
         }

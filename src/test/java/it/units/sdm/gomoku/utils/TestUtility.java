@@ -14,8 +14,10 @@ import org.json.JSONObject;
 import org.junit.jupiter.params.provider.Arguments;
 
 import java.io.IOException;
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -207,22 +209,45 @@ public class TestUtility {
     public static Field getFieldAlreadyMadeAccessible(@NotNull final Class<?> clazz,
                                                       @NotNull final String fieldName)  // TODO : test
             throws NoSuchFieldException {   // TODO : use this method wherever needed
-        Field field = getInheritedFields(Objects.requireNonNull(clazz))
-                .stream()
-                .filter(aField -> aField.getName().equals(Objects.requireNonNull(fieldName)))
-                .findFirst()
-                .orElseThrow(NoSuchFieldException::new);
-        field.setAccessible(true);
-        return field;
+        return (Field) getMemberAlreadyMadeAccessible(Objects.requireNonNull(clazz), fieldName, true);
     }
 
     @NotNull
-    private static List<Field> getInheritedFields(@Nullable final Class<?> clazz) {
-        List<Field> result = new ArrayList<>();
+    public static Method getMethodAlreadyMadeAccessible(@NotNull final Class<?> clazz,
+                                                        @NotNull final String fieldName)  // TODO : test
+            throws NoSuchFieldException {   // TODO : use this method wherever needed
+        return (Method) getMemberAlreadyMadeAccessible(Objects.requireNonNull(clazz), fieldName, false);
+    }
+
+    @NotNull
+    public static AccessibleObject getMemberAlreadyMadeAccessible(@NotNull final Class<?> clazz,
+                                                                  @NotNull final String fieldName,
+                                                                  boolean trueIfFieldsDesiredOrFalseForMethods)  // TODO : test
+            throws NoSuchFieldException {   // TODO : use this method wherever needed
+        AccessibleObject accessibleObject = getInheritedFieldsOrMethods(Objects.requireNonNull(clazz), trueIfFieldsDesiredOrFalseForMethods)
+                .stream()
+                .map(member -> trueIfFieldsDesiredOrFalseForMethods ? (Field) member : (Method) member)
+                .filter(aMethod -> aMethod.getName().equals(Objects.requireNonNull(fieldName)))
+                .findFirst()
+                .orElseThrow(() ->
+                        new NoSuchFieldException(fieldName + " member not found neither in class " +
+                                clazz.getCanonicalName() + " nor in its superclasses."));
+        accessibleObject.setAccessible(true);
+        return accessibleObject;
+    }
+
+    @NotNull
+    private static List<AccessibleObject> getInheritedFieldsOrMethods(@Nullable Class<?> clazz,
+                                                                      boolean trueIfFieldsDesiredOrFalseForMethods) {
+        List<AccessibleObject> result = new ArrayList<>();
         for (Class<?> derivedClass = clazz;
              derivedClass != null && derivedClass != Object.class;
              derivedClass = derivedClass.getSuperclass()) {
-            Collections.addAll(result, derivedClass.getDeclaredFields());
+            Collections.addAll(
+                    result,
+                    trueIfFieldsDesiredOrFalseForMethods
+                            ? derivedClass.getDeclaredFields()
+                            : derivedClass.getDeclaredMethods());
         }
         return result;
     }
