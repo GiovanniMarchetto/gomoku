@@ -209,25 +209,31 @@ public class TestUtility {
     public static Field getFieldAlreadyMadeAccessible(@NotNull final Class<?> clazz,
                                                       @NotNull final String fieldName)  // TODO : test
             throws NoSuchFieldException {   // TODO : use this method wherever needed
-        return (Field) getMemberAlreadyMadeAccessible(Objects.requireNonNull(clazz), fieldName, true);
+        return (Field) getMemberAlreadyMadeAccessible(Objects.requireNonNull(clazz), fieldName, null);
     }
 
     @NotNull
     public static Method getMethodAlreadyMadeAccessible(@NotNull final Class<?> clazz,
-                                                        @NotNull final String fieldName)  // TODO : test
+                                                        @NotNull final String methodName,
+                                                        @NotNull Class<?>[] parameterTypes)  // TODO : test
             throws NoSuchFieldException {   // TODO : use this method wherever needed
-        return (Method) getMemberAlreadyMadeAccessible(Objects.requireNonNull(clazz), fieldName, false);
+        return (Method) getMemberAlreadyMadeAccessible(
+                Objects.requireNonNull(clazz),
+                Objects.requireNonNull(methodName),
+                Objects.requireNonNull(parameterTypes));
     }
 
     @NotNull
     public static AccessibleObject getMemberAlreadyMadeAccessible(@NotNull final Class<?> clazz,
                                                                   @NotNull final String fieldName,
-                                                                  boolean trueIfFieldsDesiredOrFalseForMethods)  // TODO : test
+                                                                  @Nullable Class<?>[] parameterTypesIfMethodOrNullIfField)  // TODO : test
             throws NoSuchFieldException {   // TODO : use this method wherever needed
+        boolean trueIfFieldsDesiredOrFalseForMethods = parameterTypesIfMethodOrNullIfField == null;
         AccessibleObject accessibleObject = getInheritedFieldsOrMethods(Objects.requireNonNull(clazz), trueIfFieldsDesiredOrFalseForMethods)
                 .stream()
                 .map(member -> trueIfFieldsDesiredOrFalseForMethods ? (Field) member : (Method) member)
-                .filter(aMethod -> aMethod.getName().equals(Objects.requireNonNull(fieldName)))
+                .filter(aMember -> aMember.getName().equals(Objects.requireNonNull(fieldName)))
+                .filter(aMember -> trueIfFieldsDesiredOrFalseForMethods || Arrays.equals(((Method) aMember).getParameterTypes(), parameterTypesIfMethodOrNullIfField))
                 .findFirst()
                 .orElseThrow(() ->
                         new NoSuchFieldException(fieldName + " member not found neither in class " +
@@ -270,14 +276,14 @@ public class TestUtility {
 
     public static <T> Object invokeMethodOnObject(
             @NotNull final T targetObject, @NotNull final String methodName, @Nullable Object... paramsToMethod)
-            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {  // TODO : test
+            throws NoSuchFieldException, InvocationTargetException, IllegalAccessException {  // TODO : test
         Class<?>[] paramTypes =
                 Arrays.stream(paramsToMethod).sequential()
                         .filter(Objects::nonNull)
                         .map(Object::getClass)
                         .toArray(Class<?>[]::new);
-        return Objects.requireNonNull(targetObject).getClass()
-                .getDeclaredMethod(Objects.requireNonNull(methodName), paramTypes)
+        return getMethodAlreadyMadeAccessible(
+                targetObject.getClass(), methodName, paramTypes)
                 .invoke(targetObject, paramsToMethod);
     }
 

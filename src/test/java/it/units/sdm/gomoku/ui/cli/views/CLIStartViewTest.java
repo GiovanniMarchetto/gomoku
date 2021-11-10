@@ -46,7 +46,7 @@ class CLIStartViewTest {
             try {
                 MatchTypes matchTypeAccordingToInputInsertedByTheUser =
                         (MatchTypes) TestUtility
-                                .getMethodAlreadyMadeAccessible(cliStartView.getClass(), "askAndGetNumberOfPlayers")
+                                .getMethodAlreadyMadeAccessible(cliStartView.getClass(), "askAndGetNumberOfPlayers", new Class[0])
                                 .invoke(null);
                 assertEquals(MatchTypes.valueOf(matchTypeOrError), matchTypeAccordingToInputInsertedByTheUser);
             } catch (InvocationTargetException invalidInputInsertedCausedException) {
