@@ -6,6 +6,9 @@ import it.units.sdm.gomoku.model.entities.CPUPlayer;
 import it.units.sdm.gomoku.model.entities.Game;
 import it.units.sdm.gomoku.model.entities.Player;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class GameTestUtility {
@@ -30,29 +33,19 @@ public class GameTestUtility {
     }
 
     public static void disputeGameAndDraw(Game game, int boardSize) {
-        final CPUPlayer cpuPlayer = new CPUPlayer();
+        List<Coordinates> remainCoordinates = new ArrayList<>();
         for (int x = 0; x < boardSize; x++) {
             for (int y = 0; y < boardSize; y++) {
                 if (x % 3 == 0 && y == 0) {
                     tryToPlaceStoneAndChangeTurn(new Coordinates(x, y), game);
+                } else {
+                    remainCoordinates.add(new Coordinates(x, y));
                 }
             }
         }
 
-        while (!game.isEnded()) {
-            try {
-                tryToPlaceStoneAndChangeTurn(cpuPlayer.chooseNextEmptyCoordinates(game.getBoard()), game);
-            } catch (Board.BoardIsFullException e) {
-                fail(e);
-            }
-        }
-
-        try {
-            if (game.getWinner() != null) {
-                fail("It's not a draw");
-            }
-        } catch (Game.GameNotEndedException e) {
-            fail(e);
+        for (Coordinates c : remainCoordinates) {
+            tryToPlaceStoneAndChangeTurn(c, game);
         }
     }
 
