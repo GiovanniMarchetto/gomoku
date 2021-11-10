@@ -100,4 +100,16 @@ class GameTest {
         }
     }
 
+    //region Support methods
+    public static void disputeGameWithSmartAlgorithm(Game game) {
+        CPUPlayer cpuPlayer = new CPUPlayer();
+        while (!game.isEnded()) {
+            try {
+                game.placeStoneAndChangeTurn(cpuPlayer.chooseSmartEmptyCoordinates(game.getBoard()));
+            } catch (Board.CellAlreadyOccupiedException | Board.BoardIsFullException | Game.GameEndedException e) {
+                fail(e);
+            }
+        }
+    }
+    //endregion
 }

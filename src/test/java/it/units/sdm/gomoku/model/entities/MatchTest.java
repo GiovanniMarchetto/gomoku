@@ -47,7 +47,7 @@ class MatchTest {
     void maxNumberOfGamesException() {
         for (int i = 0; i < NUMBER_OF_GAMES; i++) {
             startNewGameComplete();
-            disputeGameWithSmartAlgorithm();
+            GameTest.disputeGameWithSmartAlgorithm(currentGame);
         }
 
         try {
@@ -178,7 +178,7 @@ class MatchTest {
     @Test
     void isEndedNormalFlow() {
         isEndedAfterStartLastGame();
-        disputeGameWithSmartAlgorithm();
+        GameTest.disputeGameWithSmartAlgorithm(currentGame);
         assertTrue(match.isEnded());
     }
 
@@ -230,7 +230,7 @@ class MatchTest {
         }
     }
 
-    //region Private support methods
+    //region Support methods
     private void assertCpusScore(int n1, int n2) {
         assertEquals(n1, match.getScore().get(cpu1).intValue());
         assertEquals(n2, match.getScore().get(cpu2).intValue());
@@ -242,17 +242,6 @@ class MatchTest {
             currentGame.start();
         } catch (Match.MatchEndedException | Match.MaxNumberOfGamesException e) {
             fail(e);
-        }
-    }
-
-    private void disputeGameWithSmartAlgorithm() {
-        CPUPlayer cpuPlayer = new CPUPlayer();
-        while (!currentGame.isEnded()) {
-            try {
-                currentGame.placeStoneAndChangeTurn(cpuPlayer.chooseSmartEmptyCoordinates(currentGame.getBoard()));
-            } catch (Board.CellAlreadyOccupiedException | Board.BoardIsFullException | Game.GameEndedException e) {
-                fail(e);
-            }
         }
     }
 
