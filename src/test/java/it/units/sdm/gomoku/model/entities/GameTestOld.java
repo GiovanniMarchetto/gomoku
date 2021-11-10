@@ -42,7 +42,7 @@ class GameTestOld {
 
     @ParameterizedTest
     @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfMoveControlRecordFields")
-    void placeStone(Cell[][] matrix, Coordinates coordinates, boolean finishedGame) throws NoSuchFieldException, IllegalAccessException {
+    void placeStone(Cell[][] matrix, Coordinates coordinates, boolean ignored, boolean finishedGame) throws NoSuchFieldException, IllegalAccessException {
         game = new Game(matrix.length, cpuBlack, cpuWhite);
         setGameFromCsv(game, matrix);
 
@@ -65,22 +65,22 @@ class GameTestOld {
         }
     }
 
-    @ParameterizedTest
-    @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfMoveControlRecordFields")
-    void getWinner(Cell[][] matrix, Coordinates coordinates, boolean finishedGame) {
-        game = new Game(matrix.length, cpuBlack, cpuWhite);
-        setGameFromCsv(game, matrix);
-        try {
-            Player winner = game.getWinner();
-            if (game.getBoard().isThereAnyEmptyCell()) {
-                assertNotNull(winner);
-            } else {
-                assertNull(winner);
-            }
-        } catch (Game.GameNotEndedException e) {
-            assertFalse(finishedGame);
-        }
-    }
+//    @ParameterizedTest
+//    @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfMoveControlRecordFields")
+//    void getWinner(Cell[][] matrix, Coordinates coordinates,boolean ignored, boolean finishedGame) {
+//        game = new Game(matrix.length, cpuBlack, cpuWhite);
+//        setGameFromCsv(game, matrix);
+//        try {
+//            Player winner = game.getWinner();
+//            if (game.getBoard().isThereAnyEmptyCell()) {
+//                assertNotNull(winner);
+//            } else {
+//                assertNull(winner);
+//            }
+//        } catch (Game.GameNotEndedException e) {
+//            assertFalse(finishedGame);
+//        }
+//    }
 
     @ParameterizedTest
     @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfMoveControlRecordFields")
