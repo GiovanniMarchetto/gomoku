@@ -97,6 +97,18 @@ public class StartViewmodel extends Viewmodel {
     public void setNumberOfGames(@NotNull final String numberOfGames) {
         this.numberOfGames = Objects.requireNonNull(numberOfGames);
     }
+
+    private void setFieldValuesFromSetupWithoutSetters(@NotNull final Setup setup) {    // TODO : test
+        // TODO : needed?
+        player1Name = setup.player1().getName();
+        player2Name = setup.player2().getName();
+        player1CPU = setup.player1() instanceof CPUPlayer;
+        player2CPU = setup.player2() instanceof CPUPlayer;
+        selectedBoardSize = BoardSizes.fromBoardSizeValue(setup.boardSize())
+                .orElseThrow(IllegalArgumentException::new)
+                .toString();
+        numberOfGames = setup.numberOfGames().toString();
+    }
     //endregion
 
     @Override
