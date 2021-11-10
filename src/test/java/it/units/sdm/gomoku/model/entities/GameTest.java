@@ -100,7 +100,7 @@ class GameTest {
         }
     }
 
-    //region Support methods
+    //region Public Support methods
     public static void disputeGameWithSmartAlgorithm(Game game) {
         CPUPlayer cpuPlayer = new CPUPlayer();
         while (!game.isEnded()) {
@@ -109,6 +109,60 @@ class GameTest {
             } catch (Board.CellAlreadyOccupiedException | Board.BoardIsFullException | Game.GameEndedException e) {
                 fail(e);
             }
+        }
+    }
+
+    public static void disputeGameAndPlayerWin(Game game, Player player) {
+        try {
+            for (int i = 0; i < 4; i++) {
+                game.placeStoneAndChangeTurn(new Coordinates(i, 0));
+                game.placeStoneAndChangeTurn(new Coordinates(i, 1));
+            }
+
+            if (player == game.getCurrentPlayer().getPropertyValue()) {
+                game.placeStoneAndChangeTurn(new Coordinates(4, 0));
+            } else {
+                game.placeStoneAndChangeTurn(new Coordinates(0, 2));
+                game.placeStoneAndChangeTurn(new Coordinates(4, 1));
+            }
+
+            if (game.getWinner() != player) {
+                fail("The winner is not the correct player");
+            }
+        } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Game.GameNotEndedException | Game.GameEndedException e) {
+            fail(e);
+        }
+    }
+
+    public static void disputeGameAndDraw(Game game, int boardSize) {
+        CPUPlayer cpuPlayer = new CPUPlayer();
+
+        for (int x = 0; x < boardSize; x++) {
+            for (int y = 0; y < boardSize; y++) {
+                if (x % 3 == 0 && y == 0) {
+                    try {
+                        game.placeStoneAndChangeTurn(new Coordinates(x, y));
+                    } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Game.GameEndedException e) {
+                        fail(e);
+                    }
+                }
+            }
+        }
+
+        while (!game.isEnded()) {
+            try {
+                game.placeStoneAndChangeTurn(cpuPlayer.chooseNextEmptyCoordinates(game.getBoard()));
+            } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Game.GameEndedException e) {
+                fail(e);
+            }
+        }
+
+        try {
+            if (game.getWinner() != null) {
+                fail("It's not a draw");
+            }
+        } catch (Game.GameNotEndedException e) {
+            fail(e);
         }
     }
     //endregion

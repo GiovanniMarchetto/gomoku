@@ -1,6 +1,5 @@
 package it.units.sdm.gomoku.model.entities;
 
-import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -230,7 +229,7 @@ class MatchTest {
         }
     }
 
-    //region Support methods
+    //region Private support methods
     private void assertCpusScore(int n1, int n2) {
         assertEquals(n1, match.getScore().get(cpu1).intValue());
         assertEquals(n2, match.getScore().get(cpu2).intValue());
@@ -247,59 +246,13 @@ class MatchTest {
 
     private void startGameAndPlayerWin(Player player) {
         startNewGameComplete();
-
-        try {
-            for (int i = 0; i < 4; i++) {
-                currentGame.placeStoneAndChangeTurn(new Coordinates(i, 0));
-                currentGame.placeStoneAndChangeTurn(new Coordinates(i, 1));
-            }
-
-            if (player == currentGame.getCurrentPlayer().getPropertyValue()) {
-                currentGame.placeStoneAndChangeTurn(new Coordinates(4, 0));
-            } else {
-                currentGame.placeStoneAndChangeTurn(new Coordinates(0, 2));
-                currentGame.placeStoneAndChangeTurn(new Coordinates(4, 1));
-            }
-
-            if (currentGame.getWinner() != player) {
-                fail("The winner is not the correct player");
-            }
-        } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Game.GameNotEndedException | Game.GameEndedException e) {
-            fail(e);
-        }
+        GameTest.disputeGameAndPlayerWin(currentGame, player);
     }
 
     private void startGameAndDraft() {
         startNewGameComplete();
-        for (int x = 0; x < boardSizeTest; x++) {
-            for (int y = 0; y < boardSizeTest; y++) {
-                if (x % 3 == 0 && y == 0) {
-                    try {
-                        currentGame.placeStoneAndChangeTurn(new Coordinates(x, y));
-                    } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Game.GameEndedException e) {
-                        fail(e);
-                    }
-                }
-            }
-        }
-
-        while (!currentGame.isEnded()) {
-            try {
-                currentGame.placeStoneAndChangeTurn(cpu1.chooseNextEmptyCoordinates(currentGame.getBoard()));
-            } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Game.GameEndedException e) {
-                fail(e);
-            }
-        }
-
-        try {
-            if (currentGame.getWinner() != null) {
-                fail("NOT A DRAFT");
-            }
-        } catch (Game.GameNotEndedException e) {
-            fail(e);
-        }
+        GameTest.disputeGameAndDraw(currentGame, boardSizeTest);
     }
-
     //endregion
 
 }
