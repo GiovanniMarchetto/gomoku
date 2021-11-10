@@ -1,9 +1,9 @@
 package it.units.sdm.gomoku.ui;
 
-import it.units.sdm.gomoku.model.custom_types.Coordinates;
-import it.units.sdm.gomoku.model.entities.*;
+import it.units.sdm.gomoku.model.entities.Game;
+import it.units.sdm.gomoku.model.entities.Player;
+import it.units.sdm.gomoku.model.entities.Stone;
 import it.units.sdm.gomoku.utils.TestUtility;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
@@ -14,20 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class AbstractMainViewmodelTest {
 
-    private final Match match = new Match(setup);
     private final AbstractMainViewmodel abstractMainViewmodel = new TestMainViewmodel();
-
-    private Player currentPlayerProperty;
-    private Game.Status currentGameStatusProperty;
-    private boolean userMustPlaceNewStoneProperty;
-    private Coordinates lastMoveCoordinatesProperty;
-    private Game currentGame;
-    private Board currentBoard;
-
-    @BeforeEach
-    void setup() {
-//        System.out.println(abstractMainViewmodel);
-    }
 
     @Test
     void initializeNewGame() {
@@ -47,8 +34,7 @@ class AbstractMainViewmodelTest {
     void beforeTriggerFirstMoveCurrentPlayerIsNull() {
         try {
             abstractMainViewmodel.startNewMatch();
-            currentGame = abstractMainViewmodel.getCurrentGame();
-            assertNull(currentGame.getCurrentPlayer().getPropertyValue());
+            assertNull(abstractMainViewmodel.getCurrentGame().getCurrentPlayer().getPropertyValue());
         } catch (NullPointerException e) {
             fail(e);
         }
@@ -60,7 +46,7 @@ class AbstractMainViewmodelTest {
             abstractMainViewmodel.startNewMatch();
             abstractMainViewmodel.triggerFirstMove();
 
-            currentGame = abstractMainViewmodel.getCurrentGame();
+            Game currentGame = abstractMainViewmodel.getCurrentGame();
             assertEquals(Game.Status.STARTED, currentGame.getGameStatus().getPropertyValue());
 
             Player currentPlayer = currentGame.getCurrentPlayer().getPropertyValue();
@@ -77,8 +63,9 @@ class AbstractMainViewmodelTest {
     void createMatchFromSetupAndStartGame() {
         try {
             Field matchField = TestUtility.getFieldAlreadyMadeAccessible(AbstractMainViewmodel.class, "match");
-            assertNull(matchField.get(abstractMainViewmodel));
             Field gameField = TestUtility.getFieldAlreadyMadeAccessible(AbstractMainViewmodel.class, "currentGame");
+
+            assertNull(matchField.get(abstractMainViewmodel));
             assertNull(gameField.get(abstractMainViewmodel));
 
             abstractMainViewmodel.createMatchFromSetupAndStartGame(setup);
@@ -99,7 +86,24 @@ class AbstractMainViewmodelTest {
 
     @Test
     void startExtraGame() {
-        //TODO
+        abstractMainViewmodel.startNewMatch();
+        Game oldGame = abstractMainViewmodel.getCurrentGame();
+        Game newGame = null;
+        while (oldGame != newGame) {
+            try {
+                System.out.println("game");
+                oldGame = abstractMainViewmodel.getCurrentGame();
+                abstractMainViewmodel.startNewGame();
+                newGame = abstractMainViewmodel.getCurrentGame();
+            } catch (Exception e) {
+                System.err.println(e);
+                break;
+            }
+        }
+
+        abstractMainViewmodel.startExtraGame();
+        newGame = abstractMainViewmodel.getCurrentGame();
+        assertNotEquals(oldGame, newGame);
     }
 
     @Test

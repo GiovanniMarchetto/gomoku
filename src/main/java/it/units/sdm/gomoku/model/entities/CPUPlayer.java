@@ -66,7 +66,7 @@ public class CPUPlayer extends Player {
         try {
             Thread.sleep(DELAY_BEFORE_PLACING_STONE_MILLIS);
             currentGame.placeStoneAndChangeTurn(coordinates);
-        } catch (Board.CellAlreadyOccupiedException | InterruptedException e) {
+        } catch (Board.CellAlreadyOccupiedException | InterruptedException | Game.GameEndedException e) {
             e.printStackTrace(); // TODO: handle this: this should never happen (I think?)
         }
     }

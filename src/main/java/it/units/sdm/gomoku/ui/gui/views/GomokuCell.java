@@ -3,6 +3,7 @@ package it.units.sdm.gomoku.ui.gui.views;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.entities.Cell;
+import it.units.sdm.gomoku.model.entities.Game;
 import it.units.sdm.gomoku.model.entities.Stone;
 import it.units.sdm.gomoku.mvvm_library.Observer;
 import it.units.sdm.gomoku.property_change_handlers.ObservableProperty;
@@ -225,8 +226,7 @@ public class GomokuCell implements Observer {
             if (cell.isEmpty() && event.isPrimaryButtonDown() && userCanPlace()) {
                 try {
                     guiMainViewmodel.placeStoneFromUser(coordinates);
-                } catch (Board.BoardIsFullException |
-                        Board.CellAlreadyOccupiedException e) {
+                } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Game.GameEndedException e) {
                     e.printStackTrace();    // TODO : handle this exception (should never happen)
                     // Possible things to do:
                     // force update stone (in GUI) at current coordinates, or...

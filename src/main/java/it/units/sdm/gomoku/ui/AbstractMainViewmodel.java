@@ -149,7 +149,7 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
     }
 
     public void placeStoneFromUser(@NotNull final Coordinates coordinates)
-            throws Board.BoardIsFullException, Board.CellAlreadyOccupiedException {
+            throws Board.BoardIsFullException, Board.CellAlreadyOccupiedException, Game.GameEndedException {
         if (Boolean.TRUE.equals(userMustPlaceNewStoneProperty.getPropertyValue())) {
             HumanPlayer currentHumanPlayer = (HumanPlayer) Objects.requireNonNull(getCurrentPlayer());
             currentHumanPlayer.placeStone(coordinates);

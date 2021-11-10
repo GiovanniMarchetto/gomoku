@@ -250,7 +250,7 @@ class MatchTest {
         while (!currentGame.isEnded()) {
             try {
                 currentGame.placeStoneAndChangeTurn(cpuPlayer.chooseSmartEmptyCoordinates(currentGame.getBoard()));
-            } catch (Board.CellAlreadyOccupiedException | Board.BoardIsFullException e) {
+            } catch (Board.CellAlreadyOccupiedException | Board.BoardIsFullException | Game.GameEndedException e) {
                 fail(e);
             }
         }
@@ -275,7 +275,7 @@ class MatchTest {
             if (currentGame.getWinner() != player) {
                 fail("The winner is not the correct player");
             }
-        } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Game.GameNotEndedException e) {
+        } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Game.GameNotEndedException | Game.GameEndedException e) {
             fail(e);
         }
     }
@@ -287,7 +287,7 @@ class MatchTest {
                 if (x % 3 == 0 && y == 0) {
                     try {
                         currentGame.placeStoneAndChangeTurn(new Coordinates(x, y));
-                    } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
+                    } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Game.GameEndedException e) {
                         fail(e);
                     }
                 }
@@ -297,7 +297,7 @@ class MatchTest {
         while (!currentGame.isEnded()) {
             try {
                 currentGame.placeStoneAndChangeTurn(cpu1.chooseNextEmptyCoordinates(currentGame.getBoard()));
-            } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
+            } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Game.GameEndedException e) {
                 fail(e);
             }
         }

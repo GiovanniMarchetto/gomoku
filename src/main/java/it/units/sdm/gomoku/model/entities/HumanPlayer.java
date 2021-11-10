@@ -23,7 +23,7 @@ public class HumanPlayer extends Player {
     }
 
     public void placeStone(@NotNull Coordinates coordinates)
-            throws Board.BoardIsFullException, Board.CellAlreadyOccupiedException {
+            throws Board.BoardIsFullException, Board.CellAlreadyOccupiedException, Game.GameEndedException {
         Objects.requireNonNull(coordinates);
         setCoordinatesRequired(false);
         Objects.requireNonNull(currentGame).placeStoneAndChangeTurn(coordinates);
