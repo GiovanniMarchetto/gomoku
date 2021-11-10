@@ -9,6 +9,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Objects;
 
 import static it.units.sdm.gomoku.model.entities.game.GameTestUtility.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -222,5 +226,17 @@ class GameTest {
         game.start();
         disputeGameAndDraw(game, BOARD_SIZE);
         assertTrue(game.isEnded());
+    }
+
+    @Test
+    void getStart() {
+        try {
+            ZonedDateTime expected = ((Instant)
+                    Objects.requireNonNull(TestUtility.getFieldValue("start", game)))
+                    .atZone(ZoneId.systemDefault());
+            assertEquals(expected, game.getStart());
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            fail(e);
+        }
     }
 }
