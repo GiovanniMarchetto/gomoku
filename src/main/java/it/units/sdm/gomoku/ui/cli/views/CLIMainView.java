@@ -8,22 +8,19 @@ import it.units.sdm.gomoku.model.entities.Player;
 import it.units.sdm.gomoku.mvvm_library.Observer;
 import it.units.sdm.gomoku.mvvm_library.View;
 import it.units.sdm.gomoku.property_change_handlers.PropertyObserver;
-import it.units.sdm.gomoku.ui.StartViewmodel;
-import it.units.sdm.gomoku.ui.cli.CLIMain;
 import it.units.sdm.gomoku.ui.cli.IOUtility;
 import it.units.sdm.gomoku.ui.cli.viewmodels.CLIMainViewmodel;
+import org.jetbrains.annotations.NotNull;
 
 import java.beans.PropertyChangeEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class CLIMainView extends View<CLIMainViewmodel> implements Observer {    // TODO : all events clutter the memory stack
+    // TODO : test
 
-    public CLIMainView(StartViewmodel startViewmodel) {  // TODO : event-based flux of program to be tested
-        super(CLIMain.cliMainViewmodel);
-        observe(startViewmodel);    //startviewmodel fires newGameStarted property
-        CLIMainViewmodel cliMainViewmodel = getViewmodelAssociatedWithView();
-        observe(cliMainViewmodel);  // TODO : rethink about this (should View abstract class implement Observer to observer its corresponding Viewmodel)
+    public CLIMainView(@NotNull final CLIMainViewmodel cliMainViewmodel) {  // TODO : event-based flux of program to be tested
+        super(cliMainViewmodel);
         new PropertyObserver<>(cliMainViewmodel.getCurrentGameStatusProperty(), evt -> {
             switch ((Game.Status) evt.getNewValue()) {
                 case STARTED -> System.out.println("\n\nNew game!");
@@ -83,6 +80,7 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
                 }
             }
         });
+        cliMainViewmodel.triggerFirstMove();
     }
 
     @Override
