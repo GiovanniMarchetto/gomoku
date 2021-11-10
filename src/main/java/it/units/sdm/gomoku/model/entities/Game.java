@@ -65,6 +65,11 @@ public class Game implements Comparable<Game>, Observable {
     }
 
     @NotNull
+    public ZonedDateTime getStart() {
+        return start.atZone(ZoneId.systemDefault());
+    }
+
+    @NotNull
     public Stone.Color getColorOfPlayer(@NotNull final Player player) {
         return player.equals(blackPlayer) ? Stone.Color.BLACK : Stone.Color.WHITE;
     }
@@ -142,11 +147,6 @@ public class Game implements Comparable<Game>, Observable {
                 whitePlayer + " -> WHITE" + "\n" +
                 "Winner: " + winner + "\n" +
                 board;
-    }
-
-    @NotNull
-    public ZonedDateTime getStart() {
-        return start.atZone(ZoneId.systemDefault());
     }
 
     public enum Status {STARTED, ENDED}
