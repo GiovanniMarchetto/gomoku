@@ -5,7 +5,6 @@ import it.units.sdm.gomoku.ThrowingRunnable;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
-import it.units.sdm.gomoku.model.entities.HumanPlayer;
 import it.units.sdm.gomoku.model.entities.Match;
 import it.units.sdm.gomoku.ui.MainViewmodel;
 import it.units.sdm.gomoku.ui.StartViewmodel;
@@ -127,18 +126,6 @@ class GUIStartViewTest {
         Set<Integer> ints = Objects.requireNonNull(readIntegersFromCSV());
         return ints.stream().unordered().parallel()
                 .flatMap(i -> ints.stream().unordered().parallel().map(j -> Arguments.of(i, j)));
-    }
-
-    @NotNull
-    private static Stream<Arguments> setupsSupplierAndFlagIfValid() {   // TODO : add a number of valid/invalid setups
-        return Stream.of(
-                Arguments.of(
-                        new Setup(
-                                new HumanPlayer("One"),
-                                new HumanPlayer("Two"),
-                                new PositiveInteger(1),
-                                BoardSizes.NORMAL.getBoardSize()),
-                        true));
     }
 
     @Nullable
@@ -319,7 +306,7 @@ class GUIStartViewTest {
     }
 
     @ParameterizedTest
-    @MethodSource("setupsSupplierAndFlagIfValid")
+    @MethodSource("it.units.sdm.gomoku.ui.UIUtility#setupsSupplierAndFlagIfValid")
     void createMatchWhenClickButtonIfValidFields(Setup setup, boolean validSetup) {
         AtomicReference<ReflectiveOperationException> eventuallyThrownException = new AtomicReference<>();  // TODO: create interface "SupplierThatThrows" to avoid this mechanism and replace all occurrences of this "pattern"
         eventuallyThrownException.set(null);
