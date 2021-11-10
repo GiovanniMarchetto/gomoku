@@ -50,29 +50,21 @@ public class GameTestUtility {
     }
 
     public static void disputeGameAndPlayerWin(Game game, Player player) {
-        try {
-            placeTwoChainOfFourIn0And1Columns(game);
+        placeTwoChainOfFourIn0And1Rows(game);
 
-            if (player == game.getCurrentPlayer().getPropertyValue()) {
-                tryToPlaceStoneAndChangeTurn(new Coordinates(4, 0), game);
-            } else {
-                tryToPlaceStoneAndChangeTurn(new Coordinates(0, 2), game);
-                tryToPlaceStoneAndChangeTurn(new Coordinates(4, 1), game);
-            }
-
-            if (game.getWinner() != player) {
-                fail("The winner is not the correct player");
-            }
-        } catch (Game.GameNotEndedException e) {
-            fail(e);
+        if (player == game.getCurrentPlayer().getPropertyValue()) {
+            tryToPlaceStoneAndChangeTurn(new Coordinates(0, 4), game);
+        } else {
+            tryToPlaceStoneAndChangeTurn(new Coordinates(2, 0), game);
+            tryToPlaceStoneAndChangeTurn(new Coordinates(1, 4), game);
         }
     }
 
-    static void placeTwoChainOfFourIn0And1Columns(Game game) {
+    static void placeTwoChainOfFourIn0And1Rows(Game game) {
         try {
             for (int i = 0; i < 4; i++) {
-                game.placeStoneAndChangeTurn(new Coordinates(i, 0));
-                game.placeStoneAndChangeTurn(new Coordinates(i, 1));
+                game.placeStoneAndChangeTurn(new Coordinates(0, i));
+                game.placeStoneAndChangeTurn(new Coordinates(1, i));
             }
         } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Game.GameEndedException e) {
             fail(e);

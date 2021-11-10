@@ -170,8 +170,7 @@ class GameTest {
     @Test
     void setWinnerIfIsTheWinMoveBlack() {
         game.start();
-        placeTwoChainOfFourIn0And1Columns(game);
-        tryToPlaceStoneAndChangeTurn(new Coordinates(4, 0), game);
+        disputeGameAndPlayerWin(game, cpuBlack);
         try {
             assertEquals(cpuBlack, game.getWinner());
         } catch (Game.GameNotEndedException e) {
@@ -182,9 +181,7 @@ class GameTest {
     @Test
     void setWinnerIfIsTheWinMoveWhite() {
         game.start();
-        placeTwoChainOfFourIn0And1Columns(game);
-        tryToPlaceStoneAndChangeTurn(new Coordinates(2, 1), game);
-        tryToPlaceStoneAndChangeTurn(new Coordinates(4, 1), game);
+        disputeGameAndPlayerWin(game, cpuWhite);
         try {
             assertEquals(cpuWhite, game.getWinner());
         } catch (Game.GameNotEndedException e) {
@@ -201,7 +198,7 @@ class GameTest {
     @Test
     void setGameStatusIfGameNotEnded() {
         game.start();
-        placeTwoChainOfFourIn0And1Columns(game);
+        placeTwoChainOfFourIn0And1Rows(game);
         assertNotEquals(Game.Status.ENDED, game.getGameStatus().getPropertyValue());
     }
 
@@ -216,8 +213,7 @@ class GameTest {
     @Test
     void checkIsEndedWithWinner() {
         game.start();
-        placeTwoChainOfFourIn0And1Columns(game);
-        tryToPlaceStoneAndChangeTurn(new Coordinates(4, 0), game);
+        disputeGameAndPlayerWin(game, cpuBlack);
         assertTrue(game.isEnded());
     }
 
