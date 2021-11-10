@@ -12,9 +12,9 @@ import static it.units.sdm.gomoku.ui.TestMainViewmodel.cpuPlayer1;
 import static it.units.sdm.gomoku.ui.TestMainViewmodel.setup;
 import static org.junit.jupiter.api.Assertions.*;
 
-class AbstractMainViewmodelTest {
+class MainViewmodelTest {
 
-    private final AbstractMainViewmodel abstractMainViewmodel = new TestMainViewmodel();
+    private final MainViewmodel mainViewmodel = new TestMainViewmodel();
 
     @Test
     void initializeNewGame() {
@@ -24,7 +24,7 @@ class AbstractMainViewmodelTest {
     @Test
     void tryToTriggerFirstMoveWithoutGameStart() {
         try {
-            abstractMainViewmodel.triggerFirstMove();
+            mainViewmodel.triggerFirstMove();
             fail("The match is not start");
         } catch (NullPointerException ignored) {
         }
@@ -33,8 +33,8 @@ class AbstractMainViewmodelTest {
     @Test
     void beforeTriggerFirstMoveCurrentPlayerIsNull() {
         try {
-            abstractMainViewmodel.startNewMatch();
-            assertNull(abstractMainViewmodel.getCurrentGame().getCurrentPlayer().getPropertyValue());
+            mainViewmodel.startNewMatch();
+            assertNull(mainViewmodel.getCurrentGame().getCurrentPlayer().getPropertyValue());
         } catch (NullPointerException e) {
             fail(e);
         }
@@ -43,10 +43,10 @@ class AbstractMainViewmodelTest {
     @Test
     void triggerFirstMove() {
         try {
-            abstractMainViewmodel.startNewMatch();
-            abstractMainViewmodel.triggerFirstMove();
+            mainViewmodel.startNewMatch();
+            mainViewmodel.triggerFirstMove();
 
-            Game currentGame = abstractMainViewmodel.getCurrentGame();
+            Game currentGame = mainViewmodel.getCurrentGame();
             assertEquals(Game.Status.STARTED, currentGame.getGameStatus().getPropertyValue());
 
             Player currentPlayer = currentGame.getCurrentPlayer().getPropertyValue();
@@ -62,15 +62,15 @@ class AbstractMainViewmodelTest {
     @Test
     void createMatchFromSetupAndStartGame() {
         try {
-            Field matchField = TestUtility.getFieldAlreadyMadeAccessible(AbstractMainViewmodel.class, "match");
-            Field gameField = TestUtility.getFieldAlreadyMadeAccessible(AbstractMainViewmodel.class, "currentGame");
+            Field matchField = TestUtility.getFieldAlreadyMadeAccessible(MainViewmodel.class, "match");
+            Field gameField = TestUtility.getFieldAlreadyMadeAccessible(MainViewmodel.class, "currentGame");
 
-            assertNull(matchField.get(abstractMainViewmodel));
-            assertNull(gameField.get(abstractMainViewmodel));
+            assertNull(matchField.get(mainViewmodel));
+            assertNull(gameField.get(mainViewmodel));
 
-            abstractMainViewmodel.createMatchFromSetupAndStartGame(setup);
-            assertNotNull(matchField.get(abstractMainViewmodel));
-            assertNotNull(gameField.get(abstractMainViewmodel));
+            mainViewmodel.createMatchFromSetupAndStartGame(setup);
+            assertNotNull(matchField.get(mainViewmodel));
+            assertNotNull(gameField.get(mainViewmodel));
         } catch (NoSuchFieldException | IllegalAccessException e) {
             fail(e);
         }
@@ -78,31 +78,36 @@ class AbstractMainViewmodelTest {
 
     @Test
     void startNewGame() {
-        abstractMainViewmodel.createMatchFromSetupAndStartGame(setup);
-        Game first = abstractMainViewmodel.getCurrentGame();
-        abstractMainViewmodel.startNewGame();
-        assertNotEquals(first, abstractMainViewmodel.getCurrentGame());
+        mainViewmodel.createMatchFromSetupAndStartGame(setup);
+        Game first = mainViewmodel.getCurrentGame();
+        mainViewmodel.startNewGame();
+        assertNotEquals(first, mainViewmodel.getCurrentGame());
+    }
+
+    @Test
+    void startNewGameAfterEndMatch() {
+        //TODO: the startNewGame must pass the exception?
     }
 
     @Test
     void startExtraGame() {
-        abstractMainViewmodel.startNewMatch();
-        Game oldGame = abstractMainViewmodel.getCurrentGame();
+        mainViewmodel.startNewMatch();
+        Game oldGame = mainViewmodel.getCurrentGame();
         Game newGame = null;
         while (oldGame != newGame) {
             try {
                 System.out.println("game");
-                oldGame = abstractMainViewmodel.getCurrentGame();
-                abstractMainViewmodel.startNewGame();
-                newGame = abstractMainViewmodel.getCurrentGame();
+                oldGame = mainViewmodel.getCurrentGame();
+                mainViewmodel.startNewGame();
+                newGame = mainViewmodel.getCurrentGame();
             } catch (Exception e) {
                 System.err.println(e);
                 break;
             }
         }
 
-        abstractMainViewmodel.startExtraGame();
-        newGame = abstractMainViewmodel.getCurrentGame();
+        mainViewmodel.startExtraGame();
+        newGame = mainViewmodel.getCurrentGame();
         assertNotEquals(oldGame, newGame);
     }
 
@@ -117,7 +122,7 @@ class AbstractMainViewmodelTest {
     }
 
     @Test
-    void isMatchEndedWithADraft() {
+    void isMatchEndedWithADraw() {
         //TODO
     }
 

@@ -118,7 +118,7 @@ public class Match {
 
     @Nullable
     public Player getWinner() throws MatchNotEndedException {
-        if (isADraft()) {
+        if (isADraw()) {
             return null;
         } else {
             return getScoreOfPlayer(currentBlackPlayer).compareTo(getScoreOfPlayer(currentWhitePlayer)) > 0
@@ -157,8 +157,8 @@ public class Match {
         return currentWhitePlayer;
     }
 
-    public boolean isADraft() throws MatchNotEndedException {
-        //TODO: IS NOT DRAFT IS DRAW! (English error)
+    public boolean isADraw() throws MatchNotEndedException {
+        //TODO: IS NOT DRAW IS DRAW! (English error)
         if (isEnded()) {
             return getScoreOfPlayer(getCurrentBlackPlayer())
                     .equals(getScoreOfPlayer(getCurrentWhitePlayer()));

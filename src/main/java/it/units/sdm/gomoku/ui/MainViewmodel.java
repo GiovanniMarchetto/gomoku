@@ -18,7 +18,7 @@ import java.util.Objects;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-public abstract class AbstractMainViewmodel extends Viewmodel {
+public abstract class MainViewmodel extends Viewmodel {
 
     @NotNull
     private final ObservableProperty<Player> currentPlayerProperty;
@@ -42,7 +42,7 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
     @Nullable
     private Board currentBoard;
 
-    public AbstractMainViewmodel() {
+    public MainViewmodel() {
         this.currentPlayerProperty = new ObservableProperty<>();
         this.currentGameStatusProperty = new ObservableProperty<>();
         this.userMustPlaceNewStoneProperty = new ObservableProperty<>();
@@ -126,8 +126,8 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
         return Objects.requireNonNull(match).isEnded();
     }
 
-    public synchronized boolean isMatchEndedWithADraft() throws Match.MatchNotEndedException {
-        return Objects.requireNonNull(match).isADraft();
+    public synchronized boolean isMatchEndedWithADraw() throws Match.MatchNotEndedException {
+        return Objects.requireNonNull(match).isADraw();
     }
 
 

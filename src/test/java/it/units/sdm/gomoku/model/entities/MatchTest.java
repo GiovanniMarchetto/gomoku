@@ -1,5 +1,6 @@
 package it.units.sdm.gomoku.model.entities;
 
+import it.units.sdm.gomoku.model.entities.game.GameTestUtility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -46,7 +47,7 @@ class MatchTest {
     void maxNumberOfGamesException() {
         for (int i = 0; i < NUMBER_OF_GAMES; i++) {
             startNewGameComplete();
-            GameTest.disputeGameWithSmartAlgorithm(currentGame);
+            GameTestUtility.disputeGameWithSmartAlgorithm(currentGame);
         }
 
         try {
@@ -87,7 +88,7 @@ class MatchTest {
 
     @Test
     void getScoreAfterADrawGame() {
-        startGameAndDraft();
+        startGameAndDraw();
         assertCpusScore(0, 0);
     }
 
@@ -104,7 +105,7 @@ class MatchTest {
     void getWinnerWithADraw() {
         try {
             for (int i = 0; i < NUMBER_OF_GAMES; i++) {
-                startGameAndDraft();
+                startGameAndDraw();
             }
             assertNull(match.getWinner());
         } catch (Match.MatchNotEndedException e) {
@@ -160,7 +161,7 @@ class MatchTest {
     void isEndedAfterAGame() {
         //noinspection ConstantConditions
         if (NUMBER_OF_GAMES != 1) {
-            startGameAndDraft();
+            startGameAndDraw();
             assertFalse(match.isEnded());
         }
     }
@@ -168,7 +169,7 @@ class MatchTest {
     @Test
     void isEndedAfterStartLastGame() {
         for (int i = 0; i < NUMBER_OF_GAMES - 1; i++) {
-            startGameAndDraft();
+            startGameAndDraw();
         }
         startNewGameComplete();
         assertFalse(match.isEnded());
@@ -177,7 +178,7 @@ class MatchTest {
     @Test
     void isEndedNormalFlow() {
         isEndedAfterStartLastGame();
-        GameTest.disputeGameWithSmartAlgorithm(currentGame);
+        GameTestUtility.disputeGameWithSmartAlgorithm(currentGame);
         assertTrue(match.isEnded());
     }
 
@@ -191,39 +192,39 @@ class MatchTest {
     @Test
     void isEndedAfterEndExtraGame() {
         isEndedAfterAddExtraGame();
-        startGameAndDraft();
+        startGameAndDraw();
         assertTrue(match.isEnded());
     }
 
     @Test
-    void isADraftMatchNotEnded() {
+    void isADrawMatchNotEnded() {
         try {
-            match.isADraft();
+            match.isADraw();
             fail("Not throw MatchNotEndedException");
         } catch (Match.MatchNotEndedException ignored) {
         }
     }
 
     @Test
-    void isADraft() {
+    void isADraw() {
         for (int i = 0; i < NUMBER_OF_GAMES; i++) {
-            startGameAndDraft();
+            startGameAndDraw();
         }
         try {
-            assertTrue(match.isADraft());
+            assertTrue(match.isADraw());
         } catch (Match.MatchNotEndedException e) {
             fail(e);
         }
     }
 
     @Test
-    void isNotADraft() {
+    void isNotADraw() {
         startGameAndPlayerWin(cpu1);
         for (int i = 1; i < NUMBER_OF_GAMES; i++) {
-            startGameAndDraft();
+            startGameAndDraw();
         }
         try {
-            assertFalse(match.isADraft());
+            assertFalse(match.isADraw());
         } catch (Match.MatchNotEndedException e) {
             fail(e);
         }
@@ -246,12 +247,12 @@ class MatchTest {
 
     private void startGameAndPlayerWin(Player player) {
         startNewGameComplete();
-        GameTest.disputeGameAndPlayerWin(currentGame, player);
+        GameTestUtility.disputeGameAndPlayerWin(currentGame, player);
     }
 
-    private void startGameAndDraft() {
+    private void startGameAndDraw() {
         startNewGameComplete();
-        GameTest.disputeGameAndDraw(currentGame, boardSizeTest);
+        GameTestUtility.disputeGameAndDraw(currentGame, boardSizeTest);
     }
     //endregion
 

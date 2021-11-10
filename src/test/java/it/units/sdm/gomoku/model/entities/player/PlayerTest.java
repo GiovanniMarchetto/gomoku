@@ -1,6 +1,8 @@
-package it.units.sdm.gomoku.model.entities;
+package it.units.sdm.gomoku.model.entities.player;
 
 import it.units.sdm.gomoku.EnvVariables;
+import it.units.sdm.gomoku.model.entities.HumanPlayer;
+import it.units.sdm.gomoku.model.entities.Player;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
 

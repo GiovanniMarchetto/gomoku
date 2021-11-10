@@ -2,7 +2,7 @@ package it.units.sdm.gomoku.ui.gui.views;
 
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
 import it.units.sdm.gomoku.model.entities.Match;
-import it.units.sdm.gomoku.ui.AbstractMainViewmodel;
+import it.units.sdm.gomoku.ui.MainViewmodel;
 import it.units.sdm.gomoku.ui.gui.viewmodels.GUIMainViewmodel;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -27,8 +27,8 @@ class GomokuGridManagerTest {
         int boardSize = 19, numberOfGames = 3;
 
         try {
-            // TODO : refactor method to test AbstractMainViewmodel
-            Field matchField = AbstractMainViewmodel.class.getDeclaredField("match");
+            // TODO : refactor method to test MainViewmodel
+            Field matchField = MainViewmodel.class.getDeclaredField("match");
             matchField.setAccessible(true);
             matchField.set(vm, new Match(boardSize, numberOfGames, p1, p2));
 
@@ -42,7 +42,7 @@ class GomokuGridManagerTest {
     }
 
     private void startNewGame() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        Method startNewGameMethod = AbstractMainViewmodel.class.getDeclaredMethod("startNewGame");
+        Method startNewGameMethod = MainViewmodel.class.getDeclaredMethod("startNewGame");
         startNewGameMethod.setAccessible(true);
         startNewGameMethod.invoke(vm);
     }

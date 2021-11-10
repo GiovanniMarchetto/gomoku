@@ -22,7 +22,7 @@ public class StartViewmodel extends Viewmodel {
             .map(BoardSizes::toString)
             .toList();
 
-    private final AbstractMainViewmodel mainViewmodel;
+    private final MainViewmodel mainViewmodel;
 
     private volatile String player1Name;    // TODO : volatile fields?
     private volatile String player2Name;
@@ -31,7 +31,7 @@ public class StartViewmodel extends Viewmodel {
     private volatile String selectedBoardSize;
     private volatile String numberOfGames;
 
-    public StartViewmodel(AbstractMainViewmodel mainViewmodel) {
+    public StartViewmodel(MainViewmodel mainViewmodel) {
         this.mainViewmodel = mainViewmodel;
     }
 

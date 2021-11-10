@@ -39,7 +39,7 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
 
                     if (viewmodel.isMatchEnded()) {
                         try {
-                            if (viewmodel.isMatchEndedWithADraft()) {   // TODO: replace all occurrences of "*draft*" with "*draw*" (remember: don't search only entire word matching)
+                            if (viewmodel.isMatchEndedWithADraw()) {   // TODO: replace all occurrences of "*draw*" with "*draw*" (remember: don't search only entire word matching)
                                 System.out.print("Extra game? Y/N: ");
                                 if (IOUtility.isYesFromStdin()) {
                                     viewmodel.startExtraGame();
@@ -55,7 +55,7 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
                             } catch (Match.MatchNotEndedException ignored) {
                             }
                             System.out.println("The match is finish with: " +
-                                    (winnerOfMatch != null ? "WIN of" + winnerOfMatch : "DRAFT"));
+                                    (winnerOfMatch != null ? "WIN of" + winnerOfMatch : "DRAW"));
 
                             System.out.print("Another match? Y/N: ");
                             if (IOUtility.isYesFromStdin()) {

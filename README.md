@@ -14,8 +14,9 @@ Players alternate turns placing a stone of their color on an empty intersection.
 ## Structure
 The main packages:
 - _model_, in this part there is the model for the game
-- _mvvm_library_, in this package there are some interfaces and abstract classes that are the base for the implementation of the Model-View-Viewmodel paradigm
-- _ui_, this is the package for the user-interface where there are the AbstractMainViewmodel and 3 packages:
+- _mvvm_library_, in this package there are some interfaces and abstract classes that are the base for the
+  implementation of the Model-View-Viewmodel paradigm
+- _ui_, this is the package for the user-interface where there are the MainViewmodel and 3 packages:
 	- _cli_, command line interface package
 	- _gui_, graphical user interface package
 	- _support_, some support classes that are used in both cli and gui
