@@ -205,5 +205,26 @@ class GameTest {
         assertNotEquals(Game.Status.ENDED, game.getGameStatus().getPropertyValue());
     }
 
+//TODO: hasThePlayerWonThisGame deep tests
 
+    @Test
+    void checkIsEndedInNormalExecution() {
+        game.start();
+        assertFalse(game.isEnded());
+    }
+
+    @Test
+    void checkIsEndedWithWinner() {
+        game.start();
+        placeTwoChainOfFourIn0And1Columns(game);
+        tryToPlaceStoneAndChangeTurn(new Coordinates(4, 0), game);
+        assertTrue(game.isEnded());
+    }
+
+    @Test
+    void checkIsEndedWithDraw() { //i.e. board is full
+        game.start();
+        disputeGameAndDraw(game, BOARD_SIZE);
+        assertTrue(game.isEnded());
+    }
 }
