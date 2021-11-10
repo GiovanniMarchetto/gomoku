@@ -19,7 +19,7 @@ public class GameTestUtility {
     }
 
     public static void disputeGameWithSmartAlgorithm(Game game) {
-        CPUPlayer cpuPlayer = new CPUPlayer();
+        final CPUPlayer cpuPlayer = new CPUPlayer();
         while (!game.isEnded()) {
             try {
                 tryToPlaceStoneAndChangeTurn(cpuPlayer.chooseSmartEmptyCoordinates(game.getBoard()), game);
@@ -30,8 +30,7 @@ public class GameTestUtility {
     }
 
     public static void disputeGameAndDraw(Game game, int boardSize) {
-        CPUPlayer cpuPlayer = new CPUPlayer();
-
+        final CPUPlayer cpuPlayer = new CPUPlayer();
         for (int x = 0; x < boardSize; x++) {
             for (int y = 0; y < boardSize; y++) {
                 if (x % 3 == 0 && y == 0) {

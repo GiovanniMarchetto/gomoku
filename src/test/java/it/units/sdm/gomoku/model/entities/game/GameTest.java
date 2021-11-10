@@ -1,7 +1,6 @@
 package it.units.sdm.gomoku.model.entities.game;
 
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
-import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.*;
 import it.units.sdm.gomoku.property_change_handlers.ObservableProperty;
 import it.units.sdm.gomoku.utils.TestUtility;
@@ -14,7 +13,7 @@ import java.lang.reflect.Field;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GameTest {
-    private final PositiveInteger BOARD_SIZE = new PositiveInteger(5);
+    private final int BOARD_SIZE = 5;
     private final CPUPlayer cpuBlack = new CPUPlayer();
     private final CPUPlayer cpuWhite = new CPUPlayer();
     private final Coordinates firstCoordinates = new Coordinates(0, 0);
@@ -91,6 +90,49 @@ class GameTest {
     @Test
     void getColorOfPlayerWhite() {
         assertEquals(Stone.Color.WHITE, game.getColorOfPlayer(cpuWhite));
+    }
+
+    @Test
+    void getWinnerBeforeEndGame() {
+        game.start();
+        try {
+            game.getWinner();
+            fail("Game not ended!");
+        } catch (Game.GameNotEndedException ignored) {
+        }
+    }
+
+    @Test
+    void getWinnerWithBlackPlayerWon() {
+        game.start();
+        try {
+            GameTestUtility.disputeGameAndPlayerWin(game, cpuBlack);
+            assertEquals(cpuBlack, game.getWinner());
+        } catch (Game.GameNotEndedException e) {
+            fail(e);
+        }
+    }
+
+    @Test
+    void getWinnerWithWhitePlayerWon() {
+        game.start();
+        try {
+            GameTestUtility.disputeGameAndPlayerWin(game, cpuWhite);
+            assertEquals(cpuWhite, game.getWinner());
+        } catch (Game.GameNotEndedException e) {
+            fail(e);
+        }
+    }
+
+    @Test
+    void getWinnerWithDraft() {
+        game.start();
+        try {
+            GameTestUtility.disputeGameAndDraw(game, BOARD_SIZE);
+            assertNull(game.getWinner());
+        } catch (Game.GameNotEndedException e) {
+            fail(e);
+        }
     }
 
     @Test
