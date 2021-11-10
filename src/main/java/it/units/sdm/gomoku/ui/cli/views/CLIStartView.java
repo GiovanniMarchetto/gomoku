@@ -45,7 +45,7 @@ public class CLIStartView extends View<StartViewmodel> {// TODO : refactor this 
         getViewmodelAssociatedWithView().setSelectedBoardSize(askAndGetBoardSize());
         getViewmodelAssociatedWithView().setNumberOfGames(askAndGetNumberOfGames());
 
-        getViewmodelAssociatedWithView().startMatch();
+        getViewmodelAssociatedWithView().createAndStartMatch();
     }
 
     @NotNull
