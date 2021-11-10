@@ -38,4 +38,10 @@ class GameTest {
         assertNull(game.getGameStatus().getPropertyValue());
     }
 
+    @Test
+    void checkGameStatusAfterStart() {
+        game.start();
+        assertEquals(Game.Status.STARTED, game.getGameStatus().getPropertyValue());
+    }
+
 }
