@@ -1,5 +1,6 @@
 package it.units.sdm.gomoku.model.entities;
 
+import it.units.sdm.gomoku.model.entities.game.GameTestUtility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -46,7 +47,7 @@ class MatchTest {
     void maxNumberOfGamesException() {
         for (int i = 0; i < NUMBER_OF_GAMES; i++) {
             startNewGameComplete();
-            GameTest.disputeGameWithSmartAlgorithm(currentGame);
+            GameTestUtility.disputeGameWithSmartAlgorithm(currentGame);
         }
 
         try {
@@ -177,7 +178,7 @@ class MatchTest {
     @Test
     void isEndedNormalFlow() {
         isEndedAfterStartLastGame();
-        GameTest.disputeGameWithSmartAlgorithm(currentGame);
+        GameTestUtility.disputeGameWithSmartAlgorithm(currentGame);
         assertTrue(match.isEnded());
     }
 
@@ -246,12 +247,12 @@ class MatchTest {
 
     private void startGameAndPlayerWin(Player player) {
         startNewGameComplete();
-        GameTest.disputeGameAndPlayerWin(currentGame, player);
+        GameTestUtility.disputeGameAndPlayerWin(currentGame, player);
     }
 
     private void startGameAndDraft() {
         startNewGameComplete();
-        GameTest.disputeGameAndDraw(currentGame, boardSizeTest);
+        GameTestUtility.disputeGameAndDraw(currentGame, boardSizeTest);
     }
     //endregion
 
