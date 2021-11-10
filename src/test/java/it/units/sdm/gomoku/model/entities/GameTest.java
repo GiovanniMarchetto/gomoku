@@ -44,4 +44,15 @@ class GameTest {
         assertEquals(Game.Status.STARTED, game.getGameStatus().getPropertyValue());
     }
 
+    @Test
+    void getCurrentPlayer() {
+        try {
+            Field currentPlayerField = TestUtility.getFieldAlreadyMadeAccessible(Game.class, "currentPlayer");
+            @SuppressWarnings("unchecked")
+            ObservableProperty<Player> currentPlayerProperty = (ObservableProperty<Player>) currentPlayerField.get(game);
+            assertEquals(currentPlayerProperty, game.getCurrentPlayer());
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            fail(e);
+        }
+    }
 }
