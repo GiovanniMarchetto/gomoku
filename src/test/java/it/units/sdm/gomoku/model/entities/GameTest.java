@@ -66,4 +66,16 @@ class GameTest {
         game.start();
         assertEquals(cpuBlack, game.getCurrentPlayer().getPropertyValue());
     }
+
+    @Test
+    void getBoard() {
+        try {
+            Field boardField = TestUtility.getFieldAlreadyMadeAccessible(Game.class, "board");
+            Board board = (Board) boardField.get(game);
+            assertEquals(board, game.getBoard());
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            fail(e);
+        }
+    }
+
 }
