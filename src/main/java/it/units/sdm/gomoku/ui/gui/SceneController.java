@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-public class SceneController {
+public class SceneController {  // todo : TEST
 
     private static SceneController singleInstance;
     private static Boolean javaFxRunning = null;
@@ -68,7 +68,6 @@ public class SceneController {
         stage.setMinWidth(stageMinWidth);
         stage.setMinHeight(stageMinHeight);
         passToNewScene(ViewName.START_VIEW);
-        singleInstance = this;
     }
 
     @NotNull
@@ -89,9 +88,9 @@ public class SceneController {
                                   @NotNull final Pair<@NotNull ViewName, @NotNull String>... fxmlFilePaths) {
         if (!isJavaFxRunning()) return;
         if (wasAlreadyInstantiated()) {
-            throw new IllegalStateException(SceneController.class.getCanonicalName() + " already instantiated.");
+            throw new SceneControllerAlreadyInstantiatedException(SceneController.class.getCanonicalName() + " already instantiated.");
         } else {
-            new SceneController(
+            singleInstance = new SceneController(
                     Objects.requireNonNull(stage),
                     Objects.requireNonNull(firstStageTitle),
                     initialSceneWidthInPx, initialSceneHeightInPx,
@@ -180,15 +179,18 @@ public class SceneController {
         }
     }
 
-    public enum ViewName {
-        START_VIEW,
-        MAIN_VIEW,
-        SUMMARY_VIEW
-    }
+    public enum ViewName {START_VIEW, MAIN_VIEW, SUMMARY_VIEW}
 
     public static class SceneControllerNotInstantiatedException extends IllegalStateException {
         //   TODO : test ?
         public SceneControllerNotInstantiatedException(@NotNull final String errorMessage) {
+            super(Objects.requireNonNull(errorMessage));
+        }
+    }
+
+    public static class SceneControllerAlreadyInstantiatedException extends IllegalStateException { // TODO: needed?
+        //   TODO : test ?
+        public SceneControllerAlreadyInstantiatedException(@NotNull final String errorMessage) {
             super(Objects.requireNonNull(errorMessage));
         }
     }
