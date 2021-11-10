@@ -8,8 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 class GameTest {
     private final PositiveInteger BOARD_SIZE = new PositiveInteger(5);
@@ -32,6 +31,11 @@ class GameTest {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             fail(e);
         }
+    }
+
+    @Test
+    void checkGameStatusBeforeStart() {
+        assertNull(game.getGameStatus().getPropertyValue());
     }
 
 }
