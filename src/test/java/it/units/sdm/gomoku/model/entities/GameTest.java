@@ -78,4 +78,13 @@ class GameTest {
         }
     }
 
+    @Test
+    void getColorOfPlayerBlack() {
+        assertEquals(Stone.Color.BLACK, game.getColorOfPlayer(cpuBlack));
+    }
+
+    @Test
+    void getColorOfPlayerWhite() {
+        assertEquals(Stone.Color.WHITE, game.getColorOfPlayer(cpuWhite));
+    }
 }
