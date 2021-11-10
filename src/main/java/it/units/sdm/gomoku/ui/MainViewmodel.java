@@ -12,11 +12,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.beans.PropertyChangeEvent;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public abstract class MainViewmodel extends Viewmodel {
 
@@ -30,6 +29,8 @@ public abstract class MainViewmodel extends Viewmodel {
     private final ObservableProperty<Coordinates> lastMoveCoordinatesProperty;
     @Nullable
     private Match match;
+    @Nullable
+    private List<PropertyObserver<?>> propertiesOfModelObservers;
     //
 //    @NotNull
 //    public final ObservableProperty<Game> currentGame = new ObservableProperty<>(this); // TODO:public???
@@ -53,33 +54,7 @@ public abstract class MainViewmodel extends Viewmodel {
         try {
             currentGame = Objects.requireNonNull(match).startNewGame();
             currentBoard = currentGame.getBoard();
-            new PropertyObserver<>(
-                    currentGame.getCurrentPlayer(),
-                    evt -> {
-                        currentPlayerProperty.setPropertyValueAndFireIfPropertyChange((Player) evt.getNewValue());
-                        if (!isCurrentGameEnded()) {
-                            runOnSeparateThread(() -> {
-                                try {
-                                    Objects.requireNonNull(currentPlayerProperty.getPropertyValue()).makeMove(getCurrentGame());
-                                } catch (Board.BoardIsFullException e) {
-                                    e.printStackTrace(); // TODO: handle this: this should never happen (I think?)
-                                }
-                            });
-                        }
-                    });
-            new PropertyObserver<>(
-                    currentGame.getGameStatus(),
-                    evt -> {
-                        currentGameStatusProperty.setPropertyValueAndFireIfPropertyChange((Game.Status) evt.getNewValue());
-                        if (evt.getNewValue().equals(Game.Status.ENDED)) {
-                            endGame();
-                        }
-                    });
-            new PropertyObserver<>(currentBoard.getLastMoveCoordinatesProperty(),
-                    evt -> lastMoveCoordinatesProperty.setPropertyValueAndFireIfPropertyChange((Coordinates) evt.getNewValue()));
-            Arrays.asList(getCurrentBlackPlayer(), getCurrentWhitePlayer())
-                    .forEach(player -> new PropertyObserver<>(player.getCoordinatesRequiredToContinueProperty(),
-                            evt -> userMustPlaceNewStoneProperty.setPropertyValueAndFireIfPropertyChange((boolean) evt.getNewValue())));
+            propertiesOfModelObservers = observePropertiesOfModelAndGet();
 
             observe(currentGame);   // TODO : should fade away
             observe(currentBoard);
@@ -87,6 +62,51 @@ public abstract class MainViewmodel extends Viewmodel {
         } catch (Match.MatchEndedException | Match.MaxNumberOfGamesException e) {
             e.printStackTrace();    // TODO : handle this exception
         }
+    }
+
+    private List<PropertyObserver<?>> observePropertiesOfModelAndGet() {
+
+        List<PropertyObserver<?>> observerList = new ArrayList<>();
+
+        assert currentGame != null;
+        observerList.add(
+                new PropertyObserver<>(
+                        currentGame.getCurrentPlayer(),
+                        evt -> {
+                            currentPlayerProperty.setPropertyValueAndFireIfPropertyChange((Player) evt.getNewValue());
+                            if (!isCurrentGameEnded()) {
+                                runOnSeparateThread(() -> {
+                                    try {
+                                        Objects.requireNonNull(currentPlayerProperty.getPropertyValue()).makeMove(getCurrentGame());
+                                    } catch (Board.BoardIsFullException e) {
+                                        e.printStackTrace(); // TODO: handle this: this should never happen (I think?)
+                                    }
+                                });
+                            }
+                        }));
+
+        observerList.add(
+                new PropertyObserver<>(
+                        currentGame.getGameStatus(),
+                        evt -> {
+                            currentGameStatusProperty.setPropertyValueAndFireIfPropertyChange((Game.Status) evt.getNewValue());
+                            if (evt.getNewValue().equals(Game.Status.ENDED)) {
+                                endGame();
+                            }
+                        }));
+
+        assert currentBoard != null;
+        observerList.add(
+                new PropertyObserver<>(currentBoard.getLastMoveCoordinatesProperty(),
+                        evt -> lastMoveCoordinatesProperty.setPropertyValueAndFireIfPropertyChange((Coordinates) evt.getNewValue())));
+
+        observerList.addAll(
+                Stream.of(getCurrentBlackPlayer(), getCurrentWhitePlayer())
+                        .map(player -> new PropertyObserver<>(player.getCoordinatesRequiredToContinueProperty(),
+                                evt -> userMustPlaceNewStoneProperty.setPropertyValueAndFireIfPropertyChange((boolean) evt.getNewValue())))
+                        .toList());
+
+        return observerList;
     }
 
     @Override
