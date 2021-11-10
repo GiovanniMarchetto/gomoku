@@ -1,5 +1,6 @@
 package it.units.sdm.gomoku.model.entities;
 
+import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.property_change_handlers.ObservableProperty;
 import it.units.sdm.gomoku.utils.TestUtility;
@@ -87,4 +88,16 @@ class GameTest {
     void getColorOfPlayerWhite() {
         assertEquals(Stone.Color.WHITE, game.getColorOfPlayer(cpuWhite));
     }
+
+    @Test
+    void placeStoneBeforeStart() {
+        try {
+            game.placeStoneAndChangeTurn(new Coordinates(0, 0));
+            fail();
+        } catch (Board.BoardIsFullException | Game.GameEndedException | Board.CellAlreadyOccupiedException e) {
+            fail(e);
+        } catch (NullPointerException ignored) {
+        }
+    }
+
 }
