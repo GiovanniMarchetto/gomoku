@@ -89,14 +89,12 @@ class GameTest {
         assertEquals(Stone.Color.WHITE, game.getColorOfPlayer(cpuWhite));
     }
 
-    @Test
-    void placeStoneBeforeStart() {
+    //region Private Support methods
+    private static void tryToPlaceStoneAndChangeTurn(Coordinates coordinates, Game game) {
         try {
-            game.placeStoneAndChangeTurn(new Coordinates(0, 0));
-            fail();
+            game.placeStoneAndChangeTurn(coordinates);
         } catch (Board.BoardIsFullException | Game.GameEndedException | Board.CellAlreadyOccupiedException e) {
             fail(e);
-        } catch (NullPointerException ignored) {
         }
     }
 
@@ -105,10 +103,49 @@ class GameTest {
         CPUPlayer cpuPlayer = new CPUPlayer();
         while (!game.isEnded()) {
             try {
-                game.placeStoneAndChangeTurn(cpuPlayer.chooseSmartEmptyCoordinates(game.getBoard()));
-            } catch (Board.CellAlreadyOccupiedException | Board.BoardIsFullException | Game.GameEndedException e) {
+                tryToPlaceStoneAndChangeTurn(cpuPlayer.chooseSmartEmptyCoordinates(game.getBoard()), game);
+            } catch (Board.BoardIsFullException e) {
                 fail(e);
             }
+        }
+    }
+
+    public static void disputeGameAndDraw(Game game, int boardSize) {
+        CPUPlayer cpuPlayer = new CPUPlayer();
+
+        for (int x = 0; x < boardSize; x++) {
+            for (int y = 0; y < boardSize; y++) {
+                if (x % 3 == 0 && y == 0) {
+                    tryToPlaceStoneAndChangeTurn(new Coordinates(x, y), game);
+                }
+            }
+        }
+
+        while (!game.isEnded()) {
+            try {
+                tryToPlaceStoneAndChangeTurn(cpuPlayer.chooseNextEmptyCoordinates(game.getBoard()), game);
+            } catch (Board.BoardIsFullException e) {
+                fail(e);
+            }
+        }
+
+        try {
+            if (game.getWinner() != null) {
+                fail("It's not a draw");
+            }
+        } catch (Game.GameNotEndedException e) {
+            fail(e);
+        }
+    }
+    //endregion
+
+    @Test
+    void placeStoneBeforeStart() {
+        final Coordinates coordinates = new Coordinates(0, 0);
+        try {
+            tryToPlaceStoneAndChangeTurn(coordinates, game);
+        } catch (NullPointerException ignored) {
+            assertTrue(game.getBoard().getCellAtCoordinates(coordinates).isEmpty());
         }
     }
 
@@ -134,36 +171,12 @@ class GameTest {
         }
     }
 
-    public static void disputeGameAndDraw(Game game, int boardSize) {
-        CPUPlayer cpuPlayer = new CPUPlayer();
-
-        for (int x = 0; x < boardSize; x++) {
-            for (int y = 0; y < boardSize; y++) {
-                if (x % 3 == 0 && y == 0) {
-                    try {
-                        game.placeStoneAndChangeTurn(new Coordinates(x, y));
-                    } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Game.GameEndedException e) {
-                        fail(e);
-                    }
-                }
-            }
-        }
-
-        while (!game.isEnded()) {
-            try {
-                game.placeStoneAndChangeTurn(cpuPlayer.chooseNextEmptyCoordinates(game.getBoard()));
-            } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Game.GameEndedException e) {
-                fail(e);
-            }
-        }
-
-        try {
-            if (game.getWinner() != null) {
-                fail("It's not a draw");
-            }
-        } catch (Game.GameNotEndedException e) {
-            fail(e);
-        }
+    @Test
+    void placeStoneAfterStart() {
+        game.start();
+        final Coordinates coordinates = new Coordinates(0, 0);
+        tryToPlaceStoneAndChangeTurn(coordinates, game);
+        assertFalse(game.getBoard().getCellAtCoordinates(coordinates).isEmpty());
     }
     //endregion
 }
