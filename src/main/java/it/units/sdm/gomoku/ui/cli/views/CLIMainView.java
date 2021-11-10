@@ -75,7 +75,7 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
             if ((boolean) evt.getNewValue()) {
                 try {
                     waitForAValidMoveOfAPlayer();
-                } catch (Board.BoardIsFullException e) {
+                } catch (Board.BoardIsFullException | Game.GameEndedException e) {
                     // TODO : handle exception
                     System.err.println("Game terminated due to an unexpected exception: ");
                     e.printStackTrace();
@@ -89,7 +89,7 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
     public void propertyChange(PropertyChangeEvent evt) {
     }
 
-    private void waitForAValidMoveOfAPlayer() throws Board.BoardIsFullException {  // TODO : not tested
+    private void waitForAValidMoveOfAPlayer() throws Board.BoardIsFullException, Game.GameEndedException {  // TODO : not tested
         int rowCoord, colCoord;
         boolean validMove = false;
 
@@ -121,6 +121,10 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
                 throw e;
             } catch (Board.CellAlreadyOccupiedException e) {
                 System.out.print("The position " + coordInsertedByTheUser + " is already occupied.");
+            } catch (Game.GameEndedException e) {
+                Logger.getLogger(getClass().getCanonicalName())
+                        .log(Level.SEVERE, "Should never happen: the game is already ended", e);
+                throw e;
             }
         } while (!validMove);
     }

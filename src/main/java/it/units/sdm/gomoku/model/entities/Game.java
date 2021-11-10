@@ -70,16 +70,35 @@ public class Game implements Comparable<Game>, Observable {
     }
 
     public void placeStoneAndChangeTurn(@NotNull final Coordinates coordinates)
-            throws Board.BoardIsFullException, Board.CellAlreadyOccupiedException {
-        placeStone(Objects.requireNonNull(currentPlayer.getPropertyValue()), coordinates);
+            throws Board.BoardIsFullException, Board.CellAlreadyOccupiedException, GameEndedException {
+
+        final Player player = Objects.requireNonNull(currentPlayer.getPropertyValue());
+
+        placeStone(player, coordinates);
+
+        setWinnerIfPlayerWon(player, coordinates);
+
+        setGameStatusIfGameEnded();
+
         changeTurn();
     }
 
     private void placeStone(@NotNull final Player player, @NotNull final Coordinates coordinates)
-            throws Board.BoardIsFullException, Board.CellAlreadyOccupiedException {
+            throws Board.BoardIsFullException, Board.CellAlreadyOccupiedException, GameEndedException {
+        if (!isEnded()) {
+            board.occupyPosition(getColorOfPlayer(Objects.requireNonNull(player)), Objects.requireNonNull(coordinates));
+        } else {
+            throw new GameEndedException();
+        }
+    }
 
-        board.occupyPosition(getColorOfPlayer(Objects.requireNonNull(player)), Objects.requireNonNull(coordinates));
-        setWinnerIfPlayerWon(player, coordinates);
+    private void setWinnerIfPlayerWon(@NotNull Player player, @NotNull Coordinates coordinates) {
+        if (hasThePlayerWonThisGame(coordinates)) {
+            setWinner(player);
+        }
+    }
+
+    private void setGameStatusIfGameEnded() {
         if (isEnded()) {
             gameStatus.setPropertyValueAndFireIfPropertyChange(Status.ENDED);
         }
@@ -87,12 +106,6 @@ public class Game implements Comparable<Game>, Observable {
 
     private void changeTurn() {
         currentPlayer.setPropertyValueAndFireIfPropertyChange(currentPlayer.getPropertyValue() == blackPlayer ? whitePlayer : blackPlayer);
-    }
-
-    private void setWinnerIfPlayerWon(@NotNull Player player, @NotNull Coordinates coordinates) {
-        if (hasThePlayerWonThisGame(coordinates)) {
-            setWinner(player);
-        }
     }
 
     private boolean hasThePlayerWonThisGame(@NotNull final Coordinates lastMove) {
@@ -141,6 +154,12 @@ public class Game implements Comparable<Game>, Observable {
     public static class GameNotEndedException extends Exception {
         public GameNotEndedException() {
             super("The game is not over.");
+        }
+    }
+
+    public static class GameEndedException extends Exception {
+        public GameEndedException() {
+            super("The game is over.");
         }
     }
 }

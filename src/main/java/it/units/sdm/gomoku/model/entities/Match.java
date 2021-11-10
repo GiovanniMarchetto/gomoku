@@ -72,7 +72,7 @@ public class Match {
 
     @Deprecated
     public static void executeMoveOfPlayerInGame(@NotNull Game game, @NotNull Coordinates coordinatesOfTheMove)
-            throws Board.BoardIsFullException, Board.CellAlreadyOccupiedException {
+            throws Board.BoardIsFullException, Board.CellAlreadyOccupiedException, Game.GameEndedException {
         game.placeStoneAndChangeTurn(coordinatesOfTheMove);
     }
 
