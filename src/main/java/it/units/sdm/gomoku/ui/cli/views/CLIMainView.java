@@ -80,7 +80,12 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
                 }
             }
         });
-        cliMainViewmodel.triggerFirstMove();
+    }
+
+    @Override
+    public void onViewInitialized() {
+        super.onViewInitialized();
+        getViewmodelAssociatedWithView().triggerFirstMove();
     }
 
     @Override
