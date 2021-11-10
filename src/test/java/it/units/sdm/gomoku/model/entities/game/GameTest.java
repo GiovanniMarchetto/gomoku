@@ -192,4 +192,18 @@ class GameTest {
         }
     }
 
+    @Test
+    void setGameStatusIfGameEndedWhenPlaceStone() {
+        setWinnerIfIsTheWinMoveBlack();
+        assertEquals(Game.Status.ENDED, game.getGameStatus().getPropertyValue());
+    }
+
+    @Test
+    void setGameStatusIfGameNotEnded() {
+        game.start();
+        placeTwoChainOfFourIn0And1Columns(game);
+        assertNotEquals(Game.Status.ENDED, game.getGameStatus().getPropertyValue());
+    }
+
+
 }
