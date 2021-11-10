@@ -15,6 +15,12 @@ public class CLIStartView extends View<StartViewmodel> {// TODO : refactor this 
 
     public CLIStartView(StartViewmodel startViewmodel) {
         super(startViewmodel);
+    }
+
+    @Override
+    public void onViewInitialized() {
+        super.onViewInitialized();
+
         switch (askAndGetNumberOfPlayers()) {   // TODO : all tests are missing (see GUIStartViewTest)
             case CPU_VS_CPU -> {
                 getViewmodelAssociatedWithView().setPlayer1Name("CPU1");
