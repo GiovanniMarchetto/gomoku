@@ -55,4 +55,15 @@ class GameTest {
             fail(e);
         }
     }
+
+    @Test
+    void checkCurrentPlayerBeforeStart() {
+        assertNull(game.getCurrentPlayer().getPropertyValue());
+    }
+
+    @Test
+    void checkCurrentPlayerAfterStart() {
+        game.start();
+        assertEquals(cpuBlack, game.getCurrentPlayer().getPropertyValue());
+    }
 }
