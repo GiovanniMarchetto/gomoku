@@ -139,7 +139,7 @@ public abstract class AbstractMainViewmodel extends Viewmodel {
         this.match = Objects.requireNonNull(match);
     }
 
-    public void endGame() {
+    public void endGame() {   // TODO : needed? all methods observe() / stopObserving() should not be needed anymore
         stopObserving(Objects.requireNonNull(currentGame));
         stopObserving(Objects.requireNonNull(currentBoard));
     }
