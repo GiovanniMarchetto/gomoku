@@ -10,8 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
 
-import static it.units.sdm.gomoku.model.entities.game.GameTestUtility.placeTwoChainOfFourIn0And1Columns;
-import static it.units.sdm.gomoku.model.entities.game.GameTestUtility.tryToPlaceStoneAndChangeTurn;
+import static it.units.sdm.gomoku.model.entities.game.GameTestUtility.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GameTest {
@@ -108,7 +107,7 @@ class GameTest {
     void getWinnerWithBlackPlayerWon() {
         game.start();
         try {
-            GameTestUtility.disputeGameAndPlayerWin(game, cpuBlack);
+            disputeGameAndPlayerWin(game, cpuBlack);
             assertEquals(cpuBlack, game.getWinner());
         } catch (Game.GameNotEndedException e) {
             fail(e);
@@ -119,7 +118,7 @@ class GameTest {
     void getWinnerWithWhitePlayerWon() {
         game.start();
         try {
-            GameTestUtility.disputeGameAndPlayerWin(game, cpuWhite);
+            disputeGameAndPlayerWin(game, cpuWhite);
             assertEquals(cpuWhite, game.getWinner());
         } catch (Game.GameNotEndedException e) {
             fail(e);
@@ -130,7 +129,7 @@ class GameTest {
     void getWinnerWithDraw() {
         game.start();
         try {
-            GameTestUtility.disputeGameAndDraw(game, BOARD_SIZE);
+            disputeGameAndDraw(game, BOARD_SIZE);
             assertNull(game.getWinner());
         } catch (Game.GameNotEndedException e) {
             fail(e);
@@ -140,7 +139,7 @@ class GameTest {
     @Test
     void placeStoneBeforeStart() {
         try {
-            GameTestUtility.tryToPlaceStoneAndChangeTurn(firstCoordinates, game);
+            tryToPlaceStoneAndChangeTurn(firstCoordinates, game);
         } catch (NullPointerException ignored) {
             assertTrue(game.getBoard().getCellAtCoordinates(firstCoordinates).isEmpty());
         }
@@ -149,32 +148,45 @@ class GameTest {
     @Test
     void placeStoneAfterStart() {
         game.start();
-        GameTestUtility.tryToPlaceStoneAndChangeTurn(firstCoordinates, game);
+        tryToPlaceStoneAndChangeTurn(firstCoordinates, game);
         assertFalse(game.getBoard().getCellAtCoordinates(firstCoordinates).isEmpty());
     }
 
     @Test
     void changeTurnAfterFirstPlaceStone() {
         game.start();
-        GameTestUtility.tryToPlaceStoneAndChangeTurn(firstCoordinates, game);
+        tryToPlaceStoneAndChangeTurn(firstCoordinates, game);
         assertEquals(cpuWhite, game.getCurrentPlayer().getPropertyValue());
     }
 
     @Test
     void changeTurnAfterSecondPlaceStone() {
         game.start();
-        GameTestUtility.tryToPlaceStoneAndChangeTurn(firstCoordinates, game);
-        GameTestUtility.tryToPlaceStoneAndChangeTurn(secondCoordinates, game);
+        tryToPlaceStoneAndChangeTurn(firstCoordinates, game);
+        tryToPlaceStoneAndChangeTurn(secondCoordinates, game);
         assertEquals(cpuBlack, game.getCurrentPlayer().getPropertyValue());
     }
 
     @Test
-    void setWinnerIfIsTheWinMove() {
+    void setWinnerIfIsTheWinMoveBlack() {
         game.start();
         placeTwoChainOfFourIn0And1Columns(game);
         tryToPlaceStoneAndChangeTurn(new Coordinates(4, 0), game);
         try {
             assertEquals(cpuBlack, game.getWinner());
+        } catch (Game.GameNotEndedException e) {
+            fail(e);
+        }
+    }
+
+    @Test
+    void setWinnerIfIsTheWinMoveWhite() {
+        game.start();
+        placeTwoChainOfFourIn0And1Columns(game);
+        tryToPlaceStoneAndChangeTurn(new Coordinates(2, 1), game);
+        tryToPlaceStoneAndChangeTurn(new Coordinates(4, 1), game);
+        try {
+            assertEquals(cpuWhite, game.getWinner());
         } catch (Game.GameNotEndedException e) {
             fail(e);
         }
