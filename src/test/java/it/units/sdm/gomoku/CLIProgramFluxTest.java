@@ -3,6 +3,7 @@ package it.units.sdm.gomoku;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.*;
+import it.units.sdm.gomoku.mvvm_library.View;
 import it.units.sdm.gomoku.property_change_handlers.PropertyObserver;
 import it.units.sdm.gomoku.ui.MainViewmodel;
 import it.units.sdm.gomoku.ui.StartViewmodel;
@@ -26,6 +27,7 @@ import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
@@ -260,7 +262,60 @@ public class CLIProgramFluxTest {
         }
     }
 
-    void checkMainViewToObservePropertyChangeEventsFiredFromModelAsConsequenceOfGameStart(Setup setup) {    // TODO
+    @ParameterizedTest
+    @MethodSource("it.units.sdm.gomoku.ui.UIUtility#setupsSupplierAndFlagIfValid")
+    void checkMainViewToObservePropertyChangeEventsFiredFromViewmodelAsConsequenceOfGameStart(Setup setup) {
+        // TODO : REFACTOR, test is very similar to the previous one
+        boolean player1IsHuman = setup.player1() instanceof HumanPlayer;
+        boolean player2IsHuman = setup.player2() instanceof HumanPlayer;
+        if (player1IsHuman || player2IsHuman) {
+            checkCorrectnessOfNewGameInitializationFromSetup(setup);
+            try {
+                boolean userMustPlaceStone = true;
+                Object[] propertiesValuesThatShouldBeObserved;
+                assert mainViewmodel != null;
+                if (player1IsHuman) {
+                    propertiesValuesThatShouldBeObserved =
+                            new Object[]{Game.Status.STARTED, mainViewmodel.getCurrentBlackPlayer(), userMustPlaceStone};
+                } else if (player2IsHuman) {
+                    final int numberOfMoveDoneUntilHere = 1;
+                    assert Objects.requireNonNull(boardOfFirstGame)
+                            .getCoordinatesHistory().size() == numberOfMoveDoneUntilHere;
+                    Coordinates lastMove = this.boardOfFirstGame.getCoordinatesHistory().get(this.boardOfFirstGame.getSize() - 1);
+                    propertiesValuesThatShouldBeObserved =
+                            new Object[]{Game.Status.STARTED, userMustPlaceStone, lastMove, mainViewmodel.getCurrentWhitePlayer()};
+                } else {
+                    throw new IllegalStateException("Test may need to be updated: one of two player expected to be human");
+                }
+
+                //noinspection unchecked    // TODO : resee this
+                assertEquals(
+                        propertiesValuesThatShouldBeObserved.length,
+                        getPropertiesObservedByView(
+                                ((View<?>) ((List<?>) ((Map<?, ?>)
+                                        Objects.requireNonNull(
+                                                TestUtility.getFieldValue(
+                                                        "historyOfCreatedViews", cliSceneControllerInstanceGetter.get())))
+                                        .get(CLISceneController.CLIViewName.CLI_MAIN_VIEW)).get(0)))
+                                .stream()
+                                .filter(propertyObserver -> Arrays.stream(propertiesValuesThatShouldBeObserved)
+                                        .anyMatch(propVal -> {
+                                            try {
+                                                PropertyChangeEvent lastObservedChange = (PropertyChangeEvent) TestUtility
+                                                        .getFieldValue("lastObservedEvt", propertyObserver);
+                                                return lastObservedChange != null &&
+                                                        propVal.equals(lastObservedChange.getNewValue());
+                                            } catch (NoSuchFieldException | IllegalAccessException e) {
+                                                loggerThisClass.log(Level.SEVERE, "Error with reflections", e);
+                                                return false;
+                                            }
+                                        }))
+                                .count());
+
+            } catch (NoSuchFieldException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                fail(e);
+            }
+        }
     }
 
     private List<? extends PropertyObserver<?>> getObservedPropertiesByMainViewmodel()
@@ -269,6 +324,17 @@ public class CLIProgramFluxTest {
         return ((List<?>)
                 Objects.requireNonNull(
                         TestUtility.getFieldValue("propertiesOfModelObservers", this.mainViewmodel)))
+                .stream()
+                .map(propertyObserver -> (PropertyObserver<?>) propertyObserver)
+                .toList();
+    }
+
+    private List<? extends PropertyObserver<?>> getPropertiesObservedByView(@NotNull final View<?> view)
+            throws NoSuchFieldException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        return ((List<?>)
+                Objects.requireNonNull(
+                        TestUtility.getFieldValue(
+                                "propertiesObservedInViewModel", Objects.requireNonNull(view))))
                 .stream()
                 .map(propertyObserver -> (PropertyObserver<?>) propertyObserver)
                 .toList();
