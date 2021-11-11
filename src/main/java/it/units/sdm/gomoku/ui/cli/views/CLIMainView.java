@@ -7,7 +7,6 @@ import it.units.sdm.gomoku.model.entities.Match;
 import it.units.sdm.gomoku.model.entities.Player;
 import it.units.sdm.gomoku.mvvm_library.Observer;
 import it.units.sdm.gomoku.mvvm_library.View;
-import it.units.sdm.gomoku.property_change_handlers.PropertyObserver;
 import it.units.sdm.gomoku.ui.cli.IOUtility;
 import it.units.sdm.gomoku.ui.cli.viewmodels.CLIMainViewmodel;
 import org.jetbrains.annotations.NotNull;
@@ -17,11 +16,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class CLIMainView extends View<CLIMainViewmodel> implements Observer {    // TODO : all events clutter the memory stack
+    // TODO : refactor: a lot in common with view of GUI (e.g. property events), may refactor?
     // TODO : test
 
     public CLIMainView(@NotNull final CLIMainViewmodel cliMainViewmodel) {  // TODO : event-based flux of program to be tested
         super(cliMainViewmodel);
-        new PropertyObserver<>(cliMainViewmodel.getCurrentGameStatusProperty(), evt -> {
+        addObservedPropertyOfViewmodel(cliMainViewmodel.getCurrentGameStatusProperty(), evt -> {
             switch ((Game.Status) evt.getNewValue()) {
                 case STARTED -> System.out.println("\n\nNew game!");
                 case ENDED -> {
@@ -68,7 +68,7 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
                 }
             }
         });
-        new PropertyObserver<>(cliMainViewmodel.getUserMustPlaceNewStoneProperty(), evt -> {
+        addObservedPropertyOfViewmodel(cliMainViewmodel.getUserMustPlaceNewStoneProperty(), evt -> {
             if ((boolean) evt.getNewValue()) {
                 try {
                     waitForAValidMoveOfAPlayer();
@@ -79,6 +79,12 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
                     System.exit(1);
                 }
             }
+        });
+        addObservedPropertyOfViewmodel(cliMainViewmodel.getLastMoveCoordinatesProperty(), evt -> {
+            // TODO : update the view according to the last move?
+        });
+        addObservedPropertyOfViewmodel(cliMainViewmodel.getCurrentPlayerProperty(), evt -> {
+            // TODO : update the view, e.g.: "Turn of ${currentPlayer}"
         });
     }
 
