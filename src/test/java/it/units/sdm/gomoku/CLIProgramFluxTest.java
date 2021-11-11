@@ -51,12 +51,11 @@ public class CLIProgramFluxTest {
     private static final Logger loggerThisClass = Logger.getLogger(CLIProgramFluxTest.class.getCanonicalName());
     private final static PipedOutputStream pis = new PipedOutputStream();   // TODO : rethink about this
     private final static Thread dataProducerThread = new Thread(() -> {
-        Supplier<String> numberBetweeen1And4Generator = () -> String.valueOf((int) (1 + Math.random() * 4)); // TODO : test
         try (
                 PrintWriter pw = new PrintWriter(pis, true)
         ) {
             while (true) {
-                pw.println(numberBetweeen1And4Generator.get());
+                pw.println("1");
             }
         }
     });
@@ -112,14 +111,46 @@ public class CLIProgramFluxTest {
         }
     }
 
-//    @Test // TODO : not working
-//    void checkFirstView() {
-//        launchApplicationAndCheckSceneControllerInstantiation();
+//    @Test
+//        // TODO : not working - do we really need this test for the program flow testing?
+//    void checkFirstView() { // TODO: refactor needed (problem of responsibility separation in the model?)
+//
+//        Supplier<View<?>> actualCurrentViewGetter = () -> {
+//            try {
+//                return (View<?>) TestUtility
+//                        .getFieldAlreadyMadeAccessible(CLISceneController.class, "currentView")
+//                        .get(null);
+//            } catch (NoSuchFieldException | IllegalAccessException e) {
+//                fail(e);
+//                return null;
+//            }
+//        };
+//        AtomicReference<View<?>> actualCurrentViewAtomicReference = new AtomicReference<>(actualCurrentViewGetter.get());
+//        Thread actualCurrentViewObserver = new Thread(() -> {
+//            do {
+//                actualCurrentViewAtomicReference.set(actualCurrentViewGetter.get());
+//            } while (actualCurrentViewAtomicReference.get() == null);  // TODO : better to use properties? This loop simply observes the view to change
+//        });
+//        Thread actualCurrentViewObserverInterrupterIfThreadNotJoiningWithin1ms = new Thread(() -> {
+//            try {
+//                Thread.sleep(1);
+//            } catch (InterruptedException e) {
+//                loggerThisClass.log(Level.SEVERE, "Thread stopper interrupted", e);
+//            }
+//            actualCurrentViewObserver.interrupt();
+//        });
+//
+//        new Thread(this::launchApplicationAndCheckSceneControllerInstantiation).start();
+//        boolean atBeginningTheCurrentViewIsNull = actualCurrentViewAtomicReference.get() == null;
+//        assert atBeginningTheCurrentViewIsNull;
+//        actualCurrentViewObserver.start();
+//        actualCurrentViewObserverInterrupterIfThreadNotJoiningWithin1ms.start();
+//
 //        try {
-//            View<?> actualCurrentView =
-//                    (View<?>) TestUtility.getFieldValue("currentView", cliSceneControllerInstanceGetter.get());
-//            assertTrue(actualCurrentView instanceof CLIStartView);
-//        } catch (NoSuchFieldException | IllegalAccessException e) {
+//            actualCurrentViewObserver.join();
+//            actualCurrentViewObserverInterrupterIfThreadNotJoiningWithin1ms.join();
+//            assertTrue(actualCurrentViewAtomicReference.get() instanceof CLIStartView);
+//        } catch (InterruptedException e) {
 //            fail(e);
 //        }
 //    }
