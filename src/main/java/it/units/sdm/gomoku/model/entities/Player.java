@@ -22,7 +22,7 @@ public abstract class Player implements Observable {
         coordinatesRequiredToContinueProperty.setPropertyValueWithoutNotifying(false);
     }
 
-    public abstract void makeMove(@NotNull final Game currentGame) throws Board.BoardIsFullException;
+    public abstract void makeMove(@NotNull final Game currentGame);
 
     @NotNull
     public String getName() {

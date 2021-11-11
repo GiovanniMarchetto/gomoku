@@ -86,13 +86,7 @@ public abstract class MainViewmodel extends Viewmodel {
                 evt -> {
                     currentPlayerProperty.setPropertyValueAndFireIfPropertyChange((Player) evt.getNewValue());
                     if (!isCurrentGameEnded()) {
-                        Utility.runOnSeparateThread(() -> {
-                            try {
-                                Objects.requireNonNull(currentPlayerProperty.getPropertyValue()).makeMove(getCurrentGame());
-                            } catch (Board.BoardIsFullException e) {
-                                e.printStackTrace(); // TODO: handle this: this should never happen (I think?)
-                            }
-                        });
+                        Utility.runOnSeparateThread(() -> Objects.requireNonNull(currentPlayerProperty.getPropertyValue()).makeMove(getCurrentGame()));
                     }
                 });
 
