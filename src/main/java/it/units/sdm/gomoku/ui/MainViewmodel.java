@@ -28,19 +28,12 @@ public abstract class MainViewmodel extends Viewmodel {
     private final ObservableProperty<Boolean> userMustPlaceNewStoneProperty;
     @NotNull
     private final ObservableProperty<Coordinates> lastMoveCoordinatesProperty;
-    @Nullable
-    private Match match;
     @NotNull
     private final List<PropertyObserver<?>> modelPropertyObservers;
-    //
-//    @NotNull
-//    public final ObservableProperty<Game> currentGame = new ObservableProperty<>(this); // TODO:public???
-//
+    @Nullable
+    private Match match;
     @Nullable
     private Game currentGame;
-    //
-//    @NotNull
-//    private final ObservableProperty<Board> currentBoard = new ObservableProperty<>(this);  // TODO : needed?
     @Nullable
     private Board currentBoard;
 
@@ -52,7 +45,7 @@ public abstract class MainViewmodel extends Viewmodel {
         this.modelPropertyObservers = new ArrayList<>();
     }
 
-    protected void initializeNewGame() {
+    protected void initializeNewGame() {//TODO: need? for me inline
         try {
             currentGame = Objects.requireNonNull(match).startNewGame();
             currentBoard = currentGame.getBoard();
@@ -125,8 +118,6 @@ public abstract class MainViewmodel extends Viewmodel {
 
     public void createMatchFromSetupAndStartGame(Setup setup) {
         setMatch(new Match(setup));
-        observe(getCurrentBlackPlayer());   // TODO : comment observe(..) method usages
-        observe(getCurrentWhitePlayer());
         startNewGame();
     }
 
@@ -162,13 +153,12 @@ public abstract class MainViewmodel extends Viewmodel {
         this.match = Objects.requireNonNull(match);
     }
 
-    public void endGame() {   // TODO : needed? all methods observe() / stopObserving() should not be needed anymore
-        stopObserving(Objects.requireNonNull(currentGame));
-        stopObserving(Objects.requireNonNull(currentBoard));
+    public void endGame() {
     }
 
     public void forceReFireAllCells() {
         // TODO: Rethink this
+        //TODO: to test if implemented
     }
 
     public void placeStoneFromUser(@NotNull final Coordinates coordinates)
@@ -181,7 +171,7 @@ public abstract class MainViewmodel extends Viewmodel {
 
     @NotNull
     public String getCurrentBoardAsString() {
-        return Objects.requireNonNull(currentBoard).toString();
+        return getCurrentBoard().toString();
     }
 
     @NotNull
@@ -198,6 +188,7 @@ public abstract class MainViewmodel extends Viewmodel {
         try {
             return Objects.requireNonNull(currentBoard).getSize();
         } catch (NullPointerException e) {
+            //TODO: only for this the logger?
             Logger.getLogger(getClass().getCanonicalName())
                     .severe("The board is null but should not.\n\t" +
                             Arrays.stream(e.getStackTrace())
@@ -207,6 +198,7 @@ public abstract class MainViewmodel extends Viewmodel {
         }
     }
 
+    @NotNull
     public Map<Player, NonNegativeInteger> getScoreOfMatch() {
         return Objects.requireNonNull(match).getScore();
     }

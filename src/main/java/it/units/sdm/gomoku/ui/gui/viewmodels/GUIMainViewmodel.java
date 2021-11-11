@@ -5,9 +5,7 @@ import it.units.sdm.gomoku.ui.gui.SceneController;
 
 public class GUIMainViewmodel extends MainViewmodel {
 
-    @Override
     public void endGame() {
-        super.endGame();
         SceneController.fadeOutSceneIfIsGUIRunningOrDoNothing(SceneController.ViewName.SUMMARY_VIEW, 1500);
     }
 
