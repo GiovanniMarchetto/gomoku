@@ -1,5 +1,6 @@
 package it.units.sdm.gomoku.model.entities;
 
+import it.units.sdm.gomoku.Utility;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,14 +19,21 @@ public class HumanPlayer extends Player {
 
     @Override
     public void makeMove(@NotNull final Game currentGame) {
-        this.currentGame = Objects.requireNonNull(currentGame);
-        setCoordinatesRequired(true);
+        Utility.runOnSeparateThread(() -> {
+            this.currentGame = Objects.requireNonNull(currentGame);
+            setCoordinatesRequired(true);
+        });
     }
 
     public void placeStone(@NotNull Coordinates coordinates)
             throws Board.BoardIsFullException, Board.CellAlreadyOccupiedException, Game.GameEndedException {
         Objects.requireNonNull(coordinates);
         setCoordinatesRequired(false);
-        Objects.requireNonNull(currentGame).placeStoneAndChangeTurn(coordinates);
+        try {
+            Objects.requireNonNull(currentGame).placeStoneAndChangeTurn(coordinates);
+        } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | RuntimeException e) {
+            Utility.runOnSeparateThread(() -> setCoordinatesRequired(true));
+            throw e;
+        }
     }
 }

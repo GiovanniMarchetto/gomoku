@@ -1,5 +1,6 @@
 package it.units.sdm.gomoku.model.entities;
 
+import it.units.sdm.gomoku.Utility;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
@@ -61,14 +62,16 @@ public class CPUPlayer extends Player {
     }
 
     @Override
-    public void makeMove(@NotNull final Game currentGame) throws BoardIsFullException {
-        Coordinates coordinates = chooseSmartEmptyCoordinates(Objects.requireNonNull(currentGame).getBoard());
-        try {
-            Thread.sleep(DELAY_BEFORE_PLACING_STONE_MILLIS);
-            currentGame.placeStoneAndChangeTurn(coordinates);
-        } catch (Board.CellAlreadyOccupiedException | InterruptedException | Game.GameEndedException e) {
-            e.printStackTrace(); // TODO: handle this: this should never happen (I think?)
-        }
+    public void makeMove(@NotNull final Game currentGame) {
+        Utility.runOnSeparateThread(() -> {
+            try {
+                Coordinates coordinates = chooseSmartEmptyCoordinates(Objects.requireNonNull(currentGame).getBoard());
+                Thread.sleep(DELAY_BEFORE_PLACING_STONE_MILLIS);
+                currentGame.placeStoneAndChangeTurn(coordinates);
+            } catch (BoardIsFullException | Board.CellAlreadyOccupiedException | RuntimeException | Game.GameEndedException | InterruptedException e) {
+                e.printStackTrace(); // TODO: handle this: this should never happen (I think?)
+            }
+        });
     }
 
     @NotNull
@@ -112,7 +115,7 @@ public class CPUPlayer extends Player {
         if (board.isThereAnyEmptyCell()) {
             //noinspection OptionalGetWithoutIsPresent // because is yet checked with isThereAnyEmptyCell
             return getStreamOfEmptyCoordinates(board).min((o1, o2) ->
-                    (int) (getWeightRespectToCenter(centerValue,o1)- getWeightRespectToCenter(centerValue,o2))).get();
+                    (int) (getWeightRespectToCenter(centerValue, o1) - getWeightRespectToCenter(centerValue, o2))).get();
         }
         throw new BoardIsFullException();
     }
@@ -126,8 +129,8 @@ public class CPUPlayer extends Player {
         return chooseNextEmptyCoordinates(board);
     }
 
-    private double getWeightRespectToCenter(double center, Coordinates coordinates){
-        return Math.pow(Math.abs(center-coordinates.getX()),2)+Math.pow(Math.abs(center-coordinates.getY()),2);
+    private double getWeightRespectToCenter(double center, Coordinates coordinates) {
+        return Math.pow(Math.abs(center - coordinates.getX()), 2) + Math.pow(Math.abs(center - coordinates.getY()), 2);
     }
 
     @NotNull
