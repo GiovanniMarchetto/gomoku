@@ -3,7 +3,6 @@ package it.units.sdm.gomoku.ui.gui.views;
 import it.units.sdm.gomoku.model.entities.Stone;
 import it.units.sdm.gomoku.mvvm_library.Observer;
 import it.units.sdm.gomoku.mvvm_library.View;
-import it.units.sdm.gomoku.property_change_handlers.PropertyObserver;
 import it.units.sdm.gomoku.ui.gui.GUIMain;
 import it.units.sdm.gomoku.ui.gui.SceneController;
 import it.units.sdm.gomoku.ui.gui.viewmodels.GUIMainViewmodel;
@@ -51,13 +50,14 @@ public class GUIMainView extends View<GUIMainViewmodel> implements Observer {
 
         GUIMainViewmodel vm = getViewmodelAssociatedWithView();
 
-        new PropertyObserver<>(vm.getCurrentPlayerProperty(), evt ->
-                SceneController.executeOnJavaFxUiThread(() -> {
-                    currentPlayerLabel.setText(evt.getNewValue().toString());
-                    currentPlayerCircle.setFill(
-                            getViewmodelAssociatedWithView().getColorOfCurrentPlayer() == Stone.Color.BLACK
-                                    ? Color.BLACK : Color.WHITE);
-                }));
+        addObservedPropertyOfViewmodel(
+                vm.getCurrentPlayerProperty(), evt ->
+                        SceneController.executeOnJavaFxUiThread(() -> {
+                            currentPlayerLabel.setText(evt.getNewValue().toString());
+                            currentPlayerCircle.setFill(
+                                    getViewmodelAssociatedWithView().getColorOfCurrentPlayer() == Stone.Color.BLACK
+                                            ? Color.BLACK : Color.WHITE);
+                        }));
 
         double discardSafeMisure = 50;
         double discardHeight = topGridPane.getPrefHeight();// 50;
