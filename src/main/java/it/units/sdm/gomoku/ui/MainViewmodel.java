@@ -12,10 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.beans.PropertyChangeEvent;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -33,8 +30,8 @@ public abstract class MainViewmodel extends Viewmodel {
     private final ObservableProperty<Coordinates> lastMoveCoordinatesProperty;
     @Nullable
     private Match match;
-    @Nullable
-    private List<PropertyObserver<?>> propertiesOfModelObservers;
+    @NotNull
+    private final List<PropertyObserver<?>> propertiesOfModelObservers;
     //
 //    @NotNull
 //    public final ObservableProperty<Game> currentGame = new ObservableProperty<>(this); // TODO:public???
@@ -52,6 +49,7 @@ public abstract class MainViewmodel extends Viewmodel {
         this.currentGameStatusProperty = new ObservableProperty<>();
         this.userMustPlaceNewStoneProperty = new ObservableProperty<>();
         this.lastMoveCoordinatesProperty = new ObservableProperty<>();
+        this.propertiesOfModelObservers = new ArrayList<>();
     }
 
     protected void initializeNewGame() {
