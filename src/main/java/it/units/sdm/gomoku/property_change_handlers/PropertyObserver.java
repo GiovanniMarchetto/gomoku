@@ -8,7 +8,7 @@ import java.beans.PropertyChangeEvent;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public class PropertyObserver<T> implements Observer {
+public class PropertyObserver<ObservedPropertyValueType> implements Observer {
     // TODO : to be tested
 
     @NotNull
@@ -16,7 +16,7 @@ public class PropertyObserver<T> implements Observer {
     @Nullable
     private volatile PropertyChangeEvent lastObservedEvt;   // TODO : only for tests purposes
 
-    public PropertyObserver(@NotNull final ObservableProperty<T> observedProperty,
+    public PropertyObserver(@NotNull final ObservableProperty<ObservedPropertyValueType> observedProperty,
                             @NotNull final Consumer<PropertyChangeEvent> actionOnPropertyChange) {
         this.actionOnPropertyChange = Objects.requireNonNull(actionOnPropertyChange);
         observe(Objects.requireNonNull(observedProperty));
