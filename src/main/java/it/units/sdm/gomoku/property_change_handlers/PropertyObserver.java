@@ -2,6 +2,7 @@ package it.units.sdm.gomoku.property_change_handlers;
 
 import it.units.sdm.gomoku.mvvm_library.Observer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.beans.PropertyChangeEvent;
 import java.util.Objects;
@@ -10,7 +11,10 @@ import java.util.function.Consumer;
 public class PropertyObserver<T> implements Observer {
     // TODO : to be tested
 
+    @NotNull
     private final Consumer<PropertyChangeEvent> actionOnPropertyChange;
+    @Nullable
+    private volatile PropertyChangeEvent lastObservedEvt;   // TODO : only for tests purposes
 
     public PropertyObserver(@NotNull final ObservableProperty<T> observedProperty,
                             @NotNull final Consumer<PropertyChangeEvent> actionOnPropertyChange) {
@@ -20,6 +24,7 @@ public class PropertyObserver<T> implements Observer {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
+        lastObservedEvt = evt;
         actionOnPropertyChange.accept(evt);
     }
 }

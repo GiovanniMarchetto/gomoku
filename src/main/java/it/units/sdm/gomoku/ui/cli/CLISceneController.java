@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 public class CLISceneController {   // TODO : refactor (common things with GUI)
@@ -19,14 +20,20 @@ public class CLISceneController {   // TODO : refactor (common things with GUI)
     private static CLISceneController singleInstance;
     private static View<?> currentView;
 
-    private CLISceneController() {
-        cliMainViewmodel = new CLIMainViewmodel();
-        views = new ConcurrentHashMap<>();
-        views.put(CLIViewName.CLI_START_VIEW, () -> new CLIStartView(new StartViewmodel(cliMainViewmodel)));
-        views.put(CLIViewName.CLI_MAIN_VIEW, () -> new CLIMainView(cliMainViewmodel));
-    }
+    private final AtomicReference<StartViewmodel> startViewmodelAtomicReference;
 
     private final CLIMainViewmodel cliMainViewmodel;
+
+    private CLISceneController() {
+        cliMainViewmodel = new CLIMainViewmodel();
+        startViewmodelAtomicReference = new AtomicReference<>();
+        views = new ConcurrentHashMap<>();
+        views.put(CLIViewName.CLI_START_VIEW, () -> {
+            startViewmodelAtomicReference.set(new StartViewmodel(cliMainViewmodel));
+            return new CLIStartView(startViewmodelAtomicReference.get());
+        });
+        views.put(CLIViewName.CLI_MAIN_VIEW, () -> new CLIMainView(cliMainViewmodel));
+    }
     private final Map<CLIViewName, Supplier<View<?>>> views;
 
     public static void initialize() {

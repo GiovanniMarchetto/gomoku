@@ -90,7 +90,7 @@ public class GUIStartView extends View<StartViewmodel> {
     }
 
     public void startMatchButtonOnMouseClicked(MouseEvent e) {  // TODO : to test
-        getViewmodelAssociatedWithView().startMatch();
+        getViewmodelAssociatedWithView().createAndStartMatch();
     }
 
     private void allowOnlyNumberInNumberOfGamesTextField() {

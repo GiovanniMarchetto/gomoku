@@ -9,7 +9,7 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            LogManager.getLogManager().readConfiguration(Main.class.getResourceAsStream(PATH_TO_LOGGING_PROPERTIES_LOADED_AS_RESOURCE));
+            LogManager.getLogManager().readConfiguration(Main.class.getResourceAsStream(PATH_TO_LOGGING_PROPERTIES_LOADED_AS_RESOURCE));    // TODO : can be configured directly from build.gradle?
         } catch (IOException e) {
             e.printStackTrace();
         }

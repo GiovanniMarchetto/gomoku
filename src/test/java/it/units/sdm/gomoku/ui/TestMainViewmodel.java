@@ -11,7 +11,7 @@ public class TestMainViewmodel extends MainViewmodel {
     public static final PositiveInteger numberOfGames = new PositiveInteger(3);
     public static final PositiveInteger boardSize = new PositiveInteger(5);
     public static final Setup setup = new Setup(cpuPlayer1, cpuPlayer2,
-            numberOfGames, boardSize);
+            numberOfGames, boardSize);  // TODO : tests should cover any combination of setups
 
     @Override
     public void startNewMatch() {

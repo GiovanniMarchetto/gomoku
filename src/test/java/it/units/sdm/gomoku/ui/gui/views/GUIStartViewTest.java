@@ -5,7 +5,6 @@ import it.units.sdm.gomoku.ThrowingRunnable;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
-import it.units.sdm.gomoku.model.entities.HumanPlayer;
 import it.units.sdm.gomoku.model.entities.Match;
 import it.units.sdm.gomoku.ui.MainViewmodel;
 import it.units.sdm.gomoku.ui.StartViewmodel;
@@ -129,18 +128,6 @@ class GUIStartViewTest {
                 .flatMap(i -> ints.stream().unordered().parallel().map(j -> Arguments.of(i, j)));
     }
 
-    @NotNull
-    private static Stream<Arguments> setupsSupplierAndFlagIfValid() {   // TODO : add a number of valid/invalid setups
-        return Stream.of(
-                Arguments.of(
-                        new Setup(
-                                new HumanPlayer("One"),
-                                new HumanPlayer("Two"),
-                                new PositiveInteger(1),
-                                BoardSizes.NORMAL.getBoardSize()),
-                        true));
-    }
-
     @Nullable
     private static Set<Integer> readIntegersFromCSV() {
         final String COMMENT_STARTER_CHARACTER = "#";
@@ -188,7 +175,7 @@ class GUIStartViewTest {
         final String fieldNameInViewmodel = "numberOfGames";
         try {
             TextField numberOfGamesTextField = getTextField(textfieldNameInView);
-            setOldValueInViewmodelAndTheSetNewValueInView(
+            setOldValueInViewmodelAndThenSetNewValueInView(
                     String.valueOf(oldNumberOfGamesAlreadySet), String.valueOf(newNumberOfGamesInsertedByUser),
                     fieldNameInViewmodel,
                     numberOfGamesTextField.textProperty()::setValue);
@@ -272,7 +259,7 @@ class GUIStartViewTest {
             @Nullable final T oldValue, @Nullable final T newValue,
             @NotNull final String fieldNameInViewmodel, @NotNull final Consumer<T> propertyValueSetterInView)
             throws NoSuchFieldException, IllegalAccessException {
-        setOldValueInViewmodelAndTheSetNewValueInView(oldValue, newValue, fieldNameInViewmodel, propertyValueSetterInView);
+        setOldValueInViewmodelAndThenSetNewValueInView(oldValue, newValue, fieldNameInViewmodel, propertyValueSetterInView);
         assertEquals(TestUtility.getFieldValue(fieldNameInViewmodel, guiStartViewmodel), newValue);
     }
 
@@ -283,7 +270,7 @@ class GUIStartViewTest {
                 .get(guiStartView);
     }
 
-    private <T> void setOldValueInViewmodelAndTheSetNewValueInView(
+    private <T> void setOldValueInViewmodelAndThenSetNewValueInView(
             @Nullable T oldValue, @Nullable T newValue, @NotNull String fieldNameInViewmodel,
             @NotNull Consumer<T> propertyValueSetterInView)
             throws NoSuchFieldException, IllegalAccessException {
@@ -319,7 +306,7 @@ class GUIStartViewTest {
     }
 
     @ParameterizedTest
-    @MethodSource("setupsSupplierAndFlagIfValid")
+    @MethodSource("it.units.sdm.gomoku.ui.UIUtility#setupsSupplierAndFlagIfValid")
     void createMatchWhenClickButtonIfValidFields(Setup setup, boolean validSetup) {
         AtomicReference<ReflectiveOperationException> eventuallyThrownException = new AtomicReference<>();  // TODO: create interface "SupplierThatThrows" to avoid this mechanism and replace all occurrences of this "pattern"
         eventuallyThrownException.set(null);

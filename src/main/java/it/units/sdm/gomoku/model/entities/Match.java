@@ -57,7 +57,7 @@ public class Match {
         this(boardSize, DEFAULT_MAXIMUM_GAMES.intValue(), player1, player2);
     }
 
-    public Match(@NotNull final Setup setup) {
+    public Match(@NotNull final Setup setup) {  // TODO: test
         this(Objects.requireNonNull(setup).boardSize(), setup.numberOfGames(), setup.player1(), setup.player2());
     }
 
@@ -191,6 +191,5 @@ public class Match {
     }
 
     public static class MaxNumberOfGamesException extends Exception {
-
     }
 }
