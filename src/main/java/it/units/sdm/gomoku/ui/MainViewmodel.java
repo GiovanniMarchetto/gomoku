@@ -12,7 +12,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.beans.PropertyChangeEvent;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -54,7 +58,7 @@ public abstract class MainViewmodel extends Viewmodel {
         try {
             currentGame = Objects.requireNonNull(match).startNewGame();
             currentBoard = currentGame.getBoard();
-            propertiesOfModelObservers = observePropertiesOfModelAndGet();
+            observePropertiesOfModel();
 
             observe(currentGame);   // TODO : should fade away
             observe(currentBoard);
@@ -64,49 +68,54 @@ public abstract class MainViewmodel extends Viewmodel {
         }
     }
 
-    private List<PropertyObserver<?>> observePropertiesOfModelAndGet() {
+    private <ObservedPropertyValueType> void addObservedProperty(
+            @NotNull final ObservableProperty<ObservedPropertyValueType> observableProperty,
+            @NotNull final Consumer<PropertyChangeEvent> actionOnPropertyChange) {
+        // TODO : test and improve logic: e.g. the same property cannot be observed more than once
+        Objects.requireNonNull(propertiesOfModelObservers)
+                .add(new PropertyObserver<>(
+                        Objects.requireNonNull(observableProperty), Objects.requireNonNull(actionOnPropertyChange)));
+    }
 
-        List<PropertyObserver<?>> observerList = new ArrayList<>();
+    private void observePropertiesOfModel() {
 
         assert currentGame != null;
-        observerList.add(
-                new PropertyObserver<>(
-                        currentGame.getCurrentPlayer(),
-                        evt -> {
-                            currentPlayerProperty.setPropertyValueAndFireIfPropertyChange((Player) evt.getNewValue());
-                            if (!isCurrentGameEnded()) {
-                                runOnSeparateThread(() -> {
-                                    try {
-                                        Objects.requireNonNull(currentPlayerProperty.getPropertyValue()).makeMove(getCurrentGame());
-                                    } catch (Board.BoardIsFullException e) {
-                                        e.printStackTrace(); // TODO: handle this: this should never happen (I think?)
-                                    }
-                                });
+        addObservedProperty(
+                currentGame.getCurrentPlayer(),
+                evt -> {
+                    currentPlayerProperty.setPropertyValueAndFireIfPropertyChange((Player) evt.getNewValue());
+                    if (!isCurrentGameEnded()) {
+                        runOnSeparateThread(() -> {
+                            try {
+                                Objects.requireNonNull(currentPlayerProperty.getPropertyValue()).makeMove(getCurrentGame());
+                            } catch (Board.BoardIsFullException e) {
+                                e.printStackTrace(); // TODO: handle this: this should never happen (I think?)
                             }
-                        }));
+                        });
+                    }
+                });
 
-        observerList.add(
-                new PropertyObserver<>(
-                        currentGame.getGameStatus(),
-                        evt -> {
-                            currentGameStatusProperty.setPropertyValueAndFireIfPropertyChange((Game.Status) evt.getNewValue());
-                            if (evt.getNewValue().equals(Game.Status.ENDED)) {
-                                endGame();
-                            }
-                        }));
+        addObservedProperty(
+                currentGame.getGameStatus(),
+                evt -> {
+                    currentGameStatusProperty.setPropertyValueAndFireIfPropertyChange((Game.Status) evt.getNewValue());
+                    if (evt.getNewValue().equals(Game.Status.ENDED)) {
+                        endGame();
+                    }
+                });
 
         assert currentBoard != null;
-        observerList.add(
-                new PropertyObserver<>(currentBoard.getLastMoveCoordinatesProperty(),
-                        evt -> lastMoveCoordinatesProperty.setPropertyValueAndFireIfPropertyChange((Coordinates) evt.getNewValue())));
+        addObservedProperty(
+                currentBoard.getLastMoveCoordinatesProperty(),
+                evt -> lastMoveCoordinatesProperty.setPropertyValueAndFireIfPropertyChange(
+                        (Coordinates) evt.getNewValue()));
 
-        observerList.addAll(
-                Stream.of(getCurrentBlackPlayer(), getCurrentWhitePlayer())
-                        .map(player -> new PropertyObserver<>(player.getCoordinatesRequiredToContinueProperty(),
-                                evt -> userMustPlaceNewStoneProperty.setPropertyValueAndFireIfPropertyChange((boolean) evt.getNewValue())))
-                        .toList());
+        Stream.of(getCurrentBlackPlayer(), getCurrentWhitePlayer())
+                .forEach(player ->
+                        addObservedProperty(
+                                player.getCoordinatesRequiredToContinueProperty(),
+                                evt -> userMustPlaceNewStoneProperty.setPropertyValueAndFireIfPropertyChange((boolean) evt.getNewValue())));
 
-        return observerList;
     }
 
     @Override
