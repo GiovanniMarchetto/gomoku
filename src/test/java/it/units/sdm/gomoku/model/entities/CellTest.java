@@ -77,7 +77,7 @@ class CellTest {
     @Test
     void testToStringBlack() {
         cell.setStone(blackStone);
-        assertEquals(String.valueOf('X'), cell.toString());
+        assertEquals("X", cell.toString());
     }
 
     @Test
