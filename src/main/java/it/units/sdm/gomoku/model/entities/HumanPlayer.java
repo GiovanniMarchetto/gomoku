@@ -19,8 +19,10 @@ public class HumanPlayer extends Player {
 
     @Override
     public void makeMove(@NotNull final Game currentGame) {
-        this.currentGame = Objects.requireNonNull(currentGame);
-        setCoordinatesRequired(true);
+        Utility.runOnSeparateThread(() -> {
+            this.currentGame = Objects.requireNonNull(currentGame);
+            setCoordinatesRequired(true);
+        });
     }
 
     public void placeStone(@NotNull Coordinates coordinates)

@@ -1,5 +1,6 @@
 package it.units.sdm.gomoku.model.entities;
 
+import it.units.sdm.gomoku.Utility;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
@@ -62,13 +63,15 @@ public class CPUPlayer extends Player {
 
     @Override
     public void makeMove(@NotNull final Game currentGame) {
-        try {
-            Coordinates coordinates = chooseSmartEmptyCoordinates(Objects.requireNonNull(currentGame).getBoard());
-            Thread.sleep(DELAY_BEFORE_PLACING_STONE_MILLIS);
-            currentGame.placeStoneAndChangeTurn(coordinates);
-        } catch (BoardIsFullException | Board.CellAlreadyOccupiedException | RuntimeException | Game.GameEndedException | InterruptedException e) {
-            e.printStackTrace(); // TODO: handle this: this should never happen (I think?)
-        }
+        Utility.runOnSeparateThread(() -> {
+            try {
+                Coordinates coordinates = chooseSmartEmptyCoordinates(Objects.requireNonNull(currentGame).getBoard());
+                Thread.sleep(DELAY_BEFORE_PLACING_STONE_MILLIS);
+                currentGame.placeStoneAndChangeTurn(coordinates);
+            } catch (BoardIsFullException | Board.CellAlreadyOccupiedException | RuntimeException | Game.GameEndedException | InterruptedException e) {
+                e.printStackTrace(); // TODO: handle this: this should never happen (I think?)
+            }
+        });
     }
 
     @NotNull

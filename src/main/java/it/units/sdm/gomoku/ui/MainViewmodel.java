@@ -1,6 +1,5 @@
 package it.units.sdm.gomoku.ui;
 
-import it.units.sdm.gomoku.Utility;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.entities.*;
@@ -86,7 +85,7 @@ public abstract class MainViewmodel extends Viewmodel {
                 evt -> {
                     currentPlayerProperty.setPropertyValueAndFireIfPropertyChange((Player) evt.getNewValue());
                     if (!isCurrentGameEnded()) {
-                        Utility.runOnSeparateThread(() -> Objects.requireNonNull(currentPlayerProperty.getPropertyValue()).makeMove(getCurrentGame()));
+                        Objects.requireNonNull(currentPlayerProperty.getPropertyValue()).makeMove(getCurrentGame());
                     }
                 });
 
