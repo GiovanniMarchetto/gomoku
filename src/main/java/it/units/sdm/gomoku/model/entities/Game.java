@@ -14,8 +14,6 @@ import java.util.Objects;
 
 public class Game implements Comparable<Game>, Observable {
 
-    // TODO : add tests to check general rules of games
-
     @NotNull
     public static final PositiveInteger NUMBER_OF_CONSECUTIVE_STONE_FOR_WINNING = new PositiveInteger(5);
     @NotNull

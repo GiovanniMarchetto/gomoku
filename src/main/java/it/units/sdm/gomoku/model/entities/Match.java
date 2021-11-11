@@ -158,7 +158,6 @@ public class Match {
     }
 
     public boolean isADraw() throws MatchNotEndedException {
-        //TODO: IS NOT DRAW IS DRAW! (English error)
         if (isEnded()) {
             return getScoreOfPlayer(getCurrentBlackPlayer())
                     .equals(getScoreOfPlayer(getCurrentWhitePlayer()));
