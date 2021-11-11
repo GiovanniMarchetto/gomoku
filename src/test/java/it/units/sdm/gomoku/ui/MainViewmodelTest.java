@@ -65,7 +65,7 @@ class MainViewmodelTest {
         try {
             Match match = new Match(setup);
             mainViewmodel.setMatch(match);
-            assertEquals(match, TestUtility.getFieldValue("match", match));
+            assertEquals(match, TestUtility.getFieldValue("match", mainViewmodel));
         } catch (NoSuchFieldException | IllegalAccessException e) {
             fail(e);
         }
@@ -118,7 +118,6 @@ class MainViewmodelTest {
             fail(e);
         }
     }
-
 
     @Test
     void getCurrentBoardAsString() {
