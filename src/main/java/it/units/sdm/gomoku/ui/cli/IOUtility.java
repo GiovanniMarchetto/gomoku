@@ -15,7 +15,7 @@ public class IOUtility {
         //noinspection CatchMayIgnoreException
         try {
             char inserted = SettableScannerSingleton
-                    .createScannerForSystemInIfAllowedOrUseTheDefaultAndGet()
+                    .createNewScannerForSystemInIfAllowedOrUseTheDefaultAndGet()
                     .nextLine().toLowerCase().charAt(0);
             for (char validChar : validChars) {
                 if (Character.toLowerCase(inserted) == Character.toLowerCase(validChar)) {
@@ -30,7 +30,7 @@ public class IOUtility {
     public static int getAIntFromStdIn() {
         // TODO : refactor to use method above
         Scanner fromUser = SettableScannerSingleton
-                .createScannerForSystemInIfAllowedOrUseTheDefaultAndGet();
+                .createNewScannerForSystemInIfAllowedOrUseTheDefaultAndGet();
         if (fromUser == null) return 0;
         int aInt = 0;
         boolean validInputInserted = false;
@@ -74,7 +74,7 @@ public class IOUtility {
             @NotNull final PrintStream out,
             @NotNull final Class<? extends Throwable> throwable) {
         Scanner fromUser = SettableScannerSingleton
-                .createScannerForSystemInIfAllowedOrUseTheDefaultAndGet();
+                .createNewScannerForSystemInIfAllowedOrUseTheDefaultAndGet();
         String inputValue = null;
         boolean isValidInput = false;
         while (!isValidInput) {
@@ -111,14 +111,16 @@ public class IOUtility {
 
     public static class SettableScannerSingleton {  // TODO : test and move in separate class
 
-        private static final boolean scannerCanBeModified = true;// for debugging purposes, access with reflection
+        @SuppressWarnings("FieldMayBeFinal")
+        // for debugging purposes, access with reflection // TODO: correct? To be discussed
+        private static boolean scannerCanBeModified = true;
         @Nullable
         private static Scanner scannerSingleInstance;
 
         private SettableScannerSingleton() {
         }
 
-        public static Scanner createScannerForSystemInIfAllowedOrUseTheDefaultAndGet() {
+        public static Scanner createNewScannerForSystemInIfAllowedOrUseTheDefaultAndGet() {
             if (scannerCanBeModified) {
                 scannerSingleInstance = new Scanner(System.in);
             }
