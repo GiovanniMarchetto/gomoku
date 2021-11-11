@@ -7,34 +7,55 @@ import it.units.sdm.gomoku.ui.cli.views.CLIMainView;
 import it.units.sdm.gomoku.ui.cli.views.CLIStartView;
 import it.units.sdm.gomoku.ui.gui.SceneController;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class CLISceneController {   // TODO : refactor (common things with GUI)
     // TODO : test
 
+    @Nullable
     private static CLISceneController singleInstance;
+    @Nullable
     private static View<?> currentView;
 
+    @NotNull
     private final AtomicReference<StartViewmodel> startViewmodelAtomicReference;
 
+    @NotNull
     private final CLIMainViewmodel cliMainViewmodel;
 
+    @NotNull
+    private final Map<CLIViewName, List<View<?>>> historyOfCreatedViews;
+
+    @NotNull
+    private final Map<CLIViewName, Supplier<View<?>>> views;
+
     private CLISceneController() {
+        historyOfCreatedViews = Arrays.stream(CLIViewName.values())
+                .map(viewName -> new AbstractMap.SimpleEntry<>(viewName, new ArrayList<View<?>>()))
+                .collect(Collectors.toConcurrentMap(Map.Entry::getKey, Map.Entry::getValue));
         cliMainViewmodel = new CLIMainViewmodel();
         startViewmodelAtomicReference = new AtomicReference<>();
         views = new ConcurrentHashMap<>();
         views.put(CLIViewName.CLI_START_VIEW, () -> {
-            startViewmodelAtomicReference.set(new StartViewmodel(cliMainViewmodel));
-            return new CLIStartView(startViewmodelAtomicReference.get());
+            startViewmodelAtomicReference.set(new StartViewmodel(cliMainViewmodel));    // TODO : refactor (similar operations for both the views)
+            return addViewToHistoryAndGet(
+                    CLIViewName.CLI_START_VIEW, new CLIStartView(startViewmodelAtomicReference.get()));
         });
-        views.put(CLIViewName.CLI_MAIN_VIEW, () -> new CLIMainView(cliMainViewmodel));
+        views.put(CLIViewName.CLI_MAIN_VIEW, () ->
+                addViewToHistoryAndGet(CLIViewName.CLI_MAIN_VIEW, new CLIMainView(cliMainViewmodel)));
     }
-    private final Map<CLIViewName, Supplier<View<?>>> views;
+
+    private View<?> addViewToHistoryAndGet(@NotNull final CLIViewName cliViewName, @NotNull final View<?> newView) {
+        historyOfCreatedViews.get(Objects.requireNonNull(cliViewName))
+                .add(Objects.requireNonNull(newView));
+        return newView;
+    }
 
     public static void initialize() {
         // TODO : very similar to SceneController.initialize()
