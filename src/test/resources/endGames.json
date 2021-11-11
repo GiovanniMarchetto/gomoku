@@ -59,7 +59,7 @@
           "NONE",
           "NONE",
           "NONE",
-          "WHITE"
+          "NONE"
         ],
         [
           "BLACK",
@@ -121,8 +121,8 @@
           "WHITE"
         ],
         [
-          "NONE",
-          "NONE",
+          "BLACK",
+          "BLACK",
           "NONE",
           "NONE",
           "WHITE"
@@ -142,7 +142,7 @@
           "WHITE",
           "WHITE",
           "WHITE",
-          "BLACK"
+          "NONE"
         ],
         [
           "NONE",
@@ -152,7 +152,7 @@
           "WHITE"
         ],
         [
-          "BLACK",
+          "NONE",
           "WHITE",
           "BLACK",
           "BLACK",
@@ -183,7 +183,7 @@
     {
       "matrix": [
         [
-          "BLACK",
+          "WHITE",
           "WHITE",
           "WHITE",
           "WHITE",
@@ -201,7 +201,7 @@
           "WHITE",
           "BLACK",
           "BLACK",
-          "BLACK"
+          "WHITE"
         ],
         [
           "NONE",
@@ -244,9 +244,9 @@
         [
           "BLACK",
           "WHITE",
-          "WHITE",
           "BLACK",
-          "BLACK"
+          "BLACK",
+          "WHITE"
         ],
         [
           "BLACK",
@@ -258,9 +258,9 @@
         [
           "BLACK",
           "WHITE",
-          "WHITE",
           "BLACK",
-          "BLACK"
+          "BLACK",
+          "WHITE"
         ]
       ],
       "coordinates": [
