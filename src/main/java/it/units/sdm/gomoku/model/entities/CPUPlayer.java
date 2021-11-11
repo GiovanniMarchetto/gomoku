@@ -112,7 +112,7 @@ public class CPUPlayer extends Player {
         if (board.isThereAnyEmptyCell()) {
             //noinspection OptionalGetWithoutIsPresent // because is yet checked with isThereAnyEmptyCell
             return getStreamOfEmptyCoordinates(board).min((o1, o2) ->
-                    (int) (getWeightRespectToCenter(centerValue,o1)- getWeightRespectToCenter(centerValue,o2))).get();
+                    (int) (getWeightRespectToCenter(centerValue, o1) - getWeightRespectToCenter(centerValue, o2))).get();
         }
         throw new BoardIsFullException();
     }
@@ -126,8 +126,8 @@ public class CPUPlayer extends Player {
         return chooseNextEmptyCoordinates(board);
     }
 
-    private double getWeightRespectToCenter(double center, Coordinates coordinates){
-        return Math.pow(Math.abs(center-coordinates.getX()),2)+Math.pow(Math.abs(center-coordinates.getY()),2);
+    private double getWeightRespectToCenter(double center, Coordinates coordinates) {
+        return Math.pow(Math.abs(center - coordinates.getX()), 2) + Math.pow(Math.abs(center - coordinates.getY()), 2);
     }
 
     @NotNull
