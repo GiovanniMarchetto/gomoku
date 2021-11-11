@@ -195,7 +195,8 @@ class GameTest {
 
     @Test
     void setGameStatusIfGameEndedWhenPlaceStone() {
-        setWinnerIfIsTheWinMoveBlack();
+        game.start();
+        disputeGameAndPlayerWin(game, cpuBlack);
         assertEquals(Game.Status.ENDED, game.getGameStatus().getPropertyValue());
     }
 
@@ -205,8 +206,6 @@ class GameTest {
         placeTwoChainOfFourIn0And1Rows(game);
         assertNotEquals(Game.Status.ENDED, game.getGameStatus().getPropertyValue());
     }
-
-//TODO: hasThePlayerWonThisGame deep tests
 
     @Test
     void checkIsEndedInNormalExecution() {

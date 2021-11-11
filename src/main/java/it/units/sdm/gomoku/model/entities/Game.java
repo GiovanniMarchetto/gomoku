@@ -98,7 +98,7 @@ public class Game implements Comparable<Game>, Observable {
     }
 
     private void setWinnerIfPlayerWon(@NotNull Player player, @NotNull Coordinates coordinates) {
-        if (hasThePlayerWonThisGame(coordinates)) {
+        if (hasThePlayerWonWithLastMove(coordinates)) {
             setWinner(player);
         }
     }
@@ -113,7 +113,7 @@ public class Game implements Comparable<Game>, Observable {
         currentPlayer.setPropertyValueAndFireIfPropertyChange(currentPlayer.getPropertyValue() == blackPlayer ? whitePlayer : blackPlayer);
     }
 
-    private boolean hasThePlayerWonThisGame(@NotNull final Coordinates lastMove) {
+    private boolean hasThePlayerWonWithLastMove(@NotNull final Coordinates lastMove) {
         return board.isCoordinatesBelongingToChainOfNStones(lastMove, NUMBER_OF_CONSECUTIVE_STONE_FOR_WINNING);
     }
 
