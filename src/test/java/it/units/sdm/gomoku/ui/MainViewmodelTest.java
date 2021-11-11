@@ -7,7 +7,6 @@ import it.units.sdm.gomoku.model.entities.Stone;
 import it.units.sdm.gomoku.utils.TestUtility;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Field;
 import java.util.Objects;
 
 import static it.units.sdm.gomoku.ui.TestMainViewmodel.cpuPlayer1;
@@ -62,20 +61,15 @@ class MainViewmodelTest {
     }
 
     @Test
-    void createMatchFromSetupAndStartGame() {
+    void setMatch() {
         try {
-            Field matchField = TestUtility.getFieldAlreadyMadeAccessible(MainViewmodel.class, "match");
-            Field gameField = TestUtility.getFieldAlreadyMadeAccessible(MainViewmodel.class, "currentGame");
-
-            assertNull(matchField.get(mainViewmodel));
-            assertNull(gameField.get(mainViewmodel));
-
-            mainViewmodel.createMatchFromSetupAndStartGame(setup);
-            assertNotNull(matchField.get(mainViewmodel));
-            assertNotNull(gameField.get(mainViewmodel));
+            Match match = new Match(setup);
+            mainViewmodel.setMatch(match);
+            assertEquals(match, TestUtility.getFieldValue("match", match));
         } catch (NoSuchFieldException | IllegalAccessException e) {
             fail(e);
         }
+
     }
 
     @Test
@@ -125,10 +119,6 @@ class MainViewmodelTest {
         }
     }
 
-    @Test
-    void setMatch() {
-        //TODO
-    }
 
     @Test
     void getCurrentBoardAsString() {
