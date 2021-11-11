@@ -1,6 +1,7 @@
 package it.units.sdm.gomoku.ui.cli;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
 import java.util.*;
@@ -9,11 +10,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class IOUtility {
+
     public static char getLowercaseCharIfValidCaseInsensitiveOr0(char... validChars) {
-        Scanner userInput = new Scanner(System.in);
         //noinspection CatchMayIgnoreException
         try {
-            char inserted = userInput.nextLine().toLowerCase().charAt(0);
+            char inserted = SettableScannerSingleton
+                    .createScannerForSystemInIfAllowedOrUseTheDefaultAndGet()
+                    .nextLine().toLowerCase().charAt(0);
             for (char validChar : validChars) {
                 if (Character.toLowerCase(inserted) == Character.toLowerCase(validChar)) {
                     return Character.toLowerCase(validChar);
@@ -24,23 +27,11 @@ public class IOUtility {
         return 0;
     }
 
-    public static char getLowercaseCharWhenValidCaseInsensitiveOrCycle(char... validChars) {
-        char aChar = 0;
-        boolean validInputInserted = false;
-        do {
-            aChar = getLowercaseCharIfValidCaseInsensitiveOr0(validChars);
-            validInputInserted = aChar != 0;
-            if (!validInputInserted) {
-                System.out.print("Invalid input, please insert one from the list " +
-                        Arrays.toString(validChars) + ": ");
-            }
-        } while (!validInputInserted);
-        return aChar;
-    }
-
     public static int getAIntFromStdIn() {
         // TODO : refactor to use method above
-        Scanner fromUser = new Scanner(System.in);
+        Scanner fromUser = SettableScannerSingleton
+                .createScannerForSystemInIfAllowedOrUseTheDefaultAndGet();
+        if (fromUser == null) return 0;
         int aInt = 0;
         boolean validInputInserted = false;
         do {
@@ -63,15 +54,18 @@ public class IOUtility {
         return aInt;
     }
 
-    public static String checkInputAndGet(
-            @NotNull final Predicate<String> validator,
-            @NotNull final PrintStream out,
-            @NotNull final String messageErrorIfInvalid) {
-        return checkInputAndGet(
-                Objects.requireNonNull(validator),
-                Objects.requireNonNull(messageErrorIfInvalid),
-                Objects.requireNonNull(out),
-                IllegalArgumentException.class);
+    public static char getLowercaseCharWhenValidCaseInsensitiveOrCycle(char... validChars) {
+        char aChar = 0;
+        boolean validInputInserted = false;
+        do {
+            aChar = getLowercaseCharIfValidCaseInsensitiveOr0(validChars);
+            validInputInserted = aChar != 0;
+            if (!validInputInserted) {
+                System.out.print("Invalid input, please insert one from the list " +
+                        Arrays.toString(validChars) + ": ");
+            }
+        } while (!validInputInserted);
+        return aChar;
     }
 
     public static String checkInputAndGet(
@@ -79,11 +73,17 @@ public class IOUtility {
             @NotNull final String messageErrorIfInvalid,
             @NotNull final PrintStream out,
             @NotNull final Class<? extends Throwable> throwable) {
+        Scanner fromUser = SettableScannerSingleton
+                .createScannerForSystemInIfAllowedOrUseTheDefaultAndGet();
         String inputValue = null;
         boolean isValidInput = false;
         while (!isValidInput) {
             try {
-                inputValue = new Scanner(System.in).nextLine();
+                if (fromUser != null) {
+                    inputValue = fromUser.nextLine();
+                } else {
+                    return "\0";
+                }
             } catch (InputMismatchException ignored) {
             } catch (Exception e) {
                 if (!throwable.isAssignableFrom(e.getClass())) {
@@ -96,6 +96,35 @@ public class IOUtility {
             }
         }
         return inputValue;
+    }
+
+    public static String checkInputAndGet(
+            @NotNull final Predicate<String> validator,
+            @NotNull final PrintStream out,
+            @NotNull final String messageErrorIfInvalid) {
+        return checkInputAndGet(
+                Objects.requireNonNull(validator),
+                Objects.requireNonNull(messageErrorIfInvalid),
+                Objects.requireNonNull(out),
+                IllegalArgumentException.class);
+    }
+
+    public static class SettableScannerSingleton {  // TODO : test and move in separate class
+
+        private static final boolean scannerCanBeModified = true;// for debugging purposes, access with reflection
+        @Nullable
+        private static Scanner scannerSingleInstance;
+
+        private SettableScannerSingleton() {
+        }
+
+        public static Scanner createScannerForSystemInIfAllowedOrUseTheDefaultAndGet() {
+            if (scannerCanBeModified) {
+                scannerSingleInstance = new Scanner(System.in);
+            }
+            return scannerSingleInstance;
+        }
+
     }
 
     public static boolean isYesFromStdin() {

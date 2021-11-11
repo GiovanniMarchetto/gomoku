@@ -75,8 +75,8 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
                 } catch (Board.BoardIsFullException | Game.GameEndedException e) {
                     // TODO : handle exception
                     System.err.println("Game terminated due to an unexpected exception: ");
-                    e.printStackTrace();
-                    System.exit(1);
+                    e.printStackTrace();    // TODO : use logger
+                    System.exit(1);     // TODO : correct?
                 }
             }
         });
