@@ -109,7 +109,7 @@ public class Game implements Comparable<Game>, Observable {
         }
     }
 
-    private void changeTurn() {
+    private void changeTurn() { // TODO: dovrebbe fare il controllo/throware se il gioco è finito? (secondo me si)
         currentPlayer.setPropertyValueAndFireIfPropertyChange(currentPlayer.getPropertyValue() == blackPlayer ? whitePlayer : blackPlayer);
     }
 
