@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public class ObservableProperty<T> implements Observable, Cloneable {  // TODO : to be tested
+public class ObservableProperty<PropertyValueType> implements Observable, Cloneable {  // TODO : to be tested
 
     // TODO : test all events to work properly
 
@@ -16,7 +16,7 @@ public class ObservableProperty<T> implements Observable, Cloneable {  // TODO :
     private final String propertyName;
 
     @Nullable
-    private volatile T propertyValue;   // TODO : volatile needed? Atomic reference better?
+    private volatile PropertyValueType propertyValue;   // TODO : volatile needed? Atomic reference better?
 
     public ObservableProperty() {
         this.propertyValue = null;
@@ -24,12 +24,12 @@ public class ObservableProperty<T> implements Observable, Cloneable {  // TODO :
     }
 
     @Nullable
-    public T getPropertyValue() {
+    public PropertyValueType getPropertyValue() {
         return propertyValue;
     }
 
     @NotNull
-    public synchronized ObservableProperty<T> setPropertyValueWithoutNotifying(@Nullable final T propertyValue) {   // TODO : synchronized needed?
+    public synchronized ObservableProperty<PropertyValueType> setPropertyValueWithoutNotifying(@Nullable final PropertyValueType propertyValue) {   // TODO : synchronized needed?
         this.propertyValue = propertyValue;
         return this;
     }
@@ -40,8 +40,8 @@ public class ObservableProperty<T> implements Observable, Cloneable {  // TODO :
     }
 
     @NotNull
-    public synchronized ObservableProperty<T> setPropertyValueAndFireIfPropertyChange(@Nullable final T propertyNewValue) {   // TODO : synchronized needed?
-        T oldValue = getPropertyValue();
+    public synchronized ObservableProperty<PropertyValueType> setPropertyValueAndFireIfPropertyChange(@Nullable final PropertyValueType propertyNewValue) {   // TODO : synchronized needed?
+        PropertyValueType oldValue = getPropertyValue();
         if (!Objects.equals(oldValue, propertyNewValue)) {
             setPropertyValueWithoutNotifying(propertyNewValue);
             firePropertyChange(propertyName, oldValue, getPropertyValue());
@@ -51,13 +51,13 @@ public class ObservableProperty<T> implements Observable, Cloneable {  // TODO :
 
     @SuppressWarnings("MethodDoesntCallSuperMethod")
     @Override
-    public ObservableProperty<T> clone() {
-        ObservableProperty<T> clone = new ObservableProperty<>();
-        clone.setPropertyValueWithoutNotifying(getPropertyValue()/*TODO : .clone() but T should implement cloneable interface*/);
+    public ObservableProperty<PropertyValueType> clone() {
+        ObservableProperty<PropertyValueType> clone = new ObservableProperty<>();
+        clone.setPropertyValueWithoutNotifying(getPropertyValue()/*TODO : .clone() but PropertyValueType should implement cloneable interface*/);
         return clone;
     }
 
-    public boolean valueEquals(@NotNull final ObservableProperty<T> otherProperty) {
+    public boolean valueEquals(@NotNull final ObservableProperty<PropertyValueType> otherProperty) {
         return Objects.equals(propertyValue, Objects.requireNonNull(otherProperty).propertyValue);
     }
 
