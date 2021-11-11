@@ -323,7 +323,7 @@ public class CLIProgramFluxTest {
         assert this.mainViewmodel != null;
         return ((List<?>)
                 Objects.requireNonNull(
-                        TestUtility.getFieldValue("propertiesOfModelObservers", this.mainViewmodel)))
+                        TestUtility.getFieldValue("modelPropertyObservers", this.mainViewmodel)))
                 .stream()
                 .map(propertyObserver -> (PropertyObserver<?>) propertyObserver)
                 .toList();

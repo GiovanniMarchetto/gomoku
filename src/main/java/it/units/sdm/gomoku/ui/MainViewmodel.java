@@ -31,7 +31,7 @@ public abstract class MainViewmodel extends Viewmodel {
     @Nullable
     private Match match;
     @NotNull
-    private final List<PropertyObserver<?>> propertiesOfModelObservers;
+    private final List<PropertyObserver<?>> modelPropertyObservers;
     //
 //    @NotNull
 //    public final ObservableProperty<Game> currentGame = new ObservableProperty<>(this); // TODO:public???
@@ -49,7 +49,7 @@ public abstract class MainViewmodel extends Viewmodel {
         this.currentGameStatusProperty = new ObservableProperty<>();
         this.userMustPlaceNewStoneProperty = new ObservableProperty<>();
         this.lastMoveCoordinatesProperty = new ObservableProperty<>();
-        this.propertiesOfModelObservers = new ArrayList<>();
+        this.modelPropertyObservers = new ArrayList<>();
     }
 
     protected void initializeNewGame() {
@@ -70,12 +70,14 @@ public abstract class MainViewmodel extends Viewmodel {
             @NotNull final ObservableProperty<ObservedPropertyValueType> observableProperty,
             @NotNull final Consumer<PropertyChangeEvent> actionOnPropertyChange) {
         // TODO : test and improve logic: e.g. the same property cannot be observed more than once
-        Objects.requireNonNull(propertiesOfModelObservers)
+        Objects.requireNonNull(modelPropertyObservers)
                 .add(new PropertyObserver<>(
                         Objects.requireNonNull(observableProperty), Objects.requireNonNull(actionOnPropertyChange)));
     }
 
     private void observePropertiesOfModel() {
+
+        modelPropertyObservers.clear();
 
         assert currentGame != null;
         addObservedProperty(
