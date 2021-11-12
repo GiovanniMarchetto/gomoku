@@ -1,25 +1,30 @@
 package it.units.sdm.gomoku.ui;
 
-import it.units.sdm.gomoku.model.entities.Game;
-import it.units.sdm.gomoku.model.entities.Match;
-import it.units.sdm.gomoku.model.entities.Player;
-import it.units.sdm.gomoku.model.entities.Stone;
+import it.units.sdm.gomoku.model.custom_types.Coordinates;
+import it.units.sdm.gomoku.model.entities.*;
+import it.units.sdm.gomoku.property_change_handlers.ObservableProperty;
+import it.units.sdm.gomoku.ui.support.Setup;
 import it.units.sdm.gomoku.utils.TestUtility;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Objects;
 
-import static it.units.sdm.gomoku.ui.TestMainViewmodel.cpuPlayer1;
-import static it.units.sdm.gomoku.ui.TestMainViewmodel.setup;
+import static it.units.sdm.gomoku.ui.TestMainViewmodel.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MainViewmodelTest {
 
-    private final MainViewmodel mainViewmodel = new TestMainViewmodel();
+    private MainViewmodel mainViewmodel;
+
+    @BeforeEach
+    void setUp() {
+        mainViewmodel = new TestMainViewmodel();
+    }
 
     @Test
     void initializeNewGame() {
-        //TODO
+        //TODO: see if inline
     }
 
     @Test
@@ -120,104 +125,141 @@ class MainViewmodelTest {
     }
 
     @Test
-    void getCurrentBoardAsString() {
-        //TODO
-    }
-
-    @Test
-    void endGame() {
-        //TODO
+    void checkNullElementsReturnExceptionBeforeCreateTheFirstMatch() {
+        //TODO: this is the only test with sense for getters
+        // (the others are already tested in the model)
+        //if require match must be call setMatch()
+        //if require currentGame must be call startNewGame/initialize Game
     }
 
     @Test
     void getCurrentGame() {
-        //TODO
+        mainViewmodel.startNewMatch();
+        try {
+            Game game = (Game) TestUtility.getFieldValue("currentGame", mainViewmodel);
+            assertEquals(game, mainViewmodel.getCurrentGame());
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            fail(e);
+        }
     }
 
     @Test
     void getCurrentBoard() {
-        //TODO
-    }
-
-    @Test
-    void placeStoneFromUser() {
-        //TODO
-    }
-
-    @Test
-    void forceReFireAllCells() {
-        //TODO
-    }
-
-    @Test
-    void getBoardSize() {
-        //TODO
-    }
-
-    @Test
-    void getScoreOfMatch() {
-        //TODO
-    }
-
-    @Test
-    void getCurrentPlayer() {
-        //TODO
+        mainViewmodel.startNewMatch();
+        try {
+            Board board = (Board) TestUtility.getFieldValue("currentBoard", mainViewmodel);
+            assertEquals(board, mainViewmodel.getCurrentBoard());
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            fail(e);
+        }
     }
 
     @Test
     void getCurrentPlayerProperty() {
-        //TODO
+        mainViewmodel.startNewMatch();
+        try {
+            @SuppressWarnings("unchecked")
+            ObservableProperty<Player> currentPlayerProperty =
+                    (ObservableProperty<Player>) TestUtility.getFieldValue("currentPlayerProperty", mainViewmodel);
+            assertEquals(currentPlayerProperty, mainViewmodel.getCurrentPlayerProperty());
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            fail(e);
+        }
     }
 
     @Test
     void getCurrentGameStatusProperty() {
-        //TODO
+        mainViewmodel.startNewMatch();
+        try {
+            @SuppressWarnings("unchecked")
+            ObservableProperty<Game.Status> currentGameStatusProperty =
+                    (ObservableProperty<Game.Status>) TestUtility.getFieldValue("currentGameStatusProperty", mainViewmodel);
+            assertEquals(currentGameStatusProperty, mainViewmodel.getCurrentGameStatusProperty());
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            fail(e);
+        }
     }
 
     @Test
     void getUserMustPlaceNewStoneProperty() {
-        //TODO
+        mainViewmodel.startNewMatch();
+        try {
+            @SuppressWarnings("unchecked")
+            ObservableProperty<Boolean> userMustPlaceNewStoneProperty =
+                    (ObservableProperty<Boolean>) TestUtility.getFieldValue("userMustPlaceNewStoneProperty", mainViewmodel);
+            assertEquals(userMustPlaceNewStoneProperty, mainViewmodel.getUserMustPlaceNewStoneProperty());
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            fail(e);
+        }
     }
 
     @Test
     void getLastMoveCoordinatesProperty() {
-        //TODO
+        mainViewmodel.startNewMatch();
+        try {
+            @SuppressWarnings("unchecked")
+            ObservableProperty<Coordinates> lastMoveCoordinatesProperty =
+                    (ObservableProperty<Coordinates>) TestUtility.getFieldValue("lastMoveCoordinatesProperty", mainViewmodel);
+            assertEquals(lastMoveCoordinatesProperty, mainViewmodel.getLastMoveCoordinatesProperty());
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            fail(e);
+        }
     }
 
     @Test
-    void getColorOfCurrentPlayer() {
-        //TODO
+    void placeStoneFromUserWithoutPermission() {
+        mainViewmodel.startNewMatch();
+        try {
+            @SuppressWarnings("unchecked")
+            ObservableProperty<Boolean> userMustPlaceNewStoneProperty =
+                    (ObservableProperty<Boolean>) TestUtility.getFieldValue("userMustPlaceNewStoneProperty", mainViewmodel);
+            //noinspection ConstantConditions
+            userMustPlaceNewStoneProperty.setPropertyValueWithoutNotifying(false);
+            Coordinates coordinates = new Coordinates(0, 0);
+            mainViewmodel.placeStoneFromUser(coordinates);
+            assertTrue(mainViewmodel.getCellAtCoordinatesInCurrentBoard(coordinates).isEmpty());
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            System.err.println("setFieldValue Exception");
+            fail(e);
+        } catch (Board.BoardIsFullException | Game.GameEndedException | Board.CellAlreadyOccupiedException e) {
+            System.err.println("placeStoneFromUser Exception");
+            fail(e);
+        }
     }
 
     @Test
-    void getCurrentBlackPlayer() {
-        //TODO
+    void placeStoneFromUser() {
+        HumanPlayer humanPlayer = new HumanPlayer("Human");
+        Setup setupWithHuman = new Setup(
+                humanPlayer, cpuPlayer1, numberOfGames, boardSize);
+        mainViewmodel.createMatchFromSetupAndStartGame(setupWithHuman);
+        mainViewmodel.getCurrentGame().start();
+
+        while (true) {
+            try {
+                //give the time to fire and set the currentGame
+                if (TestUtility.getFieldValue("currentGame", humanPlayer) != null) {
+                    break;
+                }
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                fail(e);
+            }
+        }
+
+        try {
+            @SuppressWarnings("unchecked")
+            ObservableProperty<Boolean> userMustPlaceNewStoneProperty =
+                    (ObservableProperty<Boolean>) TestUtility.getFieldValue(
+                            "userMustPlaceNewStoneProperty", mainViewmodel);
+            //noinspection ConstantConditions
+            userMustPlaceNewStoneProperty.setPropertyValueWithoutNotifying(true);
+            Coordinates coordinates = new Coordinates(0, 0);
+            mainViewmodel.placeStoneFromUser(coordinates);
+            assertFalse(mainViewmodel.getCellAtCoordinatesInCurrentBoard(coordinates).isEmpty());
+        } catch (NoSuchFieldException | IllegalAccessException
+                | Board.BoardIsFullException | Game.GameEndedException
+                | Board.CellAlreadyOccupiedException e) {
+            fail(e);
+        }
     }
-
-    @Test
-    void getCurrentWhitePlayer() {
-        //TODO
-    }
-
-    @Test
-    void getCellAtCoordinatesInCurrentBoard() {
-        //TODO
-    }
-
-    @Test
-    void getWinnerOfTheMatch() {
-        //TODO
-    }
-
-    @Test
-    void getWinnerOfTheGame() {
-        //TODO
-    }
-
-    @Test
-    void getGameStartTime() {
-        //TODO
-    }
-
-
 }
