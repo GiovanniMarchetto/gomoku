@@ -2,7 +2,14 @@ package it.units.sdm.gomoku;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+import java.util.logging.Logger;
+
 public class Utility {
+
+    public static Logger getLoggerOfClass(@NotNull final Class<?> targetClass) {
+        return Logger.getLogger(Objects.requireNonNull(targetClass).getCanonicalName());
+    }
 
     //    private static int threadCount = 0;
     public static void runOnSeparateThread(@NotNull final Runnable runnable) {

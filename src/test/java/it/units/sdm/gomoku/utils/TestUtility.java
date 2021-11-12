@@ -38,7 +38,7 @@ public class TestUtility {
 
     public final static String END_GAMES = "/endGames.json";
 
-    @NotNull
+    @NotNull    // TODO : BoardTestUtility class may needed to contain all the method to support BoardTest
     public static Board createBoardFromCellMatrix(Cell[][] cellMatrix, PositiveInteger boardSize) {
         Board board = new Board(boardSize);
         IntStream.range(0, boardSize.intValue())
@@ -48,7 +48,7 @@ public class TestUtility {
                             try {
                                 //noinspection ConstantConditions // just filtered out
                                 board.occupyPosition(cellMatrix[x][y].getStone().color(), new Coordinates(x, y));
-                            } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
+                            } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Board.CellOutOfBoardException e) {
                                 fail(e);
                             }
                         }));

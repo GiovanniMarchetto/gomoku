@@ -224,6 +224,8 @@ class MainViewmodelTest {
         } catch (Board.BoardIsFullException | Game.GameEndedException | Board.CellAlreadyOccupiedException e) {
             System.err.println("placeStoneFromUser Exception");
             fail(e);
+        } catch (Board.CellOutOfBoardException e) {
+            fail(new IllegalStateException(e));
         }
     }
 
@@ -260,6 +262,8 @@ class MainViewmodelTest {
                 | Board.BoardIsFullException | Game.GameEndedException
                 | Board.CellAlreadyOccupiedException e) {
             fail(e);
+        } catch (Board.CellOutOfBoardException e) {
+            fail(new IllegalStateException(e));
         }
     }
 }

@@ -39,7 +39,7 @@ public class GameTestBasedOnCsv {
                 game.placeStoneAndChangeTurn(whiteCoordinatesList.get(i));
             }
             game.placeStoneAndChangeTurn(coordinatesToControl);
-        } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Game.GameEndedException e) {
+        } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Game.GameEndedException | Board.CellOutOfBoardException e) {
             fail(e);
         }
     }
@@ -51,15 +51,29 @@ public class GameTestBasedOnCsv {
                 .boxed().sequential()
                 .flatMap(x -> IntStream.range(0, board.getSize())
                         .mapToObj(y -> new Coordinates(x, y)))
-                .filter(coords -> !board.getCellAtCoordinates(coords).isEmpty())
-                .filter(coords -> board.getCellAtCoordinates(coords).getStone().color() == color)
+                .filter(coords -> {
+                    try {
+                        return !board.getCellAtCoordinates(coords).isEmpty();
+                    } catch (Board.CellOutOfBoardException e) {
+                        fail(e);
+                        return false;
+                    }
+                })
+                .filter(coords -> {
+                    try {
+                        return Objects.requireNonNull(board.getCellAtCoordinates(coords).getStone()).color() == color;
+                    } catch (Board.CellOutOfBoardException e) {
+                        fail(e);
+                        return false;
+                    }
+                })
                 .filter(coordinates -> !coordinates.equals(coordinatesToControl))
                 .toList();
     }
 
     @ParameterizedTest
     @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfMoveControlRecordFields")
-    void setUpFromCsvCorrectness(Cell[][] cellMatrix, Coordinates coordinatesToControl) {
+    void setUpFromCsvCorrectness(Cell[][] cellMatrix, Coordinates coordinatesToControl) throws Board.CellOutOfBoardException {
         game = new Game(cellMatrix.length, cpuBlack, cpuWhite);
         game.start();
 

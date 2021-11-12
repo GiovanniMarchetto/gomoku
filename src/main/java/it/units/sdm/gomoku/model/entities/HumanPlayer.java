@@ -25,13 +25,13 @@ public class HumanPlayer extends Player {
         });
     }
 
-    public void placeStone(@NotNull Coordinates coordinates)
-            throws Board.BoardIsFullException, Board.CellAlreadyOccupiedException, Game.GameEndedException {
+    public void placeStone(@NotNull final Coordinates coordinates)
+            throws Board.BoardIsFullException, Board.CellAlreadyOccupiedException, Game.GameEndedException, Board.CellOutOfBoardException {
         Objects.requireNonNull(coordinates);
         setCoordinatesRequired(false);
         try {
             Objects.requireNonNull(currentGame).placeStoneAndChangeTurn(coordinates);
-        } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | RuntimeException e) {
+        } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Board.CellOutOfBoardException e) {
             Utility.runOnSeparateThread(() -> setCoordinatesRequired(true));
             throw e;
         }

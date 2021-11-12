@@ -47,7 +47,7 @@ public class CLIProgramFluxTest {
         }
     };
     @NotNull
-    private static final Logger loggerThisClass = Logger.getLogger(CLIProgramFluxTest.class.getCanonicalName());
+    private static final Logger loggerThisClass = Logger.getLogger(CLIProgramFluxTest.class.getCanonicalName());    // TODO : replace all Logger field with method invocation Utility.getLoggerOfClass(Class<?>)
     @NotNull
     private final static PipedOutputStream PIPED_OUTPUT_STREAM = new PipedOutputStream();   // TODO : rethink about this
     @NotNull
@@ -421,7 +421,7 @@ public class CLIProgramFluxTest {
         }
 
         assert this.boardOfFirstGame != null;
-        assertFalse(this.boardOfFirstGame.getCellAtCoordinates(new Coordinates(xCoord, yCoord)).isEmpty());
+        assertFalse(Objects.requireNonNull(this.boardOfFirstGame.getCellAtCoordinatesOrNullIfInvalid(new Coordinates(xCoord, yCoord))).isEmpty());
     }
 
     private void setFakeInputScannerFromInputStreamOrFailTest(@NotNull final InputStream fakeInputInsertedByTheUser) {

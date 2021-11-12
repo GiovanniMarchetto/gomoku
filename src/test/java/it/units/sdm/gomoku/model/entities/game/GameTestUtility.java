@@ -16,7 +16,7 @@ public class GameTestUtility {
     static void tryToPlaceStoneAndChangeTurn(Coordinates coordinates, Game game) {
         try {
             game.placeStoneAndChangeTurn(coordinates);
-        } catch (Board.BoardIsFullException | Game.GameEndedException | Board.CellAlreadyOccupiedException e) {
+        } catch (Board.BoardIsFullException | Game.GameEndedException | Board.CellAlreadyOccupiedException | Board.CellOutOfBoardException e) {
             fail(e);
         }
     }
@@ -66,7 +66,7 @@ public class GameTestUtility {
                 game.placeStoneAndChangeTurn(new Coordinates(0, i));
                 game.placeStoneAndChangeTurn(new Coordinates(1, i));
             }
-        } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Game.GameEndedException e) {
+        } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Game.GameEndedException | Board.CellOutOfBoardException e) {
             fail(e);
         }
     }

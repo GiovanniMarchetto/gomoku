@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -62,12 +64,16 @@ public class CPUPlayer extends Player {
     @Override
     public void makeMove(@NotNull final Game currentGame) {
         Utility.runOnSeparateThread(() -> {
+            Coordinates coordinates = null;
             try {
-                Coordinates coordinates = chooseSmartEmptyCoordinates(Objects.requireNonNull(currentGame).getBoard());
+                coordinates = chooseSmartEmptyCoordinates(Objects.requireNonNull(currentGame).getBoard());
                 Thread.sleep(DELAY_BEFORE_PLACING_STONE_MILLIS);
                 currentGame.placeStoneAndChangeTurn(coordinates);
-            } catch (BoardIsFullException | Board.CellAlreadyOccupiedException | RuntimeException | Game.GameEndedException | InterruptedException e) {
-                e.printStackTrace(); // TODO: handle this: this should never happen (I think?)
+            } catch (BoardIsFullException | Board.CellAlreadyOccupiedException | Game.GameEndedException | Board.CellOutOfBoardException e) {
+                Utility.getLoggerOfClass(getClass()).severe("Illegal move: impossible to choose coordinate " + coordinates + ". " + e.getMessage());
+                throw new IllegalStateException(e);
+            } catch (InterruptedException e) {
+                Utility.getLoggerOfClass(getClass()).log(Level.SEVERE, "Thread interrupted for unknown reason.", e);
             }
         });
     }
@@ -135,7 +141,13 @@ public class CPUPlayer extends Player {
         return IntStream.range(0, board.getSize()).boxed()
                 .flatMap(x -> IntStream.range(0, board.getSize())
                         .mapToObj(y -> new Coordinates(x, y)))
-                .filter(c -> board.getCellAtCoordinates(c).isEmpty());
+                .filter(c -> {
+                    try {
+                        return board.getCellAtCoordinates(c).isEmpty();
+                    } catch (Board.CellOutOfBoardException e) {
+                        return false;
+                    }
+                });
     }
 }
 

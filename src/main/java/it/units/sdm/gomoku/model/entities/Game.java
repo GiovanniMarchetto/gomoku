@@ -73,7 +73,7 @@ public class Game implements Comparable<Game>, Observable {
     }
 
     public void placeStoneAndChangeTurn(@NotNull final Coordinates coordinates)
-            throws Board.BoardIsFullException, Board.CellAlreadyOccupiedException, GameEndedException {
+            throws Board.BoardIsFullException, Board.CellAlreadyOccupiedException, GameEndedException, Board.CellOutOfBoardException {
 
         final Player player = Objects.requireNonNull(currentPlayer.getPropertyValue());
 
@@ -87,7 +87,7 @@ public class Game implements Comparable<Game>, Observable {
     }
 
     private void placeStone(@NotNull final Player player, @NotNull final Coordinates coordinates)
-            throws Board.BoardIsFullException, Board.CellAlreadyOccupiedException, GameEndedException {
+            throws Board.BoardIsFullException, Board.CellAlreadyOccupiedException, GameEndedException, Board.CellOutOfBoardException {
         if (!isEnded()) {
             board.occupyPosition(getColorOfPlayer(Objects.requireNonNull(player)), Objects.requireNonNull(coordinates));
         } else {

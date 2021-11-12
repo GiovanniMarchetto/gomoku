@@ -55,16 +55,8 @@ public class BoardTest {
     }
 
     @NotNull
-    private Coordinates tryToOccupyNextEmptyCellAndReturnCoordinates() {
-        try {
-            CPUPlayer cpuPlayer = new CPUPlayer();
-            Coordinates coordToOccupy = cpuPlayer.chooseNextEmptyCoordinates(board);
-            board.occupyPosition(Stone.Color.BLACK, coordToOccupy);
-            return coordToOccupy;
-        } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
-            fail(e);
-            return null;
-        }
+    private static Stream<Arguments> provideCoupleOfIntegersBetweenMinus10IncludedAndPlus50Excluded() {
+        return TestUtility.provideCoupleOfIntegersInRange(-10, 50);
     }
 
     @NotNull
@@ -75,6 +67,19 @@ public class BoardTest {
     @NotNull
     private static Stream<Arguments> provideCoupleOfNonNegativeIntegersOutsideBoard() {
         return TestUtility.provideCoupleOfIntegersInRange(BOARD_SIZE.intValue(), BOARD_SIZE.intValue() + 10);
+    }
+
+    @NotNull
+    private Coordinates tryToOccupyNextEmptyCellAndReturnCoordinates() {
+        try {
+            CPUPlayer cpuPlayer = new CPUPlayer();
+            Coordinates coordToOccupy = cpuPlayer.chooseNextEmptyCoordinates(board);
+            board.occupyPosition(Stone.Color.BLACK, coordToOccupy);
+            return coordToOccupy;
+        } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Board.CellOutOfBoardException e) {
+            fail(e);
+            return null;
+        }
     }
     //endregion Support Methods
 
@@ -180,7 +185,7 @@ public class BoardTest {
 
     @ParameterizedTest
     @MethodSource("provideCoupleOfNonNegativeIntegersInsideBoard")
-    void getCellAtCoordinates(int x, int y) {
+    void getCellAtCoordinates(int x, int y) throws Board.CellOutOfBoardException {
         assertEquals(boardMatrixFromCsv[x][y], board.getCellAtCoordinates(new Coordinates(x, y)));
     }
 
@@ -199,24 +204,30 @@ public class BoardTest {
 
 
     @ParameterizedTest
-    @MethodSource("provideCoupleOfNonNegativeIntegersInsideBoard")
+    @MethodSource("provideCoupleOfIntegersBetweenMinus10IncludedAndPlus50Excluded")
     void occupyPosition(int x, int y) {
-        Coordinates coordinates = new Coordinates(x, y);
         try {
-            Stone.Color stoneColor = Stone.Color.BLACK;
-            board.occupyPosition(stoneColor, coordinates);
-            assertTrue(wasCellEmptyAndIsNowOccupiedWithCorrectColor(boardMatrixFromCsv[x][y], coordinates, stoneColor));
-        } catch (Board.BoardIsFullException e) {
-            Coordinates firstCoordinateAfterFillBoard = new Coordinates(18, 17);
-            assertEquals(firstCoordinateAfterFillBoard, coordinates);
-        } catch (Board.CellAlreadyOccupiedException e) {
-            if (boardMatrixFromCsv[x][y].isEmpty()) {
-                fail("The cell was empty");
+            Coordinates coordinates = new Coordinates(x, y);
+            try {
+                Stone.Color stoneColor = Stone.Color.BLACK;
+                board.occupyPosition(stoneColor, coordinates);
+                assertTrue(wasCellEmptyAndIsNowOccupiedWithCorrectColor(boardMatrixFromCsv[x][y], coordinates, stoneColor));
+            } catch (Board.BoardIsFullException e) {
+                Coordinates firstCoordinateAfterFillBoard = new Coordinates(18, 17);
+                assertEquals(firstCoordinateAfterFillBoard, coordinates);
+            } catch (Board.CellAlreadyOccupiedException e) {
+                if (boardMatrixFromCsv[x][y].isEmpty()) {
+                    fail("The cell was empty");
+                }
+            } catch (Board.CellOutOfBoardException e) {
+                assertFalse(board.isCoordinatesInsideBoard(coordinates));
             }
+        } catch (IllegalArgumentException e) {
+            assertFalse(NonNegativeInteger.isValid(x) && NonNegativeInteger.isValid(y));
         }
     }
 
-    private boolean wasCellEmptyAndIsNowOccupiedWithCorrectColor(Cell cell, Coordinates coordinates, Stone.Color stoneColor) {
+    private boolean wasCellEmptyAndIsNowOccupiedWithCorrectColor(Cell cell, Coordinates coordinates, Stone.Color stoneColor) throws Board.CellOutOfBoardException {
         return cell.isEmpty() && Objects.equals(stoneColor,
                 Objects.requireNonNull(board.getCellAtCoordinates(coordinates).getStone()).color());
     }
@@ -225,7 +236,14 @@ public class BoardTest {
     @MethodSource("getABoardAndACoordinate")
     void fwdDiagonalToList(Cell[][] matrix, Coordinates coords) {
         try {
-            assertTrue(isMatrixPartToListMethodCorrect(matrix, coords, "fwdDiagonalToList", this::alternativeFwdDiagonalToList));
+            assertTrue(isMatrixPartToListMethodCorrect(matrix, coords, "getFwdDiagonalContainingCoords", (board1, coords1) -> {
+                try {
+                    return alternativeFwdDiagonalToList(board1, coords1);
+                } catch (Board.CellOutOfBoardException e) {
+                    fail(e);
+                    return null;
+                }
+            }));
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
             fail(e);
         }
@@ -235,7 +253,14 @@ public class BoardTest {
     @MethodSource("getABoardAndACoordinate")
     void bckDiagonalToList(Cell[][] matrix, Coordinates coords) {
         try {
-            assertTrue(isMatrixPartToListMethodCorrect(matrix, coords, "bckDiagonalToList", this::alternativeBckDiagonalToList));
+            assertTrue(isMatrixPartToListMethodCorrect(matrix, coords, "getBckDiagonalContainingCoords", (board1, coords1) -> {
+                try {
+                    return alternativeBckDiagonalToList(board1, coords1);
+                } catch (Board.CellOutOfBoardException e) {
+                    fail(e);
+                    return null;
+                }
+            }));
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
             fail(e);
         }
@@ -245,7 +270,7 @@ public class BoardTest {
     @MethodSource("getABoardAndACoordinate")
     void columnToList(Cell[][] matrix, Coordinates coords) {
         try {
-            assertTrue(isMatrixPartToListMethodCorrect(matrix, coords, "columnToList", this::alternativeColumnToList));
+            assertTrue(isMatrixPartToListMethodCorrect(matrix, coords, "getColumnContainingCoords", this::alternativeColumnToList));
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
             fail(e);
         }
@@ -255,7 +280,7 @@ public class BoardTest {
     @MethodSource("getABoardAndACoordinate")
     void rowToList(Cell[][] matrix, Coordinates coords) {
         try {
-            assertTrue(isMatrixPartToListMethodCorrect(matrix, coords, "rowToList", this::alternativeRowToList));
+            assertTrue(isMatrixPartToListMethodCorrect(matrix, coords, "getRowContainingCoords", this::alternativeRowToList));
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
             fail(e);
         }
@@ -279,17 +304,31 @@ public class BoardTest {
     List<Cell> alternativeRowToList(@NotNull final Board board, @NotNull final Coordinates coords) {
         // TODO : refactor needed : 4 very similar methods
         return IntStream.range(0, board.getSize())
-                .mapToObj(yCoord -> board.getCellAtCoordinates(new Coordinates(Objects.requireNonNull(coords).getX(), yCoord)))
+                .mapToObj(yCoord -> {
+                    try {
+                        return board.getCellAtCoordinates(new Coordinates(Objects.requireNonNull(coords).getX(), yCoord));
+                    } catch (Board.CellOutOfBoardException e) {
+                        fail(e);
+                        return null;
+                    }
+                })
                 .toList();
     }
 
     List<Cell> alternativeColumnToList(@NotNull final Board board, @NotNull final Coordinates coords) {
         return IntStream.range(0, board.getSize())
-                .mapToObj(xCoord -> board.getCellAtCoordinates(new Coordinates(xCoord, Objects.requireNonNull(coords).getY())))
+                .mapToObj(xCoord -> {
+                    try {
+                        return board.getCellAtCoordinates(new Coordinates(xCoord, Objects.requireNonNull(coords).getY()));
+                    } catch (Board.CellOutOfBoardException e) {
+                        fail(e);
+                        return null;
+                    }
+                })
                 .toList();
     }
 
-    List<Cell> alternativeFwdDiagonalToList(@NotNull final Board board, @NotNull final Coordinates coords) {
+    List<Cell> alternativeFwdDiagonalToList(@NotNull final Board board, @NotNull final Coordinates coords) throws Board.CellOutOfBoardException {
         int B = board.getSize();
         int S = Objects.requireNonNull(coords).getX() + coords.getY();
         int x = Math.min(S, B - 1);
@@ -304,7 +343,7 @@ public class BoardTest {
         return list;
     }
 
-    List<Cell> alternativeBckDiagonalToList(@NotNull final Board board, @NotNull final Coordinates coords) {
+    List<Cell> alternativeBckDiagonalToList(@NotNull final Board board, @NotNull final Coordinates coords) throws Board.CellOutOfBoardException {
         int B = board.getSize();
         int S = Objects.requireNonNull(coords).getX() - coords.getY();
         int x = Math.max(S, 0);
@@ -348,7 +387,7 @@ public class BoardTest {
                 .forEach(coords -> {
                     try {
                         b.occupyPosition(getStoneColorFromCoords.apply(coords), coords);
-                    } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
+                    } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Board.CellOutOfBoardException e) {
                         fail(e);
                     }
                 });
@@ -381,7 +420,7 @@ public class BoardTest {
     }
 
     @Test
-    void testEqualsBetweenTwoDifferentBoardsWithSameNumberOfOccupiedPositions() {//TODO: can be redo for simplify
+    void testEqualsBetweenTwoDifferentBoardsWithSameNumberOfOccupiedPositions() throws Board.CellOutOfBoardException {//TODO: can be redo for simplify
         Board expectedBoard = board.clone();
         int found = 0;
         List<Coordinates> coords = generateCoordinates(board.getSize()).toList();
@@ -396,7 +435,7 @@ public class BoardTest {
                         }
                     }
                 } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
-                    e.printStackTrace();
+                    fail(e);
                 }
 
                 found++;
