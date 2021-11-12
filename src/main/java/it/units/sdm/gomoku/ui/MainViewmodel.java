@@ -162,7 +162,7 @@ public abstract class MainViewmodel extends Viewmodel {
     }
 
     public void placeStoneFromUser(@NotNull final Coordinates coordinates)
-            throws Board.BoardIsFullException, Board.CellAlreadyOccupiedException, Game.GameEndedException {
+            throws Board.BoardIsFullException, Board.CellAlreadyOccupiedException, Game.GameEndedException, Board.CellOutOfBoardException {
         if (Boolean.TRUE.equals(userMustPlaceNewStoneProperty.getPropertyValue())) {
             HumanPlayer currentHumanPlayer = (HumanPlayer) Objects.requireNonNull(getCurrentPlayer());
             currentHumanPlayer.placeStone(coordinates);
@@ -244,7 +244,8 @@ public abstract class MainViewmodel extends Viewmodel {
     }
 
     @NotNull
-    public Cell getCellAtCoordinatesInCurrentBoard(Coordinates coordinates) {
+    public Cell getCellAtCoordinatesInCurrentBoard(@NotNull final Coordinates coordinates)
+            throws Board.CellOutOfBoardException {
         return Objects.requireNonNull(currentBoard).getCellAtCoordinates(coordinates);
     }
 

@@ -26,9 +26,9 @@ class CPUPlayerTest {
 
     private static void tryToOccupyCoordinatesChosen(int x, int y) {
         try {
-            board.occupyPosition(cpuStoneColor, new Coordinates(x,y));
+            board.occupyPosition(cpuStoneColor, new Coordinates(x, y));
             cpuStoneColor = cpuStoneColor == Stone.Color.BLACK ? Stone.Color.BLACK : Stone.Color.WHITE;
-        } catch (CellAlreadyOccupiedException | BoardIsFullException e) {
+        } catch (CellAlreadyOccupiedException | BoardIsFullException | Board.CellOutOfBoardException e) {
             fail(e);
         }
     }
@@ -53,11 +53,11 @@ class CPUPlayerTest {
     }
 
     @RepeatedTest(NUMBER_OF_REPETITION)
-    void checkRandomChosenCoordinatesReferToEmptyCell() {
+    void checkRandomChosenCoordinatesReferToEmptyCell() throws Board.CellOutOfBoardException {
         try {
             Coordinates actual = cpuPlayer.chooseRandomEmptyCoordinates(board);
             assertTrue(board.getCellAtCoordinates(actual).isEmpty());
-            tryToOccupyCoordinatesChosen(actual.getX(),actual.getY());
+            tryToOccupyCoordinatesChosen(actual.getX(), actual.getY());
         } catch (BoardIsFullException e) {
             if (board.isThereAnyEmptyCell()) {
                 fail(e);

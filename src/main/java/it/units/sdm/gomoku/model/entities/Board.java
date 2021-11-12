@@ -1,5 +1,6 @@
 package it.units.sdm.gomoku.model.entities;
 
+import it.units.sdm.gomoku.Utility;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
@@ -80,17 +81,31 @@ public class Board implements Observable, Cloneable, Serializable {
     }
 
     @NotNull
-    public Cell getCellAtCoordinates(int x, int y) {
-        return matrix[x][y];
+    public Cell getCellAtCoordinates(@NonNegativeInteger.NonNegativeIntegerType int x,
+                                     @NonNegativeInteger.NonNegativeIntegerType int y) throws CellOutOfBoardException {
+        return getCellAtCoordinates(new Coordinates(x, y));
     }
 
     @NotNull
-    public Cell getCellAtCoordinates(@NotNull Coordinates coordinates) {
-        return getCellAtCoordinates(coordinates.getX(), coordinates.getY());
+    public Cell getCellAtCoordinates(@NotNull final Coordinates coordinates) throws CellOutOfBoardException {
+        if (isCoordinatesInsideBoard(Objects.requireNonNull(coordinates))) {
+            return matrix[coordinates.getX()][coordinates.getY()];
+        } else {
+            throw new CellOutOfBoardException(coordinates);
+        }
+    }
+
+    @Nullable
+    public Cell getCellAtCoordinatesOrNullIfInvalid(@NotNull final Coordinates coordinates) {
+        try {
+            return getCellAtCoordinates(Objects.requireNonNull(coordinates));
+        } catch (CellOutOfBoardException e) {
+            return null;
+        }
     }
 
     public synchronized void occupyPosition(@NotNull Stone.Color stoneColor, @NotNull Coordinates coordinates)
-            throws BoardIsFullException, CellAlreadyOccupiedException {
+            throws BoardIsFullException, CellAlreadyOccupiedException, CellOutOfBoardException {
         if (isThereAnyEmptyCell()) {
             if (isCellEmpty(Objects.requireNonNull(coordinates))) {
                 setStoneAtCoordinates(coordinates, new Stone(Objects.requireNonNull(stoneColor)));
@@ -105,21 +120,26 @@ public class Board implements Observable, Cloneable, Serializable {
         }
     }
 
-    private boolean isCellEmpty(@NotNull Coordinates coordinates) {
+    private boolean isCellEmpty(@NotNull Coordinates coordinates) throws CellOutOfBoardException {
         return getCellAtCoordinates(Objects.requireNonNull(coordinates)).isEmpty();
     }
 
-    private void setStoneAtCoordinates(@NotNull final Coordinates coordinates, @Nullable Stone stone) {
+    private void setStoneAtCoordinates(@NotNull final Coordinates coordinates, @Nullable Stone stone) throws CellOutOfBoardException {
         if (isCoordinatesInsideBoard(Objects.requireNonNull(coordinates))) {
             getCellAtCoordinates(coordinates).setStone(stone);
         } else {
-            throw new IndexOutOfBoundsException("Coordinate " + coordinates + " not present in the board.");
+            throw new CellOutOfBoardException(coordinates);
         }
     }
 
 
     public boolean isCoordinatesBelongingToChainOfNStones(@NotNull final Coordinates coords, NonNegativeInteger N) {
-        Cell cell = getCellAtCoordinates(Objects.requireNonNull(coords));
+        Cell cell;
+        try {
+            cell = getCellAtCoordinates(Objects.requireNonNull(coords));
+        } catch (CellOutOfBoardException e) {
+            return false;
+        }
         if (cell.isEmpty()) {
             return false;
         }
@@ -139,7 +159,7 @@ public class Board implements Observable, Cloneable, Serializable {
         return IntStream
                 .range(0, getSize())
                 .sequential()
-                .mapToObj(x -> getCellAtCoordinates(x, coords.getY()))
+                .mapToObj(x -> getCellAtCoordinatesOrNullIfInvalid(new Coordinates(x, coords.getY())))
                 .collect(Collectors.toList());
     }
 
@@ -167,7 +187,8 @@ public class Board implements Observable, Cloneable, Serializable {
                 .flatMap(i -> IntStream.range(0, boardSize).unordered()
                         .filter(j -> i + sign * j == S)
                         .mapToObj(j -> new Coordinates(i, j)))
-                .map(this::getCellAtCoordinates)
+                .map(this::getCellAtCoordinatesOrNullIfInvalid)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
@@ -183,9 +204,15 @@ public class Board implements Observable, Cloneable, Serializable {
                 IntStream.range(0, size.intValue()).mapToObj(row ->
                                 String.format("%" + lengthOfSize + "d| ", row)
                                         + IntStream.range(0, size.intValue())
-                                        .mapToObj(col ->
-                                                String.format(" %s%" + lengthOfSize + "s",
-                                                        getCellAtCoordinates(row, col), ""))
+                                        .mapToObj(col -> {
+                                            try {
+                                                return String.format(" %s%" + lengthOfSize + "s",
+                                                        getCellAtCoordinates(row, col), "");
+                                            } catch (CellOutOfBoardException e) {
+                                                Utility.getLoggerOfClass(getClass()).severe(e.getMessage());
+                                                throw new IllegalStateException(e);
+                                            }
+                                        })
                                         .collect(Collectors.joining())
                                         + System.lineSeparator())
                         .collect(Collectors.joining());
@@ -225,16 +252,20 @@ public class Board implements Observable, Cloneable, Serializable {
     }
 
     public static class BoardIsFullException extends Exception {
-
         public BoardIsFullException() {
             super("The board is entirely filled. No more space available.");
         }
     }
 
     public static class CellAlreadyOccupiedException extends Exception {
-
         public CellAlreadyOccupiedException(@NotNull final Coordinates coordinates) {
             super(Objects.requireNonNull(coordinates) + " already occupied.");
+        }
+    }
+
+    public static class CellOutOfBoardException extends Exception {
+        public CellOutOfBoardException(@NotNull final Coordinates invalidCoords) {
+            super(Objects.requireNonNull(invalidCoords) + " is out of board.");
         }
     }
 }

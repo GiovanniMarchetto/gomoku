@@ -1,5 +1,6 @@
 package it.units.sdm.gomoku.ui.gui.views;
 
+import it.units.sdm.gomoku.Utility;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.entities.Cell;
@@ -22,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.beans.PropertyChangeEvent;
 import java.util.Objects;
+import java.util.logging.Level;
 
 public class GomokuCell implements Observer {
 
@@ -40,7 +42,8 @@ public class GomokuCell implements Observer {
 
     private Group group;
 
-    public GomokuCell(GUIMainViewmodel guiMainViewmodel, Coordinates coordinates, @NotNull final ObservableProperty<Double> stoneRadiusProperty, int boardSize) {
+    public GomokuCell(GUIMainViewmodel guiMainViewmodel, Coordinates coordinates,
+                      @NotNull final ObservableProperty<Double> stoneRadiusProperty, int boardSize) {
         this.guiMainViewmodel = guiMainViewmodel;
         this.coordinates = coordinates;
         this.boardSize = boardSize;
@@ -50,7 +53,15 @@ public class GomokuCell implements Observer {
         new PropertyObserver<>(guiMainViewmodel.getLastMoveCoordinatesProperty(), evt -> {
             Coordinates lastCoords = (Coordinates) Objects.requireNonNull(evt.getNewValue());
             if (lastCoords.equals(coordinates)) {
-                Platform.runLater(() -> setCell(Objects.requireNonNull(guiMainViewmodel.getCellAtCoordinatesInCurrentBoard(lastCoords))));
+                Platform.runLater(() -> {
+                    try {
+                        setCell(Objects.requireNonNull(guiMainViewmodel.getCellAtCoordinatesInCurrentBoard(lastCoords)));
+                    } catch (Board.CellOutOfBoardException e) {
+                        Utility.getLoggerOfClass(getClass())
+                                .severe("Previous move refers to invalid coordinates, but this should not be possible");
+                        throw new IllegalStateException(e);
+                    }
+                });
             }
             Coordinates penultimateCoords = (Coordinates) evt.getOldValue();
             if (penultimateCoords != null && penultimateCoords.equals(coordinates)) {
@@ -226,14 +237,9 @@ public class GomokuCell implements Observer {
             if (cell.isEmpty() && event.isPrimaryButtonDown() && userCanPlace()) {
                 try {
                     guiMainViewmodel.placeStoneFromUser(coordinates);
-                } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Game.GameEndedException e) {
-                    e.printStackTrace();    // TODO : handle this exception (should never happen)
-                    // Possible things to do:
-                    // force update stone (in GUI) at current coordinates, or...
-//                    setCell(vm.getCellAtCoordinatesInCurrentBoard(coordinates));
-                    // ... force update all stones
-                    guiMainViewmodel.forceReFireAllCells();
-
+                } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Game.GameEndedException | Board.CellOutOfBoardException e) {
+                    Utility.getLoggerOfClass(getClass()).log(Level.SEVERE, "Invalid coordinates. This should never happen.", e);
+                    throw new IllegalStateException(e);
                 }
             }
         });

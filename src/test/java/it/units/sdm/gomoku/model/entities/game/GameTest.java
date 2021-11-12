@@ -141,7 +141,7 @@ class GameTest {
     }
 
     @Test
-    void placeStoneBeforeStart() {
+    void placeStoneBeforeStart() throws Board.CellOutOfBoardException {
         try {
             tryToPlaceStoneAndChangeTurn(firstCoordinates, game);
         } catch (NullPointerException ignored) {
@@ -150,7 +150,7 @@ class GameTest {
     }
 
     @Test
-    void placeStoneAfterStart() {
+    void placeStoneAfterStart() throws Board.CellOutOfBoardException {
         game.start();
         tryToPlaceStoneAndChangeTurn(firstCoordinates, game);
         assertFalse(game.getBoard().getCellAtCoordinates(firstCoordinates).isEmpty());

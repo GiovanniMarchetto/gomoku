@@ -115,7 +115,7 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
             colCoord = IOUtility.getAIntFromStdIn();
             coordInsertedByTheUser = new Coordinates(rowCoord, colCoord);
             viewmodel.placeStoneFromUser(coordInsertedByTheUser);
-        } catch (IndexOutOfBoundsException e) {
+        } catch (Board.CellOutOfBoardException e) {
             System.out.println("Valid coordinates values are between " + 0 +
                     " and " + (viewmodel.getBoardSize() - 1) + " included.");
         } catch (IllegalArgumentException e) {

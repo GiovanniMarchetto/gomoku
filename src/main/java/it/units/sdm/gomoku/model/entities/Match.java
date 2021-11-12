@@ -1,7 +1,6 @@
 package it.units.sdm.gomoku.model.entities;
 
 import it.units.sdm.gomoku.Length;
-import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.ui.support.Setup;
@@ -68,12 +67,6 @@ public class Match {
             throw new IllegalArgumentException("2 players expected but " + players.length + " found.");
         }
         return players;
-    }
-
-    @Deprecated
-    public static void executeMoveOfPlayerInGame(@NotNull Game game, @NotNull Coordinates coordinatesOfTheMove)
-            throws Board.BoardIsFullException, Board.CellAlreadyOccupiedException, Game.GameEndedException {
-        game.placeStoneAndChangeTurn(coordinatesOfTheMove);
     }
 
     public void addAnExtraGame() {

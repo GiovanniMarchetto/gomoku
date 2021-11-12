@@ -74,7 +74,7 @@ public class CPUPlayerSmartChooseEmptyCoordinatesTest {
     private void occupyCoordinateFromXAndY(int x, int y) {
         try {
             board.occupyPosition(stoneColor, new Coordinates(x, y));
-        } catch (BoardIsFullException | CellAlreadyOccupiedException e) {
+        } catch (BoardIsFullException | CellAlreadyOccupiedException | Board.CellOutOfBoardException e) {
             fail(e.getMessage());
         }
     }
