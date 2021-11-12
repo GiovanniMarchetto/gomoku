@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 public class TestUtility {
 
-    // TODO : resee tests of this class
+    // TODO : re-see tests of this class
 
     public final static String END_GAMES = "/endGames.json";
 
@@ -191,7 +191,7 @@ public class TestUtility {
                                 .flatMap(aCell -> aCell)
                                 .map(TestUtility::getCellFromStoneRepresentedAsString)
                                 .map(Cell::getStone)
-                                .filter(stoneThisCell -> (stoneThisCell == null && stoneThisCell == stoneType)
+                                .filter(stoneThisCell -> (stoneThisCell == null && stoneType == null)
                                         || (stoneThisCell != null && stoneThisCell.equals(stoneType)))
                                 .count()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));

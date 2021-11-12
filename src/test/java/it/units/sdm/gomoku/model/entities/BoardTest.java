@@ -50,14 +50,9 @@ public class BoardTest {
                         .mapToObj(j -> new Coordinates(i, j)));
     }
 
-    @NotNull
-    public static Board createBoardWithCsvBoardStone() {
-        return TestUtility.createBoardFromCellMatrix(boardMatrixFromCsv, EnvVariables.BOARD_SIZE);
-    }
-
     @BeforeEach
     void setUp() {
-        board = createBoardWithCsvBoardStone();
+        board = TestUtility.createBoardFromCellMatrix(boardMatrixFromCsv, EnvVariables.BOARD_SIZE);
     }
 
     @Test

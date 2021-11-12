@@ -24,7 +24,7 @@ public class Board implements Observable, Cloneable, Serializable {
     @NotNull
     private final PositiveInteger size;
     @NotNull
-    private final List<Coordinates> coordinatesHistory;    // TODO: SERVE?
+    private final List<Coordinates> coordinatesHistory;
     @NotNull
     private final Cell[][] matrix;
     @NotNull
@@ -50,8 +50,8 @@ public class Board implements Observable, Cloneable, Serializable {
         this.lastMoveCoordinatesProperty = board.lastMoveCoordinatesProperty.clone();
     }
 
-    public static boolean isListContainingChainOfNCells(@NotNull final List<@NotNull Cell> cellList,
-                                                        NonNegativeInteger N, @NotNull final Cell cell) {
+    private static boolean isListContainingChainOfNCells(@NotNull final List<@NotNull Cell> cellList,
+                                                         NonNegativeInteger N, @NotNull final Cell cell) {
         int numberOfStonesInChain = N.intValue();
 
         if (cellList.size() < numberOfStonesInChain)
@@ -61,7 +61,7 @@ public class Board implements Observable, Cloneable, Serializable {
                 .unordered()
                 .map(x -> cellList.subList(x, x + numberOfStonesInChain)
                         .stream()
-                        .mapToInt(y -> y.equals(cell) ? 1 : 0/*type conversion*/)   // TODO: check in whole project where Stone (when it was an enum) was compared using == instead of equals, because it is now replaced by class Cell and objects must be compared with equals (here there was a bug because cells were compared with ==)
+                        .mapToInt(y -> y.equals(cell) ? 1 : 0/*type conversion*/)
                         .sum())
                 .anyMatch(aSum -> aSum >= numberOfStonesInChain);
     }
