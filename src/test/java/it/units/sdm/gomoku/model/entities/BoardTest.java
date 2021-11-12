@@ -399,17 +399,17 @@ public class BoardTest {
     }
 
     @Test
-    void testNotEqualsNewObject() {
+    void testEqualsNewObject() {
         assertNotEquals(board, new Object());
     }
 
     @Test
-    void testNotEqualsDifferentSize() {
+    void testEqualsDifferentSize() {
         assertNotEquals(board, new Board(board.getSize() + 1));
     }
 
     @Test
-    void testNotEqualsEmptyBoard() {
+    void testEqualsEmptyBoard() {
         assertNotEquals(board, new Board(board.getSize()));
     }
 
@@ -420,28 +420,30 @@ public class BoardTest {
     }
 
     @Test
-    void testEqualsBetweenTwoDifferentBoardsWithSameNumberOfOccupiedPositions() throws Board.CellOutOfBoardException {//TODO: can be redo for simplify
+    void testEqualsWithSamePositionOccupied() {//i.e. different lastMoveCoordinatesProperty
+        board = new Board(BOARD_SIZE);
         Board expectedBoard = board.clone();
-        int found = 0;
-        List<Coordinates> coords = generateCoordinates(board.getSize()).toList();
-        for (int i = 0; i < coords.size() && found < 2; i++) {
-            if (expectedBoard.getCellAtCoordinates(coords.get(i)).isEmpty()
-                    || board.getCellAtCoordinates(coords.get(i)).isEmpty()) {
-                try {
-                    switch (found) {
-                        case 0 -> expectedBoard.occupyPosition(Stone.Color.BLACK, coords.get(i));
-                        case 1 -> board.occupyPosition(Stone.Color.BLACK, coords.get(i));
-                        default -> {
-                        }
-                    }
-                } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
-                    fail(e);
-                }
-
-                found++;
-            }
+        try {
+            board.occupyPosition(Stone.Color.BLACK, new Coordinates(0, 0));
+            expectedBoard.occupyPosition(Stone.Color.WHITE, new Coordinates(0, 0));
+        } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Board.CellOutOfBoardException e) {
+            fail(e);
         }
-        assertNotEquals(expectedBoard, board);  // TODO : is test correct?
+        assertNotEquals(expectedBoard, board);
+    }
+
+    @Test
+    void testEqualsWithDifferentCoordinateHistory() {
+        board = new Board(BOARD_SIZE);
+        Board expectedBoard = board.clone();
+        try {
+            board.occupyPosition(Stone.Color.BLACK, new Coordinates(0, 0));
+            board.occupyPosition(Stone.Color.WHITE, new Coordinates(0, 1));
+            expectedBoard.occupyPosition(Stone.Color.WHITE, new Coordinates(0, 1));
+        } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Board.CellOutOfBoardException e) {
+            fail(e);
+        }
+        assertNotEquals(expectedBoard, board);
     }
 
     @Test

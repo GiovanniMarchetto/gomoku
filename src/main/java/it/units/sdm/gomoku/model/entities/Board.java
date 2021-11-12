@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static it.units.sdm.gomoku.model.custom_types.NonNegativeInteger.NonNegativeIntegerType;
 import static it.units.sdm.gomoku.model.custom_types.PositiveInteger.PositiveIntegerType;
 
 public class Board implements Observable, Cloneable, Serializable {
@@ -75,14 +76,14 @@ public class Board implements Observable, Cloneable, Serializable {
     }
 
     public boolean isCoordinatesInsideBoard(@NotNull Coordinates coordinates) {
-        @NonNegativeInteger.NonNegativeIntegerType int x = Objects.requireNonNull(coordinates).getX();
-        @NonNegativeInteger.NonNegativeIntegerType int y = coordinates.getY();
+        @NonNegativeIntegerType int x = Objects.requireNonNull(coordinates).getX();
+        @NonNegativeIntegerType int y = coordinates.getY();
         return x < size.intValue() && y < size.intValue();
     }
 
     @NotNull
-    public Cell getCellAtCoordinates(@NonNegativeInteger.NonNegativeIntegerType int x,
-                                     @NonNegativeInteger.NonNegativeIntegerType int y) throws CellOutOfBoardException {
+    public Cell getCellAtCoordinates(@NonNegativeIntegerType int x,
+                                     @NonNegativeIntegerType int y) throws CellOutOfBoardException {
         return getCellAtCoordinates(new Coordinates(x, y));
     }
 
