@@ -3,6 +3,7 @@ package it.units.sdm.gomoku.model.entities;
 import it.units.sdm.gomoku.EnvVariables;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
+import it.units.sdm.gomoku.property_change_handlers.ObservableProperty;
 import it.units.sdm.gomoku.utils.TestUtility;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,6 +52,19 @@ public class BoardTest {
                 .flatMap(i -> IntStream.range(0, boardSize)
                         .mapToObj(j -> new Coordinates(i, j)));
     }
+
+    @NotNull
+    private Coordinates tryToOccupyNextEmptyCellAndReturnCoordinates() {
+        try {
+            CPUPlayer cpuPlayer = new CPUPlayer();
+            Coordinates coordToOccupy = cpuPlayer.chooseNextEmptyCoordinates(board);
+            board.occupyPosition(Stone.Color.BLACK, coordToOccupy);
+            return coordToOccupy;
+        } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
+            fail(e);
+            return null;
+        }
+    }
     //endregion Support Methods
 
     @BeforeEach
@@ -76,21 +90,43 @@ public class BoardTest {
     }
 
     @Test
-    void getCoordinatesHistoryWithNewAdd() {
+    void getCoordinatesHistoryWithNewStoneOnTheBoard() {
         try {
             @SuppressWarnings("unchecked")
             List<Coordinates> expected = (List<Coordinates>)
                     TestUtility.getFieldValue("coordinatesHistory", board);
-            CPUPlayer cpuPlayer = new CPUPlayer();
-            Coordinates coordToOccupy = cpuPlayer.chooseNextEmptyCoordinates(board);
-            board.occupyPosition(Stone.Color.BLACK, coordToOccupy);
-            Objects.requireNonNull(expected).add(coordToOccupy);
+            Objects.requireNonNull(expected).add(tryToOccupyNextEmptyCellAndReturnCoordinates());
             assertEquals(expected, board.getCoordinatesHistory());
         } catch (NoSuchFieldException | IllegalAccessException e) {
             fail(e);
-        } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException ignored) {
         }
     }
+
+
+    @Test
+    void getLastMoveCoordinatesProperty() {
+        try {
+            @SuppressWarnings("unchecked")
+            ObservableProperty<Coordinates> expected = (ObservableProperty<Coordinates>)
+                    TestUtility.getFieldValue("lastMoveCoordinatesProperty", board);
+            assertEquals(expected, board.getLastMoveCoordinatesProperty());
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            fail(e);
+        }
+    }
+
+    @Test
+    void setLastMoveCoordinatesProperty() {
+        Coordinates expected = tryToOccupyNextEmptyCellAndReturnCoordinates();
+        assertEquals(expected, board.getLastMoveCoordinatesProperty().getPropertyValue());
+    }
+
+    @Test
+    void isLastMoveCoordinatesPropertyValueEqualsAtLastCoordinateInHistory() {
+        List<Coordinates> coordinatesHistory = board.getCoordinatesHistory();
+        assertEquals(coordinatesHistory.get(coordinatesHistory.size() - 1), board.getLastMoveCoordinatesProperty().getPropertyValue());
+    }
+
 
     @ParameterizedTest
     @MethodSource("it.units.sdm.gomoku.utils.TestUtility#provideCoupleOfNonNegativeIntegersTillBoardSize")

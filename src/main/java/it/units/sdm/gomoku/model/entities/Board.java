@@ -60,6 +60,11 @@ public class Board implements Observable, Cloneable, Serializable {
         return coordinatesHistory;
     }
 
+    @NotNull
+    public ObservableProperty<Coordinates> getLastMoveCoordinatesProperty() {
+        return lastMoveCoordinatesProperty;
+    }
+
     public boolean isEmpty() {
         return coordinatesHistory.size() == 0;
     }
@@ -241,11 +246,6 @@ public class Board implements Observable, Cloneable, Serializable {
                                         .collect(Collectors.joining())
                                         + System.lineSeparator())
                         .collect(Collectors.joining());
-    }
-
-    @NotNull
-    public ObservableProperty<Coordinates> getLastMoveCoordinatesProperty() {
-        return lastMoveCoordinatesProperty;
     }
 
     public static class BoardIsFullException extends Exception {
