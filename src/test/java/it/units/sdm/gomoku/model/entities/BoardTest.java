@@ -3,6 +3,7 @@ package it.units.sdm.gomoku.model.entities;
 import it.units.sdm.gomoku.EnvVariables;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
+import it.units.sdm.gomoku.property_change_handlers.ObservableProperty;
 import it.units.sdm.gomoku.utils.TestUtility;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,10 +31,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class BoardTest {
 
-    public static final Cell[][] boardMatrixFromCsv = TestUtility.readBoardOfCellsFromCSVFile(EnvVariables.BOARD_19X19_PROVIDER_RESOURCE_LOCATION);
-
+    public static final Cell[][] boardMatrixFromCsv =
+            TestUtility.readBoardOfCellsFromCSVFile(EnvVariables.BOARD_19X19_PROVIDER_RESOURCE_LOCATION);
     private static Board board;
 
+    //region Support Methods
+    @NotNull
     private static Stream<Arguments> getABoardAndACoordinate() {
         return getStreamOfMoveControlRecordFields()
                 .map(Arguments::get)
@@ -51,18 +54,94 @@ public class BoardTest {
     }
 
     @NotNull
-    public static Board createBoardWithCsvBoardStone() {
-        return TestUtility.createBoardFromCellMatrix(boardMatrixFromCsv, EnvVariables.BOARD_SIZE);
+    private Coordinates tryToOccupyNextEmptyCellAndReturnCoordinates() {
+        try {
+            CPUPlayer cpuPlayer = new CPUPlayer();
+            Coordinates coordToOccupy = cpuPlayer.chooseNextEmptyCoordinates(board);
+            board.occupyPosition(Stone.Color.BLACK, coordToOccupy);
+            return coordToOccupy;
+        } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
+            fail(e);
+            return null;
+        }
     }
+    //endregion Support Methods
 
     @BeforeEach
     void setUp() {
-        board = createBoardWithCsvBoardStone();
+        board = TestUtility.createBoardFromCellMatrix(boardMatrixFromCsv, EnvVariables.BOARD_SIZE);
     }
 
     @Test
     void getSize() {
         assertEquals(EnvVariables.BOARD_SIZE.intValue(), board.getSize());
+    }
+
+    @Test
+    void getCoordinatesHistory() {
+        try {
+            @SuppressWarnings("unchecked")
+            List<Coordinates> expected = (List<Coordinates>)
+                    TestUtility.getFieldValue("coordinatesHistory", board);
+            assertEquals(expected, board.getCoordinatesHistory());
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            fail(e);
+        }
+    }
+
+    @Test
+    void getCoordinatesHistoryWithNewStoneOnTheBoard() {
+        try {
+            @SuppressWarnings("unchecked")
+            List<Coordinates> expected = (List<Coordinates>)
+                    TestUtility.getFieldValue("coordinatesHistory", board);
+            Objects.requireNonNull(expected).add(tryToOccupyNextEmptyCellAndReturnCoordinates());
+            assertEquals(expected, board.getCoordinatesHistory());
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            fail(e);
+        }
+    }
+
+
+    @Test
+    void getLastMoveCoordinatesProperty() {
+        try {
+            @SuppressWarnings("unchecked")
+            ObservableProperty<Coordinates> expected = (ObservableProperty<Coordinates>)
+                    TestUtility.getFieldValue("lastMoveCoordinatesProperty", board);
+            assertEquals(expected, board.getLastMoveCoordinatesProperty());
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            fail(e);
+        }
+    }
+
+    @Test
+    void setLastMoveCoordinatesProperty() {
+        Coordinates expected = tryToOccupyNextEmptyCellAndReturnCoordinates();
+        assertEquals(expected, board.getLastMoveCoordinatesProperty().getPropertyValue());
+    }
+
+    @Test
+    void isLastMoveCoordinatesPropertyValueEqualsAtLastCoordinateInHistory() {
+        List<Coordinates> coordinatesHistory = board.getCoordinatesHistory();
+        assertEquals(coordinatesHistory.get(coordinatesHistory.size() - 1), board.getLastMoveCoordinatesProperty().getPropertyValue());
+    }
+
+    @Test
+    void isEmpty() {
+        board = new Board(EnvVariables.BOARD_SIZE);
+        assertTrue(board.isEmpty());
+    }
+
+    @Test
+    void isThereAnyEmptyCell() {
+        board = new Board(EnvVariables.BOARD_SIZE);
+        int totalCell = (int) Math.pow(EnvVariables.BOARD_SIZE.intValue(), 2);
+        IntStream.range(0, totalCell - 1)
+                .forEach(i -> {
+                    tryToOccupyNextEmptyCellAndReturnCoordinates();
+                    assertTrue(board.isThereAnyEmptyCell());
+                });
     }
 
     @ParameterizedTest
@@ -260,7 +339,6 @@ public class BoardTest {
                     }
                 });
     }
-
 
     @Test
     void testEqualsItself() {

@@ -85,14 +85,5 @@ public class GUIMainView extends View<GUIMainViewmodel> implements Observer {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-//
-//        if (Objects.equals(evt.getPropertyName(), getViewmodelAssociatedWithView().currentGame.getPropertyValue().currentPlayer.getPropertyNameOrElseThrow())) {//TODO:message chain code smell
-//            SceneController.executeOnJavaFxUiThread(() -> {
-//                currentPlayerLabel.setText(evt.getNewValue().toString());
-//                currentPlayerCircle.setFill(
-//                        getViewmodelAssociatedWithView().getColorOfCurrentPlayer() == Stone.Color.BLACK
-//                                ? Color.BLACK : Color.WHITE);
-//            });
-//        }
     }
 }

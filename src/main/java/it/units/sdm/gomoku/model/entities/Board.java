@@ -24,7 +24,7 @@ public class Board implements Observable, Cloneable, Serializable {
     @NotNull
     private final PositiveInteger size;
     @NotNull
-    private final List<Coordinates> coordinatesHistory;    // TODO: SERVE?
+    private final List<Coordinates> coordinatesHistory;
     @NotNull
     private final Cell[][] matrix;
     @NotNull
@@ -50,22 +50,6 @@ public class Board implements Observable, Cloneable, Serializable {
         this.lastMoveCoordinatesProperty = board.lastMoveCoordinatesProperty.clone();
     }
 
-    public static boolean isListContainingChainOfNCells(@NotNull final List<@NotNull Cell> cellList,
-                                                        NonNegativeInteger N, @NotNull final Cell cell) {
-        int numberOfStonesInChain = N.intValue();
-
-        if (cellList.size() < numberOfStonesInChain)
-            return false;
-
-        return IntStream.range(0, cellList.size() - numberOfStonesInChain + 1)
-                .unordered()
-                .map(x -> cellList.subList(x, x + numberOfStonesInChain)
-                        .stream()
-                        .mapToInt(y -> y.equals(cell) ? 1 : 0/*type conversion*/)   // TODO: check in whole project where Stone (when it was an enum) was compared using == instead of equals, because it is now replaced by class Cell and objects must be compared with equals (here there was a bug because cells were compared with ==)
-                        .sum())
-                .anyMatch(aSum -> aSum >= numberOfStonesInChain);
-    }
-
     @PositiveIntegerType
     public int getSize() {
         return size.intValue();
@@ -74,6 +58,11 @@ public class Board implements Observable, Cloneable, Serializable {
     @NotNull
     public List<Coordinates> getCoordinatesHistory() {
         return coordinatesHistory;
+    }
+
+    @NotNull
+    public ObservableProperty<Coordinates> getLastMoveCoordinatesProperty() {
+        return lastMoveCoordinatesProperty;
     }
 
     public boolean isEmpty() {
@@ -180,6 +169,22 @@ public class Board implements Observable, Cloneable, Serializable {
                 .anyMatch(cellList -> isListContainingChainOfNCells(cellList, N, Objects.requireNonNull(cell)));
     }
 
+    private static boolean isListContainingChainOfNCells(@NotNull final List<@NotNull Cell> cellList,
+                                                         NonNegativeInteger N, @NotNull final Cell cell) {
+        int numberOfStonesInChain = N.intValue();
+
+        if (cellList.size() < numberOfStonesInChain)
+            return false;
+
+        return IntStream.range(0, cellList.size() - numberOfStonesInChain + 1)
+                .unordered()
+                .map(x -> cellList.subList(x, x + numberOfStonesInChain)
+                        .stream()
+                        .mapToInt(y -> y.equals(cell) ? 1 : 0/*type conversion*/)
+                        .sum())
+                .anyMatch(aSum -> aSum >= numberOfStonesInChain);
+    }
+
     @NotNull
     private List<Cell> rowToList(@NotNull final Coordinates coords) {
         return new ArrayList<>(Arrays.asList(matrix[Objects.requireNonNull(coords).getX()]));
@@ -241,11 +246,6 @@ public class Board implements Observable, Cloneable, Serializable {
                                         .collect(Collectors.joining())
                                         + System.lineSeparator())
                         .collect(Collectors.joining());
-    }
-
-    @NotNull
-    public ObservableProperty<Coordinates> getLastMoveCoordinatesProperty() {
-        return lastMoveCoordinatesProperty;
     }
 
     public static class BoardIsFullException extends Exception {
