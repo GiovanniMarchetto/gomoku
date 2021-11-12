@@ -127,6 +127,22 @@ public class BoardTest {
         assertEquals(coordinatesHistory.get(coordinatesHistory.size() - 1), board.getLastMoveCoordinatesProperty().getPropertyValue());
     }
 
+    @Test
+    void isEmpty() {
+        board = new Board(EnvVariables.BOARD_SIZE);
+        assertTrue(board.isEmpty());
+    }
+
+    @Test
+    void isThereAnyEmptyCell() {
+        board = new Board(EnvVariables.BOARD_SIZE);
+        int totalCell = (int) Math.pow(EnvVariables.BOARD_SIZE.intValue(), 2);
+        IntStream.range(0, totalCell - 1)
+                .forEach(i -> {
+                    tryToOccupyNextEmptyCellAndReturnCoordinates();
+                    assertTrue(board.isThereAnyEmptyCell());
+                });
+    }
 
     @ParameterizedTest
     @MethodSource("it.units.sdm.gomoku.utils.TestUtility#provideCoupleOfNonNegativeIntegersTillBoardSize")
