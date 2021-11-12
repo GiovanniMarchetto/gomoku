@@ -69,7 +69,7 @@ public class Board implements Observable, Cloneable, Serializable {
         return coordinatesHistory.size() == 0;
     }
 
-    public synchronized boolean isThereAnyEmptyCell() {
+    public boolean isThereAnyEmptyCell() {
         return coordinatesHistory.size() < Math.pow(size.intValue(), 2);
     }
 
