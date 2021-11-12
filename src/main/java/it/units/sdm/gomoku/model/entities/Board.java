@@ -125,23 +125,7 @@ public class Board implements Observable, Cloneable, Serializable {
         }
         return Stream.of(rowToList(coords), columnToList(coords), fwdDiagonalToList(coords), bckDiagonalToList(coords))
                 .unordered().parallel()
-                .anyMatch(cellList -> isListContainingChainOfNCells(cellList, N, Objects.requireNonNull(cell)));
-    }
-
-    private static boolean isListContainingChainOfNCells(@NotNull final List<@NotNull Cell> cellList,
-                                                         NonNegativeInteger N, @NotNull final Cell cell) {
-        int numberOfStonesInChain = N.intValue();
-
-        if (cellList.size() < numberOfStonesInChain)
-            return false;
-
-        return IntStream.range(0, cellList.size() - numberOfStonesInChain + 1)
-                .unordered()
-                .map(x -> cellList.subList(x, x + numberOfStonesInChain)
-                        .stream()
-                        .mapToInt(y -> y.equals(cell) ? 1 : 0/*type conversion*/)
-                        .sum())
-                .anyMatch(aSum -> aSum >= numberOfStonesInChain);
+                .anyMatch(cellList -> cell.isBelongingToChainOfNCellsInList(N, cellList));
     }
 
     @NotNull
