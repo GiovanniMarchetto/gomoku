@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -50,7 +49,8 @@ public class CPUPlayer extends Player {
                                 .filter(pair -> pair.getKey() >= 0 && pair.getValue() >= 0)
                                 .map(validPair -> new Coordinates(validPair.getKey(), validPair.getValue()))
                                 .filter(board::isCoordinatesInsideBoard)
-                                .map(board::getCellAtCoordinates)
+                                .map(board::getCellAtCoordinatesOrNullIfInvalid)
+                                .filter(Objects::nonNull)
                                 .filter(cell -> !cell.isEmpty())
                                 .map(Cell::getStone)
                                 .collect(Collectors.groupingBy(Stone::color, Collectors.counting()))
