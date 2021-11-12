@@ -7,32 +7,29 @@ import it.units.sdm.gomoku.mvvm_library.View;
 import it.units.sdm.gomoku.property_change_handlers.PropertyObserver;
 import it.units.sdm.gomoku.ui.MainViewmodel;
 import it.units.sdm.gomoku.ui.StartViewmodel;
+import it.units.sdm.gomoku.ui.UIUtility;
 import it.units.sdm.gomoku.ui.cli.CLIMain;
 import it.units.sdm.gomoku.ui.cli.CLISceneController;
+import it.units.sdm.gomoku.ui.cli.IOUtility;
+import it.units.sdm.gomoku.ui.cli.views.CLIMainView;
 import it.units.sdm.gomoku.ui.support.Setup;
 import it.units.sdm.gomoku.utils.TestUtility;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.beans.PropertyChangeEvent;
-import java.io.IOException;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -51,16 +48,22 @@ public class CLIProgramFluxTest {
     };
     @NotNull
     private static final Logger loggerThisClass = Logger.getLogger(CLIProgramFluxTest.class.getCanonicalName());
-    private final static PipedOutputStream pis = new PipedOutputStream();   // TODO : rethink about this
+    @NotNull
+    private final static PipedOutputStream PIPED_OUTPUT_STREAM = new PipedOutputStream();   // TODO : rethink about this
+    @NotNull
+    private final static PipedInputStream PIPED_INPUT_STREAM = new PipedInputStream();
+    @NotNull
     private final static Thread dataProducerThread = new Thread(() -> {
         try (
-                PrintWriter pw = new PrintWriter(pis, true)
+                PrintWriter pw = new PrintWriter(PIPED_OUTPUT_STREAM, true)
         ) {
             while (true) {
                 pw.println("1");
             }
         }
     });
+    @NotNull
+    private final static InputStream realStdIn = System.in;
     @Nullable
     private StartViewmodel startViewmodel;
     @Nullable
@@ -75,25 +78,40 @@ public class CLIProgramFluxTest {
     private Board boardOfFirstGame;
 
     @BeforeAll
-    static void ignoreStdOut() {
+    static void ignoreStdOutAndStdErr() {
 //        System.setOut(new PrintStream(new ByteArrayOutputStream()));
+//        System.setErr(new PrintStream(new ByteArrayOutputStream()));
     }
 
     @BeforeAll
     static void produceDataForStdInForever() {
-        PipedInputStream pis = new PipedInputStream();
         try {
-            CLIProgramFluxTest.pis.connect(pis);
+            CLIProgramFluxTest.PIPED_OUTPUT_STREAM.connect(PIPED_INPUT_STREAM);
         } catch (IOException e) {
             loggerThisClass.log(Level.SEVERE, "Error when connecting the piped stream", e);
         }
-        System.setIn(pis);
+        System.setIn(PIPED_INPUT_STREAM);
         dataProducerThread.start();
+    }
+
+    private static void setRealStdIn() {
+        try {
+            System.setIn(Objects.requireNonNull(realStdIn));
+            TestUtility.getFieldAlreadyMadeAccessible(IOUtility.SettableScannerSingleton.class, "scannerCanBeModified")
+                    .set(null, true);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            loggerThisClass.log(Level.SEVERE, "Unable to reset StdIn to its real value", e);
+        }
     }
 
     @AfterAll
     static void stopProducingDataToStdIn() {
         dataProducerThread.interrupt();
+    }
+
+    @BeforeEach
+    void connectStdInToPipedInputStream() {
+        System.setIn(PIPED_INPUT_STREAM);
     }
 
     @Test
@@ -189,28 +207,9 @@ public class CLIProgramFluxTest {
         }
     }
 
-    @ParameterizedTest
-    @MethodSource("it.units.sdm.gomoku.ui.UIUtility#setupsSupplierAndFlagIfValid")
-    void checkCorrectnessOfNewGameInitializationFromSetup(Setup setup) {    // TODO : what happens with invalid setup instance?
-        checkCorrectnessOfMatchCreationFromSetup(setup);
-        try {
-            Player firstPlayerExpected = setup.player1();
-            assertEquals(firstPlayerExpected, this.match.getCurrentBlackPlayer());
-
-            Game firstGameOfMatch = (Game) TestUtility.getFieldValue("currentGame", mainViewmodel);
-            assert this.firstGameOfMatch != null;
-            assertEquals(this.firstGameOfMatch, firstGameOfMatch);
-
-            Board boardOfFirstGame = (Board) TestUtility.getFieldValue("currentBoard", mainViewmodel);
-            assert this.firstGameOfMatch != null;
-            assertEquals(this.boardOfFirstGame, boardOfFirstGame);
-
-            assert firstGameOfMatch != null;
-            assertEquals(firstPlayerExpected, firstGameOfMatch.getCurrentPlayer().getPropertyValue());
-            assertEquals(Stone.Color.BLACK, firstGameOfMatch.getColorOfPlayer(firstPlayerExpected));
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            fail(e);
-        }
+    @AfterEach
+    void resetRealStdIn() {
+        setRealStdIn();
     }
 
     @ParameterizedTest
@@ -316,6 +315,128 @@ public class CLIProgramFluxTest {
                 fail(e);
             }
         }
+    }
+
+    @ParameterizedTest
+    @MethodSource("it.units.sdm.gomoku.ui.UIUtility#setupsSupplierAndFlagIfValid")
+    void checkCorrectnessOfNewGameInitializationFromSetup(Setup setup) {    // TODO : what happens with invalid setup instance?
+        checkCorrectnessOfMatchCreationFromSetup(setup);
+        try {
+            Player firstPlayerExpected = setup.player1();
+            assert this.match != null;
+            assertEquals(firstPlayerExpected, this.match.getCurrentBlackPlayer());
+
+            assert mainViewmodel != null;
+            Game firstGameOfMatch = (Game) TestUtility.getFieldValue("currentGame", mainViewmodel);
+            assert this.firstGameOfMatch != null;
+            assertEquals(this.firstGameOfMatch, firstGameOfMatch);
+
+            Board boardOfFirstGame = (Board) TestUtility.getFieldValue("currentBoard", mainViewmodel);
+            assert this.firstGameOfMatch != null;
+            assertEquals(this.boardOfFirstGame, boardOfFirstGame);
+
+            assert firstGameOfMatch != null;
+            assertEquals(firstPlayerExpected, firstGameOfMatch.getCurrentPlayer().getPropertyValue());
+            assertEquals(Stone.Color.BLACK, firstGameOfMatch.getColorOfPlayer(firstPlayerExpected));
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            fail(e);
+        }
+    }
+
+    @ParameterizedTest
+    @CsvSource({"3,4"})
+        // TODO : use @MethodSource to test all possible coordinates
+    void checkModelToReceiveCoordinatesForAMoveAsInsertedFromTheView(int xCoord, int yCoord) {
+        // TODO : rethink this test
+        Setup setup = (Setup) Objects.requireNonNull(
+                UIUtility.setupsSupplierAndFlagIfValid()
+                        .findFirst()
+                        .orElseThrow()).get()[0];
+        Thread initializeGame = new Thread(() -> {
+            checkCorrectnessOfNewGameInitializationFromSetup(setup);
+        });
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                initializeGame.interrupt();
+            }
+        }, 10); // TODO : should interrupt when cli ask coordinates to the user (anyway refactor to avoid magic numbers)
+        initializeGame.start();
+        try {
+            initializeGame.join();
+        } catch (InterruptedException alreadyInterrupted) {
+        }
+
+        View<?> mainView = null;
+        try {
+            mainView = getCurrentView();
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            fail(e);
+        }
+        assert mainView instanceof CLIMainView;
+        ByteArrayInputStream fakeInputInsertedByTheUser =
+                new ByteArrayInputStream((xCoord + System.lineSeparator() + yCoord + System.lineSeparator()).getBytes());
+
+        setFakeInputScannerFromInputStreamOrFailTest(fakeInputInsertedByTheUser);
+
+        assert this.mainViewmodel != null;
+        Stream.of(this.mainViewmodel.getCurrentBlackPlayer(), this.mainViewmodel.getCurrentWhitePlayer())
+                // TODO: discuss if it is correct that we must manually set the currentGame (only when running the entire class test, if we run only this test it works)
+                .filter(player -> player instanceof HumanPlayer)
+                .forEach(player -> {
+                    try {
+                        TestUtility.setFieldValue("currentGame", this.firstGameOfMatch, player);
+                    } catch (NoSuchFieldException | IllegalAccessException e) {
+                        loggerThisClass.log(Level.SEVERE, "Error when forcing to set the game to a player", e);
+                    }
+                });
+
+        View<?> finalMainView = mainView;
+        Thread userMoveExecutor = new Thread(() -> {
+            Thread thisThread = Thread.currentThread();
+            Thread interrupter = new Thread(() -> {
+                while (true) {  // TODO : improve?
+                    try {
+                        if (!(System.in.available() == 0)) break;
+                    } catch (IOException e) {
+                        loggerThisClass.log(Level.SEVERE, "Exception in user move executor thread", e);
+                    }
+                }
+                thisThread.interrupt();
+            });
+            interrupter.setName("MoveExecutorInterrupter");
+            interrupter.start();
+            try {
+                TestUtility.invokeMethodOnObject(finalMainView, "waitForAValidMoveOfAPlayer");
+            } catch (NoSuchFieldException | InvocationTargetException | IllegalAccessException e) {
+                fail(e);
+            }
+            interrupter.interrupt();
+        });
+        userMoveExecutor.setName("UserMoveExecutor");
+        userMoveExecutor.start();
+        try {
+            userMoveExecutor.join();
+        } catch (InterruptedException ignored) {
+        }
+
+        assert this.boardOfFirstGame != null;
+        assertFalse(this.boardOfFirstGame.getCellAtCoordinates(new Coordinates(xCoord, yCoord)).isEmpty());
+    }
+
+    private void setFakeInputScannerFromInputStreamOrFailTest(@NotNull final InputStream fakeInputInsertedByTheUser) {
+        try {
+            System.setIn(fakeInputInsertedByTheUser);
+            IOUtility.SettableScannerSingleton.createNewScannerForSystemInIfAllowedOrUseTheDefaultAndGet();
+            TestUtility.getFieldAlreadyMadeAccessible(IOUtility.SettableScannerSingleton.class, "scannerCanBeModified")
+                    .set(null, false);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            fail(e);
+        }
+    }
+
+    private View<?> getCurrentView() throws NoSuchFieldException, IllegalAccessException {
+        return (View<?>) TestUtility.getFieldAlreadyMadeAccessible(CLISceneController.class, "currentView").get(null);
     }
 
     private List<? extends PropertyObserver<?>> getObservedPropertiesByMainViewmodel()
