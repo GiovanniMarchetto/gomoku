@@ -160,9 +160,7 @@ public class BoardTest {
         board = new Board(BOARD_SIZE);
         int totalCell = (int) Math.pow(BOARD_SIZE.intValue(), 2);
         IntStream.range(0, totalCell)
-                .forEach(i -> {
-                    tryToOccupyNextEmptyCellAndReturnCoordinates();
-                });
+                .forEach(i -> tryToOccupyNextEmptyCellAndReturnCoordinates());
         assertFalse(board.isThereAnyEmptyCell());
     }
 
@@ -180,15 +178,14 @@ public class BoardTest {
         assertFalse(board.isCoordinatesInsideBoard(coordinates));
     }
 
-
     @ParameterizedTest
-    @MethodSource("it.units.sdm.gomoku.utils.TestUtility#provideCoupleOfNonNegativeIntegersTillBoardSize")
+    @MethodSource("provideCoupleOfNonNegativeIntegersInsideBoard")
     void getCellAtCoordinates(int x, int y) {
         assertEquals(boardMatrixFromCsv[x][y], board.getCellAtCoordinates(new Coordinates(x, y)));
     }
 
     @ParameterizedTest
-    @MethodSource("it.units.sdm.gomoku.utils.TestUtility#provideCoupleOfNonNegativeIntegersTillBoardSize")
+    @MethodSource("provideCoupleOfNonNegativeIntegersInsideBoard")
     void getBoardMatrixCopy(int x, int y) {
         try {
             Method getBoardMatrixCopyMethod = Board.class.getDeclaredMethod("getBoardMatrixCopy");
@@ -202,7 +199,7 @@ public class BoardTest {
 
 
     @ParameterizedTest
-    @MethodSource("it.units.sdm.gomoku.utils.TestUtility#provideCoupleOfNonNegativeIntegersTillBoardSize")
+    @MethodSource("provideCoupleOfNonNegativeIntegersInsideBoard")
     void occupyPosition(int x, int y) {
         Coordinates coordinates = new Coordinates(x, y);
         try {
@@ -389,7 +386,8 @@ public class BoardTest {
         int found = 0;
         List<Coordinates> coords = generateCoordinates(board.getSize()).toList();
         for (int i = 0; i < coords.size() && found < 2; i++) {
-            if (expectedBoard.getStoneAtCoordinates(coords.get(i)) == null || board.getStoneAtCoordinates(coords.get(i)) == null) {
+            if (expectedBoard.getCellAtCoordinates(coords.get(i)).isEmpty()
+                    || board.getCellAtCoordinates(coords.get(i)).isEmpty()) {
                 try {
                     switch (found) {
                         case 0 -> expectedBoard.occupyPosition(Stone.Color.BLACK, coords.get(i));

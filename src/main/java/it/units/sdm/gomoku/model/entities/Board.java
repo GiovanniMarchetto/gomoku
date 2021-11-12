@@ -79,46 +79,14 @@ public class Board implements Observable, Cloneable, Serializable {
         return x < size.intValue() && y < size.intValue();
     }
 
-    @Nullable
-    public Stone getStoneAtCoordinates(@NotNull final Coordinates coordinates) {
-        if (isCoordinatesInsideBoard(Objects.requireNonNull(coordinates))) {
-            return getCellAtCoordinates(coordinates).getStone();
-        } else {
-            throw new IndexOutOfBoundsException("Coordinate " + coordinates + " not present in the board.");
-        }
+    @NotNull
+    public Cell getCellAtCoordinates(int x, int y) {
+        return matrix[x][y];
     }
 
-    @SuppressWarnings("MethodDoesntCallSuperMethod")
-    @Override
-    public Board clone() {
-        return new Board(this);
-    }
-
-    private Cell[][] getBoardMatrixCopy() {
-        return Arrays.stream(matrix)
-                .map(Cell[]::clone)
-                .toArray(Cell[][]::new);
-    }
-
-    @Override
-    public boolean equals(Object o) {   // TODO to be tested
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Board otherBoard = (Board) o;
-        return size.equals(otherBoard.size)
-                && lastMoveCoordinatesProperty.valueEquals(otherBoard.lastMoveCoordinatesProperty)
-                && coordinatesHistory.equals(otherBoard.coordinatesHistory) // TODO : board equality should consider coordinate history?
-                && Arrays.deepEquals(matrix, otherBoard.matrix);
-    }
-
-    @Override
-    public int hashCode() { // TODO : check if creates problems with hashmaps (hashCode method should be present according to equals() contract)
-        // TODO to be tested
-        int result = size.hashCode();
-        result = 31 * result + coordinatesHistory.hashCode();
-        result = 31 * result + Arrays.deepHashCode(matrix);
-        result = 31 * result + lastMoveCoordinatesProperty.hashCode();
-        return result;
+    @NotNull
+    public Cell getCellAtCoordinates(@NotNull Coordinates coordinates) {
+        return getCellAtCoordinates(coordinates.getX(), coordinates.getY());
     }
 
     public synchronized void occupyPosition(@NotNull Stone.Color stoneColor, @NotNull Coordinates coordinates)
@@ -149,15 +117,6 @@ public class Board implements Observable, Cloneable, Serializable {
         }
     }
 
-    @NotNull
-    public Cell getCellAtCoordinates(int x, int y) {
-        return matrix[x][y];
-    }
-
-    @NotNull
-    public Cell getCellAtCoordinates(@NotNull Coordinates coordinates) {
-        return getCellAtCoordinates(coordinates.getX(), coordinates.getY());
-    }
 
     public boolean isCoordinatesBelongingToChainOfNStones(@NotNull final Coordinates coords, NonNegativeInteger N) {
         Cell cell = getCellAtCoordinates(Objects.requireNonNull(coords));
@@ -248,13 +207,48 @@ public class Board implements Observable, Cloneable, Serializable {
                         .collect(Collectors.joining());
     }
 
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    @Override
+    public Board clone() {
+        return new Board(this);
+    }
+
+    private Cell[][] getBoardMatrixCopy() {
+        return Arrays.stream(matrix)
+                .map(Cell[]::clone)
+                .toArray(Cell[][]::new);
+    }
+
+    @Override
+    public boolean equals(Object o) {   // TODO to be tested
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Board otherBoard = (Board) o;
+        return size.equals(otherBoard.size)
+                && lastMoveCoordinatesProperty.valueEquals(otherBoard.lastMoveCoordinatesProperty)
+                && coordinatesHistory.equals(otherBoard.coordinatesHistory) // TODO : board equality should consider coordinate history?
+                && Arrays.deepEquals(matrix, otherBoard.matrix);
+    }
+
+    @Override
+    public int hashCode() { // TODO : check if creates problems with hashmaps (hashCode method should be present according to equals() contract)
+        // TODO to be tested
+        int result = size.hashCode();
+        result = 31 * result + coordinatesHistory.hashCode();
+        result = 31 * result + Arrays.deepHashCode(matrix);
+        result = 31 * result + lastMoveCoordinatesProperty.hashCode();
+        return result;
+    }
+
     public static class BoardIsFullException extends Exception {
+
         public BoardIsFullException() {
             super("The board is entirely filled. No more space available.");
         }
     }
 
     public static class CellAlreadyOccupiedException extends Exception {
+
         public CellAlreadyOccupiedException(@NotNull final Coordinates coordinates) {
             super(Objects.requireNonNull(coordinates) + " already occupied.");
         }
