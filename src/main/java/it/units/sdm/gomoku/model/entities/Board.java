@@ -73,10 +73,6 @@ public class Board implements Observable, Cloneable, Serializable {
         return coordinatesHistory.size() < Math.pow(size.intValue(), 2);
     }
 
-    private boolean isCellEmpty(@NotNull Coordinates coordinates) {
-        return getCellAtCoordinates(Objects.requireNonNull(coordinates)).isEmpty();
-    }
-
     public boolean isCoordinatesInsideBoard(@NotNull Coordinates coordinates) {
         int x = Objects.requireNonNull(coordinates).getX();
         int y = coordinates.getY();
@@ -139,6 +135,10 @@ public class Board implements Observable, Cloneable, Serializable {
         } else {
             throw new BoardIsFullException();
         }
+    }
+
+    private boolean isCellEmpty(@NotNull Coordinates coordinates) {
+        return getCellAtCoordinates(Objects.requireNonNull(coordinates)).isEmpty();
     }
 
     private void setStoneAtCoordinates(@NotNull final Coordinates coordinates, @Nullable Stone stone) {

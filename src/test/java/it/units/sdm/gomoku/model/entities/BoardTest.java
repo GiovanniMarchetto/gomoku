@@ -3,6 +3,7 @@ package it.units.sdm.gomoku.model.entities;
 import it.units.sdm.gomoku.EnvVariables;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
+import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.property_change_handlers.ObservableProperty;
 import it.units.sdm.gomoku.utils.TestUtility;
 import org.jetbrains.annotations.NotNull;
@@ -10,7 +11,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.CsvFileSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.lang.reflect.InvocationTargetException;
@@ -33,6 +33,7 @@ public class BoardTest {
 
     public static final Cell[][] boardMatrixFromCsv =
             TestUtility.readBoardOfCellsFromCSVFile(EnvVariables.BOARD_19X19_PROVIDER_RESOURCE_LOCATION);
+    public static final PositiveInteger BOARD_SIZE = new PositiveInteger(19);
     private static Board board;
 
     //region Support Methods
@@ -65,16 +66,26 @@ public class BoardTest {
             return null;
         }
     }
+
+    @NotNull
+    private static Stream<Arguments> provideCoupleOfNonNegativeIntegersInsideBoard() {
+        return TestUtility.provideCoupleOfNonNegativeIntegersTillNExcluded(BOARD_SIZE.intValue());
+    }
+
+    @NotNull
+    private static Stream<Arguments> provideCoupleOfNonNegativeIntegersOutsideBoard() {
+        return TestUtility.provideCoupleOfIntegersInRange(BOARD_SIZE.intValue(), BOARD_SIZE.intValue() + 10);
+    }
     //endregion Support Methods
 
     @BeforeEach
     void setUp() {
-        board = TestUtility.createBoardFromCellMatrix(boardMatrixFromCsv, EnvVariables.BOARD_SIZE);
+        board = TestUtility.createBoardFromCellMatrix(boardMatrixFromCsv, BOARD_SIZE);
     }
 
     @Test
     void getSize() {
-        assertEquals(EnvVariables.BOARD_SIZE.intValue(), board.getSize());
+        assertEquals(BOARD_SIZE.intValue(), board.getSize());
     }
 
     @Test
@@ -129,20 +140,46 @@ public class BoardTest {
 
     @Test
     void isEmpty() {
-        board = new Board(EnvVariables.BOARD_SIZE);
+        board = new Board(BOARD_SIZE);
         assertTrue(board.isEmpty());
     }
 
     @Test
-    void isThereAnyEmptyCell() {
-        board = new Board(EnvVariables.BOARD_SIZE);
-        int totalCell = (int) Math.pow(EnvVariables.BOARD_SIZE.intValue(), 2);
+    void checkIfIsThereAnyEmptyCellForEveryOccupyUntilBoardHasOnePositionFree() {
+        board = new Board(BOARD_SIZE);
+        int totalCell = (int) Math.pow(BOARD_SIZE.intValue(), 2);
         IntStream.range(0, totalCell - 1)
                 .forEach(i -> {
                     tryToOccupyNextEmptyCellAndReturnCoordinates();
                     assertTrue(board.isThereAnyEmptyCell());
                 });
     }
+
+    @Test
+    void noMoreEmptyCell() {
+        board = new Board(BOARD_SIZE);
+        int totalCell = (int) Math.pow(BOARD_SIZE.intValue(), 2);
+        IntStream.range(0, totalCell)
+                .forEach(i -> {
+                    tryToOccupyNextEmptyCellAndReturnCoordinates();
+                });
+        assertFalse(board.isThereAnyEmptyCell());
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideCoupleOfNonNegativeIntegersInsideBoard")
+    void isCoordinatesInsideBoard(int value) {
+        Coordinates coordinates = new Coordinates(value, value);
+        assertTrue(board.isCoordinatesInsideBoard(coordinates));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideCoupleOfNonNegativeIntegersOutsideBoard")
+    void isNotCoordinatesInsideBoard(int value) {
+        Coordinates coordinates = new Coordinates(value, value);
+        assertFalse(board.isCoordinatesInsideBoard(coordinates));
+    }
+
 
     @ParameterizedTest
     @MethodSource("it.units.sdm.gomoku.utils.TestUtility#provideCoupleOfNonNegativeIntegersTillBoardSize")
@@ -163,26 +200,6 @@ public class BoardTest {
         }
     }
 
-    @ParameterizedTest
-    @CsvFileSource(resources = EnvVariables.NON_NEGATIVE_INTS_PROVIDER_RESOURCE_LOCATION)
-    void isCoordinatesInsideBoard(int value) {
-        Coordinates coordinates = new Coordinates(value, value);
-        assertEquals(value < EnvVariables.BOARD_SIZE.intValue(), board.isCoordinatesInsideBoard(coordinates));
-    }
-
-    @Test
-    void isAnyEmptyPositionOnTheBoard() {
-        assertTrue(board.isThereAnyEmptyCell());
-    }
-
-    @Test
-    void isAnyEmptyPositionOnTheBoard_TestWhenShouldBeFalse() {
-        board = new Board(EnvVariables.BOARD_SIZE);
-        occupyAllPositionsIfValidPredicateWithGivenColor(board,
-                coords -> Stone.Color.BLACK,
-                coords -> true);
-        assertFalse(board.isThereAnyEmptyCell());
-    }
 
     @ParameterizedTest
     @MethodSource("it.units.sdm.gomoku.utils.TestUtility#provideCoupleOfNonNegativeIntegersTillBoardSize")
