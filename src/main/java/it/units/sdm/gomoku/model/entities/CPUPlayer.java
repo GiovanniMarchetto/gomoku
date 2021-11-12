@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -40,26 +39,24 @@ public class CPUPlayer extends Player {
 
     private static boolean isHeadOfAChainOfStones(Board board, Coordinates headCoordinates,
                                                   PositiveInteger numberOfConsecutive) {
-        int[] directionFactorXs = {0, 0, 1, -1, 1, -1, 1, -1};
-        int[] directionFactorYs = {1, -1, 0, 0, 1, -1, -1, 1};
-
-        return IntStream.range(0, directionFactorXs.length)
-                .mapToObj(i -> new Pair<>(directionFactorXs[i], directionFactorYs[i]))
-                .flatMap(aDirectionFactor -> IntStream.rangeClosed(1, numberOfConsecutive.intValue())
-                        .mapToObj(i -> new Pair<>(
-                                headCoordinates.getX() + i * aDirectionFactor.getKey(),
-                                headCoordinates.getY() + i * aDirectionFactor.getValue()))
-                        .filter(pair -> pair.getKey() >= 0 && pair.getValue() >= 0)
-                        .map(validPair -> new Coordinates(validPair.getKey(), validPair.getValue()))
-                        .filter(board::isCoordinatesInsideBoard)
-                        .map(board::getCellAtCoordinates)
-                        .filter(cell -> !cell.isEmpty())
-                        .map(Cell::getStone)
-                        .collect(Collectors.groupingBy(Stone::color, Collectors.counting()))
-                        .values()
-                        .stream()
-                )
-                .anyMatch(counter -> counter == numberOfConsecutive.intValue());
+        return IntStream.rangeClosed(-1, 1).mapToObj(xDirection ->
+                IntStream.rangeClosed(-1, 1).mapToObj(yDirection ->
+                        IntStream.rangeClosed(1, numberOfConsecutive.intValue())
+                                .mapToObj(i -> new Pair<>(
+                                        headCoordinates.getX() + i * xDirection,
+                                        headCoordinates.getY() + i * yDirection))
+                                .filter(pair -> pair.getKey() >= 0 && pair.getValue() >= 0)
+                                .map(validPair -> new Coordinates(validPair.getKey(), validPair.getValue()))
+                                .filter(board::isCoordinatesInsideBoard)
+                                .map(board::getCellAtCoordinates)
+                                .filter(cell -> !cell.isEmpty())
+                                .map(Cell::getStone)
+                                .collect(Collectors.groupingBy(Stone::color, Collectors.counting()))
+                                .values()
+                                .stream()
+                                .anyMatch(counter -> counter == numberOfConsecutive.intValue())
+                ).anyMatch(find -> find)
+        ).anyMatch(find -> find);
     }
 
     @Override
@@ -84,18 +81,17 @@ public class CPUPlayer extends Player {
 
         final int maxChainToFind = 5;//exclusive
         final int minChainToFind = 2;//inclusive
+        final int[] chainToFind = IntStream.range(minChainToFind, maxChainToFind)
+                .map(i -> minChainToFind - i + maxChainToFind - 1).toArray();
 
-        AtomicInteger consecutiveStonesToFind = new AtomicInteger(maxChainToFind);
-        for (; consecutiveStonesToFind.get() >= minChainToFind; consecutiveStonesToFind.getAndDecrement()) {
+        for (int i : chainToFind) {
             Optional<Coordinates> optionalCoordinates = getStreamOfEmptyCoordinates(board)
-                    .filter(c -> isHeadOfAChainOfStones(board, c, new PositiveInteger(consecutiveStonesToFind.get())))
+                    .filter(c -> isHeadOfAChainOfStones(board, c, new PositiveInteger(i)))
                     .findAny();
-
             if (optionalCoordinates.isPresent()) {
                 return optionalCoordinates.get();
             }
         }
-
         return chooseNextEmptyCoordinatesFromCenter(board);
     }
 
