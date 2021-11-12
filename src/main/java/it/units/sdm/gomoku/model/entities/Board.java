@@ -197,19 +197,20 @@ public class Board implements Observable, Cloneable, Serializable {
 
     @Override
     public String toString() {
-        int lengthOfSize = String.valueOf(size).length();
+        int lengthOfMaxCoordsValue = String.valueOf(size.intValue() - 1).length();
 
-        return String.format("  %s%" + lengthOfSize + "s", size.intValue() < 11 ? " " : "", "") +
+        return String.format("  %s%" + lengthOfMaxCoordsValue + "s", lengthOfMaxCoordsValue == 1 ? " " : "", "") +
                 IntStream.range(0, size.intValue())
-                        .mapToObj(col -> String.format("%" + lengthOfSize + "d  ", col))
+                        .mapToObj(col -> String.format("%" + lengthOfMaxCoordsValue + "d  ", col))
                         .collect(Collectors.joining()) +
                 System.lineSeparator() +
-                IntStream.range(0, size.intValue()).mapToObj(row ->
-                                String.format("%" + lengthOfSize + "d| ", row)
+                IntStream.range(0, size.intValue())
+                        .mapToObj(row ->
+                                String.format("%" + lengthOfMaxCoordsValue + "d| ", row)
                                         + IntStream.range(0, size.intValue())
                                         .mapToObj(col -> {
                                             try {
-                                                return String.format(" %s%" + lengthOfSize + "s",
+                                                return String.format(" %s%" + lengthOfMaxCoordsValue + "s",
                                                         getCellAtCoordinates(row, col), "");
                                             } catch (CellOutOfBoardException e) {
                                                 Utility.getLoggerOfClass(getClass()).severe(e.getMessage());
@@ -227,6 +228,7 @@ public class Board implements Observable, Cloneable, Serializable {
         return new Board(this);
     }
 
+    @NotNull
     private Cell[][] getBoardMatrixCopy() {
         return Arrays.stream(matrix)
                 .map(Cell[]::clone)
