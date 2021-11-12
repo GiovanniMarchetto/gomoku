@@ -89,6 +89,6 @@ public class NonNegativeInteger extends Number implements Comparable<Number> {
      */
     @Documented
     @Target({METHOD, FIELD, PARAMETER, LOCAL_VARIABLE})
-    public @interface NonNegativeIntegerType {
+    public @interface NonNegativeIntegerType {  // TODO (if time allows): annotation should be processed and checked at compile time (https://www.baeldung.com/java-annotation-processing-builder)
     }
 }

@@ -75,8 +75,8 @@ public class Board implements Observable, Cloneable, Serializable {
     }
 
     public boolean isCoordinatesInsideBoard(@NotNull Coordinates coordinates) {
-        int x = Objects.requireNonNull(coordinates).getX();
-        int y = coordinates.getY();
+        @NonNegativeInteger.NonNegativeIntegerType int x = Objects.requireNonNull(coordinates).getX();
+        @NonNegativeInteger.NonNegativeIntegerType int y = coordinates.getY();
         return x < size.intValue() && y < size.intValue();
     }
 
