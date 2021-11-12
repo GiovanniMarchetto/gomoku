@@ -30,7 +30,7 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
                     CLIMainViewmodel viewmodel = getViewmodelAssociatedWithView();
                     try {
                         Player winnerOfGame = viewmodel.getWinnerOfTheGame();
-                        System.out.println("The game is finish with: " +
+                        System.out.println("The game is ended with: " +
                                 (winnerOfGame != null ? "WIN of " + winnerOfGame : "a DRAW"));
                     } catch (Game.GameNotEndedException ignored) {
                     }
