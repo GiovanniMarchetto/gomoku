@@ -30,10 +30,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class BoardTest {
 
-    public static final Cell[][] boardMatrixFromCsv = TestUtility.readBoardOfCellsFromCSVFile(EnvVariables.BOARD_19X19_PROVIDER_RESOURCE_LOCATION);
-
+    public static final Cell[][] boardMatrixFromCsv =
+            TestUtility.readBoardOfCellsFromCSVFile(EnvVariables.BOARD_19X19_PROVIDER_RESOURCE_LOCATION);
     private static Board board;
 
+    //region Support Methods
+    @NotNull
     private static Stream<Arguments> getABoardAndACoordinate() {
         return getStreamOfMoveControlRecordFields()
                 .map(Arguments::get)
@@ -49,6 +51,7 @@ public class BoardTest {
                 .flatMap(i -> IntStream.range(0, boardSize)
                         .mapToObj(j -> new Coordinates(i, j)));
     }
+    //endregion Support Methods
 
     @BeforeEach
     void setUp() {
@@ -58,6 +61,35 @@ public class BoardTest {
     @Test
     void getSize() {
         assertEquals(EnvVariables.BOARD_SIZE.intValue(), board.getSize());
+    }
+
+    @Test
+    void getCoordinatesHistory() {
+        try {
+            @SuppressWarnings("unchecked")
+            List<Coordinates> expected = (List<Coordinates>)
+                    TestUtility.getFieldValue("coordinatesHistory", board);
+            assertEquals(expected, board.getCoordinatesHistory());
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            fail(e);
+        }
+    }
+
+    @Test
+    void getCoordinatesHistoryWithNewAdd() {
+        try {
+            @SuppressWarnings("unchecked")
+            List<Coordinates> expected = (List<Coordinates>)
+                    TestUtility.getFieldValue("coordinatesHistory", board);
+            CPUPlayer cpuPlayer = new CPUPlayer();
+            Coordinates coordToOccupy = cpuPlayer.chooseNextEmptyCoordinates(board);
+            board.occupyPosition(Stone.Color.BLACK, coordToOccupy);
+            Objects.requireNonNull(expected).add(coordToOccupy);
+            assertEquals(expected, board.getCoordinatesHistory());
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            fail(e);
+        } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException ignored) {
+        }
     }
 
     @ParameterizedTest
@@ -255,7 +287,6 @@ public class BoardTest {
                     }
                 });
     }
-
 
     @Test
     void testEqualsItself() {
