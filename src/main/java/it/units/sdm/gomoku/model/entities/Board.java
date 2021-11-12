@@ -109,8 +109,9 @@ public class Board implements Observable, Cloneable, Serializable {
         if (isThereAnyEmptyCell()) {
             if (isCellEmpty(Objects.requireNonNull(coordinates))) {
                 setStoneAtCoordinates(coordinates, new Stone(Objects.requireNonNull(stoneColor)));
-                coordinatesHistory
-                        .add(lastMoveCoordinatesProperty.setPropertyValueAndFireIfPropertyChange(coordinates)
+                coordinatesHistory.add(
+                        lastMoveCoordinatesProperty
+                                .setPropertyValueAndFireIfPropertyChange(coordinates)
                                 .getPropertyValue());
             } else {
                 throw new CellAlreadyOccupiedException(coordinates);
@@ -120,11 +121,11 @@ public class Board implements Observable, Cloneable, Serializable {
         }
     }
 
-    private boolean isCellEmpty(@NotNull Coordinates coordinates) throws CellOutOfBoardException {
+    private boolean isCellEmpty(@NotNull final Coordinates coordinates) throws CellOutOfBoardException {
         return getCellAtCoordinates(Objects.requireNonNull(coordinates)).isEmpty();
     }
 
-    private void setStoneAtCoordinates(@NotNull final Coordinates coordinates, @Nullable Stone stone) throws CellOutOfBoardException {
+    private synchronized void setStoneAtCoordinates(@NotNull final Coordinates coordinates, @Nullable Stone stone) throws CellOutOfBoardException {
         if (isCoordinatesInsideBoard(Objects.requireNonNull(coordinates))) {
             getCellAtCoordinates(coordinates).setStone(stone);
         } else {
@@ -133,7 +134,8 @@ public class Board implements Observable, Cloneable, Serializable {
     }
 
 
-    public boolean isCoordinatesBelongingToChainOfNStones(@NotNull final Coordinates coords, NonNegativeInteger N) {
+    public boolean isCoordinatesBelongingToChainOfNStones(@NotNull final Coordinates coords,
+                                                          @NotNull final NonNegativeInteger N) {
         Cell cell;
         try {
             cell = getCellAtCoordinates(Objects.requireNonNull(coords));
@@ -143,48 +145,49 @@ public class Board implements Observable, Cloneable, Serializable {
         if (cell.isEmpty()) {
             return false;
         }
-        return Stream.of(rowToList(coords), columnToList(coords), fwdDiagonalToList(coords), bckDiagonalToList(coords))
+        return Stream.of(getRowContainingCoords(coords), getColumnContainingCoords(coords), getFwdDiagonalContainingCoords(coords), getBckDiagonalContainingCoords(coords))
                 .unordered().parallel()
-                .anyMatch(cellList -> cell.isBelongingToChainOfNCellsInList(N, cellList));
+                .anyMatch(cellList -> cell.isBelongingToChainOfNCellsInList(Objects.requireNonNull(N), cellList));
     }
 
     @NotNull
-    private List<Cell> rowToList(@NotNull final Coordinates coords) {
+    private List<Cell> getRowContainingCoords(@NotNull final Coordinates coords) {
         return new ArrayList<>(Arrays.asList(matrix[Objects.requireNonNull(coords).getX()]));
     }
 
     @NotNull
-    private List<Cell> columnToList(@NotNull final Coordinates coords) {
+    private List<Cell> getColumnContainingCoords(@NotNull final Coordinates coords) {
         Objects.requireNonNull(coords);
         return IntStream
                 .range(0, getSize())
                 .sequential()
                 .mapToObj(x -> getCellAtCoordinatesOrNullIfInvalid(new Coordinates(x, coords.getY())))
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
     @NotNull
-    private List<Cell> fwdDiagonalToList(@NotNull final Coordinates coords) {
-        return diagonalToList(coords, false);
+    private List<Cell> getFwdDiagonalContainingCoords(@NotNull final Coordinates coords) {
+        return getDiagonalContainingCoords(coords, false);
     }
 
     @NotNull
-    private List<Cell> bckDiagonalToList(@NotNull final Coordinates coords) {
-        return diagonalToList(coords, true);
+    private List<Cell> getBckDiagonalContainingCoords(@NotNull final Coordinates coords) {
+        return getDiagonalContainingCoords(coords, true);
     }
 
     @NotNull
-    private List<Cell> diagonalToList(@NotNull final Coordinates coords, boolean isBackDiagonal) {
+    private List<Cell> getDiagonalContainingCoords(@NotNull final Coordinates coords, boolean isBackDiagonal) {
         int boardSize = getSize();
         int sign = isBackDiagonal ? -1 : 1;
         int S = Objects.requireNonNull(coords).getX() + sign * coords.getY();
 
         return IntStream.range(0, boardSize).sequential()
                 .filter(i -> boardSize + sign * i > sign * S && sign * i <= sign * S)
-                // sign =  1 => boardSize + i >  S &&  i <=  S
-                // sign = -1 => boardSize - i > -S && -i <= -S
+                // sign ==  1 => boardSize + i >  S &&  i <=  S
+                // sign == -1 => boardSize - i > -S && -i <= -S
                 .boxed()
-                .flatMap(i -> IntStream.range(0, boardSize).unordered()
+                .flatMap(i -> IntStream.range(0, boardSize).unordered().parallel()
                         .filter(j -> i + sign * j == S)
                         .mapToObj(j -> new Coordinates(i, j)))
                 .map(this::getCellAtCoordinatesOrNullIfInvalid)

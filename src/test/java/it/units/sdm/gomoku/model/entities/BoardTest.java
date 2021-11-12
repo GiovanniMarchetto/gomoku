@@ -236,7 +236,7 @@ public class BoardTest {
     @MethodSource("getABoardAndACoordinate")
     void fwdDiagonalToList(Cell[][] matrix, Coordinates coords) {
         try {
-            assertTrue(isMatrixPartToListMethodCorrect(matrix, coords, "fwdDiagonalToList", (board1, coords1) -> {
+            assertTrue(isMatrixPartToListMethodCorrect(matrix, coords, "getFwdDiagonalContainingCoords", (board1, coords1) -> {
                 try {
                     return alternativeFwdDiagonalToList(board1, coords1);
                 } catch (Board.CellOutOfBoardException e) {
@@ -253,7 +253,7 @@ public class BoardTest {
     @MethodSource("getABoardAndACoordinate")
     void bckDiagonalToList(Cell[][] matrix, Coordinates coords) {
         try {
-            assertTrue(isMatrixPartToListMethodCorrect(matrix, coords, "bckDiagonalToList", (board1, coords1) -> {
+            assertTrue(isMatrixPartToListMethodCorrect(matrix, coords, "getBckDiagonalContainingCoords", (board1, coords1) -> {
                 try {
                     return alternativeBckDiagonalToList(board1, coords1);
                 } catch (Board.CellOutOfBoardException e) {
@@ -270,7 +270,7 @@ public class BoardTest {
     @MethodSource("getABoardAndACoordinate")
     void columnToList(Cell[][] matrix, Coordinates coords) {
         try {
-            assertTrue(isMatrixPartToListMethodCorrect(matrix, coords, "columnToList", this::alternativeColumnToList));
+            assertTrue(isMatrixPartToListMethodCorrect(matrix, coords, "getColumnContainingCoords", this::alternativeColumnToList));
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
             fail(e);
         }
@@ -280,7 +280,7 @@ public class BoardTest {
     @MethodSource("getABoardAndACoordinate")
     void rowToList(Cell[][] matrix, Coordinates coords) {
         try {
-            assertTrue(isMatrixPartToListMethodCorrect(matrix, coords, "rowToList", this::alternativeRowToList));
+            assertTrue(isMatrixPartToListMethodCorrect(matrix, coords, "getRowContainingCoords", this::alternativeRowToList));
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | Board.BoardIsFullException | Board.CellAlreadyOccupiedException e) {
             fail(e);
         }
