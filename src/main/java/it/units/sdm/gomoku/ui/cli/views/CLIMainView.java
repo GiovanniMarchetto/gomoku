@@ -71,7 +71,7 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
         addObservedPropertyOfViewmodel(cliMainViewmodel.getUserMustPlaceNewStoneProperty(), evt -> {
             if ((boolean) evt.getNewValue()) {
                 try {
-                    waitForAValidMoveOfAPlayer();
+                    waitForAMoveOfAPlayer();
                 } catch (Board.BoardIsFullException | Game.GameEndedException e) {
                     // TODO : handle exception
                     System.err.println("Game terminated due to an unexpected exception: ");
@@ -98,7 +98,7 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
     public void propertyChange(PropertyChangeEvent evt) {
     }
 
-    private void waitForAValidMoveOfAPlayer() throws Board.BoardIsFullException, Game.GameEndedException {  // TODO : not tested
+    private void waitForAMoveOfAPlayer() throws Board.BoardIsFullException, Game.GameEndedException {  // TODO : not tested
         int rowCoord, colCoord;
 
         CLIMainViewmodel viewmodel = getViewmodelAssociatedWithView();

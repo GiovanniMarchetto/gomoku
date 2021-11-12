@@ -1,12 +1,13 @@
 package it.units.sdm.gomoku.ui;
 
 import it.units.sdm.gomoku.model.entities.Game;
+import it.units.sdm.gomoku.model.entities.Match;
 import it.units.sdm.gomoku.model.entities.Player;
 import it.units.sdm.gomoku.model.entities.Stone;
 import it.units.sdm.gomoku.utils.TestUtility;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Field;
+import java.util.Objects;
 
 import static it.units.sdm.gomoku.ui.TestMainViewmodel.cpuPlayer1;
 import static it.units.sdm.gomoku.ui.TestMainViewmodel.setup;
@@ -60,20 +61,15 @@ class MainViewmodelTest {
     }
 
     @Test
-    void createMatchFromSetupAndStartGame() {
+    void setMatch() {
         try {
-            Field matchField = TestUtility.getFieldAlreadyMadeAccessible(MainViewmodel.class, "match");
-            Field gameField = TestUtility.getFieldAlreadyMadeAccessible(MainViewmodel.class, "currentGame");
-
-            assertNull(matchField.get(mainViewmodel));
-            assertNull(gameField.get(mainViewmodel));
-
-            mainViewmodel.createMatchFromSetupAndStartGame(setup);
-            assertNotNull(matchField.get(mainViewmodel));
-            assertNotNull(gameField.get(mainViewmodel));
+            Match match = new Match(setup);
+            mainViewmodel.setMatch(match);
+            assertEquals(match, TestUtility.getFieldValue("match", mainViewmodel));
         } catch (NoSuchFieldException | IllegalAccessException e) {
             fail(e);
         }
+
     }
 
     @Test
@@ -87,53 +83,40 @@ class MainViewmodelTest {
     @Test
     void startNewGameAfterEndMatch() {
         //TODO: the startNewGame must pass the exception?
+//        mainViewmodel.startNewMatch();
+//        for (int i = 1; i < setup.numberOfGames().intValue(); i++) {
+//            mainViewmodel.startNewGame();
+//        }
+//        Game oldGame = mainViewmodel.getCurrentGame();
+//        mainViewmodel.startNewGame();
+//        Game  newGame = mainViewmodel.getCurrentGame();
+//        assertEquals(oldGame, newGame);
     }
 
     @Test
     void startExtraGame() {
         mainViewmodel.startNewMatch();
-        Game oldGame = mainViewmodel.getCurrentGame();
-        Game newGame = null;
-        while (oldGame != newGame) {
-            try {
-                System.out.println("game");
-                oldGame = mainViewmodel.getCurrentGame();
-                mainViewmodel.startNewGame();
-                newGame = mainViewmodel.getCurrentGame();
-            } catch (Exception e) {
-                System.err.println(e);
-                break;
-            }
+        for (int i = 1; i < setup.numberOfGames().intValue(); i++) {
+            mainViewmodel.startNewGame();
         }
-
+        Game oldGame = mainViewmodel.getCurrentGame();
         mainViewmodel.startExtraGame();
-        newGame = mainViewmodel.getCurrentGame();
+        Game newGame = mainViewmodel.getCurrentGame();
         assertNotEquals(oldGame, newGame);
     }
 
     @Test
     void addAnExtraGameToThisMatch() {
-        //TODO
-    }
-
-    @Test
-    void isMatchEnded() {
-        //TODO
-    }
-
-    @Test
-    void isMatchEndedWithADraw() {
-        //TODO
-    }
-
-    @Test
-    void isCurrentGameEnded() {
-        //TODO
-    }
-
-    @Test
-    void setMatch() {
-        //TODO
+        mainViewmodel.startNewMatch();
+        try {
+            Match match = (Match) Objects.requireNonNull(TestUtility.getFieldValue("match", mainViewmodel));
+            int expected = match.getNumberOfGames() + 1;
+            mainViewmodel.addAnExtraGameToThisMatch();
+            int actual = match.getNumberOfGames();
+            assertEquals(expected, actual);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            fail(e);
+        }
     }
 
     @Test
