@@ -1,15 +1,15 @@
 package it.units.sdm.gomoku.model.entities;
 
+import it.units.sdm.gomoku.utils.TestUtility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.lang.reflect.Field;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class CellTest {
 
     private final Stone blackStone = new Stone(Stone.Color.BLACK);
+    private final Stone whiteStone = new Stone(Stone.Color.WHITE);
     private Cell cell;
 
     @BeforeEach
@@ -37,14 +37,11 @@ class CellTest {
     @Test
     void getStoneBlack() {
         try {
-            Field stoneField = Cell.class.getDeclaredField("stone");
-            stoneField.setAccessible(true);
-            stoneField.set(cell, blackStone);
+            TestUtility.setFieldValue("stone", blackStone, cell);
+            assertEquals(blackStone, cell.getStone());
         } catch (NoSuchFieldException | IllegalAccessException e) {
             fail(e);
         }
-
-        assertEquals(blackStone, cell.getStone());
     }
 
     @Test
@@ -82,7 +79,7 @@ class CellTest {
 
     @Test
     void testToStringWhite() {
-        cell.setStone(new Stone(Stone.Color.WHITE));
+        cell.setStone(whiteStone);
         assertEquals("O", cell.toString());
     }
 

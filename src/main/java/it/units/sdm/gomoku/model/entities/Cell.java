@@ -42,7 +42,7 @@ public class Cell implements Cloneable {
             return " ";
         } else {
             return switch (Objects.requireNonNull(stone).color()) {
-                case BLACK -> "X"; // Unicode Character “⬤” (U+2B24) Black Large Circle
+                case BLACK -> "X";
                 case WHITE -> "O";
             };
         }

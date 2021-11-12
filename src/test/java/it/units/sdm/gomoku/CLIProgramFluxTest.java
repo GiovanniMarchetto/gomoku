@@ -407,7 +407,7 @@ public class CLIProgramFluxTest {
             interrupter.setName("MoveExecutorInterrupter");
             interrupter.start();
             try {
-                TestUtility.invokeMethodOnObject(finalMainView, "waitForAValidMoveOfAPlayer");
+                TestUtility.invokeMethodOnObject(finalMainView, "waitForAMoveOfAPlayer");
             } catch (NoSuchFieldException | InvocationTargetException | IllegalAccessException e) {
                 fail(e);
             }
