@@ -118,11 +118,16 @@ public class TestUtility {
     }
 
     @NotNull
-    public static Stream<Arguments> provideCoupleOfNonNegativeIntegersTillNExcluded(int N) {
-        return IntStream.range(0, N)
+    public static Stream<Arguments> provideCoupleOfIntegersInRange(int startIncluded, int endExcluded) {
+        return IntStream.range(startIncluded, endExcluded)
                 .unordered().parallel()
                 .boxed()
-                .flatMap(i -> IntStream.range(0, N).mapToObj(j -> Arguments.of(i, j)));
+                .flatMap(i -> IntStream.range(startIncluded, endExcluded).mapToObj(j -> Arguments.of(i, j)));
+    }
+
+    @NotNull
+    public static Stream<Arguments> provideCoupleOfNonNegativeIntegersTillNExcluded(int N) {
+        return provideCoupleOfIntegersInRange(0, N);
     }
 
     @NotNull
