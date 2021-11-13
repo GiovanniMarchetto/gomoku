@@ -34,6 +34,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@Disabled   // TODO: tests to do
 public class CLIProgramFluxTest {
 
     @NotNull
