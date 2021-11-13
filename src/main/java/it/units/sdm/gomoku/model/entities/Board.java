@@ -44,7 +44,7 @@ public class Board implements Observable, Cloneable, Serializable {
         this(new PositiveInteger(size));
     }
 
-    public Board(@NotNull Board board) {
+    public Board(@NotNull final Board board) {
         this.size = new PositiveInteger(board.size);
         this.numberOfFilledPositions = board.numberOfFilledPositions;
         this.matrix = board.getBoardMatrixCopy();
