@@ -378,6 +378,6 @@ public class BoardTest {
     @Test
     void testHashCodeClone() {
         Board copy = new Board(board);
-        assertNotEquals(board.hashCode(), copy.hashCode());
-    }
+        assertEquals(board.hashCode(), copy.hashCode());
+    }   // TODO : add test for hashCode - equals contract in other classes which use hashcode
 }
