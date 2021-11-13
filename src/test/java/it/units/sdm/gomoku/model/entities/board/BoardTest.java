@@ -18,8 +18,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -47,6 +50,11 @@ public class BoardTest {
     @NotNull
     private static Stream<Arguments> provideCoupleOfNonNegativeIntegersOutsideBoard() {
         return TestUtility.provideCoupleOfIntegersInRange(BOARD_SIZE.intValue(), BOARD_SIZE.intValue() + 10);
+    }
+
+    @NotNull
+    private static Stream<Arguments> boardSupplier() {
+        return Stream.of(Arguments.of(TestUtility.createBoardFromCellMatrix(boardMatrixFromCsv, boardMatrixFromCsv.length)));   // TODO : provide more boards
     }
 
     @NotNull
@@ -80,6 +88,78 @@ public class BoardTest {
     @BeforeEach
     void setUp() {
         board = TestUtility.createBoardFromCellMatrix(boardMatrixFromCsv, BOARD_SIZE);
+    }
+
+    private static void chekFieldExistenceOrThrow(@NotNull final String fieldName, @NotNull final Class<?> clazz) throws NoSuchFieldException {
+        TestUtility.getFieldAlreadyMadeAccessible(Objects.requireNonNull(clazz), Objects.requireNonNull(fieldName));
+    }
+
+    private static void copyConstructorCreatesNewObjectWithEqualsButNotSameField(@NotNull final Board boardToCopy,
+                                                                                 @NotNull final String fieldName,
+                                                                                 boolean trueIfDifferentReferenceRequired)
+            throws NoSuchFieldException, IllegalAccessException {
+        Board copy = new Board(boardToCopy);
+        Object fieldValueInInitial = TestUtility.getFieldValue(Objects.requireNonNull(fieldName), boardToCopy);
+        Object fieldValueInCopied = TestUtility.getFieldValue(fieldName, copy);
+        if (trueIfDifferentReferenceRequired) {
+            Class<?> fieldType = TestUtility.getFieldAlreadyMadeAccessible(boardToCopy.getClass(), fieldName).getType();
+            assertEqualityOfFieldsButDifferenceReference(fieldType, fieldValueInInitial, fieldValueInCopied);
+        } else {
+            assertEquals(fieldValueInInitial, fieldValueInCopied);
+        }
+    }
+
+    private static void assertEqualityOfFieldsButDifferenceReference(
+            @NotNull final Class<?> fieldType, final Object fieldValueInInitial, final Object fieldValueInCopied)
+            throws NoSuchFieldException {
+        if (fieldType.isArray()) {
+            int length = Array.getLength(fieldValueInInitial);
+            for (int i = 0; i < length; i++) {
+                Object initialArrayElement = Array.get(fieldValueInInitial, i);
+                Object copiedArrayElement = Array.get(fieldValueInCopied, i);
+                for (Field f : initialArrayElement.getClass().getDeclaredFields()) {
+                    Class<?> innerFieldType = TestUtility.getFieldAlreadyMadeAccessible(f.getClass(), f.getName()).getType();
+                    assertEqualityOfFieldsButDifferenceReference(innerFieldType, initialArrayElement, copiedArrayElement);
+                }
+            }
+        } else {
+            assert Objects.requireNonNull(fieldValueInInitial).equals(fieldValueInCopied);
+            if (!Objects.requireNonNull(fieldType).isPrimitive()) {
+                assertNotSame(fieldValueInInitial, fieldValueInCopied);
+            }
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("boardSupplier")
+    void copyConstructorCreatesNewObject(Board boardToCopy) {
+        assertNotSame(boardToCopy, new Board((boardToCopy)));
+    }
+
+    @ParameterizedTest
+    @MethodSource("boardSupplier")
+    void copyConstructorCreatesObjectOfSameClass(Board boardToCopy) {
+        //noinspection InstantiatingObjectToGetClassObject
+        assertSame(boardToCopy.getClass(), new Board((boardToCopy)).getClass());
+    }
+
+    @ParameterizedTest
+    @MethodSource("boardSupplier")
+    void copyConstructorCreatesObjectEqualsToTheGivenOne(Board boardToCopy) {
+        assertEquals(boardToCopy, new Board(boardToCopy));
+    }
+
+    @ParameterizedTest
+    @MethodSource("boardSupplier")
+    void copyConstructorCreatesDeepCopyOfFields(Board boardToCopy) throws NoSuchFieldException, IllegalAccessException {
+        String[] nameOfFieldsToExcludeFromDeepEquality = new String[]{"lastMoveCoordinatesProperty"};
+        for (String fieldName : nameOfFieldsToExcludeFromDeepEquality) {
+            chekFieldExistenceOrThrow(fieldName, Board.class);
+        }
+        for (Field f : boardToCopy.getClass().getDeclaredFields()) {
+            copyConstructorCreatesNewObjectWithEqualsButNotSameField(
+                    boardToCopy, f.getName(), !Arrays.asList(nameOfFieldsToExcludeFromDeepEquality).contains(f.getName()));
+        }
     }
 
     @Test
@@ -297,8 +377,8 @@ public class BoardTest {
         assertNotEquals(board.hashCode(), (new Board(board.getSize())).hashCode());
     }
 
-    @Test
-    void testHashCodeClone() {
-        assertNotEquals(board.hashCode(), board.clone().hashCode());
-    }
+//    @Test // TODO : merge with newest version
+//    void testHashCodeClone() {
+//        assertNotEquals(board.hashCode(), board.clone().hashCode());
+//    }
 }
