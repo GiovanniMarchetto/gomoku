@@ -13,7 +13,7 @@ public class ObservableProperty<PropertyValueType> implements Observable, Clonea
     private static int numberOfInstances = Integer.MIN_VALUE;
 
     @NotNull
-    private final String propertyName;
+    private String propertyName;
 
     @Nullable
     private volatile PropertyValueType propertyValue;   // TODO : volatile needed? Atomic reference better?
@@ -40,7 +40,8 @@ public class ObservableProperty<PropertyValueType> implements Observable, Clonea
     }
 
     @NotNull
-    public synchronized ObservableProperty<PropertyValueType> setPropertyValueAndFireIfPropertyChange(@Nullable final PropertyValueType propertyNewValue) {   // TODO : synchronized needed?
+    public synchronized ObservableProperty<PropertyValueType> setPropertyValueAndFireIfPropertyChange(
+            @Nullable final PropertyValueType propertyNewValue) {   // TODO : synchronized needed?
         PropertyValueType oldValue = getPropertyValue();
         if (!Objects.equals(oldValue, propertyNewValue)) {
             setPropertyValueWithoutNotifying(propertyNewValue);
@@ -53,8 +54,23 @@ public class ObservableProperty<PropertyValueType> implements Observable, Clonea
     @Override
     public ObservableProperty<PropertyValueType> clone() {
         ObservableProperty<PropertyValueType> clone = new ObservableProperty<>();
+        clone.propertyName = this.propertyName;
         clone.setPropertyValueWithoutNotifying(getPropertyValue()/*TODO : .clone() but PropertyValueType should implement cloneable interface (use copy-ctor)*/);
         return clone;
+    }
+
+    @Override
+    public boolean equals(Object o) {   //  todo: test
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ObservableProperty<?> that = (ObservableProperty<?>) o;
+        return Objects.equals(propertyName, that.propertyName)
+                && Objects.equals(propertyValue, that.propertyValue);
+    }
+
+    @Override
+    public int hashCode() {   // TODO : test
+        return propertyName.hashCode();
     }
 
     public boolean valueEquals(@NotNull final ObservableProperty<PropertyValueType> otherProperty) {

@@ -67,7 +67,7 @@ class ObservablePropertyTest {
     @Test
     void testClonePropertyName() {
         ObservableProperty<String> observableClone = observable.clone();
-        assertNotEquals(observable.getPropertyName(), observableClone.getPropertyName());
+        assertEquals(observable.getPropertyName(), observableClone.getPropertyName());
     }
 
     @Test
