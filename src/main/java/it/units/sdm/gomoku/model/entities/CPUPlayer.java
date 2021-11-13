@@ -38,29 +38,6 @@ public class CPUPlayer extends Player {
         super(CPU_DEFAULT_NAME + numberOfCpuPlayers.incrementAndGet());
     }
 
-    private static boolean isHeadOfAChainOfStones(Board board, Coordinates headCoordinates,
-                                                  PositiveInteger numberOfConsecutive) {
-        return IntStream.rangeClosed(-1, 1).mapToObj(xDirection ->
-                IntStream.rangeClosed(-1, 1).mapToObj(yDirection ->
-                        IntStream.rangeClosed(1, numberOfConsecutive.intValue())
-                                .mapToObj(i -> new Pair<>(
-                                        headCoordinates.getX() + i * xDirection,
-                                        headCoordinates.getY() + i * yDirection))
-                                .filter(pair -> pair.getKey() >= 0 && pair.getValue() >= 0)
-                                .map(validPair -> new Coordinates(validPair.getKey(), validPair.getValue()))
-                                .filter(board::isCoordinatesInsideBoard)
-                                .map(board::getCellAtCoordinatesOrNullIfInvalid)
-                                .filter(Objects::nonNull)
-                                .filter(cell -> !cell.isEmpty())
-                                .map(Cell::getStone)
-                                .collect(Collectors.groupingBy(Stone::color, Collectors.counting()))
-                                .values()
-                                .stream()
-                                .anyMatch(counter -> counter == numberOfConsecutive.intValue())
-                ).anyMatch(find -> find)
-        ).anyMatch(find -> find);
-    }
-
     @Override
     public void makeMove(@NotNull final Game currentGame) {
         Utility.runOnSeparateThread(() -> {
@@ -101,6 +78,29 @@ public class CPUPlayer extends Player {
         return chooseNextEmptyCoordinatesFromCenter(board);
     }
 
+    private static boolean isHeadOfAChainOfStones(Board board, Coordinates headCoordinates,
+                                                  PositiveInteger numberOfConsecutive) {
+        return IntStream.rangeClosed(-1, 1).mapToObj(xDirection ->
+                IntStream.rangeClosed(-1, 1).mapToObj(yDirection ->
+                        IntStream.rangeClosed(1, numberOfConsecutive.intValue())
+                                .mapToObj(i -> new Pair<>(
+                                        headCoordinates.getX() + i * xDirection,
+                                        headCoordinates.getY() + i * yDirection))
+                                .filter(pair -> pair.getKey() >= 0 && pair.getValue() >= 0)
+                                .map(validPair -> new Coordinates(validPair.getKey(), validPair.getValue()))
+                                .filter(board::isCoordinatesInsideBoard)
+                                .map(board::getCellAtCoordinatesOrNullIfInvalid)
+                                .filter(Objects::nonNull)
+                                .filter(cell -> !cell.isEmpty())
+                                .map(Cell::getStone)
+                                .collect(Collectors.groupingBy(Stone::color, Collectors.counting()))
+                                .values()
+                                .stream()
+                                .anyMatch(counter -> counter == numberOfConsecutive.intValue())
+                ).anyMatch(find -> find)
+        ).anyMatch(find -> find);
+    }
+
     @NotNull
     public Coordinates chooseNextEmptyCoordinates(@NotNull Board board) throws BoardIsFullException {
         if (board.isThereAnyEmptyCell()) {
@@ -129,7 +129,7 @@ public class CPUPlayer extends Player {
             List<Coordinates> emptyCoordinates = getStreamOfEmptyCoordinates(board).toList();
             return emptyCoordinates.get(rand.nextInt(emptyCoordinates.size()));
         }
-        return chooseNextEmptyCoordinates(board);
+        throw new BoardIsFullException();
     }
 
     private double getWeightRespectToCenter(double center, Coordinates coordinates) {

@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 import static it.units.sdm.gomoku.model.custom_types.NonNegativeInteger.NonNegativeIntegerType;
 import static it.units.sdm.gomoku.model.custom_types.PositiveInteger.PositiveIntegerType;
 
-public class Board implements Observable, Cloneable, Serializable {
+public class Board implements Observable, Serializable {
 
     private int numberOfFilledPositions;
     @NotNull
@@ -216,12 +216,6 @@ public class Board implements Observable, Cloneable, Serializable {
                         .collect(Collectors.joining());
     }
 
-    @SuppressWarnings("MethodDoesntCallSuperMethod")
-    @Override
-    public Board clone() {
-        return new Board(this);
-    }
-
     @NotNull
     private Cell[][] getBoardMatrixCopy() {
         return Arrays.stream(matrix).sequential()
@@ -235,8 +229,8 @@ public class Board implements Observable, Cloneable, Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         Board otherBoard = (Board) o;
         return size.equals(otherBoard.size)
-                && lastMoveCoordinatesProperty.valueEquals(otherBoard.lastMoveCoordinatesProperty)
                 && numberOfFilledPositions == otherBoard.numberOfFilledPositions
+                && lastMoveCoordinatesProperty.valueEquals(otherBoard.lastMoveCoordinatesProperty)
                 && Arrays.deepEquals(matrix, otherBoard.matrix);
     }
 

@@ -12,6 +12,7 @@ import it.units.sdm.gomoku.property_change_handlers.ObservableProperty;
 import it.units.sdm.gomoku.utils.TestUtility;
 import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -38,8 +39,8 @@ public class BoardTest {
 
     //region Support Methods
     @NotNull
-    private static Stream<Arguments> provideCoupleOfIntegersBetweenMinus10IncludedAndPlus50Excluded() {
-        return TestUtility.provideCoupleOfIntegersInRange(-10, 50);
+    private static Stream<Arguments> provideCoupleOfIntegersBetweenMinus5IncludedAndPlus5ToBoardSizeExcluded() {
+        return TestUtility.provideCoupleOfIntegersInRange(-5, BOARD_SIZE.intValue() + 5);
     }
 
     @NotNull
@@ -58,18 +59,29 @@ public class BoardTest {
     }
 
     @NotNull
-    private Coordinates tryToOccupyNextEmptyCellAndReturnCoordinates() {
+    public static void tryToOccupyCoordinatesWithColor(Board board, Stone.Color color, int x, int y) {
+        try {
+            board.occupyPosition(color, new Coordinates(x, y));
+        } catch (Board.CellAlreadyOccupiedException | Board.BoardIsFullException | Board.CellOutOfBoardException e) {
+            fail(e);
+        }
+    }
+
+    @Nullable
+    private Coordinates tryToOccupyNextEmptyCellAndReturnCoordinatesWithBlackStone() {
         try {
             CPUPlayer cpuPlayer = new CPUPlayer();
-            Coordinates coordToOccupy = cpuPlayer.chooseNextEmptyCoordinates(board);
-            board.occupyPosition(Stone.Color.BLACK, coordToOccupy);
-            return coordToOccupy;
-        } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Board.CellOutOfBoardException e) {
+            Coordinates coordinatesToOccupy = cpuPlayer.chooseNextEmptyCoordinates(board);
+            tryToOccupyCoordinatesWithColor(board, Stone.Color.BLACK,
+                    coordinatesToOccupy.getX(), coordinatesToOccupy.getY());
+            return coordinatesToOccupy;
+        } catch (Board.BoardIsFullException e) {
             fail(e);
             return null;
         }
     }
 
+    @NotNull
     private Pair<Cell[][], Cell[][]> getInitialAndCopiedBoardMatrixWithMethodProvidedByTheClass()
             throws NoSuchFieldException, IllegalAccessException, InvocationTargetException {
         Method getBoardMatrixCopyMethod = TestUtility.getMethodAlreadyMadeAccessible(board.getClass(), "getBoardMatrixCopy");
@@ -79,9 +91,13 @@ public class BoardTest {
         return new Pair<>(toBeCopiedMatrix, copiedMatrix);
     }
 
-    private boolean wasCellEmptyAndIsNowOccupiedWithCorrectColor(Cell cell, Coordinates coordinates, Stone.Color stoneColor) throws Board.CellOutOfBoardException {
-        return cell.isEmpty() && Objects.equals(stoneColor,
-                Objects.requireNonNull(board.getCellAtCoordinates(coordinates).getStone()).color());
+    @NotNull
+    private Board setupForTestEquals() {
+        board = new Board(BOARD_SIZE);
+        Board board2 = new Board(board);
+        tryToOccupyCoordinatesWithColor(board, Stone.Color.BLACK, 0, 0);
+        tryToOccupyCoordinatesWithColor(board2, Stone.Color.WHITE, 0, 0);
+        return board2;
     }
     //endregion Support Methods
 
@@ -182,7 +198,7 @@ public class BoardTest {
     void checkNumberOfFilledPositionAfterAddAStone() {
         try {
             int expected = ((int) TestUtility.getFieldValue("numberOfFilledPositions", board)) + 1;
-            tryToOccupyNextEmptyCellAndReturnCoordinates();
+            tryToOccupyNextEmptyCellAndReturnCoordinatesWithBlackStone();
             int actual = ((int) TestUtility.getFieldValue("numberOfFilledPositions", board));
             assertEquals(expected, actual);
         } catch (NoSuchFieldException | IllegalAccessException e) {
@@ -204,7 +220,7 @@ public class BoardTest {
 
     @Test
     void setLastMoveCoordinatesProperty() {
-        Coordinates expected = tryToOccupyNextEmptyCellAndReturnCoordinates();
+        Coordinates expected = tryToOccupyNextEmptyCellAndReturnCoordinatesWithBlackStone();
         assertEquals(expected, board.getLastMoveCoordinatesProperty().getPropertyValue());
     }
 
@@ -220,7 +236,7 @@ public class BoardTest {
         int totalCell = (int) Math.pow(BOARD_SIZE.intValue(), 2);
         IntStream.range(0, totalCell - 1)
                 .forEach(i -> {
-                    tryToOccupyNextEmptyCellAndReturnCoordinates();
+                    tryToOccupyNextEmptyCellAndReturnCoordinatesWithBlackStone();
                     assertTrue(board.isThereAnyEmptyCell());
                 });
     }
@@ -230,7 +246,7 @@ public class BoardTest {
         board = new Board(BOARD_SIZE);
         int totalCell = (int) Math.pow(BOARD_SIZE.intValue(), 2);
         IntStream.range(0, totalCell)
-                .forEach(i -> tryToOccupyNextEmptyCellAndReturnCoordinates());
+                .forEach(i -> tryToOccupyNextEmptyCellAndReturnCoordinatesWithBlackStone());
         assertFalse(board.isThereAnyEmptyCell());
     }
 
@@ -279,21 +295,22 @@ public class BoardTest {
     }
 
     @ParameterizedTest
-    @MethodSource("provideCoupleOfIntegersBetweenMinus10IncludedAndPlus50Excluded")
+    @MethodSource("provideCoupleOfIntegersBetweenMinus5IncludedAndPlus5ToBoardSizeExcluded")
     void occupyPosition(int x, int y) {
         try {
             Coordinates coordinates = new Coordinates(x, y);
             try {
                 Stone.Color stoneColor = Stone.Color.BLACK;
                 board.occupyPosition(stoneColor, coordinates);
-                assertTrue(wasCellEmptyAndIsNowOccupiedWithCorrectColor(boardMatrixFromCsv[x][y], coordinates, stoneColor));
+                Cell cell = board.getCellAtCoordinates(coordinates);
+                //noinspection ConstantConditions //check before
+                assertTrue(boardMatrixFromCsv[x][y].isEmpty()
+                        && !cell.isEmpty()
+                        && stoneColor == cell.getStone().color());
             } catch (Board.BoardIsFullException e) {
-                Coordinates firstCoordinateAfterFillBoard = new Coordinates(18, 17);
-                assertEquals(firstCoordinateAfterFillBoard, coordinates);
+                assertFalse(board.isThereAnyEmptyCell());
             } catch (Board.CellAlreadyOccupiedException e) {
-                if (boardMatrixFromCsv[x][y].isEmpty()) {
-                    fail("The cell was empty");
-                }
+                assertFalse(boardMatrixFromCsv[x][y].isEmpty());
             } catch (Board.CellOutOfBoardException e) {
                 assertFalse(board.isCoordinatesInsideBoard(coordinates));
             }
@@ -319,7 +336,7 @@ public class BoardTest {
 
     @Test
     void testEqualsNewBoard() {
-        assertEquals(board, board.clone());
+        assertEquals(board, new Board(board));
     }
 
     @Test
@@ -328,43 +345,24 @@ public class BoardTest {
     }
 
     @Test
-    void testEqualsWithDifferentLastMoveCoordinatesProperty() {
-        board = new Board(BOARD_SIZE);
-        Board expectedBoard = board.clone();
-        try {
-            board.occupyPosition(Stone.Color.BLACK, new Coordinates(0, 0));
-            expectedBoard.occupyPosition(Stone.Color.WHITE, new Coordinates(0, 1));
-        } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Board.CellOutOfBoardException e) {
-            fail(e);
-        }
-        assertNotEquals(expectedBoard, board);
+    void testEqualsWithDifferentNumberOfFilledPosition() {
+        Board board2 = setupForTestEquals();
+        tryToOccupyCoordinatesWithColor(board, Stone.Color.BLACK, 0, 1);
+        assertNotEquals(board2, board);
     }
 
     @Test
-    void testEqualsWithDifferentNumberOfFilledPosition() {
-        board = new Board(BOARD_SIZE);
-        Board expectedBoard = board.clone();
-        try {
-            board.occupyPosition(Stone.Color.BLACK, new Coordinates(0, 0));
-            board.occupyPosition(Stone.Color.WHITE, new Coordinates(0, 1));
-            expectedBoard.occupyPosition(Stone.Color.WHITE, new Coordinates(0, 1));
-        } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Board.CellOutOfBoardException e) {
-            fail(e);
-        }
-        assertNotEquals(expectedBoard, board);
+    void testEqualsWithDifferentLastMoveCoordinatesProperty() {
+        Board board2 = setupForTestEquals();
+        tryToOccupyCoordinatesWithColor(board, Stone.Color.BLACK, 0, 1);
+        tryToOccupyCoordinatesWithColor(board2, Stone.Color.WHITE, 0, 2);
+        assertNotEquals(board2, board);
     }
 
     @Test
     void testEqualsWithDifferentMatrix() {
-        board = new Board(BOARD_SIZE);
-        Board expectedBoard = board.clone();
-        try {
-            board.occupyPosition(Stone.Color.BLACK, new Coordinates(0, 0));
-            expectedBoard.occupyPosition(Stone.Color.WHITE, new Coordinates(0, 0));
-        } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Board.CellOutOfBoardException e) {
-            fail(e);
-        }
-        assertNotEquals(expectedBoard, board);
+        Board board2 = setupForTestEquals();
+        assertNotEquals(board2, board);
     }
 
     @Test
@@ -377,8 +375,9 @@ public class BoardTest {
         assertNotEquals(board.hashCode(), (new Board(board.getSize())).hashCode());
     }
 
-//    @Test // TODO : merge with newest version
-//    void testHashCodeClone() {
-//        assertNotEquals(board.hashCode(), board.clone().hashCode());
-//    }
+    @Test
+    void testHashCodeClone() {
+        Board copy = new Board(board);
+        assertNotEquals(board.hashCode(), copy.hashCode());
+    }
 }
