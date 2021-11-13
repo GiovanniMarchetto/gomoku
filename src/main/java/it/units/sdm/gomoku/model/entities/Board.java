@@ -241,8 +241,7 @@ public class Board implements Observable, Cloneable, Serializable {
     }
 
     @Override
-    public int hashCode() { // TODO : check if creates problems with hashmaps (hashCode method should be present according to equals() contract)
-        // TODO to be tested
+    public int hashCode() {
         int result = size.hashCode();
         result = 31 * result + numberOfFilledPositions;
         result = 31 * result + Arrays.deepHashCode(matrix);
