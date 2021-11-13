@@ -191,15 +191,22 @@ public class BoardTest {
 
     @ParameterizedTest
     @MethodSource("provideCoupleOfNonNegativeIntegersInsideBoard")
-    void getBoardMatrixCopy(int x, int y) {
+    Cell[][] getBoardMatrixCopyTestACellToBeEqual(int x, int y) {
+        Cell[][] matrixCopy = null;
         try {
-            Method getBoardMatrixCopyMethod = Board.class.getDeclaredMethod("getBoardMatrixCopy");
-            getBoardMatrixCopyMethod.setAccessible(true);
-            Cell[][] matrixCopy = (Cell[][]) getBoardMatrixCopyMethod.invoke(board);
+            Method getBoardMatrixCopyMethod = TestUtility.getMethodAlreadyMadeAccessible(board.getClass(), "getBoardMatrixCopy");
+            matrixCopy = (Cell[][]) getBoardMatrixCopyMethod.invoke(board);
             assertEquals(boardMatrixFromCsv[x][y], matrixCopy[x][y]);
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+        } catch (InvocationTargetException | IllegalAccessException | NoSuchFieldException e) {
             fail(e);
         }
+        return matrixCopy;
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideCoupleOfNonNegativeIntegersInsideBoard")
+    void getBoardMatrixCopyTestToBeDeepCopy(int x, int y) {
+        assertNotSame(getBoardMatrixCopyTestACellToBeEqual(x, y)[x][y], boardMatrixFromCsv[x][y]);
     }
 
 
