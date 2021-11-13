@@ -20,7 +20,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Objects;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -36,7 +35,7 @@ public class BoardTest {
     //region Support Methods
     @NotNull
     private static Stream<Arguments> provideCoupleOfIntegersBetweenMinus10IncludedAndPlus50Excluded() {
-        return TestUtility.provideCoupleOfIntegersInRange(-10, 50);
+        return TestUtility.provideCoupleOfIntegersInRange(-10, 30);
     }
 
     @NotNull
@@ -77,11 +76,6 @@ public class BoardTest {
         Cell[][] copiedMatrix = (Cell[][]) getBoardMatrixCopyMethod.invoke(board);
         assert toBeCopiedMatrix != null;
         return new Pair<>(toBeCopiedMatrix, copiedMatrix);
-    }
-
-    private boolean wasCellEmptyAndIsNowOccupiedWithCorrectColor(Cell cell, Coordinates coordinates, Stone.Color stoneColor) throws Board.CellOutOfBoardException {
-        return cell.isEmpty() && Objects.equals(stoneColor,
-                Objects.requireNonNull(board.getCellAtCoordinates(coordinates).getStone()).color());
     }
 
     @NotNull
@@ -223,14 +217,15 @@ public class BoardTest {
             try {
                 Stone.Color stoneColor = Stone.Color.BLACK;
                 board.occupyPosition(stoneColor, coordinates);
-                assertTrue(wasCellEmptyAndIsNowOccupiedWithCorrectColor(boardMatrixFromCsv[x][y], coordinates, stoneColor));
+                Cell cell = board.getCellAtCoordinates(coordinates);
+                //noinspection ConstantConditions //check before
+                assertTrue(boardMatrixFromCsv[x][y].isEmpty()
+                        && !cell.isEmpty()
+                        && stoneColor == cell.getStone().color());
             } catch (Board.BoardIsFullException e) {
-                Coordinates firstCoordinateAfterFillBoard = new Coordinates(18, 17);
-                assertEquals(firstCoordinateAfterFillBoard, coordinates);
+                assertFalse(board.isThereAnyEmptyCell());
             } catch (Board.CellAlreadyOccupiedException e) {
-                if (boardMatrixFromCsv[x][y].isEmpty()) {
-                    fail("The cell was empty");
-                }
+                assertFalse(boardMatrixFromCsv[x][y].isEmpty());
             } catch (Board.CellOutOfBoardException e) {
                 assertFalse(board.isCoordinatesInsideBoard(coordinates));
             }
