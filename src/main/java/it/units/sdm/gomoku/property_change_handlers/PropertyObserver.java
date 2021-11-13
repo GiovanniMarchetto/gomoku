@@ -24,7 +24,7 @@ public class PropertyObserver<ObservedPropertyValueType> implements Observer {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        lastObservedEvt = evt;
+        lastObservedEvt = evt;  // TODO : is evt.name IN-dependent?
         actionOnPropertyChange.accept(evt);
     }
 }
