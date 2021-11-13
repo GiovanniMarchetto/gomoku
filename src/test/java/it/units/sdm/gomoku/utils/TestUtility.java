@@ -220,12 +220,12 @@ public class TestUtility {
     @NotNull
     public static Method getMethodAlreadyMadeAccessible(@NotNull final Class<?> clazz,
                                                         @NotNull final String methodName,
-                                                        @NotNull Class<?>[] parameterTypes)  // TODO : test
+                                                        @Nullable Class<?>... methodParameterTypes)  // TODO : test
             throws NoSuchFieldException {   // TODO : use this method wherever needed
         return (Method) getMemberAlreadyMadeAccessible(
                 Objects.requireNonNull(clazz),
                 Objects.requireNonNull(methodName),
-                Objects.requireNonNull(parameterTypes));
+                methodParameterTypes);
     }
 
     @NotNull
