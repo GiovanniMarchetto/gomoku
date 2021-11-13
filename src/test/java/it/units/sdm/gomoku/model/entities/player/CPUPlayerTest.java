@@ -12,31 +12,27 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import static it.units.sdm.gomoku.model.entities.Board.BoardIsFullException;
-import static it.units.sdm.gomoku.model.entities.Board.CellAlreadyOccupiedException;
+import static it.units.sdm.gomoku.model.entities.board.BoardTest.tryToOccupyCoordinatesWithColor;
 import static org.junit.jupiter.api.Assertions.*;
 
-class CPUPlayerTest {
+public class CPUPlayerTest {
 
     public static final int NUMBER_OF_REPETITION = 10;
     private static final PositiveInteger BOARD_SIZE_5 = new PositiveInteger(5);
     private static final PositiveInteger BOARD_SIZE_4 = new PositiveInteger(4);
     private static Board board = null;
-    private static Stone.Color cpuStoneColor = Stone.Color.BLACK;
+    private static final Stone.Color cpuStoneColor = Stone.Color.BLACK;
     private final CPUPlayer cpuPlayer = new CPUPlayer("cpuPlayer");
 
-    private static void tryToOccupyCoordinatesChosen(int x, int y) {
-        try {
-            board.occupyPosition(cpuStoneColor, new Coordinates(x, y));
-            cpuStoneColor = cpuStoneColor == Stone.Color.BLACK ? Stone.Color.BLACK : Stone.Color.WHITE;
-        } catch (CellAlreadyOccupiedException | BoardIsFullException | Board.CellOutOfBoardException e) {
-            fail(e);
-        }
+    @BeforeAll
+    static void resetBoard() {
+        board = new Board(BOARD_SIZE_5);
     }
 
     private void checkAndOccupyCell(int x, int y, Coordinates actual) {
         Coordinates expected = new Coordinates(x, y);
         assertEquals(expected, actual);
-        tryToOccupyCoordinatesChosen(x,y);
+        tryToOccupyCoordinatesWithColor(board, cpuStoneColor, x, y);
     }
 
     private void checkFromCenterAndOccupyCell(int x, int y) {
@@ -47,17 +43,12 @@ class CPUPlayerTest {
         }
     }
 
-    @BeforeAll
-    static void resetBoard() {
-        board = new Board(BOARD_SIZE_5);
-    }
-
     @RepeatedTest(NUMBER_OF_REPETITION)
     void checkRandomChosenCoordinatesReferToEmptyCell() throws Board.CellOutOfBoardException {
         try {
             Coordinates actual = cpuPlayer.chooseRandomEmptyCoordinates(board);
             assertTrue(board.getCellAtCoordinates(actual).isEmpty());
-            tryToOccupyCoordinatesChosen(actual.getX(), actual.getY());
+            tryToOccupyCoordinatesWithColor(board, cpuStoneColor, actual.getX(), actual.getY());
         } catch (BoardIsFullException e) {
             if (board.isThereAnyEmptyCell()) {
                 fail(e);
@@ -119,9 +110,9 @@ class CPUPlayerTest {
         @BeforeAll
         static void occupyThreeCells() {
             resetBoard();
-            tryToOccupyCoordinatesChosen(0,1);
-            tryToOccupyCoordinatesChosen(0,3);
-            tryToOccupyCoordinatesChosen(1,2);
+            tryToOccupyCoordinatesWithColor(board, cpuStoneColor, 0, 1);
+            tryToOccupyCoordinatesWithColor(board, cpuStoneColor, 0, 3);
+            tryToOccupyCoordinatesWithColor(board, cpuStoneColor, 1, 2);
         }
 
         @ParameterizedTest
