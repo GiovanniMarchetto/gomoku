@@ -53,7 +53,7 @@ public class ObservableProperty<PropertyValueType> implements Observable, Clonea
     @Override
     public ObservableProperty<PropertyValueType> clone() {
         ObservableProperty<PropertyValueType> clone = new ObservableProperty<>();
-        clone.setPropertyValueWithoutNotifying(getPropertyValue()/*TODO : .clone() but PropertyValueType should implement cloneable interface*/);
+        clone.setPropertyValueWithoutNotifying(getPropertyValue()/*TODO : .clone() but PropertyValueType should implement cloneable interface (use copy-ctor)*/);
         return clone;
     }
 

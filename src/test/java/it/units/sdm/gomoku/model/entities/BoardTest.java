@@ -4,7 +4,6 @@ import it.units.sdm.gomoku.EnvVariables;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
-import it.units.sdm.gomoku.property_change_handlers.ObservableProperty;
 import it.units.sdm.gomoku.utils.TestUtility;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
@@ -93,55 +92,57 @@ public class BoardTest {
         assertEquals(BOARD_SIZE.intValue(), board.getSize());
     }
 
-    @Test
-    void getCoordinatesHistory() {
-        try {
-            @SuppressWarnings("unchecked")
-            List<Coordinates> expected = (List<Coordinates>)
-                    TestUtility.getFieldValue("coordinatesHistory", board);
-            assertEquals(expected, board.getCoordinatesHistory());
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            fail(e);
-        }
-    }
-
-    @Test
-    void getCoordinatesHistoryWithNewStoneOnTheBoard() {
-        try {
-            @SuppressWarnings("unchecked")
-            List<Coordinates> expected = (List<Coordinates>)
-                    TestUtility.getFieldValue("coordinatesHistory", board);
-            Objects.requireNonNull(expected).add(tryToOccupyNextEmptyCellAndReturnCoordinates());
-            assertEquals(expected, board.getCoordinatesHistory());
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            fail(e);
-        }
-    }
-
-
-    @Test
-    void getLastMoveCoordinatesProperty() {
-        try {
-            @SuppressWarnings("unchecked")
-            ObservableProperty<Coordinates> expected = (ObservableProperty<Coordinates>)
-                    TestUtility.getFieldValue("lastMoveCoordinatesProperty", board);
-            assertEquals(expected, board.getLastMoveCoordinatesProperty());
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            fail(e);
-        }
-    }
-
-    @Test
-    void setLastMoveCoordinatesProperty() {
-        Coordinates expected = tryToOccupyNextEmptyCellAndReturnCoordinates();
-        assertEquals(expected, board.getLastMoveCoordinatesProperty().getPropertyValue());
-    }
-
-    @Test
-    void isLastMoveCoordinatesPropertyValueEqualsAtLastCoordinateInHistory() {
-        List<Coordinates> coordinatesHistory = board.getCoordinatesHistory();
-        assertEquals(coordinatesHistory.get(coordinatesHistory.size() - 1), board.getLastMoveCoordinatesProperty().getPropertyValue());
-    }
+// TODO: redo tests after removing coordinatesHistory from class Board
+//
+//    @Test
+//    void getCoordinatesHistory() {
+//        try {
+//            @SuppressWarnings("unchecked")
+//            List<Coordinates> expected = (List<Coordinates>)
+//                    TestUtility.getFieldValue("coordinatesHistory", board);
+//            assertEquals(expected, board.getCoordinatesHistory());
+//        } catch (NoSuchFieldException | IllegalAccessException e) {
+//            fail(e);
+//        }
+//    }
+//
+//    @Test
+//    void getCoordinatesHistoryWithNewStoneOnTheBoard() {
+//        try {
+//            @SuppressWarnings("unchecked")
+//            List<Coordinates> expected = (List<Coordinates>)
+//                    TestUtility.getFieldValue("coordinatesHistory", board);
+//            Objects.requireNonNull(expected).add(tryToOccupyNextEmptyCellAndReturnCoordinates());
+//            assertEquals(expected, board.getCoordinatesHistory());
+//        } catch (NoSuchFieldException | IllegalAccessException e) {
+//            fail(e);
+//        }
+//    }
+//
+//
+//    @Test
+//    void getLastMoveCoordinatesProperty() {
+//        try {
+//            @SuppressWarnings("unchecked")
+//            ObservableProperty<Coordinates> expected = (ObservableProperty<Coordinates>)
+//                    TestUtility.getFieldValue("lastMoveCoordinatesProperty", board);
+//            assertEquals(expected, board.getLastMoveCoordinatesProperty());
+//        } catch (NoSuchFieldException | IllegalAccessException e) {
+//            fail(e);
+//        }
+//    }
+//
+//    @Test
+//    void setLastMoveCoordinatesProperty() {
+//        Coordinates expected = tryToOccupyNextEmptyCellAndReturnCoordinates();
+//        assertEquals(expected, board.getLastMoveCoordinatesProperty().getPropertyValue());
+//    }
+//
+//    @Test
+//    void isLastMoveCoordinatesPropertyValueEqualsAtLastCoordinateInHistory() {
+//        List<Coordinates> coordinatesHistory = board.getCoordinatesHistory();
+//        assertEquals(coordinatesHistory.get(coordinatesHistory.size() - 1), board.getLastMoveCoordinatesProperty().getPropertyValue());
+//    }
 
     @Test
     void isEmpty() {

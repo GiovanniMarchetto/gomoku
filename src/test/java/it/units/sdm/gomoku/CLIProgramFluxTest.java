@@ -29,6 +29,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -39,7 +40,7 @@ public class CLIProgramFluxTest {
     private static final Supplier<CLISceneController> cliSceneControllerInstanceGetter = () -> {
         try {
             return (CLISceneController) TestUtility
-                    .getMethodAlreadyMadeAccessible(CLISceneController.class, "getInstance", new Class[0])
+                    .getMethodAlreadyMadeAccessible(CLISceneController.class, "getInstance")
                     .invoke(null);
         } catch (IllegalAccessException | InvocationTargetException | NoSuchFieldException e) {
             fail(e);
@@ -118,13 +119,13 @@ public class CLIProgramFluxTest {
     void launchApplicationAndCheckSceneControllerInstantiation() {
         try {
             try {
-                TestUtility.getMethodAlreadyMadeAccessible(CLIMain.class, "launch", new Class[0])
+                TestUtility.getMethodAlreadyMadeAccessible(CLIMain.class, "launch")
                         .invoke(null);
             } catch (InvocationTargetException noInputLinesButDontCare) {
                 // TODO : rethink about this (Scanner throws exception because "No line found" and launch method is interrupted before selecting the right view)
             }
             assertTrue((boolean) TestUtility
-                    .getMethodAlreadyMadeAccessible(CLISceneController.class, "wasAlreadyInstantiated", new Class[0])
+                    .getMethodAlreadyMadeAccessible(CLISceneController.class, "wasAlreadyInstantiated")
                     .invoke(null));
         } catch (Exception e) {
             fail(e);
@@ -227,10 +228,7 @@ public class CLIProgramFluxTest {
                     propertiesValuesThatShouldBeObserved =
                             new Object[]{Game.Status.STARTED, match.getCurrentBlackPlayer(), coordinatesRequiredToContinue};
                 } else if (player2IsHuman) {
-                    final int numberOfMoveDoneUntilHere = 1;
-                    assert Objects.requireNonNull(boardOfFirstGame)
-                            .getCoordinatesHistory().size() == numberOfMoveDoneUntilHere;
-                    Coordinates lastMove = this.boardOfFirstGame.getCoordinatesHistory().get(this.boardOfFirstGame.getSize() - 1);
+                    Coordinates lastMove = assertNumberOfMovesDoneUntilHereAndGetCoordinatesOfLastMoveOrThrow(1);
                     propertiesValuesThatShouldBeObserved =
                             new Object[]{Game.Status.STARTED, coordinatesRequiredToContinue, lastMove, match.getCurrentWhitePlayer()};
                 } else {
@@ -255,10 +253,25 @@ public class CLIProgramFluxTest {
                                         }))
                                 .count());
 
-            } catch (NoSuchFieldException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            } catch (NoSuchFieldException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | NoSuchElementException e) {
                 fail(e);
             }
         }
+    }
+
+    private Coordinates assertNumberOfMovesDoneUntilHereAndGetCoordinatesOfLastMoveOrThrow(
+            int expectedNumberOfMovesUntilHere) throws NoSuchElementException, NoSuchFieldException, IllegalAccessException {
+        assert boardOfFirstGame != null;
+        @SuppressWarnings("ConstantConditions") // field declared as int
+        int numberOfFilledPositionOnTheBoard = (int) TestUtility.getFieldValue("numberOfFilledPositions", boardOfFirstGame);
+        assert numberOfFilledPositionOnTheBoard == expectedNumberOfMovesUntilHere;
+        return IntStream.range(0, boardOfFirstGame.getSize())
+                .unordered().parallel().boxed()
+                .flatMap(i -> IntStream.range(0, boardOfFirstGame.getSize())
+                        .mapToObj(j -> new Coordinates(i, j))
+                        .filter(coord -> boardOfFirstGame.getCellAtCoordinatesOrNullIfInvalid(coord) != null))
+                .findAny()
+                .orElseThrow(() -> new NoSuchElementException("Last move not found"));
     }
 
     @ParameterizedTest
@@ -277,10 +290,7 @@ public class CLIProgramFluxTest {
                     propertiesValuesThatShouldBeObserved =
                             new Object[]{Game.Status.STARTED, mainViewmodel.getCurrentBlackPlayer(), userMustPlaceStone};
                 } else if (player2IsHuman) {
-                    final int numberOfMoveDoneUntilHere = 1;
-                    assert Objects.requireNonNull(boardOfFirstGame)
-                            .getCoordinatesHistory().size() == numberOfMoveDoneUntilHere;
-                    Coordinates lastMove = this.boardOfFirstGame.getCoordinatesHistory().get(this.boardOfFirstGame.getSize() - 1);
+                    Coordinates lastMove = assertNumberOfMovesDoneUntilHereAndGetCoordinatesOfLastMoveOrThrow(1);
                     propertiesValuesThatShouldBeObserved =
                             new Object[]{Game.Status.STARTED, userMustPlaceStone, lastMove, mainViewmodel.getCurrentWhitePlayer()};
                 } else {

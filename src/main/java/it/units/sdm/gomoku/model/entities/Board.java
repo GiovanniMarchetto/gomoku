@@ -18,14 +18,14 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static it.units.sdm.gomoku.model.custom_types.NonNegativeInteger.NonNegativeIntegerType;
 import static it.units.sdm.gomoku.model.custom_types.PositiveInteger.PositiveIntegerType;
 
 public class Board implements Observable, Cloneable, Serializable {
 
+    private int numberOfFilledPositions;
     @NotNull
     private final PositiveInteger size;
-    @NotNull
-    private final List<Coordinates> coordinatesHistory;
     @NotNull
     private final Cell[][] matrix;
     @NotNull
@@ -33,7 +33,7 @@ public class Board implements Observable, Cloneable, Serializable {
 
     public Board(@NotNull PositiveInteger size) {
         this.size = size;
-        this.coordinatesHistory = new ArrayList<>(size.intValue());
+        this.numberOfFilledPositions = 0;
         this.matrix = IntStream.range(0, size.intValue())
                 .mapToObj(i -> IntStream.range(0, size.intValue()).mapToObj(j -> new Cell()).toArray(Cell[]::new))
                 .toArray(Cell[][]::new);
@@ -46,7 +46,7 @@ public class Board implements Observable, Cloneable, Serializable {
 
     public Board(@NotNull Board board) {
         this.size = new PositiveInteger(board.size);
-        this.coordinatesHistory = new ArrayList<>(board.coordinatesHistory);
+        this.numberOfFilledPositions = board.numberOfFilledPositions;
         this.matrix = board.getBoardMatrixCopy();
         this.lastMoveCoordinatesProperty = board.lastMoveCoordinatesProperty.clone();
     }
@@ -57,32 +57,27 @@ public class Board implements Observable, Cloneable, Serializable {
     }
 
     @NotNull
-    public List<Coordinates> getCoordinatesHistory() {
-        return coordinatesHistory;
-    }
-
-    @NotNull
     public ObservableProperty<Coordinates> getLastMoveCoordinatesProperty() {
         return lastMoveCoordinatesProperty;
     }
 
     public boolean isEmpty() {
-        return coordinatesHistory.size() == 0;
+        return numberOfFilledPositions == 0;
     }
 
     public boolean isThereAnyEmptyCell() {
-        return coordinatesHistory.size() < Math.pow(size.intValue(), 2);
+        return numberOfFilledPositions < Math.pow(size.intValue(), 2);
     }
 
     public boolean isCoordinatesInsideBoard(@NotNull Coordinates coordinates) {
-        @NonNegativeInteger.NonNegativeIntegerType int x = Objects.requireNonNull(coordinates).getX();
-        @NonNegativeInteger.NonNegativeIntegerType int y = coordinates.getY();
+        @NonNegativeIntegerType int x = Objects.requireNonNull(coordinates).getX();
+        @NonNegativeIntegerType int y = coordinates.getY();
         return x < size.intValue() && y < size.intValue();
     }
 
     @NotNull
-    public Cell getCellAtCoordinates(@NonNegativeInteger.NonNegativeIntegerType int x,
-                                     @NonNegativeInteger.NonNegativeIntegerType int y) throws CellOutOfBoardException {
+    public Cell getCellAtCoordinates(@NonNegativeIntegerType int x,
+                                     @NonNegativeIntegerType int y) throws CellOutOfBoardException {
         return getCellAtCoordinates(new Coordinates(x, y));
     }
 
@@ -109,10 +104,8 @@ public class Board implements Observable, Cloneable, Serializable {
         if (isThereAnyEmptyCell()) {
             if (isCellEmpty(Objects.requireNonNull(coordinates))) {
                 setStoneAtCoordinates(coordinates, new Stone(Objects.requireNonNull(stoneColor)));
-                coordinatesHistory.add(
-                        lastMoveCoordinatesProperty
-                                .setPropertyValueAndFireIfPropertyChange(coordinates)
-                                .getPropertyValue());
+                numberOfFilledPositions++;
+                lastMoveCoordinatesProperty.setPropertyValueAndFireIfPropertyChange(coordinates);
             } else {
                 throw new CellAlreadyOccupiedException(coordinates);
             }
@@ -125,7 +118,8 @@ public class Board implements Observable, Cloneable, Serializable {
         return getCellAtCoordinates(Objects.requireNonNull(coordinates)).isEmpty();
     }
 
-    private synchronized void setStoneAtCoordinates(@NotNull final Coordinates coordinates, @Nullable Stone stone) throws CellOutOfBoardException {
+    private synchronized void setStoneAtCoordinates(@NotNull final Coordinates coordinates, @Nullable Stone stone)
+            throws CellOutOfBoardException {
         if (isCoordinatesInsideBoard(Objects.requireNonNull(coordinates))) {
             getCellAtCoordinates(coordinates).setStone(stone);
         } else {
@@ -236,13 +230,13 @@ public class Board implements Observable, Cloneable, Serializable {
     }
 
     @Override
-    public boolean equals(Object o) {   // TODO to be tested
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Board otherBoard = (Board) o;
         return size.equals(otherBoard.size)
                 && lastMoveCoordinatesProperty.valueEquals(otherBoard.lastMoveCoordinatesProperty)
-                && coordinatesHistory.equals(otherBoard.coordinatesHistory) // TODO : board equality should consider coordinate history?
+                && numberOfFilledPositions == otherBoard.numberOfFilledPositions
                 && Arrays.deepEquals(matrix, otherBoard.matrix);
     }
 
@@ -250,7 +244,7 @@ public class Board implements Observable, Cloneable, Serializable {
     public int hashCode() { // TODO : check if creates problems with hashmaps (hashCode method should be present according to equals() contract)
         // TODO to be tested
         int result = size.hashCode();
-        result = 31 * result + coordinatesHistory.hashCode();
+        result = 31 * result + numberOfFilledPositions;
         result = 31 * result + Arrays.deepHashCode(matrix);
         result = 31 * result + lastMoveCoordinatesProperty.hashCode();
         return result;
