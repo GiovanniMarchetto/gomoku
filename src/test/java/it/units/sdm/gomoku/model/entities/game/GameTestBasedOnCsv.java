@@ -25,7 +25,7 @@ public class GameTestBasedOnCsv {
         game = new Game(cellMatrix.length, cpuBlack, cpuWhite);
         game.start();
 
-        Board board = TestUtility.createBoardFromCellMatrix(cellMatrix, cellMatrix.length);
+        Board board = TestUtility.createBoardFromCellMatrix(cellMatrix);
 
         List<Coordinates> blackCoordinatesList = getListOfCoordinatesOfAColor(coordinatesToControl, board, Stone.Color.BLACK);
         List<Coordinates> whiteCoordinatesList = getListOfCoordinatesOfAColor(coordinatesToControl, board, Stone.Color.WHITE);
@@ -77,7 +77,7 @@ public class GameTestBasedOnCsv {
         game = new Game(cellMatrix.length, cpuBlack, cpuWhite);
         game.start();
 
-        Board board = TestUtility.createBoardFromCellMatrix(cellMatrix, cellMatrix.length);
+        Board board = TestUtility.createBoardFromCellMatrix(cellMatrix);
 
         List<Coordinates> blackCoordinatesList = getListOfCoordinatesOfAColor(coordinatesToControl, board, Stone.Color.BLACK);
         List<Coordinates> whiteCoordinatesList = getListOfCoordinatesOfAColor(coordinatesToControl, board, Stone.Color.WHITE);
@@ -95,7 +95,7 @@ public class GameTestBasedOnCsv {
     @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfMoveControlRecordFields")
     void setUpFromCsvBoardTest(Cell[][] matrix, Coordinates coordinatesToControl) {
         setUpFromCsv(matrix, coordinatesToControl);
-        Board expectedBoard = TestUtility.createBoardFromCellMatrix(matrix, matrix.length);
+        Board expectedBoard = TestUtility.createBoardFromCellMatrix(matrix);
         assertEquals(expectedBoard.toString(), game.getBoard().toString());
     }
 

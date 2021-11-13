@@ -56,8 +56,8 @@ public class TestUtility {
     }
 
     @NotNull
-    public static Board createBoardFromCellMatrix(Cell[][] cellMatrix, int boardSize) {
-        return createBoardFromCellMatrix(cellMatrix, new PositiveInteger(boardSize));
+    public static Board createBoardFromCellMatrix(Cell[][] cellMatrix) {
+        return createBoardFromCellMatrix(cellMatrix, new PositiveInteger(cellMatrix.length));
     }
 
     @NotNull

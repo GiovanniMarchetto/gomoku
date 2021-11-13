@@ -54,7 +54,7 @@ public class BoardTest {
 
     @NotNull
     private static Stream<Arguments> boardSupplier() {
-        return Stream.of(Arguments.of(TestUtility.createBoardFromCellMatrix(boardMatrixFromCsv, boardMatrixFromCsv.length)));   // TODO : provide more boards
+        return Stream.of(Arguments.of(TestUtility.createBoardFromCellMatrix(boardMatrixFromCsv)));   // TODO : provide more boards
     }
 
     @NotNull
