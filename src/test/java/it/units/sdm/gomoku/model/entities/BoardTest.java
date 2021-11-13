@@ -4,6 +4,7 @@ import it.units.sdm.gomoku.EnvVariables;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
+import it.units.sdm.gomoku.property_change_handlers.ObservableProperty;
 import it.units.sdm.gomoku.utils.TestUtility;
 import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -93,57 +94,47 @@ public class BoardTest {
         assertEquals(BOARD_SIZE.intValue(), board.getSize());
     }
 
-// TODO: redo tests after removing coordinatesHistory from class Board
-//
-//    @Test
-//    void getCoordinatesHistory() {
-//        try {
-//            @SuppressWarnings("unchecked")
-//            List<Coordinates> expected = (List<Coordinates>)
-//                    TestUtility.getFieldValue("coordinatesHistory", board);
-//            assertEquals(expected, board.getCoordinatesHistory());
-//        } catch (NoSuchFieldException | IllegalAccessException e) {
-//            fail(e);
-//        }
-//    }
-//
-//    @Test
-//    void getCoordinatesHistoryWithNewStoneOnTheBoard() {
-//        try {
-//            @SuppressWarnings("unchecked")
-//            List<Coordinates> expected = (List<Coordinates>)
-//                    TestUtility.getFieldValue("coordinatesHistory", board);
-//            Objects.requireNonNull(expected).add(tryToOccupyNextEmptyCellAndReturnCoordinates());
-//            assertEquals(expected, board.getCoordinatesHistory());
-//        } catch (NoSuchFieldException | IllegalAccessException e) {
-//            fail(e);
-//        }
-//    }
-//
-//
-//    @Test
-//    void getLastMoveCoordinatesProperty() {
-//        try {
-//            @SuppressWarnings("unchecked")
-//            ObservableProperty<Coordinates> expected = (ObservableProperty<Coordinates>)
-//                    TestUtility.getFieldValue("lastMoveCoordinatesProperty", board);
-//            assertEquals(expected, board.getLastMoveCoordinatesProperty());
-//        } catch (NoSuchFieldException | IllegalAccessException e) {
-//            fail(e);
-//        }
-//    }
-//
-//    @Test
-//    void setLastMoveCoordinatesProperty() {
-//        Coordinates expected = tryToOccupyNextEmptyCellAndReturnCoordinates();
-//        assertEquals(expected, board.getLastMoveCoordinatesProperty().getPropertyValue());
-//    }
-//
-//    @Test
-//    void isLastMoveCoordinatesPropertyValueEqualsAtLastCoordinateInHistory() {
-//        List<Coordinates> coordinatesHistory = board.getCoordinatesHistory();
-//        assertEquals(coordinatesHistory.get(coordinatesHistory.size() - 1), board.getLastMoveCoordinatesProperty().getPropertyValue());
-//    }
+    @Test
+    void checkNumberOfFilledPositionAtCreation() {
+        try {
+            board = new Board(BOARD_SIZE);
+            assertEquals(0, TestUtility.getFieldValue("numberOfFilledPositions", board));
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            fail(e);
+        }
+    }
+
+    @SuppressWarnings("ConstantConditions")// field declared int in the class
+    @Test
+    void checkNumberOfFilledPositionAfterAddAStone() {
+        try {
+            int expected = ((int) TestUtility.getFieldValue("numberOfFilledPositions", board)) + 1;
+            tryToOccupyNextEmptyCellAndReturnCoordinates();
+            int actual = ((int) TestUtility.getFieldValue("numberOfFilledPositions", board));
+            assertEquals(expected, actual);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            fail(e);
+        }
+    }
+
+
+    @Test
+    void getLastMoveCoordinatesProperty() {
+        try {
+            @SuppressWarnings("unchecked")
+            ObservableProperty<Coordinates> expected = (ObservableProperty<Coordinates>)
+                    TestUtility.getFieldValue("lastMoveCoordinatesProperty", board);
+            assertEquals(expected, board.getLastMoveCoordinatesProperty());
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            fail(e);
+        }
+    }
+
+    @Test
+    void setLastMoveCoordinatesProperty() {
+        Coordinates expected = tryToOccupyNextEmptyCellAndReturnCoordinates();
+        assertEquals(expected, board.getLastMoveCoordinatesProperty().getPropertyValue());
+    }
 
     @Test
     void isEmpty() {
@@ -426,28 +417,27 @@ public class BoardTest {
     }
 
     @Test
-    void testEqualsDifferentSize() {
-        assertNotEquals(board, new Board(board.getSize() + 1));
-    }
-
-    @Test
     void testEqualsEmptyBoard() {
         assertNotEquals(board, new Board(board.getSize()));
     }
 
     @Test
     void testEqualsNewBoard() {
-        Board newBoard = board.clone();
-        assertEquals(board, newBoard);
+        assertEquals(board, board.clone());
     }
 
     @Test
-    void testEqualsWithSamePositionOccupied() {//i.e. different lastMoveCoordinatesProperty
+    void testEqualsDifferentSize() {
+        assertNotEquals(board, new Board(board.getSize() + 1));
+    }
+
+    @Test
+    void testEqualsWithDifferentLastMoveCoordinatesProperty() {
         board = new Board(BOARD_SIZE);
         Board expectedBoard = board.clone();
         try {
             board.occupyPosition(Stone.Color.BLACK, new Coordinates(0, 0));
-            expectedBoard.occupyPosition(Stone.Color.WHITE, new Coordinates(0, 0));
+            expectedBoard.occupyPosition(Stone.Color.WHITE, new Coordinates(0, 1));
         } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Board.CellOutOfBoardException e) {
             fail(e);
         }
@@ -455,13 +445,26 @@ public class BoardTest {
     }
 
     @Test
-    void testEqualsWithDifferentCoordinateHistory() {
+    void testEqualsWithDifferentNumberOfFilledPosition() {
         board = new Board(BOARD_SIZE);
         Board expectedBoard = board.clone();
         try {
             board.occupyPosition(Stone.Color.BLACK, new Coordinates(0, 0));
             board.occupyPosition(Stone.Color.WHITE, new Coordinates(0, 1));
             expectedBoard.occupyPosition(Stone.Color.WHITE, new Coordinates(0, 1));
+        } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Board.CellOutOfBoardException e) {
+            fail(e);
+        }
+        assertNotEquals(expectedBoard, board);
+    }
+
+    @Test
+    void testEqualsWithDifferentMatrix() {
+        board = new Board(BOARD_SIZE);
+        Board expectedBoard = board.clone();
+        try {
+            board.occupyPosition(Stone.Color.BLACK, new Coordinates(0, 0));
+            expectedBoard.occupyPosition(Stone.Color.WHITE, new Coordinates(0, 0));
         } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Board.CellOutOfBoardException e) {
             fail(e);
         }
