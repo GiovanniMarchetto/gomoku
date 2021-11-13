@@ -34,8 +34,8 @@ public class BoardTest {
 
     //region Support Methods
     @NotNull
-    private static Stream<Arguments> provideCoupleOfIntegersBetweenMinus10IncludedAndPlus50Excluded() {
-        return TestUtility.provideCoupleOfIntegersInRange(-10, 30);
+    private static Stream<Arguments> provideCoupleOfIntegersBetweenMinus5IncludedAndPlus5ToBoardSizeExcluded() {
+        return TestUtility.provideCoupleOfIntegersInRange(-5, BOARD_SIZE.intValue() + 5);
     }
 
     @NotNull
@@ -210,7 +210,7 @@ public class BoardTest {
     }
 
     @ParameterizedTest
-    @MethodSource("provideCoupleOfIntegersBetweenMinus10IncludedAndPlus50Excluded")
+    @MethodSource("provideCoupleOfIntegersBetweenMinus5IncludedAndPlus5ToBoardSizeExcluded")
     void occupyPosition(int x, int y) {
         try {
             Coordinates coordinates = new Coordinates(x, y);
