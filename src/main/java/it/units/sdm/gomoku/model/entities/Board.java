@@ -225,7 +225,7 @@ public class Board implements Observable, Cloneable, Serializable {
     @NotNull
     private Cell[][] getBoardMatrixCopy() {
         return Arrays.stream(matrix)
-                .map(Cell[]::clone)
+                .map(rowOfCells -> Arrays.stream(rowOfCells).map(Cell::new).toArray(Cell[]::new))
                 .toArray(Cell[][]::new);
     }
 

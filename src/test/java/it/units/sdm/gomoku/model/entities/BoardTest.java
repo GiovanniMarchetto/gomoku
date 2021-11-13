@@ -5,6 +5,7 @@ import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.utils.TestUtility;
+import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -192,22 +193,35 @@ public class BoardTest {
 
     @ParameterizedTest
     @MethodSource("provideCoupleOfNonNegativeIntegersInsideBoard")
-    Cell[][] getBoardMatrixCopyTestACellToBeEqual(int x, int y) {
-        Cell[][] matrixCopy = null;
+    void getBoardMatrixCopyTestACellToBeEqual(int x, int y) {
         try {
-            Method getBoardMatrixCopyMethod = TestUtility.getMethodAlreadyMadeAccessible(board.getClass(), "getBoardMatrixCopy");
-            matrixCopy = (Cell[][]) getBoardMatrixCopyMethod.invoke(board);
-            assertEquals(boardMatrixFromCsv[x][y], matrixCopy[x][y]);
+            Pair<Cell[][], Cell[][]> initialAndCopiedBoardMatrix =
+                    getInitialAndCopiedBoardMatrixWithMethodProvidedByTheClass();
+            assertEquals(initialAndCopiedBoardMatrix.getKey()[x][y], initialAndCopiedBoardMatrix.getValue()[x][y]);
         } catch (InvocationTargetException | IllegalAccessException | NoSuchFieldException e) {
             fail(e);
         }
-        return matrixCopy;
+    }
+
+    private Pair<Cell[][], Cell[][]> getInitialAndCopiedBoardMatrixWithMethodProvidedByTheClass()
+            throws NoSuchFieldException, IllegalAccessException, InvocationTargetException {
+        Method getBoardMatrixCopyMethod = TestUtility.getMethodAlreadyMadeAccessible(board.getClass(), "getBoardMatrixCopy");
+        Cell[][] toBeCopiedMatrix = (Cell[][]) TestUtility.getFieldValue("matrix", board);
+        Cell[][] copiedMatrix = (Cell[][]) getBoardMatrixCopyMethod.invoke(board);
+        assert toBeCopiedMatrix != null;
+        return new Pair<>(toBeCopiedMatrix, copiedMatrix);
     }
 
     @ParameterizedTest
     @MethodSource("provideCoupleOfNonNegativeIntegersInsideBoard")
     void getBoardMatrixCopyTestToBeDeepCopy(int x, int y) {
-        assertNotSame(getBoardMatrixCopyTestACellToBeEqual(x, y)[x][y], boardMatrixFromCsv[x][y]);
+        try {
+            Pair<Cell[][], Cell[][]> initialAndCopiedBoardMatrix =
+                    getInitialAndCopiedBoardMatrixWithMethodProvidedByTheClass();
+            assertNotSame(initialAndCopiedBoardMatrix.getKey()[x][y], initialAndCopiedBoardMatrix.getValue()[x][y]);
+        } catch (InvocationTargetException | IllegalAccessException | NoSuchFieldException e) {
+            fail(e);
+        }
     }
 
 
