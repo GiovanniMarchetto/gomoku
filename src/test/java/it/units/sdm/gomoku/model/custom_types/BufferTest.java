@@ -204,4 +204,15 @@ class BufferTest {
         assertEquals(expectedSizeAfterRemovingOneElement, bufferOfIntegerUsedInTests.getNumberOfElements());
     }
 
+    @ParameterizedTest
+    @CsvFileSource(resources = EnvVariables.POSITIVE_INTS_LOWER_THAN_10000_PROVIDER_RESOURCE_LOCATION)
+    void insertOneElementThenRemoveTheLastElementWhichShouldBeEqualsToTheJustInsertedOne(int element) {
+        assert isBufferEmpty(bufferOfIntegerUsedInTests);
+        bufferOfIntegerUsedInTests.insert(element);
+        assert bufferOfIntegerUsedInTests.getNumberOfElements() == 1;
+        Integer elementRemovedFromBuffer = bufferOfIntegerUsedInTests.getAndRemoveLastElement();
+        assert isBufferEmpty(bufferOfIntegerUsedInTests);
+        assertEquals(element, elementRemovedFromBuffer);
+    }
+
 }
