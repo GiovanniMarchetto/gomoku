@@ -153,8 +153,7 @@ public abstract class MainViewmodel extends Viewmodel {
         this.match = Objects.requireNonNull(match);
     }
 
-    public void endGame() {
-    }
+    public abstract void endGame();
 
     public void forceReFireAllCells() {
         // TODO: Rethink this

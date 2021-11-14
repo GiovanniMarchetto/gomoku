@@ -14,6 +14,7 @@ import javafx.scene.layout.VBox;
 import static it.units.sdm.gomoku.ui.gui.GUIMain.guiMainViewmodel;
 
 public class SummaryView extends View<GUIMainViewmodel> {
+
     @FXML
     private Button newMatchButton;
     @FXML
