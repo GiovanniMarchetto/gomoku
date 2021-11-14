@@ -177,11 +177,20 @@ public class Match {
     }
 
     public static class MatchEndedException extends Exception {
+        public MatchEndedException() {
+            super("Match already ended!");
+        }
     }
 
     public static class MatchNotEndedException extends Exception {
+        public MatchNotEndedException() {
+            super("Match not ended yet!");
+        }
     }
 
     public static class MaxNumberOfGamesException extends Exception {
+        public MaxNumberOfGamesException() {
+            super("All the games provided by the match have been played");
+        }
     }
 }

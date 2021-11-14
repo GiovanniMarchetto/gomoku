@@ -18,6 +18,32 @@ class MatchTest {
     private Match match;
     private Game currentGame;
 
+    //region Support Methods
+    private void assertCpusScore(int n1, int n2) {
+        assertEquals(n1, match.getScore().get(cpu1).intValue());
+        assertEquals(n2, match.getScore().get(cpu2).intValue());
+    }
+
+    private void startNewGameComplete() {
+        try {
+            currentGame = match.startNewGame();
+            currentGame.start();
+        } catch (Match.MatchEndedException | Match.MaxNumberOfGamesException e) {
+            fail(e);
+        }
+    }
+
+    private void startGameAndPlayerWin(Player player) {
+        startNewGameComplete();
+        GameTestUtility.disputeGameAndPlayerWin(currentGame, player);
+    }
+
+    private void startGameAndDraw() {
+        startNewGameComplete();
+        GameTestUtility.disputeGameAndDraw(currentGame, boardSizeTest);
+    }
+    //endregion Support Methods
+
     @BeforeEach
     void setup() {
         match = new Match(boardSizeTest, NUMBER_OF_GAMES, cpu1, cpu2);
@@ -229,31 +255,5 @@ class MatchTest {
             fail(e);
         }
     }
-
-    //region Private support methods
-    private void assertCpusScore(int n1, int n2) {
-        assertEquals(n1, match.getScore().get(cpu1).intValue());
-        assertEquals(n2, match.getScore().get(cpu2).intValue());
-    }
-
-    private void startNewGameComplete() {
-        try {
-            currentGame = match.startNewGame();
-            currentGame.start();
-        } catch (Match.MatchEndedException | Match.MaxNumberOfGamesException e) {
-            fail(e);
-        }
-    }
-
-    private void startGameAndPlayerWin(Player player) {
-        startNewGameComplete();
-        GameTestUtility.disputeGameAndPlayerWin(currentGame, player);
-    }
-
-    private void startGameAndDraw() {
-        startNewGameComplete();
-        GameTestUtility.disputeGameAndDraw(currentGame, boardSizeTest);
-    }
-    //endregion
 
 }

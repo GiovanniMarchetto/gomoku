@@ -26,7 +26,7 @@ class PlayerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"massimiliano", "matteo", "giovanni", "travis", "scott"})
+    @ValueSource(strings = {"massimiliano", "matteo", "giovanni", "Travis Scott"})
     void testToString(String name) {
         Player player = new HumanPlayer(name);
         assertEquals(player.toString(), name);

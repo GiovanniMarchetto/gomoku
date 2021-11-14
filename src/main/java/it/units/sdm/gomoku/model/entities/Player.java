@@ -8,8 +8,6 @@ import java.util.Objects;
 
 public abstract class Player implements Observable {
 
-    // TODO : test
-
     @NotNull
     private final String name;
 
