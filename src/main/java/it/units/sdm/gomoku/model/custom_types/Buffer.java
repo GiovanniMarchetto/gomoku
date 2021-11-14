@@ -11,10 +11,10 @@ import java.util.logging.Level;
 import static it.units.sdm.gomoku.model.custom_types.NonNegativeInteger.NonNegativeIntegerType;
 import static it.units.sdm.gomoku.model.custom_types.PositiveInteger.PositiveIntegerType;
 
-public class Buffer<ContentType> {
+public class Buffer<ElementType> {
 
     @NotNull
-    private final List<ContentType> buffer;
+    private final List<ElementType> buffer;
     @PositiveIntegerType
     private final int size;
 
@@ -31,7 +31,7 @@ public class Buffer<ContentType> {
         return buffer.size();
     }
 
-    public synchronized void insert(@Nullable final ContentType element) {
+    public synchronized void insert(@Nullable final ElementType element) {
         while (getNumberOfElements() == size) {
             try {
                 wait();
