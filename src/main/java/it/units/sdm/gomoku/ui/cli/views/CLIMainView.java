@@ -3,8 +3,6 @@ package it.units.sdm.gomoku.ui.cli.views;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.entities.Game;
-import it.units.sdm.gomoku.model.entities.Match;
-import it.units.sdm.gomoku.model.entities.Player;
 import it.units.sdm.gomoku.mvvm_library.Observer;
 import it.units.sdm.gomoku.mvvm_library.View;
 import it.units.sdm.gomoku.ui.cli.IOUtility;
@@ -22,50 +20,8 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
     public CLIMainView(@NotNull final CLIMainViewmodel cliMainViewmodel) {  // TODO : event-based flux of program to be tested
         super(cliMainViewmodel);
         addObservedPropertyOfViewmodel(cliMainViewmodel.getCurrentGameStatusProperty(), evt -> {
-            switch ((Game.Status) evt.getNewValue()) {
-                case STARTED -> System.out.println("\n\nNew game!");
-                case ENDED -> {
-                    System.out.println("Game ended\n");
-
-                    CLIMainViewmodel viewmodel = getViewmodelAssociatedWithView();
-                    try {
-                        Player winnerOfGame = viewmodel.getWinnerOfTheGame();
-                        System.out.println("The game is ended with: " +
-                                (winnerOfGame != null ? "WIN of " + winnerOfGame : "a DRAW"));
-                    } catch (Game.GameNotEndedException ignored) {
-                    }
-
-                    System.out.println("\nThe match score now is:\n" + viewmodel.getScoreOfMatch());
-
-                    if (viewmodel.isMatchEnded()) {
-                        try {
-                            if (viewmodel.isMatchEndedWithADraw()) {   // TODO: replace all occurrences of "*draw*" with "*draw*" (remember: don't search only entire word matching)
-                                System.out.print("Extra game? Y/N: ");
-                                if (IOUtility.isYesFromStdin()) {
-                                    viewmodel.startExtraGame();
-                                }
-                            }
-                        } catch (Match.MatchNotEndedException ignored) {
-                        }
-
-                        if (viewmodel.isMatchEnded()) {
-                            Player winnerOfMatch = null;
-                            try {
-                                winnerOfMatch = viewmodel.getWinnerOfTheMatch();
-                            } catch (Match.MatchNotEndedException ignored) {
-                            }
-                            System.out.println("The match is finish with: " +
-                                    (winnerOfMatch != null ? "WIN of" + winnerOfMatch : "DRAW"));
-
-                            System.out.print("Another match? Y/N: ");
-                            if (IOUtility.isYesFromStdin()) {
-                                viewmodel.startNewMatch();
-                            }
-                        }
-                    } else {
-                        viewmodel.startNewGame();
-                    }
-                }
+            if (evt.getNewValue() == Game.Status.STARTED) {
+                System.out.println("\n\nNew game!");
             }
         });
         addObservedPropertyOfViewmodel(cliMainViewmodel.getUserMustPlaceNewStoneProperty(), evt -> {

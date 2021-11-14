@@ -17,4 +17,9 @@ public class TestMainViewmodel extends MainViewmodel {
     public void startNewMatch() {
         createMatchFromSetupAndStartGame(setup);
     }
+
+    @Override
+    public void endGame() {
+
+    }
 }

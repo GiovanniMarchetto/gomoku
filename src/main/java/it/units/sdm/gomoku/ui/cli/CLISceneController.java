@@ -5,6 +5,7 @@ import it.units.sdm.gomoku.ui.StartViewmodel;
 import it.units.sdm.gomoku.ui.cli.viewmodels.CLIMainViewmodel;
 import it.units.sdm.gomoku.ui.cli.views.CLIMainView;
 import it.units.sdm.gomoku.ui.cli.views.CLIStartView;
+import it.units.sdm.gomoku.ui.cli.views.CLISummaryView;
 import it.units.sdm.gomoku.ui.gui.SceneController;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -42,6 +43,7 @@ public class CLISceneController {   // TODO : refactor (common things with GUI)
         cliMainViewmodel = new CLIMainViewmodel();
         startViewmodelAtomicReference = new AtomicReference<>();
         views = new ConcurrentHashMap<>();
+
         views.put(CLIViewName.CLI_START_VIEW, () -> {
             startViewmodelAtomicReference.set(new StartViewmodel(cliMainViewmodel));    // TODO : refactor (similar operations for both the views)
             return addViewToHistoryAndGet(
@@ -49,6 +51,8 @@ public class CLISceneController {   // TODO : refactor (common things with GUI)
         });
         views.put(CLIViewName.CLI_MAIN_VIEW, () ->
                 addViewToHistoryAndGet(CLIViewName.CLI_MAIN_VIEW, new CLIMainView(cliMainViewmodel)));
+        views.put(CLIViewName.CLI_SUMMARY_VIEW, () ->
+                addViewToHistoryAndGet(CLIViewName.CLI_SUMMARY_VIEW, new CLISummaryView(cliMainViewmodel)));
     }
 
     private View<?> addViewToHistoryAndGet(@NotNull final CLIViewName cliViewName, @NotNull final View<?> newView) {
@@ -87,6 +91,6 @@ public class CLISceneController {   // TODO : refactor (common things with GUI)
         return views.get(Objects.requireNonNull(viewName)).get();
     }
 
-    public enum CLIViewName {CLI_START_VIEW, CLI_MAIN_VIEW}
+    public enum CLIViewName {CLI_START_VIEW, CLI_MAIN_VIEW, CLI_SUMMARY_VIEW}
 
 }
