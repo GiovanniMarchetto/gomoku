@@ -34,6 +34,7 @@ public class Match {
     // TODO : ctor may take Setup instance as input param?
     public Match(@NotNull final PositiveInteger boardSize, @NotNull final PositiveInteger numberOfGames,
                  @NotNull @Length(length = 2) final Player... players) {
+        // TODO : consider to use a builder instead of a constructor with so many params
         this(Objects.requireNonNull(boardSize), Objects.requireNonNull(numberOfGames),
                 validatePlayersFromVarargs(players)[0], players[1]);
     }
