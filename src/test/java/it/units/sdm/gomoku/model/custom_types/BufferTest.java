@@ -154,6 +154,26 @@ class BufferTest {
         assertEquals(NUMBER_OF_INSERTED_ELEMENTS, bufferOfIntegerUsedInTests.getNumberOfElements());
     }
 
+    @ParameterizedTest
+    @CsvFileSource(resources = EnvVariables.POSITIVE_INTS_LOWER_THAN_10000_PROVIDER_RESOURCE_LOCATION)
+    Thread testThatInsertShouldWaitIfBufferIsFull_thenReturnTheThreadWhichShouldWaitForInsert(
+            int oneMoreElementInsertedWhenBufferIsFull) throws NoSuchFieldException, IllegalAccessException {
+        fillBufferWithIntegers(bufferOfIntegerUsedInTests);
+        assert bufferOfIntegerUsedInTests.getNumberOfElements() == ARBITRARY_CHOSEN_SIZE;
+        Thread threadThatTryToInsertOneMoreElementInBuffer =
+                createAndSetNameAndScheduleItsInterruptionAndGetThread(
+                        REASONABLE_MILLISECS_AFTER_WHICH_THREAD_MUST_BE_INTERRUPTED,
+                        () -> bufferOfIntegerUsedInTests.insert(oneMoreElementInsertedWhenBufferIsFull),
+                        "threadThatTryToInsertOneMoreElementInBuffer");
+        try {
+            Thread.sleep(REASONABLE_MILLISECS_TO_PERMIT_THREAD_TO_START);
+        } catch (InterruptedException e) {
+            fail(e);
+        }
+        assertEquals(Thread.State.WAITING, threadThatTryToInsertOneMoreElementInBuffer.getState());
+        return threadThatTryToInsertOneMoreElementInBuffer;
+    }
+
     @Test
     void insertShouldWaitIfBufferIsFullButRestartWhenThereIsSpace() throws NoSuchFieldException, IllegalAccessException {
         int oneMoreElementInsertedWhenBufferIsFull = 1234;
@@ -173,26 +193,6 @@ class BufferTest {
         Optional<?> lastElementInBufferAfterInsertingTheOneMoreElment = getLastElementFromBuffer(bufferOfIntegerUsedInTests);
         lastElementInBufferAfterInsertingTheOneMoreElment
                 .ifPresentOrElse(o -> assertEquals(oneMoreElementInsertedWhenBufferIsFull, o), Assertions::fail);
-    }
-
-    @ParameterizedTest
-    @CsvFileSource(resources = EnvVariables.POSITIVE_INTS_LOWER_THAN_10000_PROVIDER_RESOURCE_LOCATION)
-    Thread testThatInsertShouldWaitIfBufferIsFull_thenReturnTheThreadWhichShouldWaitForInsert(
-            int oneMoreElementInsertedWhenBufferIsFull) throws NoSuchFieldException, IllegalAccessException {
-        fillBufferWithIntegers(bufferOfIntegerUsedInTests);
-        assert bufferOfIntegerUsedInTests.getNumberOfElements() == ARBITRARY_CHOSEN_SIZE;
-        Thread threadThatTryToInsertOneMoreElementInBuffer =
-                createAndSetNameAndScheduleItsInterruptionAndGetThread(
-                        REASONABLE_MILLISECS_AFTER_WHICH_THREAD_MUST_BE_INTERRUPTED,
-                        () -> bufferOfIntegerUsedInTests.insert(oneMoreElementInsertedWhenBufferIsFull),
-                        "threadThatTryToInsertOneMoreElementInBuffer");
-        try {
-            Thread.sleep(REASONABLE_MILLISECS_TO_PERMIT_THREAD_TO_START);
-        } catch (InterruptedException e) {
-            fail(e);
-        }
-        assertEquals(Thread.State.WAITING, threadThatTryToInsertOneMoreElementInBuffer.getState());
-        return threadThatTryToInsertOneMoreElementInBuffer;
     }
 
     @Test
