@@ -12,7 +12,6 @@ import it.units.sdm.gomoku.property_change_handlers.ObservableProperty;
 import it.units.sdm.gomoku.utils.TestUtility;
 import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -58,7 +57,6 @@ public class BoardTest {
         return Stream.of(Arguments.of(TestUtility.createBoardFromCellMatrix(boardMatrixFromCsv)));   // TODO : provide more boards
     }
 
-    @NotNull
     public static void tryToOccupyCoordinatesWithColor(Board board, Stone.Color color, int x, int y) {
         try {
             board.occupyPosition(color, new Coordinates(x, y));
@@ -67,47 +65,12 @@ public class BoardTest {
         }
     }
 
-    @Nullable
-    private Coordinates tryToOccupyNextEmptyCellAndReturnCoordinatesWithBlackStone() {
-        try {
-            CPUPlayer cpuPlayer = new CPUPlayer();
-            Coordinates coordinatesToOccupy = cpuPlayer.chooseNextEmptyCoordinates(board);
-            tryToOccupyCoordinatesWithColor(board, Stone.Color.BLACK,
-                    coordinatesToOccupy.getX(), coordinatesToOccupy.getY());
-            return coordinatesToOccupy;
-        } catch (Board.BoardIsFullException e) {
-            fail(e);
-            return null;
-        }
-    }
+    private static void chekFieldExistenceOrThrow(@NotNull final String fieldName,
+                                                  @SuppressWarnings("SameParameterValue") @NotNull final Class<?> clazz)
+            throws NoSuchFieldException {
 
-    @NotNull
-    private Pair<Cell[][], Cell[][]> getInitialAndCopiedBoardMatrixWithMethodProvidedByTheClass()
-            throws NoSuchFieldException, IllegalAccessException, InvocationTargetException {
-        Method getBoardMatrixCopyMethod = TestUtility.getMethodAlreadyMadeAccessible(board.getClass(), "getBoardMatrixCopy");
-        Cell[][] toBeCopiedMatrix = (Cell[][]) TestUtility.getFieldValue("matrix", board);
-        Cell[][] copiedMatrix = (Cell[][]) getBoardMatrixCopyMethod.invoke(board);
-        assert toBeCopiedMatrix != null;
-        return new Pair<>(toBeCopiedMatrix, copiedMatrix);
-    }
-
-    @NotNull
-    private Board setupForTestEquals() {
-        board = new Board(BOARD_SIZE);
-        Board board2 = new Board(board);
-        tryToOccupyCoordinatesWithColor(board, Stone.Color.BLACK, 0, 0);
-        tryToOccupyCoordinatesWithColor(board2, Stone.Color.WHITE, 0, 0);
-        return board2;
-    }
-    //endregion Support Methods
-
-    @BeforeEach
-    void setUp() {
-        board = TestUtility.createBoardFromCellMatrix(boardMatrixFromCsv, BOARD_SIZE);
-    }
-
-    private static void chekFieldExistenceOrThrow(@NotNull final String fieldName, @NotNull final Class<?> clazz) throws NoSuchFieldException {
-        TestUtility.getFieldAlreadyMadeAccessible(Objects.requireNonNull(clazz), Objects.requireNonNull(fieldName));
+        TestUtility.getFieldAlreadyMadeAccessible(
+                Objects.requireNonNull(clazz), Objects.requireNonNull(fieldName));
     }
 
     private static void copyConstructorCreatesNewObjectWithEqualsButNotSameField(@NotNull final Board boardToCopy,
@@ -144,6 +107,45 @@ public class BoardTest {
                 assertNotSame(fieldValueInInitial, fieldValueInCopied);
             }
         }
+    }
+
+    @NotNull
+    private Coordinates tryToOccupyNextEmptyCellAndReturnCoordinatesWithBlackStone() {
+        try {
+            CPUPlayer cpuPlayer = new CPUPlayer();
+            Coordinates coordinatesToOccupy = cpuPlayer.chooseNextEmptyCoordinates(board);
+            tryToOccupyCoordinatesWithColor(board, Stone.Color.BLACK,
+                    coordinatesToOccupy.getX(), coordinatesToOccupy.getY());
+            return coordinatesToOccupy;
+        } catch (Board.BoardIsFullException e) {
+            fail(e);
+            return null;
+        }
+    }
+
+    @NotNull
+    private Pair<Cell[][], Cell[][]> getInitialAndCopiedBoardMatrixWithMethodProvidedByTheClass()
+            throws NoSuchFieldException, IllegalAccessException, InvocationTargetException {
+        Method getBoardMatrixCopyMethod = TestUtility.getMethodAlreadyMadeAccessible(board.getClass(), "getBoardMatrixCopy");
+        Cell[][] toBeCopiedMatrix = (Cell[][]) TestUtility.getFieldValue("matrix", board);
+        Cell[][] copiedMatrix = (Cell[][]) getBoardMatrixCopyMethod.invoke(board);
+        assert toBeCopiedMatrix != null;
+        return new Pair<>(toBeCopiedMatrix, copiedMatrix);
+    }
+
+    @NotNull
+    private Board setupForTestEquals() {
+        board = new Board(BOARD_SIZE);
+        Board board2 = new Board(board);
+        tryToOccupyCoordinatesWithColor(board, Stone.Color.BLACK, 0, 0);
+        tryToOccupyCoordinatesWithColor(board2, Stone.Color.WHITE, 0, 0);
+        return board2;
+    }
+    //endregion Support Methods
+
+    @BeforeEach
+    void setUp() {
+        board = TestUtility.createBoardFromCellMatrix(boardMatrixFromCsv, BOARD_SIZE);
     }
 
     @ParameterizedTest
