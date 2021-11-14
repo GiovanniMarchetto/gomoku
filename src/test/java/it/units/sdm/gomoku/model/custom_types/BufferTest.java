@@ -101,7 +101,7 @@ class BufferTest {
     }
 
     @NotNull
-    private static Thread createAndSetNameAndScheduleItsInterruptionAndGetThread(
+    private static Thread createAndSetNameAndScheduleItsInterruptionAndStartAndGetThread(
             int delayAfterWhichThreadMustBeInterrupted, @NotNull final Runnable action, @NotNull final String threadName) {
         Thread thread = new Thread(Objects.requireNonNull(action));
         thread.setName(threadName);
@@ -169,7 +169,7 @@ class BufferTest {
         fillBufferWithIntegers(bufferOfIntegerUsedInTests);
         assert bufferOfIntegerUsedInTests.getNumberOfElements() == ARBITRARY_CHOSEN_SIZE;
         Thread threadThatTryToInsertOneMoreElementInBuffer =
-                createAndSetNameAndScheduleItsInterruptionAndGetThread(
+                createAndSetNameAndScheduleItsInterruptionAndStartAndGetThread(
                         REASONABLE_MILLISECS_AFTER_WHICH_THREAD_MUST_BE_INTERRUPTED,
                         () -> bufferOfIntegerUsedInTests.insert(oneMoreElementInsertedWhenBufferIsFull),
                         "threadThatTryToInsertOneMoreElementInBuffer");
@@ -187,7 +187,7 @@ class BufferTest {
         Thread threadThatTryToInsertOneMoreElementInBuffer =
                 createAndStartAndGetThreadWhichTriesToInsertOneMoreElementInBufferWhenFull(oneMoreElementInsertedWhenBufferIsFull);
         Thread threadThatRemoveOneElementFromBuffer =
-                createAndSetNameAndScheduleItsInterruptionAndGetThread(
+                createAndSetNameAndScheduleItsInterruptionAndStartAndGetThread(
                         REASONABLE_MILLISECS_AFTER_WHICH_THREAD_MUST_BE_INTERRUPTED,
                         bufferOfIntegerUsedInTests::getAndRemoveLastElement, "threadThatRemoveOneElementFromBuffer");
         try {
@@ -232,7 +232,7 @@ class BufferTest {
     private Thread createAndStartAndGetThreadWhichTriesToRemoveOneElementFromBufferWhenEmpty() {
         assert isBufferEmpty(bufferOfIntegerUsedInTests);
         Thread threadThatTryToRemoveOneElementFromBuffer =
-                createAndSetNameAndScheduleItsInterruptionAndGetThread(
+                createAndSetNameAndScheduleItsInterruptionAndStartAndGetThread(
                         REASONABLE_MILLISECS_AFTER_WHICH_THREAD_MUST_BE_INTERRUPTED,
                         () -> bufferOfIntegerUsedInTests.getAndRemoveLastElement(),
                         "threadThatTryToRemoveOneElementFromBuffer");
