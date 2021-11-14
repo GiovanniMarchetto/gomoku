@@ -9,12 +9,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PropertyObserverBooleanTest {
-    ObservableProperty<Boolean> observable;
+    SettableObservableProperty<Boolean> observable;
     AtomicBoolean valueToChange;
 
     @BeforeEach
     void setup() {
-        observable = new ObservableProperty<>();
+        observable = new SettableObservableProperty<>();
         observable.setPropertyValueWithoutNotifying(false);
         valueToChange = new AtomicBoolean(false);
 

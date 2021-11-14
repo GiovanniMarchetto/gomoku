@@ -6,6 +6,8 @@ import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.mvvm_library.Observable;
 import it.units.sdm.gomoku.property_change_handlers.ObservableProperty;
+import it.units.sdm.gomoku.property_change_handlers.ProxyObservableProperty;
+import it.units.sdm.gomoku.property_change_handlers.SettableObservableProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,7 +31,7 @@ public class Board implements Observable, Serializable {
     @NotNull
     private final Cell[][] matrix;
     @NotNull
-    private final ObservableProperty<Coordinates> lastMoveCoordinatesProperty;
+    private final SettableObservableProperty<Coordinates> lastMoveCoordinatesProperty;
 
     public Board(@NotNull PositiveInteger size) {
         this.size = size;
@@ -37,7 +39,7 @@ public class Board implements Observable, Serializable {
         this.matrix = IntStream.range(0, size.intValue())
                 .mapToObj(i -> IntStream.range(0, size.intValue()).mapToObj(j -> new Cell()).toArray(Cell[]::new))
                 .toArray(Cell[][]::new);
-        this.lastMoveCoordinatesProperty = new ObservableProperty<>();
+        this.lastMoveCoordinatesProperty = new SettableObservableProperty<>();
     }
 
     public Board(@PositiveIntegerType int size) {
@@ -58,7 +60,7 @@ public class Board implements Observable, Serializable {
 
     @NotNull
     public ObservableProperty<Coordinates> getLastMoveCoordinatesProperty() {
-        return lastMoveCoordinatesProperty;
+        return new ProxyObservableProperty<>(lastMoveCoordinatesProperty);
     }
 
     public boolean isEmpty() {

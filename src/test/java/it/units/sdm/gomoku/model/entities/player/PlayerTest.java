@@ -2,7 +2,7 @@ package it.units.sdm.gomoku.model.entities.player;
 
 import it.units.sdm.gomoku.model.entities.HumanPlayer;
 import it.units.sdm.gomoku.model.entities.Player;
-import it.units.sdm.gomoku.property_change_handlers.ObservableProperty;
+import it.units.sdm.gomoku.property_change_handlers.SettableObservableProperty;
 import it.units.sdm.gomoku.utils.TestUtility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,7 +36,7 @@ class PlayerTest {
     void getCoordinatesRequiredToContinueProperty() {
         try {
             @SuppressWarnings("unchecked")
-            ObservableProperty<Boolean> coordinatesRequiredToContinueProperty = (ObservableProperty<Boolean>)
+            SettableObservableProperty<Boolean> coordinatesRequiredToContinueProperty = (SettableObservableProperty<Boolean>)
                     TestUtility.getFieldValue("coordinatesRequiredToContinueProperty", player);
             assertEquals(coordinatesRequiredToContinueProperty, player.getCoordinatesRequiredToContinueProperty());
         } catch (NoSuchFieldException | IllegalAccessException e) {

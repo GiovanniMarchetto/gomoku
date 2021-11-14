@@ -8,7 +8,7 @@ import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
 import it.units.sdm.gomoku.model.entities.Cell;
 import it.units.sdm.gomoku.model.entities.Stone;
-import it.units.sdm.gomoku.property_change_handlers.ObservableProperty;
+import it.units.sdm.gomoku.property_change_handlers.SettableObservableProperty;
 import it.units.sdm.gomoku.utils.TestUtility;
 import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -212,7 +212,7 @@ public class BoardTest {
     void getLastMoveCoordinatesProperty() {
         try {
             @SuppressWarnings("unchecked")
-            ObservableProperty<Coordinates> expected = (ObservableProperty<Coordinates>)
+            SettableObservableProperty<Coordinates> expected = (SettableObservableProperty<Coordinates>)
                     TestUtility.getFieldValue("lastMoveCoordinatesProperty", board);
             assertEquals(expected, board.getLastMoveCoordinatesProperty());
         } catch (NoSuchFieldException | IllegalAccessException e) {

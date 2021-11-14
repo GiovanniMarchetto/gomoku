@@ -6,41 +6,46 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public class ObservableProperty<PropertyValueType> implements Observable, Cloneable {  // TODO : to be tested
+public abstract class ObservableProperty<PropertyValueType> implements Observable {  // TODO : to be tested
 
     // TODO : test all events to work properly
 
-    private static int numberOfInstances = Integer.MIN_VALUE;
+    private static int numberOfDistinctCreatedInstances = Integer.MIN_VALUE;
 
     @NotNull
-    private String propertyName;
+    private final String propertyName;
+    @NotNull
+    private final ObservableProperty.PropertyValueContainer<PropertyValueType> propertyValueContainer;
 
-    @Nullable
-    private volatile PropertyValueType propertyValue;   // TODO : volatile needed? Atomic reference better?
+    protected ObservableProperty() {
+        this.propertyValueContainer = new PropertyValueContainer<>(); // TODO: class needed to avoid reference to change: is this correct?
+        this.propertyName = String.valueOf(numberOfDistinctCreatedInstances++);
+    }
 
-    public ObservableProperty() {
-        this.propertyValue = null;
-        this.propertyName = String.valueOf(numberOfInstances++);
+    protected ObservableProperty(@NotNull final ObservableProperty<PropertyValueType> observableProperty) {
+        this.propertyName = observableProperty.propertyName;
+        this.propertyValueContainer = observableProperty.propertyValueContainer;
     }
 
     @Nullable
     public PropertyValueType getPropertyValue() {
-        return propertyValue;
+        return propertyValueContainer.getValue();
     }
 
     @NotNull
-    public synchronized ObservableProperty<PropertyValueType> setPropertyValueWithoutNotifying(@Nullable final PropertyValueType propertyValue) {   // TODO : synchronized needed?
-        this.propertyValue = propertyValue;
+    protected synchronized ObservableProperty<PropertyValueType> setPropertyValueWithoutNotifying(
+            @Nullable final PropertyValueType propertyValue) {   // TODO : synchronized needed?
+        this.propertyValueContainer.setValue(propertyValue);
         return this;
     }
 
     @NotNull
-    public String getPropertyName() {
+    protected String getPropertyName() {
         return propertyName;
     }
 
     @NotNull
-    public synchronized ObservableProperty<PropertyValueType> setPropertyValueAndFireIfPropertyChange(
+    protected synchronized ObservableProperty<PropertyValueType> setPropertyValueAndFireIfPropertyChange(
             @Nullable final PropertyValueType propertyNewValue) {   // TODO : synchronized needed?
         PropertyValueType oldValue = getPropertyValue();
         if (!Objects.equals(oldValue, propertyNewValue)) {
@@ -50,22 +55,16 @@ public class ObservableProperty<PropertyValueType> implements Observable, Clonea
         return this;
     }
 
-    @SuppressWarnings("MethodDoesntCallSuperMethod")
-    @Override
-    public ObservableProperty<PropertyValueType> clone() {
-        ObservableProperty<PropertyValueType> clone = new ObservableProperty<>();
-        clone.propertyName = this.propertyName;
-        clone.setPropertyValueWithoutNotifying(getPropertyValue()/*TODO : .clone() but PropertyValueType should implement cloneable interface (use copy-ctor)*/);
-        return clone;
-    }
-
     @Override
     public boolean equals(Object o) {   //  todo: test
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ObservableProperty<?> that = (ObservableProperty<?>) o;
+        if (!(o instanceof ObservableProperty<?> that)) return false;
         return Objects.equals(propertyName, that.propertyName)
-                && Objects.equals(propertyValue, that.propertyValue);
+                && Objects.equals(propertyValueContainer, that.propertyValueContainer);
+    }
+
+    public boolean valueEquals(@NotNull final ObservableProperty<PropertyValueType> otherProperty) {
+        return Objects.equals(propertyValueContainer, Objects.requireNonNull(otherProperty).propertyValueContainer);
     }
 
     @Override
@@ -73,8 +72,37 @@ public class ObservableProperty<PropertyValueType> implements Observable, Clonea
         return propertyName.hashCode();
     }
 
-    public boolean valueEquals(@NotNull final ObservableProperty<PropertyValueType> otherProperty) {
-        return Objects.equals(propertyValue, Objects.requireNonNull(otherProperty).propertyValue);
+    private static class PropertyValueContainer<ValueType> {    // TODO : to be tested
+        @Nullable
+        private volatile ValueType value;   // TODO : volatile needed? Atomic reference better?
+
+        @Nullable
+        public ValueType getValue() {
+            return value;
+        }
+
+        public void setValue(@Nullable ValueType value) {
+            this.value = value;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            PropertyValueContainer<?> that = (PropertyValueContainer<?>) o;
+            return Objects.equals(value, that.value);
+        }
+
+        @Override
+        public int hashCode() {
+            //noinspection ConstantConditions   // just checked to be non-null
+            return value != null ? value.hashCode() : 0;
+        }
+
+        @Override
+        public String toString() {
+            return String.valueOf(value);
+        }
     }
 
 }

@@ -2,6 +2,8 @@ package it.units.sdm.gomoku.model.entities;
 
 import it.units.sdm.gomoku.mvvm_library.Observable;
 import it.units.sdm.gomoku.property_change_handlers.ObservableProperty;
+import it.units.sdm.gomoku.property_change_handlers.ProxyObservableProperty;
+import it.units.sdm.gomoku.property_change_handlers.SettableObservableProperty;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -12,11 +14,11 @@ public abstract class Player implements Observable {
     private final String name;
 
     @NotNull
-    private final ObservableProperty<Boolean> coordinatesRequiredToContinueProperty;
+    private final SettableObservableProperty<Boolean> coordinatesRequiredToContinueProperty;
 
     protected Player(@NotNull String name) {
         this.name = Objects.requireNonNull(name);
-        coordinatesRequiredToContinueProperty = new ObservableProperty<>();
+        coordinatesRequiredToContinueProperty = new SettableObservableProperty<>();
         coordinatesRequiredToContinueProperty.setPropertyValueWithoutNotifying(false);
     }
 
@@ -34,7 +36,7 @@ public abstract class Player implements Observable {
 
     @NotNull
     public ObservableProperty<Boolean> getCoordinatesRequiredToContinueProperty() {
-        return coordinatesRequiredToContinueProperty;
+        return new ProxyObservableProperty<>(coordinatesRequiredToContinueProperty);
     }
 
     protected void setCoordinatesRequired(final boolean coordinatesRequired) {

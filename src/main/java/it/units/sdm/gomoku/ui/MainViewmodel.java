@@ -6,6 +6,8 @@ import it.units.sdm.gomoku.model.entities.*;
 import it.units.sdm.gomoku.mvvm_library.Viewmodel;
 import it.units.sdm.gomoku.property_change_handlers.ObservableProperty;
 import it.units.sdm.gomoku.property_change_handlers.PropertyObserver;
+import it.units.sdm.gomoku.property_change_handlers.ProxyObservableProperty;
+import it.units.sdm.gomoku.property_change_handlers.SettableObservableProperty;
 import it.units.sdm.gomoku.ui.support.Setup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,13 +23,13 @@ import java.util.stream.Stream;
 public abstract class MainViewmodel extends Viewmodel {
 
     @NotNull
-    private final ObservableProperty<Player> currentPlayerProperty;
+    private final SettableObservableProperty<Player> currentPlayerProperty;
     @NotNull
-    private final ObservableProperty<Game.Status> currentGameStatusProperty;
+    private final SettableObservableProperty<Game.Status> currentGameStatusProperty;
     @NotNull
-    private final ObservableProperty<Boolean> userMustPlaceNewStoneProperty;
+    private final SettableObservableProperty<Boolean> userMustPlaceNewStoneProperty;
     @NotNull
-    private final ObservableProperty<Coordinates> lastMoveCoordinatesProperty;
+    private final SettableObservableProperty<Coordinates> lastMoveCoordinatesProperty;
     @NotNull
     private final List<PropertyObserver<?>> modelPropertyObservers;
     @Nullable
@@ -38,10 +40,10 @@ public abstract class MainViewmodel extends Viewmodel {
     private Board currentBoard;
 
     public MainViewmodel() {
-        this.currentPlayerProperty = new ObservableProperty<>();
-        this.currentGameStatusProperty = new ObservableProperty<>();
-        this.userMustPlaceNewStoneProperty = new ObservableProperty<>();
-        this.lastMoveCoordinatesProperty = new ObservableProperty<>();
+        this.currentPlayerProperty = new SettableObservableProperty<>();
+        this.currentGameStatusProperty = new SettableObservableProperty<>();
+        this.userMustPlaceNewStoneProperty = new SettableObservableProperty<>();
+        this.lastMoveCoordinatesProperty = new SettableObservableProperty<>();
         this.modelPropertyObservers = new ArrayList<>();
     }
 
@@ -209,22 +211,22 @@ public abstract class MainViewmodel extends Viewmodel {
 
     @NotNull
     public ObservableProperty<Player> getCurrentPlayerProperty() {
-        return currentPlayerProperty;   // TODO: getting the property would allow to set the property and fire property change events (only the owner of the property should be able to do that, here we could simply a return a function "runnable" to make the binding without allowing to access the object fields
+        return new ProxyObservableProperty<>(currentPlayerProperty);
     }
 
     @NotNull
     public ObservableProperty<Game.Status> getCurrentGameStatusProperty() {
-        return currentGameStatusProperty;
+        return new ProxyObservableProperty<>(currentGameStatusProperty);
     }
 
     @NotNull
     public ObservableProperty<Boolean> getUserMustPlaceNewStoneProperty() {
-        return this.userMustPlaceNewStoneProperty;
+        return new ProxyObservableProperty<>(userMustPlaceNewStoneProperty);
     }
 
     @NotNull
     public ObservableProperty<Coordinates> getLastMoveCoordinatesProperty() {
-        return this.lastMoveCoordinatesProperty;
+        return new ProxyObservableProperty<>(lastMoveCoordinatesProperty);
     }
 
     @NotNull

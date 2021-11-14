@@ -5,6 +5,7 @@ import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.entities.Game;
 import it.units.sdm.gomoku.model.entities.HumanPlayer;
 import it.units.sdm.gomoku.property_change_handlers.ObservableProperty;
+import it.units.sdm.gomoku.property_change_handlers.SettableObservableProperty;
 import it.units.sdm.gomoku.utils.TestUtility;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
@@ -96,8 +97,8 @@ class HumanPlayerTest {
         getCurrentGameAfterMakeMove();
         humanPlayer.placeStone(firstCoordinates);
         @SuppressWarnings("unchecked")
-        ObservableProperty<Boolean> coordinatesRequiredToContinueProperty =
-                (ObservableProperty<Boolean>) TestUtility.getFieldValue(
+        SettableObservableProperty<Boolean> coordinatesRequiredToContinueProperty =
+                (SettableObservableProperty<Boolean>) TestUtility.getFieldValue(
                         "coordinatesRequiredToContinueProperty", humanPlayer);
 
         //noinspection ConstantConditions

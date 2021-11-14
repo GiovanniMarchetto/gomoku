@@ -16,8 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -106,7 +104,7 @@ class BufferTest {
             int delayAfterWhichThreadMustBeInterrupted, @NotNull final Runnable action, @NotNull final String threadName) {
         Thread thread = new Thread(Objects.requireNonNull(action));
         thread.setName(threadName);
-        interruptThreadAfterDelayIfNotAlreadyJoined(thread, delayAfterWhichThreadMustBeInterrupted);
+        TestUtility.interruptThreadAfterDelayIfNotAlreadyJoined(thread, delayAfterWhichThreadMustBeInterrupted);
         thread.start();
         return thread;
     }
@@ -119,12 +117,6 @@ class BufferTest {
         return actualBuffer.size() > 0
                 ? Optional.of(actualBuffer.get(actualBuffer.size() - 1))
                 : Optional.empty();
-    }
-
-    private static void interruptThreadAfterDelayIfNotAlreadyJoined(
-            @NotNull final Thread threadToBeEventuallyInterrupted, int delayInMillisecs) {
-        Executors.newScheduledThreadPool(1)
-                .schedule(threadToBeEventuallyInterrupted::interrupt, delayInMillisecs, TimeUnit.MILLISECONDS);
     }
 
     @ParameterizedTest

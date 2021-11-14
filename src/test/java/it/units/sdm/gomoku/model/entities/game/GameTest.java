@@ -2,7 +2,7 @@ package it.units.sdm.gomoku.model.entities.game;
 
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.*;
-import it.units.sdm.gomoku.property_change_handlers.ObservableProperty;
+import it.units.sdm.gomoku.property_change_handlers.SettableObservableProperty;
 import it.units.sdm.gomoku.utils.TestUtility;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,7 +35,7 @@ class GameTest {
         try {
             Field gameStatusField = TestUtility.getFieldAlreadyMadeAccessible(Game.class, "gameStatus");
             @SuppressWarnings("unchecked")
-            ObservableProperty<Game.Status> gameStatusProperty = (ObservableProperty<Game.Status>) gameStatusField.get(game);
+            SettableObservableProperty<Game.Status> gameStatusProperty = (SettableObservableProperty<Game.Status>) gameStatusField.get(game);
             assertEquals(gameStatusProperty, game.getGameStatus());
         } catch (NoSuchFieldException | IllegalAccessException e) {
             fail(e);
@@ -58,7 +58,7 @@ class GameTest {
         try {
             Field currentPlayerField = TestUtility.getFieldAlreadyMadeAccessible(Game.class, "currentPlayer");
             @SuppressWarnings("unchecked")
-            ObservableProperty<Player> currentPlayerProperty = (ObservableProperty<Player>) currentPlayerField.get(game);
+            SettableObservableProperty<Player> currentPlayerProperty = (SettableObservableProperty<Player>) currentPlayerField.get(game);
             assertEquals(currentPlayerProperty, game.getCurrentPlayer());
         } catch (NoSuchFieldException | IllegalAccessException e) {
             fail(e);

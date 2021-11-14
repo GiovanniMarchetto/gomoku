@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class PropertyObserverTest {
-    private final ObservableProperty<String> observable = new ObservableProperty<>();
+    private final SettableObservableProperty<String> observable = new SettableObservableProperty<>();
     private final String startObservableValue = "test";
     private final String changeValue = "change";
     private final String startRelatedValue = "bingo";
