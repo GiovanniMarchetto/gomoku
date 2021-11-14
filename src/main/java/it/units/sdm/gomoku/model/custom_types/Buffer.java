@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import static it.units.sdm.gomoku.model.custom_types.NonNegativeInteger.NonNegativeIntegerType;
 import static it.units.sdm.gomoku.model.custom_types.PositiveInteger.PositiveIntegerType;
 
 public class Buffer<ContentType> {
@@ -20,6 +21,11 @@ public class Buffer<ContentType> {
         }
         this.size = size;
         this.buffer = new ArrayList<>(size);
+    }
+
+    @NonNegativeIntegerType
+    public synchronized int getNumberOfElements() {
+        return buffer.size();
     }
 
 }

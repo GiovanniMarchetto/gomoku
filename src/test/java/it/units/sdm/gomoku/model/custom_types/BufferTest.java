@@ -7,6 +7,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -52,4 +55,18 @@ class BufferTest {
             fail(e);
         }
     }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = EnvVariables.POSITIVE_INTS_PROVIDER_RESOURCE_LOCATION)
+    void getNumberOfElementsTest(int size) throws NoSuchFieldException, IllegalAccessException {
+        for (int numberOfInsertedElements = 0; numberOfInsertedElements < size; numberOfInsertedElements++) {
+            Buffer<Integer> bufferInstance = new Buffer<>(size);
+            @SuppressWarnings("unchecked")  // Buffer instance hosts elements of that type
+            List<Integer> actualBuffer = (List<Integer>) TestUtility.getFieldValue("buffer", bufferInstance);
+            assert actualBuffer != null;
+            actualBuffer.addAll(IntStream.range(0, numberOfInsertedElements).boxed().collect(Collectors.toList()));
+            assertEquals(numberOfInsertedElements, bufferInstance.getNumberOfElements());
+        }
+    }
+
 }
