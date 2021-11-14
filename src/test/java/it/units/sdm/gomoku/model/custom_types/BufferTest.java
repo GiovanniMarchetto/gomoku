@@ -222,4 +222,26 @@ class BufferTest {
         assertEquals(element, elementRemovedFromBuffer);
     }
 
+    @Test
+    void removeShouldWaitIfBufferIsEmpty() {
+        Thread threadThatTryToRemoveOneElementFromBuffer = createAndStartAndGetThreadWhichTriesToRemoveOneElementFromBufferWhenEmpty();
+        assertEquals(Thread.State.WAITING, threadThatTryToRemoveOneElementFromBuffer.getState());
+    }
+
+    @NotNull
+    private Thread createAndStartAndGetThreadWhichTriesToRemoveOneElementFromBufferWhenEmpty() {
+        assert isBufferEmpty(bufferOfIntegerUsedInTests);
+        Thread threadThatTryToRemoveOneElementFromBuffer =
+                createAndSetNameAndScheduleItsInterruptionAndGetThread(
+                        REASONABLE_MILLISECS_AFTER_WHICH_THREAD_MUST_BE_INTERRUPTED,
+                        () -> bufferOfIntegerUsedInTests.getAndRemoveLastElement(),
+                        "threadThatTryToRemoveOneElementFromBuffer");
+        try {
+            Thread.sleep(REASONABLE_MILLISECS_TO_PERMIT_THREAD_TO_START);
+        } catch (InterruptedException e) {
+            fail(e);
+        }
+        return threadThatTryToRemoveOneElementFromBuffer;
+    }
+
 }
