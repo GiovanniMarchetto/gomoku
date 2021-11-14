@@ -156,7 +156,7 @@ class BufferTest {
 
     @ParameterizedTest
     @CsvFileSource(resources = EnvVariables.POSITIVE_INTS_LOWER_THAN_10000_PROVIDER_RESOURCE_LOCATION)
-    Thread testThatInsertShouldWaitIfBufferIsFull_thenReturnTheThreadWhichShouldWaitForInsert(
+    Thread testThatInsertShouldWaitIfBufferIsFull_thenReturnTheThreadWhichIsWaiting(
             int oneMoreElementInsertedWhenBufferIsFull) throws NoSuchFieldException, IllegalAccessException {
         fillBufferWithIntegers(bufferOfIntegerUsedInTests);
         assert bufferOfIntegerUsedInTests.getNumberOfElements() == ARBITRARY_CHOSEN_SIZE;
@@ -178,7 +178,7 @@ class BufferTest {
     void insertShouldWaitIfBufferIsFullButRestartWhenThereIsSpace() throws NoSuchFieldException, IllegalAccessException {
         int oneMoreElementInsertedWhenBufferIsFull = 1234;
         Thread threadThatTryToInsertOneMoreElementInBuffer =
-                testThatInsertShouldWaitIfBufferIsFull_thenReturnTheThreadWhichShouldWaitForInsert(oneMoreElementInsertedWhenBufferIsFull);
+                testThatInsertShouldWaitIfBufferIsFull_thenReturnTheThreadWhichIsWaiting(oneMoreElementInsertedWhenBufferIsFull);
         Thread threadThatRemoveOneElementFromBuffer =
                 createAndSetNameAndScheduleItsInterruptionAndGetThread(
                         REASONABLE_MILLISECS_AFTER_WHICH_THREAD_MUST_BE_INTERRUPTED,
