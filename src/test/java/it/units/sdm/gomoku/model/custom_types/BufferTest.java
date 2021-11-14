@@ -6,9 +6,10 @@ import it.units.sdm.gomoku.utils.TestUtility;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,13 +24,25 @@ import static org.junit.jupiter.api.Assertions.*;
 class BufferTest {
 
     private final static int MAX_BUFFER_SIZE_USED_IN_TEST = 10000;
+    @NotNull
     private final static String actualBufferFieldNameInClass = "buffer";
+    @NotNull
     private final static String sizeFieldNameInClass = "size";
 
     private final static int ARBITRARY_CHOSEN_SIZE = 10;
     private final static int REASONABLE_MILLISECS_TO_PERMIT_THREAD_TO_START = 10;
     private final static int REASONABLE_MILLISECS_AFTER_WHICH_THREAD_MUST_BE_INTERRUPTED =
             2 * REASONABLE_MILLISECS_TO_PERMIT_THREAD_TO_START;
+
+    @NotNull
+    private Buffer<Integer> bufferOfIntegerUsedInTests;
+
+    @SuppressWarnings("unchecked")  // cast inner buffer to list of correct type
+    @Nullable
+    private static <ElementType> List<ElementType> getActualBuffer(@NotNull final Buffer<ElementType> buffer)
+            throws NoSuchFieldException, IllegalAccessException {
+        return (List<ElementType>) TestUtility.getFieldValue(actualBufferFieldNameInClass, Objects.requireNonNull(buffer));
+    }
 
     @ParameterizedTest
     @CsvFileSource(resources = EnvVariables.INTS_PROVIDER_RESOURCE_LOCATION)
@@ -56,14 +69,13 @@ class BufferTest {
                 .forEach(buffer::insert);
     }
 
-    @SuppressWarnings("unchecked")  // cast inner buffer to list of correct type
-    @Nullable
-    private static <ElementType> List<ElementType> getActualBuffer(@NotNull final Buffer<ElementType> buffer) throws NoSuchFieldException, IllegalAccessException {
-        return (List<ElementType>) TestUtility.getFieldValue(actualBufferFieldNameInClass, Objects.requireNonNull(buffer));
+    @BeforeEach
+    void setUp() {
+        bufferOfIntegerUsedInTests = new Buffer<>(ARBITRARY_CHOSEN_SIZE);
     }
 
     @ParameterizedTest
-    @CsvFileSource(resources = EnvVariables.POSITIVE_INTS_PROVIDER_RESOURCE_LOCATION)
+    @CsvFileSource(resources = EnvVariables.POSITIVE_INTS_LOWER_THAN_10000_PROVIDER_RESOURCE_LOCATION)
     void constructorCreatesObjectWithCorrectSize(int size) {
         Buffer<Integer> buffer = new Buffer<>(size);
         try {
@@ -74,7 +86,7 @@ class BufferTest {
     }
 
     @ParameterizedTest
-    @CsvFileSource(resources = EnvVariables.POSITIVE_INTS_PROVIDER_RESOURCE_LOCATION)
+    @CsvFileSource(resources = EnvVariables.POSITIVE_INTS_LOWER_THAN_10000_PROVIDER_RESOURCE_LOCATION)
     void constructorCreatesObjectWithCorrectlyInitializedBuffer(int size) {
         Buffer<Integer> buffer = new Buffer<>(size);
         try {
@@ -84,18 +96,7 @@ class BufferTest {
         }
     }
 
-    @ParameterizedTest
-    @MethodSource("it.units.sdm.gomoku.model.custom_types.CoordinatesTest#nonNegativeIntegerPairAndValidFlagSupplier"/* whatever supplier of parameters is ok */)
-    <ElementType> void insertOneElementWhenBufferIsEmpty(ElementType element) {
-        final int ARBITRARY_CHOSEN_SIZE = 10;
-        Buffer<ElementType> buffer = new Buffer<>(ARBITRARY_CHOSEN_SIZE);
-        assert isBufferEmptyImmediatelyAfterCreation(buffer);
-        buffer.insert(element);
-        final int NUMBER_OF_INSERTED_ELEMENTS = 1;
-        assertEquals(NUMBER_OF_INSERTED_ELEMENTS, buffer.getNumberOfElements());
-    }
-
-    private <ElementType> boolean isBufferEmptyImmediatelyAfterCreation(@NotNull final Buffer<ElementType> buffer) {
+    private <ElementType> boolean isBufferEmpty(@NotNull final Buffer<ElementType> buffer) {
         return Objects.requireNonNull(buffer).getNumberOfElements() == 0;
     }
 
@@ -126,60 +127,42 @@ class BufferTest {
     }
 
     @ParameterizedTest
-    @CsvFileSource(resources = EnvVariables.POSITIVE_INTS_PROVIDER_RESOURCE_LOCATION)
-    void getNumberOfElementsTest(int size) throws NoSuchFieldException, IllegalAccessException {
-        for (int numberOfInsertedElements = 0; numberOfInsertedElements < size; numberOfInsertedElements++) {
-            Buffer<Integer> bufferInstance = new Buffer<>(size);
-            List<Integer> actualBuffer = getActualBuffer(bufferInstance);
-            assert actualBuffer != null;
-            actualBuffer.addAll(IntStream.range(0, numberOfInsertedElements).boxed().toList());
-            assertEquals(numberOfInsertedElements, bufferInstance.getNumberOfElements());
-        }
+    @CsvFileSource(resources = EnvVariables.POSITIVE_INTS_LOWER_THAN_10000_PROVIDER_RESOURCE_LOCATION)
+    void getNumberOfElementsTest(int bufferSize) {
+        IntStream.range(0, bufferSize)
+                .forEach(numberOfInsertedElements -> {
+                    Buffer<Integer> bufferInstance = new Buffer<>(bufferSize);
+                    List<Integer> actualBuffer = null;
+                    try {
+                        actualBuffer = getActualBuffer(bufferInstance);
+                    } catch (NoSuchFieldException | IllegalAccessException e) {
+                        fail(e);
+                    }
+                    assert actualBuffer != null;
+                    actualBuffer.addAll(IntStream.range(0, numberOfInsertedElements).boxed().toList());
+                    assertEquals(numberOfInsertedElements, bufferInstance.getNumberOfElements());
+                });
     }
 
-    @ParameterizedTest
-    @CsvFileSource(resources = EnvVariables.POSITIVE_INTS_PROVIDER_RESOURCE_LOCATION)
-    void insertShouldWaitIfBufferIsFull() throws NoSuchFieldException, IllegalAccessException {
-        Buffer<Integer> buffer = new Buffer<>(ARBITRARY_CHOSEN_SIZE);
-        fillBufferWithIntegers(buffer);
-        assert buffer.getNumberOfElements() == ARBITRARY_CHOSEN_SIZE;
-        final Integer oneMoreElementInsertedWhenBufferIsFull = 1;
-        Thread threadThatTryToInsertOneMoreElementInBuffer =
-                createAndSetNameAndScheduleItsInterruptionAndGetThread(
-                        REASONABLE_MILLISECS_AFTER_WHICH_THREAD_MUST_BE_INTERRUPTED,
-                        () -> buffer.insert(oneMoreElementInsertedWhenBufferIsFull),
-                        "threadThatTryToInsertOneMoreElementInBuffer");
-        try {
-            Thread.sleep(REASONABLE_MILLISECS_TO_PERMIT_THREAD_TO_START);
-        } catch (InterruptedException e) {
-            fail(e);
-        }
-        assertEquals(Thread.State.WAITING, threadThatTryToInsertOneMoreElementInBuffer.getState());
-    }
 
     @ParameterizedTest
-    @CsvFileSource(resources = EnvVariables.POSITIVE_INTS_PROVIDER_RESOURCE_LOCATION)
+    @CsvFileSource(resources = EnvVariables.POSITIVE_INTS_LOWER_THAN_10000_PROVIDER_RESOURCE_LOCATION)
+    void insertOneElementWhenBufferIsEmpty(int element) {
+        assert isBufferEmpty(bufferOfIntegerUsedInTests);
+        bufferOfIntegerUsedInTests.insert(element);
+        final int NUMBER_OF_INSERTED_ELEMENTS = 1;
+        assertEquals(NUMBER_OF_INSERTED_ELEMENTS, bufferOfIntegerUsedInTests.getNumberOfElements());
+    }
+
+    @Test
     void insertShouldWaitIfBufferIsFullButRestartWhenThereIsSpace() throws NoSuchFieldException, IllegalAccessException {
-        Buffer<Integer> buffer = new Buffer<>(ARBITRARY_CHOSEN_SIZE);
-        fillBufferWithIntegers(buffer);
-        assert buffer.getNumberOfElements() == ARBITRARY_CHOSEN_SIZE;
-        final Integer oneMoreElementInsertedWhenBufferIsFull = 42;
+        int oneMoreElementInsertedWhenBufferIsFull = 1234;
         Thread threadThatTryToInsertOneMoreElementInBuffer =
-                createAndSetNameAndScheduleItsInterruptionAndGetThread(
-                        REASONABLE_MILLISECS_AFTER_WHICH_THREAD_MUST_BE_INTERRUPTED,
-                        () -> buffer.insert(oneMoreElementInsertedWhenBufferIsFull),
-                        "threadThatTryToInsertOneMoreElementInBuffer");
-        try {
-            Thread.sleep(REASONABLE_MILLISECS_TO_PERMIT_THREAD_TO_START);
-        } catch (InterruptedException e) {
-            fail(e);
-        }
-        assert Thread.State.WAITING.equals(threadThatTryToInsertOneMoreElementInBuffer.getState()); // TODO : code duplication with previous test
-
+                testThatInsertShouldWaitIfBufferIsFull_thenReturnTheThreadWhichShouldWaitForInsert(oneMoreElementInsertedWhenBufferIsFull);
         Thread threadThatRemoveOneElementFromBuffer =
                 createAndSetNameAndScheduleItsInterruptionAndGetThread(
                         REASONABLE_MILLISECS_AFTER_WHICH_THREAD_MUST_BE_INTERRUPTED,
-                        buffer::getAndRemoveLastElement, "threadThatRemoveOneElementFromBuffer");
+                        bufferOfIntegerUsedInTests::getAndRemoveLastElement, "threadThatRemoveOneElementFromBuffer");
         try {
             Thread.sleep(REASONABLE_MILLISECS_TO_PERMIT_THREAD_TO_START);
             threadThatRemoveOneElementFromBuffer.join();
@@ -187,9 +170,29 @@ class BufferTest {
         } catch (InterruptedException e) {
             fail(e);
         }
-        Optional<?> lastElementInBufferAfterInsertingTheOneMoreElment = getLastElementFromBuffer(buffer);
+        Optional<?> lastElementInBufferAfterInsertingTheOneMoreElment = getLastElementFromBuffer(bufferOfIntegerUsedInTests);
         lastElementInBufferAfterInsertingTheOneMoreElment
                 .ifPresentOrElse(o -> assertEquals(oneMoreElementInsertedWhenBufferIsFull, o), Assertions::fail);
+    }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = EnvVariables.POSITIVE_INTS_LOWER_THAN_10000_PROVIDER_RESOURCE_LOCATION)
+    Thread testThatInsertShouldWaitIfBufferIsFull_thenReturnTheThreadWhichShouldWaitForInsert(
+            int oneMoreElementInsertedWhenBufferIsFull) throws NoSuchFieldException, IllegalAccessException {
+        fillBufferWithIntegers(bufferOfIntegerUsedInTests);
+        assert bufferOfIntegerUsedInTests.getNumberOfElements() == ARBITRARY_CHOSEN_SIZE;
+        Thread threadThatTryToInsertOneMoreElementInBuffer =
+                createAndSetNameAndScheduleItsInterruptionAndGetThread(
+                        REASONABLE_MILLISECS_AFTER_WHICH_THREAD_MUST_BE_INTERRUPTED,
+                        () -> bufferOfIntegerUsedInTests.insert(oneMoreElementInsertedWhenBufferIsFull),
+                        "threadThatTryToInsertOneMoreElementInBuffer");
+        try {
+            Thread.sleep(REASONABLE_MILLISECS_TO_PERMIT_THREAD_TO_START);
+        } catch (InterruptedException e) {
+            fail(e);
+        }
+        assertEquals(Thread.State.WAITING, threadThatTryToInsertOneMoreElementInBuffer.getState());
+        return threadThatTryToInsertOneMoreElementInBuffer;
     }
 
 }
