@@ -156,7 +156,15 @@ class BufferTest {
 
     @ParameterizedTest
     @CsvFileSource(resources = EnvVariables.POSITIVE_INTS_LOWER_THAN_10000_PROVIDER_RESOURCE_LOCATION)
-    Thread testThatInsertShouldWaitIfBufferIsFull_thenReturnTheThreadWhichIsWaiting(
+    void testThatInsertShouldWaitIfBufferIsFull(int oneMoreElementInsertedWhenBufferIsFull)
+            throws NoSuchFieldException, IllegalAccessException {
+        Thread threadThatTryToInsertOneMoreElementInBuffer =
+                createAndStartAndGetThreadWhichTriesToInsertOneMoreElementInBufferWhenFull(oneMoreElementInsertedWhenBufferIsFull);
+        assertEquals(Thread.State.WAITING, threadThatTryToInsertOneMoreElementInBuffer.getState());
+    }
+
+    @NotNull
+    private Thread createAndStartAndGetThreadWhichTriesToInsertOneMoreElementInBufferWhenFull(
             int oneMoreElementInsertedWhenBufferIsFull) throws NoSuchFieldException, IllegalAccessException {
         fillBufferWithIntegers(bufferOfIntegerUsedInTests);
         assert bufferOfIntegerUsedInTests.getNumberOfElements() == ARBITRARY_CHOSEN_SIZE;
@@ -170,7 +178,6 @@ class BufferTest {
         } catch (InterruptedException e) {
             fail(e);
         }
-        assertEquals(Thread.State.WAITING, threadThatTryToInsertOneMoreElementInBuffer.getState());
         return threadThatTryToInsertOneMoreElementInBuffer;
     }
 
@@ -178,7 +185,7 @@ class BufferTest {
     void insertShouldWaitIfBufferIsFullButRestartWhenThereIsSpace() throws NoSuchFieldException, IllegalAccessException {
         int oneMoreElementInsertedWhenBufferIsFull = 1234;
         Thread threadThatTryToInsertOneMoreElementInBuffer =
-                testThatInsertShouldWaitIfBufferIsFull_thenReturnTheThreadWhichIsWaiting(oneMoreElementInsertedWhenBufferIsFull);
+                createAndStartAndGetThreadWhichTriesToInsertOneMoreElementInBufferWhenFull(oneMoreElementInsertedWhenBufferIsFull);
         Thread threadThatRemoveOneElementFromBuffer =
                 createAndSetNameAndScheduleItsInterruptionAndGetThread(
                         REASONABLE_MILLISECS_AFTER_WHICH_THREAD_MUST_BE_INTERRUPTED,
