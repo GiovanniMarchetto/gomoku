@@ -43,4 +43,20 @@ public class Buffer<ElementType> {
         notify();
     }
 
+    @Nullable
+    public synchronized ElementType getAndRemoveLastElement() {
+        while (getNumberOfElements() == 0) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                Utility.getLoggerOfClass(getClass()).log(Level.WARNING, "Interrupted", e);
+            }
+        }
+        int indexOfElementToGetAndRemove = buffer.size() - 1;
+        ElementType toReturn = buffer.get(indexOfElementToGetAndRemove);
+        buffer.remove(indexOfElementToGetAndRemove);
+        notify();
+        return toReturn;
+    }
+
 }
