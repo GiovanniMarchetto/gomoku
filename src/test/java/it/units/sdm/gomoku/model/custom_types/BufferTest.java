@@ -195,4 +195,13 @@ class BufferTest {
         return threadThatTryToInsertOneMoreElementInBuffer;
     }
 
+    @Test
+    void getAndRemoveLastElementWhenBufferIsNotEmpty() throws NoSuchFieldException, IllegalAccessException {
+        fillBufferWithIntegers(bufferOfIntegerUsedInTests);
+        assert !isBufferEmpty(bufferOfIntegerUsedInTests);
+        int expectedSizeAfterRemovingOneElement = bufferOfIntegerUsedInTests.getNumberOfElements() - 1;
+        bufferOfIntegerUsedInTests.getAndRemoveLastElement();
+        assertEquals(expectedSizeAfterRemovingOneElement, bufferOfIntegerUsedInTests.getNumberOfElements());
+    }
+
 }
