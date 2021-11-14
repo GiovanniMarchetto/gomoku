@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -197,8 +198,8 @@ class BufferTest {
         } catch (InterruptedException e) {
             fail(e);
         }
-        Optional<?> lastElementInBufferAfterInsertingTheOneMoreElment = getLastElementFromBuffer(bufferOfIntegerUsedInTests);
-        lastElementInBufferAfterInsertingTheOneMoreElment
+        Optional<?> lastElementInBufferAfterInsertingTheOneMoreElement = getLastElementFromBuffer(bufferOfIntegerUsedInTests);
+        lastElementInBufferAfterInsertingTheOneMoreElement
                 .ifPresentOrElse(o -> assertEquals(oneMoreElementInsertedWhenBufferIsFull, o), Assertions::fail);
     }
 
@@ -223,18 +224,29 @@ class BufferTest {
     }
 
     @Test
-    void removeShouldWaitIfBufferIsEmpty() {
-        Thread threadThatTryToRemoveOneElementFromBuffer = createAndStartAndGetThreadWhichTriesToRemoveOneElementFromBufferWhenEmpty();
+    void removeShouldWaitIfBufferIsEmpty() throws IOException {
+        Thread threadThatTryToRemoveOneElementFromBuffer =
+                createAndStartAndGetThreadWhichTriesToRemoveOneElementFromBufferWhenEmpty(
+                        new ObjectOutputStream(new ByteArrayOutputStream()));
         assertEquals(Thread.State.WAITING, threadThatTryToRemoveOneElementFromBuffer.getState());
     }
 
     @NotNull
-    private Thread createAndStartAndGetThreadWhichTriesToRemoveOneElementFromBufferWhenEmpty() {
+    private Thread createAndStartAndGetThreadWhichTriesToRemoveOneElementFromBufferWhenEmpty(
+            @NotNull final ObjectOutputStream whereToWriteTheObjectRemovedFromTheBuffer) {
         assert isBufferEmpty(bufferOfIntegerUsedInTests);
         Thread threadThatTryToRemoveOneElementFromBuffer =
                 createAndSetNameAndScheduleItsInterruptionAndStartAndGetThread(
                         REASONABLE_MILLISECS_AFTER_WHICH_THREAD_MUST_BE_INTERRUPTED,
-                        () -> bufferOfIntegerUsedInTests.getAndRemoveLastElement(),
+                        () -> {
+                            try {
+                                Objects.requireNonNull(whereToWriteTheObjectRemovedFromTheBuffer)
+                                        .writeObject(bufferOfIntegerUsedInTests.getAndRemoveLastElement());
+                                whereToWriteTheObjectRemovedFromTheBuffer.flush();
+                            } catch (IOException e) {
+                                fail(e);
+                            }
+                        },
                         "threadThatTryToRemoveOneElementFromBuffer");
         try {
             Thread.sleep(REASONABLE_MILLISECS_TO_PERMIT_THREAD_TO_START);
@@ -242,6 +254,33 @@ class BufferTest {
             fail(e);
         }
         return threadThatTryToRemoveOneElementFromBuffer;
+    }
+
+    @Test
+    void removeShouldWaitIfBufferIsEmptyButRestartWhenThereIsAtLeastOneElement()
+            throws IOException, ClassNotFoundException {
+        int oneElementToInsert = 1234;
+        ByteArrayOutputStream whereThreadWhichRemoveFromBufferWillWriteTheRemovedObject =
+                new ByteArrayOutputStream();
+        Thread threadThatTryToRemoveOneElementFromBuffer =
+                createAndStartAndGetThreadWhichTriesToRemoveOneElementFromBufferWhenEmpty(
+                        new ObjectOutputStream(whereThreadWhichRemoveFromBufferWillWriteTheRemovedObject));
+        Thread threadThatInsertOneElementIntoBuffer =
+                createAndSetNameAndScheduleItsInterruptionAndStartAndGetThread(
+                        REASONABLE_MILLISECS_AFTER_WHICH_THREAD_MUST_BE_INTERRUPTED,
+                        () -> bufferOfIntegerUsedInTests.insert(oneElementToInsert),
+                        "threadThatInsertOneElementIntoBuffer");
+        try {
+            Thread.sleep(REASONABLE_MILLISECS_TO_PERMIT_THREAD_TO_START);
+            threadThatInsertOneElementIntoBuffer.join();
+            threadThatTryToRemoveOneElementFromBuffer.join();
+        } catch (InterruptedException e) {
+            fail(e);
+        }
+        Object elementRemovedFromBuffer = new ObjectInputStream(
+                new ByteArrayInputStream(whereThreadWhichRemoveFromBufferWillWriteTheRemovedObject.toByteArray()))
+                .readObject();
+        assertEquals(oneElementToInsert, elementRemovedFromBuffer);
     }
 
 }
