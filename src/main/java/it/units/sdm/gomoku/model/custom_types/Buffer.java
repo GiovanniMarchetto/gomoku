@@ -4,8 +4,8 @@ import it.units.sdm.gomoku.Utility;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
 import static it.units.sdm.gomoku.model.custom_types.NonNegativeInteger.NonNegativeIntegerType;
@@ -23,7 +23,7 @@ public class Buffer<ContentType> {
             throw new IllegalArgumentException("Invalid size: it must be a positive integer.");
         }
         this.size = size;
-        this.buffer = new ArrayList<>(size);
+        this.buffer = new CopyOnWriteArrayList<>();
     }
 
     @NonNegativeIntegerType
