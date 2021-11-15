@@ -32,31 +32,37 @@ public class Buffer<ElementType> {
     }
 
     public synchronized void insert(@Nullable final ElementType element) {
-        while (getNumberOfElements() == size) {
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                Utility.getLoggerOfClass(getClass()).log(Level.WARNING, "Interrupted", e);
-            }
-        }
+        waitWhileTheBufferIsFull();
         buffer.add(element);
         notify();
     }
 
     @Nullable
     public synchronized ElementType getAndRemoveLastElement() {
-        while (getNumberOfElements() == 0) {
+        waitWhileTheBufferIsEmpty();
+        int indexOfElementToGetAndRemove = buffer.size() - 1;
+        ElementType toReturn = buffer.get(indexOfElementToGetAndRemove);
+        buffer.remove(indexOfElementToGetAndRemove);
+        notify();
+        return toReturn;
+    }
+
+    private void waitWhileTheBufferIsFull() {
+        waitWhileThereAreNElementsInBuffer(size);
+    }
+
+    private void waitWhileTheBufferIsEmpty() {
+        waitWhileThereAreNElementsInBuffer(0);
+    }
+
+    private void waitWhileThereAreNElementsInBuffer(int N) {
+        while (getNumberOfElements() == N) {
             try {
                 wait();
             } catch (InterruptedException e) {
                 Utility.getLoggerOfClass(getClass()).log(Level.WARNING, "Interrupted", e);
             }
         }
-        int indexOfElementToGetAndRemove = buffer.size() - 1;
-        ElementType toReturn = buffer.get(indexOfElementToGetAndRemove);
-        buffer.remove(indexOfElementToGetAndRemove);
-        notify();
-        return toReturn;
     }
 
 }
