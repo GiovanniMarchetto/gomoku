@@ -35,7 +35,7 @@ public class CPUPlayer extends Player {
     }
 
     @Override
-    public void makeMove(@NotNull final Game currentGame) {
+    public void makeMove(@NotNull final Game currentGame) throws IllegalStateException, IllegalArgumentException, IndexOutOfBoundsException {
         Utility.runOnSeparateThread(() -> {
             Coordinates nextMoveToMake = null;
             try {
@@ -43,7 +43,7 @@ public class CPUPlayer extends Player {
                 nextMoveToMake = chooseSmartEmptyCoordinates(currentGame);
                 super.setNextMove(nextMoveToMake, currentGame);
                 super.makeMove(currentGame);
-            } catch (BoardIsFullException | Game.GameEndedException | Board.CellOutOfBoardException | Board.CellAlreadyOccupiedException e) {
+            } catch (Game.GameEndedException e) {
                 // TODO: correctly handled exception?
                 Utility.getLoggerOfClass(getClass())
                         .log(Level.SEVERE, "Illegal move: impossible to choose coordinate " + nextMoveToMake, e);
@@ -55,10 +55,14 @@ public class CPUPlayer extends Player {
     }
 
     @NotNull
-    public Coordinates chooseSmartEmptyCoordinates(@NotNull final Game game) throws BoardIsFullException {
+    public Coordinates chooseSmartEmptyCoordinates(@NotNull final Game game) throws IllegalStateException {
 
         if (Objects.requireNonNull(game).isBoardEmpty()) {
-            return chooseNextEmptyCoordinatesFromCenter(game);
+            try {
+                return chooseNextEmptyCoordinatesFromCenter(game);
+            } catch (BoardIsFullException e) {
+                throw new IllegalStateException(e);
+            }
         }
 
         final int MAX_CHAIN_LENGTH_TO_FIND_EXCLUDED = 5;
@@ -73,7 +77,11 @@ public class CPUPlayer extends Player {
                         .filter(coord -> game.isHeadOfAChainOfStones(coord, new PositiveInteger(chainLength))))
                 .toList();
 
-        return smartCoordinates.size() > 0 ? smartCoordinates.get(0) : chooseNextEmptyCoordinatesFromCenter(game);
+        try {
+            return smartCoordinates.size() > 0 ? smartCoordinates.get(0) : chooseNextEmptyCoordinatesFromCenter(game);
+        } catch (BoardIsFullException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     @NotNull

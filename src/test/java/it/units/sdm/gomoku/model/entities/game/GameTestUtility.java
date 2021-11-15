@@ -24,11 +24,7 @@ public class GameTestUtility {
     public static void disputeGameWithSmartAlgorithm(Game game) {
         final CPUPlayer cpuPlayer = new CPUPlayer();
         while (!game.isEnded()) {
-            try {
-                tryToPlaceStoneAndChangeTurn(cpuPlayer.chooseSmartEmptyCoordinates(game), game);
-            } catch (Board.BoardIsFullException e) {
-                fail(e);
-            }
+            tryToPlaceStoneAndChangeTurn(cpuPlayer.chooseSmartEmptyCoordinates(game), game);
         }
     }
 

@@ -102,9 +102,10 @@ class HumanPlayerTest { // TODO: some of this are tests of class Player
         try {
             humanPlayer.setNextMove(outOfBoundCoordinates, game);
             fail("Coordinates out of board but accepted");
-        } catch (Board.CellOutOfBoardException ignored) {   // correct to go here to pass the test
-        } catch (Game.GameEndedException | Board.CellAlreadyOccupiedException e) {
+        } catch (Game.GameEndedException e) {
             fail(e);
+        } catch (IndexOutOfBoundsException ignored) {
+            // execution should arrive here to pass the test
         }
     }
 
