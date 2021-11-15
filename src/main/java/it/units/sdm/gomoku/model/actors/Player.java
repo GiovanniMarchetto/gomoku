@@ -1,6 +1,5 @@
 package it.units.sdm.gomoku.model.actors;
 
-import it.units.sdm.gomoku.Utility;
 import it.units.sdm.gomoku.model.custom_types.Buffer;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.Board;
@@ -12,7 +11,6 @@ import it.units.sdm.gomoku.property_change_handlers.observable_properties.Observ
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
-import java.util.logging.Level;
 
 public abstract class Player implements Observable {
 
@@ -33,17 +31,25 @@ public abstract class Player implements Observable {
         coordinatesRequiredToContinueProperty.setPropertyValueWithoutNotifying(false);
     }
 
-    public void setNextMoveToMake(@NotNull final Coordinates nextMoveToMake) {
+    public void setNextMove(@NotNull final Coordinates nextMoveToMake, @NotNull final Game currentGame)
+            throws Game.GameEndedException, Board.BoardIsFullException,
+            Board.CellAlreadyOccupiedException, Board.CellOutOfBoardException { // TODO: test and refactor
+        if (Objects.requireNonNull(currentGame).isEnded()) {
+            throw new Game.GameEndedException();
+        } else if (!currentGame.getBoard().isThereAnyEmptyCell()) {
+            throw new Board.BoardIsFullException();
+        } else if (!currentGame.getBoard().getCellAtCoordinates(nextMoveToMake).isEmpty()) {
+            throw new Board.CellAlreadyOccupiedException(nextMoveToMake);
+        }
         nextMoveBuffer.insert(Objects.requireNonNull(nextMoveToMake));
     }
 
-    public void makeMove(@NotNull final Game currentGame) {
-        Coordinates moveToMake = Objects.requireNonNull(nextMoveBuffer.getAndRemoveLastElement());
+    public void makeMove(@NotNull final Game currentGame) {             // TODO : test
         try {
-            Objects.requireNonNull(currentGame).placeStoneAndChangeTurn(moveToMake);
+            Objects.requireNonNull(currentGame).placeStoneAndChangeTurn(
+                    Objects.requireNonNull(nextMoveBuffer.getAndRemoveLastElement()));
         } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Game.GameEndedException | Board.CellOutOfBoardException e) {
-            Utility.getLoggerOfClass(getClass()).log(Level.SEVERE, "Illegal move: impossible to choose coordinate " + moveToMake, e);
-            throw new IllegalStateException(e);
+            // TODO: handle this exception
         }
     }
 

@@ -256,7 +256,7 @@ class MainViewmodelTest {
             }
         });
         separateThreadWhichWaitForCurrentGameToBeSet.start();
-        TestUtility.interruptThreadAfterDelayIfNotAlreadyJoined(    // TODO: resee this
+        TestUtility.interruptThreadAfterDelayIfNotAlreadyJoined(    // TODO: re-see this
                 separateThreadWhichWaitForCurrentGameToBeSet, REASONABLE_TIME_AFTER_WHICH_THREAD_WILL_BE_INTERRUPTED_IN_MILLIS);
         try {
             separateThreadWhichWaitForCurrentGameToBeSet.join();
@@ -273,10 +273,10 @@ class MainViewmodelTest {
             userMustPlaceNewStoneProperty.setPropertyValueWithoutNotifying(true);
             Coordinates coordinates = new Coordinates(0, 0);
             mainViewmodel.placeStoneFromUser(coordinates);
+            Thread.sleep(100);  // TODO: rethink about the architecture_ here we have to wait for another thread (who knows which one) to update the model: is this correct?
             assertFalse(mainViewmodel.getCellAtCoordinatesInCurrentBoard(coordinates).isEmpty());
-        } catch (NoSuchFieldException | IllegalAccessException
-                | Board.BoardIsFullException | Game.GameEndedException
-                | Board.CellAlreadyOccupiedException e) {
+        } catch (NoSuchFieldException | IllegalAccessException | Board.BoardIsFullException | Game.GameEndedException
+                | Board.CellAlreadyOccupiedException | InterruptedException e) {
             fail(e);
         } catch (Board.CellOutOfBoardException e) {
             fail(new IllegalStateException(e));

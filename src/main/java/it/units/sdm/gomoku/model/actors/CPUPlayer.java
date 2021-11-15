@@ -49,9 +49,10 @@ public class CPUPlayer extends Player {
             try {
                 Thread.sleep(DELAY_BEFORE_PLACING_STONE_MILLIS);
                 nextMoveToMake = chooseSmartEmptyCoordinates(Objects.requireNonNull(currentGame).getBoard());
-                super.setNextMoveToMake(nextMoveToMake);
+                super.setNextMove(nextMoveToMake, currentGame);
                 super.makeMove(currentGame);
-            } catch (BoardIsFullException e) {
+            } catch (BoardIsFullException | Game.GameEndedException | Board.CellOutOfBoardException | Board.CellAlreadyOccupiedException e) {
+                // TODO: correctly handled exception?
                 Utility.getLoggerOfClass(getClass())
                         .log(Level.SEVERE, "Illegal move: impossible to choose coordinate " + nextMoveToMake, e);
                 throw new IllegalStateException(e);

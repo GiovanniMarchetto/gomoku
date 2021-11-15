@@ -1,6 +1,5 @@
 package it.units.sdm.gomoku.ui;
 
-import it.units.sdm.gomoku.model.actors.HumanPlayer;
 import it.units.sdm.gomoku.model.actors.Player;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
@@ -167,8 +166,8 @@ public abstract class MainViewmodel extends Viewmodel {
     public void placeStoneFromUser(@NotNull final Coordinates coordinates)
             throws Board.BoardIsFullException, Board.CellAlreadyOccupiedException, Game.GameEndedException, Board.CellOutOfBoardException {
         if (Boolean.TRUE.equals(userMustPlaceNewStoneProperty.getPropertyValue())) {
-            HumanPlayer currentHumanPlayer = (HumanPlayer) Objects.requireNonNull(getCurrentPlayer());
-            currentHumanPlayer.placeStone(coordinates);
+            Objects.requireNonNull(getCurrentPlayer())
+                    .setNextMove(Objects.requireNonNull(coordinates), Objects.requireNonNull(currentGame));
         }
     }
 

@@ -69,23 +69,13 @@ class HumanPlayerTest {
     }
 
     @Test
-    void placeStoneAtStartBeforeMakeMove()
-            throws Board.BoardIsFullException, Game.GameEndedException,
-            Board.CellOutOfBoardException, Board.CellAlreadyOccupiedException {
-        try {
-            humanPlayer.placeStone(firstCoordinates);
-            fail("Game not set yet");
-        } catch (NullPointerException ignored) {
-        }
-    }
-
-    @Test
     void placeStoneAndCheckCoordinates()
             throws Board.BoardIsFullException, Game.GameEndedException,
             Board.CellOutOfBoardException, Board.CellAlreadyOccupiedException,
-            NoSuchFieldException, IllegalAccessException {
+            NoSuchFieldException, IllegalAccessException, InterruptedException {
         getCurrentGameAfterMakeMove();
-        humanPlayer.placeStone(firstCoordinates);
+        humanPlayer.setNextMove(firstCoordinates, game);
+        Thread.sleep(100);  // TODO: rethink about the architecture_ here we have to wait for another thread (who knows which one) to update the model: is this correct?
         assertFalse(game.getBoard().getCellAtCoordinates(firstCoordinates).isEmpty());
     }
 
@@ -93,9 +83,11 @@ class HumanPlayerTest {
     void placeStoneAndCheckCoordinatesRequiredToContinueProperty()
             throws Board.BoardIsFullException, Game.GameEndedException,
             Board.CellOutOfBoardException, Board.CellAlreadyOccupiedException,
-            NoSuchFieldException, IllegalAccessException {
+            NoSuchFieldException, IllegalAccessException, InterruptedException {
         getCurrentGameAfterMakeMove();
-        humanPlayer.placeStone(firstCoordinates);
+        humanPlayer.setNextMove(firstCoordinates, game);
+        Thread.sleep(100);  // TODO: rethink about the architecture_ here we have to wait for another thread (who knows which one) to update the model: is this correct?
+
         @SuppressWarnings("unchecked")
         ObservablePropertyThatCanSetPropertyValueAndFireEvents<Boolean> coordinatesRequiredToContinueProperty =
                 (ObservablePropertyThatCanSetPropertyValueAndFireEvents<Boolean>) TestUtility.getFieldValue(
@@ -110,8 +102,8 @@ class HumanPlayerTest {
             throws NoSuchFieldException, IllegalAccessException, InterruptedException {
         getCurrentGameAfterMakeMove();
         try {
-            humanPlayer.placeStone(outOfBoundCoordinates);
-            fail("Coordinates out of board");
+            humanPlayer.setNextMove(outOfBoundCoordinates, game);
+            fail("Coordinates out of board but accepted");
         } catch (Board.CellOutOfBoardException e) {
             @SuppressWarnings("unchecked")
             ObservableProperty<Boolean> coordinatesRequiredToContinueProperty =
@@ -123,13 +115,13 @@ class HumanPlayerTest {
 //                    break;
 //                }
 //            }
-            //TODO: depends on thread choices
-            Thread.sleep(0, 1000);
+//            //TODO: depends on thread choices
+//            Thread.sleep(0, 1000);
+            Thread.sleep(100);  // TODO: rethink about the architecture_ here we have to wait for another thread (who knows which one) to update the model: is this correct?
             //noinspection ConstantConditions
             assertEquals(Boolean.TRUE, coordinatesRequiredToContinueProperty.getPropertyValue());
         } catch (Board.BoardIsFullException | Game.GameEndedException | Board.CellAlreadyOccupiedException e) {
             fail(e);
-
         }
     }
 }
