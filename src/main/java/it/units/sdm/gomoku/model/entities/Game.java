@@ -15,6 +15,10 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Objects;
+import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -168,24 +172,54 @@ public class Game implements Comparable<Game>, Observable {
 
     public boolean isHeadOfAChainOfStones(@NotNull final Coordinates headCoordinates,
                                           @NotNull final PositiveInteger numberOfConsecutive) {    // TODO: test
-        return IntStream.rangeClosed(-1, 1).mapToObj(xDirection ->
-                        IntStream.rangeClosed(-1, 1).mapToObj(yDirection ->
-                                        IntStream.rangeClosed(1, numberOfConsecutive.intValue())
-                                                .mapToObj(i -> new Pair<>(
-                                                        headCoordinates.getX() + i * xDirection,
-                                                        headCoordinates.getY() + i * yDirection))
-                                                .filter(pair -> pair.getKey() >= 0 && pair.getValue() >= 0)
-                                                .map(validPair -> new Coordinates(validPair.getKey(), validPair.getValue()))
-                                                .filter(board::isCoordinatesInsideBoard)
-                                                .map(board::getCellAtCoordinatesOrNullIfInvalid)
-                                                .filter(Objects::nonNull)
-                                                .filter(cell -> !cell.isEmpty())
-                                                .collect(Collectors.groupingBy(Cell::getStone, Collectors.counting()))
-                                                .values()
-                                                .stream()
-                                                .anyMatch(counter -> counter == numberOfConsecutive.intValue()))
-                                .anyMatch(find -> find))
-                .anyMatch(find -> find);
+
+        BiFunction<Integer, Integer, Stream<Coordinates>> getAllCoordinatesInsideBoardFromVersor = (xDirection, yDirection) ->
+                IntStream.rangeClosed(1, numberOfConsecutive.intValue())
+                        .mapToObj(i -> new Pair<>(
+                                headCoordinates.getX() + i * xDirection,
+                                headCoordinates.getY() + i * yDirection))
+                        .filter(pair -> pair.getKey() >= 0 && pair.getValue() >= 0)
+                        .map(validPair -> new Coordinates(validPair.getKey(), validPair.getValue()))
+                        .filter(board::isCoordinatesInsideBoard);
+
+
+        Supplier<Stream<Stream<Coordinates>>> getAllStreamsOfCoordinatesOverAllDirections = () ->
+                IntStream.rangeClosed(-1, 1)
+                        .boxed()
+                        .flatMap(xDirection ->
+                                IntStream.rangeClosed(-1, 1).mapToObj(yDirection ->
+                                        getAllCoordinatesInsideBoardFromVersor.apply(xDirection, yDirection)));
+
+        Function<Stream<Stream<Coordinates>>, Stream<Stream<Cell>>> mapCoordStreamStreamToCellStreamStream =
+                streamStream -> streamStream
+                        .map(coordStream -> coordStream
+                                .map(board::getCellAtCoordinatesOrNullIfInvalid)
+                                .filter(Objects::nonNull));
+
+        Function<Stream<Stream<Cell>>, IntStream> groupCellStreamStreamByStoneToIntStreamOfMaxNumberSameColorStones =
+                streamStream -> streamStream
+                        .map(cellStream -> cellStream
+                                .filter(cell -> !cell.isEmpty())
+                                .collect(Collectors.groupingBy(Cell::getStone, Collectors.counting()))
+                                .values()
+                                .stream()
+                                .mapToInt(Math::toIntExact)
+                                .max()
+                                .orElseThrow(IllegalStateException::new)) //TODO BROKEN
+                        .mapToInt(i -> i);
+
+        BiPredicate<IntStream, PositiveInteger> isAnyEqualToN = (intStream, N) -> intStream
+                .anyMatch(value -> value == N.intValue());
+
+        var a = getAllStreamsOfCoordinatesOverAllDirections.get();
+
+        var b = mapCoordStreamStreamToCellStreamStream.apply(a);
+
+        var c = groupCellStreamStreamByStoneToIntStreamOfMaxNumberSameColorStones.apply(b);
+
+        var d = isAnyEqualToN.test(c, numberOfConsecutive);
+
+        return d;
     }
 
     public boolean isBoardEmpty() {    // TODO: test
