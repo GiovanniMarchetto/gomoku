@@ -4,15 +4,12 @@ import it.units.sdm.gomoku.Utility;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
-import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Random;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static it.units.sdm.gomoku.model.entities.Board.BoardIsFullException;
@@ -43,7 +40,7 @@ public class CPUPlayer extends Player {
             Coordinates nextMoveToMake = null;
             try {
                 Thread.sleep(DELAY_BEFORE_PLACING_STONE_MILLIS);
-                nextMoveToMake = chooseSmartEmptyCoordinates(Objects.requireNonNull(currentGame).getBoard());
+                nextMoveToMake = chooseSmartEmptyCoordinates(currentGame);
                 super.setNextMove(nextMoveToMake, currentGame);
                 super.makeMove(currentGame);
             } catch (BoardIsFullException | Game.GameEndedException | Board.CellOutOfBoardException | Board.CellAlreadyOccupiedException e) {
@@ -58,61 +55,36 @@ public class CPUPlayer extends Player {
     }
 
     @NotNull
-    public Coordinates chooseSmartEmptyCoordinates(@NotNull Board board) throws BoardIsFullException {
+    public Coordinates chooseSmartEmptyCoordinates(@NotNull final Game game) throws BoardIsFullException {
 
-        if (board.isEmpty()) {
-            return chooseNextEmptyCoordinatesFromCenter(board);
+        if (Objects.requireNonNull(game).isBoardEmpty()) {
+            return chooseNextEmptyCoordinatesFromCenter(game);
         }
 
-        final int maxChainToFind = 5;//exclusive
-        final int minChainToFind = 2;//inclusive
-        final int[] chainToFind = IntStream.range(minChainToFind, maxChainToFind)
-                .map(i -> minChainToFind - i + maxChainToFind - 1).toArray();
+        final int MAX_CHAIN_LENGTH_TO_FIND_EXCLUDED = 5;
+        final int MIN_CHAIN_LENGTH_TO_FIND_INCLUDED = 2;
+        IntStream possibleChainLengths =
+                IntStream.range(MIN_CHAIN_LENGTH_TO_FIND_INCLUDED, MAX_CHAIN_LENGTH_TO_FIND_EXCLUDED)
+                        .map(i -> MIN_CHAIN_LENGTH_TO_FIND_INCLUDED - i + MAX_CHAIN_LENGTH_TO_FIND_EXCLUDED - 1);
 
-        for (int i : chainToFind) {
-            Optional<Coordinates> optionalCoordinates = board.getStreamOfEmptyCoordinates()
-                    .filter(c -> isHeadOfAChainOfStones(board, c, new PositiveInteger(i)))
-                    .findAny();
-            if (optionalCoordinates.isPresent()) {
-                return optionalCoordinates.get();
-            }
-        }
-        return chooseNextEmptyCoordinatesFromCenter(board);
-    }
+        List<Coordinates> smartCoordinates = possibleChainLengths
+                .boxed()
+                .flatMap(chainLength -> game.getStreamOfEmptyCoordinatesOnBoard()
+                        .filter(coord -> game.isHeadOfAChainOfStones(coord, new PositiveInteger(chainLength))))
+                .toList();
 
-    private static boolean isHeadOfAChainOfStones(Board board, Coordinates headCoordinates,
-                                                  PositiveInteger numberOfConsecutive) {    // TODO: too many responsibilities?
-        return IntStream.rangeClosed(-1, 1).mapToObj(xDirection ->
-                        IntStream.rangeClosed(-1, 1).mapToObj(yDirection ->
-                                        IntStream.rangeClosed(1, numberOfConsecutive.intValue())
-                                                .mapToObj(i -> new Pair<>(
-                                                        headCoordinates.getX() + i * xDirection,
-                                                        headCoordinates.getY() + i * yDirection))
-                                                .filter(pair -> pair.getKey() >= 0 && pair.getValue() >= 0)
-                                                .map(validPair -> new Coordinates(validPair.getKey(), validPair.getValue()))
-                                                .filter(board::isCoordinatesInsideBoard)
-                                                .map(board::getCellAtCoordinatesOrNullIfInvalid)
-                                                .filter(Objects::nonNull)
-                                                .filter(cell -> !cell.isEmpty())
-                                                .collect(Collectors.groupingBy(Cell::getStone, Collectors.counting()))
-                                                .values()
-                                                .stream()
-                                                .anyMatch(counter -> counter == numberOfConsecutive.intValue()))
-                                .anyMatch(find -> find))
-                .anyMatch(find -> find);
+        return smartCoordinates.size() > 0 ? smartCoordinates.get(0) : chooseNextEmptyCoordinatesFromCenter(game);
     }
 
     @NotNull
-    public Coordinates chooseNextEmptyCoordinatesFromCenter(@NotNull Board board) throws BoardIsFullException {
-        int boardSize = board.getSize();
-        double centerValue = boardSize / 2.0 - 0.5;
+    public Coordinates chooseNextEmptyCoordinatesFromCenter(@NotNull Game game) throws BoardIsFullException {
+        int boardSize = game.getBoardSize();
+        double centerValue = boardSize / 2.0 - 0.5; // TODO : why -0.5?
 
-        if (board.isThereAnyEmptyCell()) {
-            //noinspection OptionalGetWithoutIsPresent // because is yet checked with isThereAnyEmptyCell
-            return board.getStreamOfEmptyCoordinates().min((o1, o2) ->
-                    (int) (getWeightRespectToCenter(centerValue, o1) - getWeightRespectToCenter(centerValue, o2))).get();
-        }
-        throw new BoardIsFullException();
+        return game.getStreamOfEmptyCoordinatesOnBoard()
+                .min((coord1, coord2) ->
+                        (int) (getWeightRespectToCenter(centerValue, coord1) - getWeightRespectToCenter(centerValue, coord2)))
+                .orElseThrow(() -> new IllegalStateException("Board is full: the game should be already ended but it is not."));
     }
 
     @NotNull

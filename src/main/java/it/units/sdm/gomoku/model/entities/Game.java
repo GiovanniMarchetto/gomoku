@@ -6,6 +6,7 @@ import it.units.sdm.gomoku.mvvm_library.Observable;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservableProperty;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyProxy;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyThatCanSetPropertyValueAndFireEvents;
+import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,6 +14,9 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class Game implements Comparable<Game>, Observable {
 
@@ -159,6 +163,41 @@ public class Game implements Comparable<Game>, Observable {
             throw new IllegalStateException("No space on board, game should be ended but it is not.");
         }
         return board.isEmptyCellAtCoordinates(Objects.requireNonNull(proposedMove));
+    }
+
+    public boolean isHeadOfAChainOfStones(@NotNull final Coordinates headCoordinates,
+                                          @NotNull final PositiveInteger numberOfConsecutive) {    // TODO: test
+        return IntStream.rangeClosed(-1, 1).mapToObj(xDirection ->
+                        IntStream.rangeClosed(-1, 1).mapToObj(yDirection ->
+                                        IntStream.rangeClosed(1, numberOfConsecutive.intValue())
+                                                .mapToObj(i -> new Pair<>(
+                                                        headCoordinates.getX() + i * xDirection,
+                                                        headCoordinates.getY() + i * yDirection))
+                                                .filter(pair -> pair.getKey() >= 0 && pair.getValue() >= 0)
+                                                .map(validPair -> new Coordinates(validPair.getKey(), validPair.getValue()))
+                                                .filter(board::isCoordinatesInsideBoard)
+                                                .map(board::getCellAtCoordinatesOrNullIfInvalid)
+                                                .filter(Objects::nonNull)
+                                                .filter(cell -> !cell.isEmpty())
+                                                .collect(Collectors.groupingBy(Cell::getStone, Collectors.counting()))
+                                                .values()
+                                                .stream()
+                                                .anyMatch(counter -> counter == numberOfConsecutive.intValue()))
+                                .anyMatch(find -> find))
+                .anyMatch(find -> find);
+    }
+
+    public boolean isBoardEmpty() {    // TODO: test
+        return board.isEmpty();
+    }
+
+    @NotNull
+    public Stream<Coordinates> getStreamOfEmptyCoordinatesOnBoard() {    // TODO: test
+        return board.getStreamOfEmptyCoordinates();
+    }
+
+    public int getBoardSize() { // TODO: test
+        return board.getSize();
     }
 
     public enum Status {STARTED, ENDED}

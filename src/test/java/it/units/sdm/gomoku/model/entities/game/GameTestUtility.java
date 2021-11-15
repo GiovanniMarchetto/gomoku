@@ -25,7 +25,7 @@ public class GameTestUtility {
         final CPUPlayer cpuPlayer = new CPUPlayer();
         while (!game.isEnded()) {
             try {
-                tryToPlaceStoneAndChangeTurn(cpuPlayer.chooseSmartEmptyCoordinates(game.getBoard()), game);
+                tryToPlaceStoneAndChangeTurn(cpuPlayer.chooseSmartEmptyCoordinates(game), game);
             } catch (Board.BoardIsFullException e) {
                 fail(e);
             }
