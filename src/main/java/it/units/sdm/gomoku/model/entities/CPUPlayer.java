@@ -82,25 +82,25 @@ public class CPUPlayer extends Player {
     }
 
     private static boolean isHeadOfAChainOfStones(Board board, Coordinates headCoordinates,
-                                                  PositiveInteger numberOfConsecutive) {
+                                                  PositiveInteger numberOfConsecutive) {    // TODO: too many responsibilities?
         return IntStream.rangeClosed(-1, 1).mapToObj(xDirection ->
-                IntStream.rangeClosed(-1, 1).mapToObj(yDirection ->
-                        IntStream.rangeClosed(1, numberOfConsecutive.intValue())
-                                .mapToObj(i -> new Pair<>(
-                                        headCoordinates.getX() + i * xDirection,
-                                        headCoordinates.getY() + i * yDirection))
-                                .filter(pair -> pair.getKey() >= 0 && pair.getValue() >= 0)
-                                .map(validPair -> new Coordinates(validPair.getKey(), validPair.getValue()))
-                                .filter(board::isCoordinatesInsideBoard)
-                                .map(board::getCellAtCoordinatesOrNullIfInvalid)
-                                .filter(Objects::nonNull)
-                                .filter(cell -> !cell.isEmpty())
-                                .collect(Collectors.groupingBy(Cell::getStone, Collectors.counting()))
-                                .values()
-                                .stream()
-                                .anyMatch(counter -> counter == numberOfConsecutive.intValue())
-                ).anyMatch(find -> find)
-        ).anyMatch(find -> find);
+                        IntStream.rangeClosed(-1, 1).mapToObj(yDirection ->
+                                        IntStream.rangeClosed(1, numberOfConsecutive.intValue())
+                                                .mapToObj(i -> new Pair<>(
+                                                        headCoordinates.getX() + i * xDirection,
+                                                        headCoordinates.getY() + i * yDirection))
+                                                .filter(pair -> pair.getKey() >= 0 && pair.getValue() >= 0)
+                                                .map(validPair -> new Coordinates(validPair.getKey(), validPair.getValue()))
+                                                .filter(board::isCoordinatesInsideBoard)
+                                                .map(board::getCellAtCoordinatesOrNullIfInvalid)
+                                                .filter(Objects::nonNull)
+                                                .filter(cell -> !cell.isEmpty())
+                                                .collect(Collectors.groupingBy(Cell::getStone, Collectors.counting()))
+                                                .values()
+                                                .stream()
+                                                .anyMatch(counter -> counter == numberOfConsecutive.intValue()))
+                                .anyMatch(find -> find))
+                .anyMatch(find -> find);
     }
 
     @NotNull
