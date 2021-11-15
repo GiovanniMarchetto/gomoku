@@ -1,8 +1,8 @@
 package it.units.sdm.gomoku.ui.support;
 
-import it.units.sdm.gomoku.model.actors.Player;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.Match;
+import it.units.sdm.gomoku.model.entities.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

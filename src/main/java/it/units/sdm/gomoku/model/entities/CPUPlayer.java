@@ -1,13 +1,9 @@
-package it.units.sdm.gomoku.model.actors;
+package it.units.sdm.gomoku.model.entities;
 
 import it.units.sdm.gomoku.Utility;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
-import it.units.sdm.gomoku.model.entities.Board;
-import it.units.sdm.gomoku.model.entities.Cell;
-import it.units.sdm.gomoku.model.entities.Game;
-import it.units.sdm.gomoku.model.entities.Stone;
 import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
 

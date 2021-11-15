@@ -1,7 +1,7 @@
 package it.units.sdm.gomoku.model.entities.player;
 
-import it.units.sdm.gomoku.model.actors.HumanPlayer;
-import it.units.sdm.gomoku.model.actors.Player;
+import it.units.sdm.gomoku.model.entities.HumanPlayer;
+import it.units.sdm.gomoku.model.entities.Player;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyThatCanSetPropertyValueAndFireEvents;
 import it.units.sdm.gomoku.utils.TestUtility;
 import org.junit.jupiter.api.BeforeEach;

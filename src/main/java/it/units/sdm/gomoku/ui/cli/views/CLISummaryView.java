@@ -1,8 +1,8 @@
 package it.units.sdm.gomoku.ui.cli.views;
 
-import it.units.sdm.gomoku.model.actors.Player;
 import it.units.sdm.gomoku.model.entities.Game;
 import it.units.sdm.gomoku.model.entities.Match;
+import it.units.sdm.gomoku.model.entities.Player;
 import it.units.sdm.gomoku.mvvm_library.Observer;
 import it.units.sdm.gomoku.mvvm_library.View;
 import it.units.sdm.gomoku.ui.cli.IOUtility;

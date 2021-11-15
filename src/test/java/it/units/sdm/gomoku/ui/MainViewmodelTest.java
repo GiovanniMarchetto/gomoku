@@ -1,12 +1,7 @@
 package it.units.sdm.gomoku.ui;
 
-import it.units.sdm.gomoku.model.actors.HumanPlayer;
-import it.units.sdm.gomoku.model.actors.Player;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
-import it.units.sdm.gomoku.model.entities.Board;
-import it.units.sdm.gomoku.model.entities.Game;
-import it.units.sdm.gomoku.model.entities.Match;
-import it.units.sdm.gomoku.model.entities.Stone;
+import it.units.sdm.gomoku.model.entities.*;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservableProperty;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyThatCanSetPropertyValueAndFireEvents;
 import it.units.sdm.gomoku.ui.support.Setup;

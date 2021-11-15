@@ -1,9 +1,7 @@
-package it.units.sdm.gomoku.model.actors;
+package it.units.sdm.gomoku.model.entities;
 
 import it.units.sdm.gomoku.model.custom_types.Buffer;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
-import it.units.sdm.gomoku.model.entities.Board;
-import it.units.sdm.gomoku.model.entities.Game;
 import it.units.sdm.gomoku.mvvm_library.Observable;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservableProperty;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyProxy;

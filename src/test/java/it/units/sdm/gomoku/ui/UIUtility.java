@@ -1,7 +1,7 @@
 package it.units.sdm.gomoku.ui;
 
-import it.units.sdm.gomoku.model.actors.HumanPlayer;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
+import it.units.sdm.gomoku.model.entities.HumanPlayer;
 import it.units.sdm.gomoku.ui.support.BoardSizes;
 import it.units.sdm.gomoku.ui.support.Setup;
 import org.jetbrains.annotations.NotNull;
