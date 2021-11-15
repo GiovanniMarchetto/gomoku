@@ -7,6 +7,9 @@ import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.entities.Cell;
 import it.units.sdm.gomoku.model.entities.Stone;
+import it.units.sdm.gomoku.model.exceptions.BoardIsFullException;
+import it.units.sdm.gomoku.model.exceptions.CellAlreadyOccupiedException;
+import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyThatCanSetPropertyValueAndFireEvents;
 import it.units.sdm.gomoku.utils.TestUtility;
 import javafx.util.Pair;
@@ -59,7 +62,7 @@ public class BoardTest {
     public static void tryToOccupyCoordinatesWithColor(Board board, Stone.Color color, int x, int y) {
         try {
             board.occupyPosition(color, new Coordinates(x, y));
-        } catch (Board.CellAlreadyOccupiedException | Board.BoardIsFullException | Board.CellOutOfBoardException e) {
+        } catch (CellAlreadyOccupiedException | BoardIsFullException | CellOutOfBoardException e) {
             fail(e);
         }
     }
@@ -117,7 +120,7 @@ public class BoardTest {
                     .forEach(coord -> {
                         try {
                             board.occupyPosition(Objects.requireNonNull(stoneColor), coord);
-                        } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Board.CellOutOfBoardException ignored) {
+                        } catch (BoardIsFullException | CellAlreadyOccupiedException | CellOutOfBoardException ignored) {
                         }
                     });
         }
@@ -142,11 +145,11 @@ public class BoardTest {
                 Coordinates coordinatesToOccupy =
                         getNEmptyPositionsRandomlyTakenFromGivenBoard(1, board)
                                 .findAny()
-                                .orElseThrow(Board.BoardIsFullException::new);
+                                .orElseThrow(BoardIsFullException::new);
                 tryToOccupyCoordinatesWithColor(board, Stone.Color.BLACK,
                         coordinatesToOccupy.getX(), coordinatesToOccupy.getY());
                 return coordinatesToOccupy;
-            } catch (Board.BoardIsFullException e) {
+            } catch (BoardIsFullException e) {
                 fail(e);
                 return null;
             }
@@ -298,7 +301,7 @@ public class BoardTest {
 
     @ParameterizedTest
     @MethodSource("provideCoupleOfNonNegativeIntegersInsideBoard")
-    void getCellAtCoordinates(int x, int y) throws Board.CellOutOfBoardException {
+    void getCellAtCoordinates(int x, int y) throws CellOutOfBoardException {
         assertEquals(boardMatrixFromCsv[x][y], board.getCellAtCoordinates(new Coordinates(x, y)));
     }
 
@@ -339,11 +342,11 @@ public class BoardTest {
                 assertTrue(boardMatrixFromCsv[x][y].isEmpty()
                         && !cell.isEmpty()
                         && stoneColor == cell.getStone().getColor());   // TODO: message chain
-            } catch (Board.BoardIsFullException e) {
+            } catch (BoardIsFullException e) {
                 assertFalse(board.isThereAnyEmptyCell());
-            } catch (Board.CellAlreadyOccupiedException e) {
+            } catch (CellAlreadyOccupiedException e) {
                 assertFalse(boardMatrixFromCsv[x][y].isEmpty());
-            } catch (Board.CellOutOfBoardException e) {
+            } catch (CellOutOfBoardException e) {
                 assertFalse(board.isCoordinatesInsideBoard(coordinates));
             }
         } catch (IllegalArgumentException e) {

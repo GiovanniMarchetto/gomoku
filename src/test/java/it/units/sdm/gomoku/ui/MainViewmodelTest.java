@@ -2,6 +2,10 @@ package it.units.sdm.gomoku.ui;
 
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.*;
+import it.units.sdm.gomoku.model.exceptions.BoardIsFullException;
+import it.units.sdm.gomoku.model.exceptions.CellAlreadyOccupiedException;
+import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
+import it.units.sdm.gomoku.model.exceptions.GameEndedException;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservableProperty;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyThatCanSetPropertyValueAndFireEvents;
 import it.units.sdm.gomoku.ui.support.Setup;
@@ -222,10 +226,10 @@ class MainViewmodelTest {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             System.err.println("setFieldValue Exception");
             fail(e);
-        } catch (Board.BoardIsFullException | Game.GameEndedException | Board.CellAlreadyOccupiedException e) {
+        } catch (BoardIsFullException | GameEndedException | CellAlreadyOccupiedException e) {
             System.err.println("placeStoneFromUser Exception");
             fail(e);
-        } catch (Board.CellOutOfBoardException e) {
+        } catch (CellOutOfBoardException e) {
             fail(new IllegalStateException(e));
         }
     }
@@ -270,10 +274,10 @@ class MainViewmodelTest {
             mainViewmodel.placeStoneFromUser(coordinates);
             Thread.sleep(100);  // TODO: rethink about the architecture_ here we have to wait for another thread (who knows which one) to update the model: is this correct?
             assertFalse(mainViewmodel.getCellAtCoordinatesInCurrentBoard(coordinates).isEmpty());
-        } catch (NoSuchFieldException | IllegalAccessException | Board.BoardIsFullException | Game.GameEndedException
-                | Board.CellAlreadyOccupiedException | InterruptedException e) {
+        } catch (NoSuchFieldException | IllegalAccessException | BoardIsFullException | GameEndedException
+                | CellAlreadyOccupiedException | InterruptedException e) {
             fail(e);
-        } catch (Board.CellOutOfBoardException e) {
+        } catch (CellOutOfBoardException e) {
             fail(new IllegalStateException(e));
         }
     }

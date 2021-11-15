@@ -1,8 +1,8 @@
 package it.units.sdm.gomoku.ui.gui.views;
 
-import it.units.sdm.gomoku.model.entities.Game;
-import it.units.sdm.gomoku.model.entities.Match;
 import it.units.sdm.gomoku.model.entities.Player;
+import it.units.sdm.gomoku.model.exceptions.GameNotEndedException;
+import it.units.sdm.gomoku.model.exceptions.MatchNotEndedException;
 import it.units.sdm.gomoku.mvvm_library.View;
 import it.units.sdm.gomoku.ui.gui.viewmodels.GUIMainViewmodel;
 import javafx.fxml.FXML;
@@ -48,7 +48,7 @@ public class SummaryView extends View<GUIMainViewmodel> {
             this.winnerOfGameLabel.setText(winnerValue != null
                     ? "WIN OF " + winnerValue
                     : "DRAW");
-        } catch (Game.GameNotEndedException e) {
+        } catch (GameNotEndedException e) {
             e.printStackTrace();
         }
 
@@ -71,7 +71,7 @@ public class SummaryView extends View<GUIMainViewmodel> {
                 if (vm.getWinnerOfTheMatch() == null) {
                     extraGameButton.setVisible(true);
                 }
-            } catch (Match.MatchNotEndedException e) {
+            } catch (MatchNotEndedException e) {
                 e.printStackTrace();
             }
             newMatchButton.setVisible(true);

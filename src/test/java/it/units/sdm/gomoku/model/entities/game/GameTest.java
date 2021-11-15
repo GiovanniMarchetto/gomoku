@@ -2,6 +2,8 @@ package it.units.sdm.gomoku.model.entities.game;
 
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.*;
+import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
+import it.units.sdm.gomoku.model.exceptions.GameNotEndedException;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyThatCanSetPropertyValueAndFireEvents;
 import it.units.sdm.gomoku.utils.TestUtility;
 import org.junit.jupiter.api.Assertions;
@@ -103,7 +105,7 @@ class GameTest {
         try {
             game.getWinner();
             fail("Game not ended!");
-        } catch (Game.GameNotEndedException ignored) {
+        } catch (GameNotEndedException ignored) {
         }
     }
 
@@ -113,7 +115,7 @@ class GameTest {
         try {
             disputeGameAndPlayerWin(game, cpuBlack);
             assertEquals(cpuBlack, game.getWinner());
-        } catch (Game.GameNotEndedException e) {
+        } catch (GameNotEndedException e) {
             fail(e);
         }
     }
@@ -124,7 +126,7 @@ class GameTest {
         try {
             disputeGameAndPlayerWin(game, cpuWhite);
             assertEquals(cpuWhite, game.getWinner());
-        } catch (Game.GameNotEndedException e) {
+        } catch (GameNotEndedException e) {
             fail(e);
         }
     }
@@ -135,13 +137,13 @@ class GameTest {
         try {
             disputeGameAndDraw(game, BOARD_SIZE);
             assertNull(game.getWinner());
-        } catch (Game.GameNotEndedException e) {
+        } catch (GameNotEndedException e) {
             fail(e);
         }
     }
 
     @Test
-    void placeStoneBeforeStart() throws Board.CellOutOfBoardException {
+    void placeStoneBeforeStart() throws CellOutOfBoardException {
         try {
             tryToPlaceStoneAndChangeTurn(firstCoordinates, game);
         } catch (NullPointerException ignored) {
@@ -150,7 +152,7 @@ class GameTest {
     }
 
     @Test
-    void placeStoneAfterStart() throws Board.CellOutOfBoardException {
+    void placeStoneAfterStart() throws CellOutOfBoardException {
         game.start();
         tryToPlaceStoneAndChangeTurn(firstCoordinates, game);
         assertFalse(game.getBoard().getCellAtCoordinates(firstCoordinates).isEmpty());
@@ -177,7 +179,7 @@ class GameTest {
         disputeGameAndPlayerWin(game, cpuBlack);
         try {
             assertEquals(cpuBlack, game.getWinner());
-        } catch (Game.GameNotEndedException e) {
+        } catch (GameNotEndedException e) {
             fail(e);
         }
     }
@@ -188,7 +190,7 @@ class GameTest {
         disputeGameAndPlayerWin(game, cpuWhite);
         try {
             assertEquals(cpuWhite, game.getWinner());
-        } catch (Game.GameNotEndedException e) {
+        } catch (GameNotEndedException e) {
             fail(e);
         }
     }
@@ -261,7 +263,7 @@ class GameTest {
                     cpuWhite + " -> WHITE" + "\n" +
                     "Winner: " + game.getWinner() + "\n" +
                     game.getBoard();
-        } catch (Game.GameNotEndedException e) {
+        } catch (GameNotEndedException e) {
             fail(e);
         }
         assertEquals(expected, game.toString());

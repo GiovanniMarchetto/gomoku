@@ -3,6 +3,7 @@ package it.units.sdm.gomoku.ui;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.entities.*;
+import it.units.sdm.gomoku.model.exceptions.*;
 import it.units.sdm.gomoku.mvvm_library.Viewmodel;
 import it.units.sdm.gomoku.property_change_handlers.PropertyObserver;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservableProperty;
@@ -56,7 +57,7 @@ public abstract class MainViewmodel extends Viewmodel {
             observe(currentGame);   // TODO : should fade away
             observe(currentBoard);
 
-        } catch (Match.MatchEndedException | Match.MaxNumberOfGamesException e) {
+        } catch (MatchEndedException | MaxNumberOfGamesException e) {
             e.printStackTrace();    // TODO : handle this exception
         }
     }
@@ -142,7 +143,7 @@ public abstract class MainViewmodel extends Viewmodel {
         return Objects.requireNonNull(match).isEnded();
     }
 
-    public synchronized boolean isMatchEndedWithADraw() throws Match.MatchNotEndedException {
+    public synchronized boolean isMatchEndedWithADraw() throws MatchNotEndedException {
         return Objects.requireNonNull(match).isADraw();
     }
 
@@ -163,7 +164,7 @@ public abstract class MainViewmodel extends Viewmodel {
     }
 
     public void placeStoneFromUser(@NotNull final Coordinates coordinates)
-            throws Board.BoardIsFullException, Board.CellAlreadyOccupiedException, Game.GameEndedException, Board.CellOutOfBoardException {
+            throws BoardIsFullException, CellAlreadyOccupiedException, GameEndedException, CellOutOfBoardException {
         if (Boolean.TRUE.equals(userMustPlaceNewStoneProperty.getPropertyValue())) {
             Objects.requireNonNull(getCurrentPlayer())
                     .setNextMove(Objects.requireNonNull(coordinates), Objects.requireNonNull(currentGame));
@@ -246,17 +247,17 @@ public abstract class MainViewmodel extends Viewmodel {
 
     @NotNull
     public Cell getCellAtCoordinatesInCurrentBoard(@NotNull final Coordinates coordinates)
-            throws Board.CellOutOfBoardException {
+            throws CellOutOfBoardException {
         return Objects.requireNonNull(currentBoard).getCellAtCoordinates(coordinates);
     }
 
     @Nullable
-    public Player getWinnerOfTheMatch() throws Match.MatchNotEndedException {
+    public Player getWinnerOfTheMatch() throws MatchNotEndedException {
         return Objects.requireNonNull(match).getWinner();
     }
 
     @Nullable
-    public Player getWinnerOfTheGame() throws Game.GameNotEndedException {
+    public Player getWinnerOfTheGame() throws GameNotEndedException {
         return Objects.requireNonNull(currentGame).getWinner();
     }
 

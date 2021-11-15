@@ -2,6 +2,7 @@ package it.units.sdm.gomoku.model.entities;
 
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
+import it.units.sdm.gomoku.model.exceptions.*;
 import it.units.sdm.gomoku.mvvm_library.Observable;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservableProperty;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyProxy;
@@ -81,7 +82,7 @@ public class Game implements Comparable<Game>, Observable {
     }
 
     public void placeStoneAndChangeTurn(@NotNull final Coordinates coordinates)
-            throws Board.BoardIsFullException, Board.CellAlreadyOccupiedException, GameEndedException, Board.CellOutOfBoardException {
+            throws BoardIsFullException, CellAlreadyOccupiedException, GameEndedException, CellOutOfBoardException {
 
         final Player player = Objects.requireNonNull(currentPlayer.getPropertyValue());
 
@@ -95,7 +96,7 @@ public class Game implements Comparable<Game>, Observable {
     }
 
     private void placeStone(@NotNull final Player player, @NotNull final Coordinates coordinates)
-            throws Board.BoardIsFullException, Board.CellAlreadyOccupiedException, GameEndedException, Board.CellOutOfBoardException {
+            throws BoardIsFullException, CellAlreadyOccupiedException, GameEndedException, CellOutOfBoardException {
         if (!isEnded()) {
             board.occupyPosition(getColorOfPlayer(Objects.requireNonNull(player)), Objects.requireNonNull(coordinates));
         } else {
@@ -156,7 +157,7 @@ public class Game implements Comparable<Game>, Observable {
     }
 
     public boolean isEmptyCoordinatesOnBoard(@NotNull final Coordinates proposedMove)
-            throws GameEndedException, Board.CellOutOfBoardException {    // TODO : test
+            throws GameEndedException, CellOutOfBoardException {    // TODO : test
         if (isEnded()) {
             throw new GameEndedException();
         } else if (!board.isThereAnyEmptyCell()) {
@@ -206,15 +207,4 @@ public class Game implements Comparable<Game>, Observable {
 
     public enum Status {STARTED, ENDED}
 
-    public static class GameNotEndedException extends Exception {
-        public GameNotEndedException() {
-            super("The game is not over.");
-        }
-    }
-
-    public static class GameEndedException extends Exception {
-        public GameEndedException() {
-            super("The game is over.");
-        }
-    }
 }

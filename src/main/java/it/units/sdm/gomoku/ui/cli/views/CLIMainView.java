@@ -1,8 +1,11 @@
 package it.units.sdm.gomoku.ui.cli.views;
 
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
-import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.entities.Game;
+import it.units.sdm.gomoku.model.exceptions.BoardIsFullException;
+import it.units.sdm.gomoku.model.exceptions.CellAlreadyOccupiedException;
+import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
+import it.units.sdm.gomoku.model.exceptions.GameEndedException;
 import it.units.sdm.gomoku.mvvm_library.Observer;
 import it.units.sdm.gomoku.mvvm_library.View;
 import it.units.sdm.gomoku.ui.cli.IOUtility;
@@ -31,7 +34,7 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
             if ((boolean) evt.getNewValue() && time.equals(cliMainViewmodel.getGameStartTime())) {
                 try {
                     waitForAMoveOfAPlayer();
-                } catch (Board.BoardIsFullException | Game.GameEndedException e) {
+                } catch (BoardIsFullException | GameEndedException e) {
                     // TODO : handle exception
                     System.err.println("Game terminated due to an unexpected exception: ");
                     e.printStackTrace();    // TODO : use logger
@@ -57,7 +60,7 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
     public void propertyChange(PropertyChangeEvent evt) {
     }
 
-    private void waitForAMoveOfAPlayer() throws Board.BoardIsFullException, Game.GameEndedException {  // TODO : not tested
+    private void waitForAMoveOfAPlayer() throws BoardIsFullException, GameEndedException {  // TODO : not tested
         int rowCoord, colCoord;
 
         CLIMainViewmodel viewmodel = getViewmodelAssociatedWithView();
@@ -74,19 +77,19 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
             colCoord = IOUtility.getAIntFromStdIn();
             coordInsertedByTheUser = new Coordinates(rowCoord, colCoord);
             viewmodel.placeStoneFromUser(coordInsertedByTheUser);
-        } catch (Board.CellOutOfBoardException e) {
+        } catch (CellOutOfBoardException e) {
             System.out.println("Valid coordinates values are between " + 0 +
                     " and " + (viewmodel.getBoardSize() - 1) + " included.");
         } catch (IllegalArgumentException e) {
             System.out.println("Invalid coordinates value.");
-        } catch (Board.BoardIsFullException e) {
+        } catch (BoardIsFullException e) {
             Logger.getLogger(getClass().getCanonicalName())
                     .log(Level.SEVERE, "Should never happen: no more empty position" +
                             " available on the board but game should be already ended", e);
             throw e;
-        } catch (Board.CellAlreadyOccupiedException e) {
+        } catch (CellAlreadyOccupiedException e) {
             System.out.println("The position " + coordInsertedByTheUser + " is already occupied.");
-        } catch (Game.GameEndedException e) {
+        } catch (GameEndedException e) {
             Logger.getLogger(getClass().getCanonicalName())
                     .log(Level.SEVERE, "Should never happen: the game is already ended", e);
             throw e;

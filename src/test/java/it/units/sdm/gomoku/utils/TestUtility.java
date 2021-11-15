@@ -6,6 +6,9 @@ import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.entities.Cell;
 import it.units.sdm.gomoku.model.entities.Stone;
+import it.units.sdm.gomoku.model.exceptions.BoardIsFullException;
+import it.units.sdm.gomoku.model.exceptions.CellAlreadyOccupiedException;
+import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
 import it.units.sdm.gomoku.ui.support.MoveControlRecord;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -50,7 +53,7 @@ public class TestUtility {
                             try {
                                 //noinspection ConstantConditions // just filtered out
                                 board.occupyPosition(cellMatrix[x][y].getStone().getColor(), new Coordinates(x, y));    // TODO: message chain
-                            } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Board.CellOutOfBoardException e) {
+                            } catch (BoardIsFullException | CellAlreadyOccupiedException | CellOutOfBoardException e) {
                                 fail(e);
                             }
                         }));

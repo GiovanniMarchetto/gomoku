@@ -5,6 +5,9 @@ import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.entities.Cell;
 import it.units.sdm.gomoku.model.entities.Stone;
+import it.units.sdm.gomoku.model.exceptions.BoardIsFullException;
+import it.units.sdm.gomoku.model.exceptions.CellAlreadyOccupiedException;
+import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -68,7 +71,7 @@ public class BoardAlgorithmTest {
             Coordinates coord = new Coordinates(Objects.requireNonNull(coords).getX(), yCoord);
             try {
                 list.add(board.getCellAtCoordinates(coord));
-            } catch (Board.CellOutOfBoardException e) {
+            } catch (CellOutOfBoardException e) {
                 fail(e);
             }
         }
@@ -81,14 +84,14 @@ public class BoardAlgorithmTest {
             Coordinates coord = new Coordinates(xCoord, Objects.requireNonNull(coords).getY());
             try {
                 list.add(board.getCellAtCoordinates(coord));
-            } catch (Board.CellOutOfBoardException e) {
+            } catch (CellOutOfBoardException e) {
                 fail(e);
             }
         }
         return list;
     }
 
-    private List<Cell> alternativeFwdDiagonalToList(@NotNull final Board board, @NotNull final Coordinates coords) throws Board.CellOutOfBoardException {
+    private List<Cell> alternativeFwdDiagonalToList(@NotNull final Board board, @NotNull final Coordinates coords) throws CellOutOfBoardException {
         int B = board.getSize();
         int S = Objects.requireNonNull(coords).getX() + coords.getY();
         int x = Math.min(S, B - 1);
@@ -103,7 +106,7 @@ public class BoardAlgorithmTest {
         return list;
     }
 
-    private List<Cell> alternativeBckDiagonalToList(@NotNull final Board board, @NotNull final Coordinates coords) throws Board.CellOutOfBoardException {
+    private List<Cell> alternativeBckDiagonalToList(@NotNull final Board board, @NotNull final Coordinates coords) throws CellOutOfBoardException {
         int B = board.getSize();
         int S = Objects.requireNonNull(coords).getX() - coords.getY();
         int x = Math.max(S, 0);
@@ -134,8 +137,8 @@ public class BoardAlgorithmTest {
                 .forEach(coords -> {
                     try {
                         b.occupyPosition(getStoneColorFromCoords.apply(coords), coords);
-                    } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException
-                            | Board.CellOutOfBoardException e) {
+                    } catch (BoardIsFullException | CellAlreadyOccupiedException
+                            | CellOutOfBoardException e) {
                         fail(e);
                     }
                 });
@@ -150,7 +153,7 @@ public class BoardAlgorithmTest {
                         "getFwdDiagonalContainingCoords", (board1, coords1) -> {
                             try {
                                 return alternativeFwdDiagonalToList(board1, coords1);
-                            } catch (Board.CellOutOfBoardException e) {
+                            } catch (CellOutOfBoardException e) {
                                 fail(e);
                                 return null;
                             }
@@ -165,7 +168,7 @@ public class BoardAlgorithmTest {
                         "getBckDiagonalContainingCoords", (board1, coords1) -> {
                             try {
                                 return alternativeBckDiagonalToList(board1, coords1);
-                            } catch (Board.CellOutOfBoardException e) {
+                            } catch (CellOutOfBoardException e) {
                                 fail(e);
                                 return null;
                             }

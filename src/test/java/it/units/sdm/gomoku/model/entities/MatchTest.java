@@ -1,6 +1,9 @@
 package it.units.sdm.gomoku.model.entities;
 
 import it.units.sdm.gomoku.model.entities.game.GameTestUtility;
+import it.units.sdm.gomoku.model.exceptions.MatchEndedException;
+import it.units.sdm.gomoku.model.exceptions.MatchNotEndedException;
+import it.units.sdm.gomoku.model.exceptions.MaxNumberOfGamesException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -28,7 +31,7 @@ class MatchTest {
         try {
             currentGame = match.startNewGame();
             currentGame.start();
-        } catch (Match.MatchEndedException | Match.MaxNumberOfGamesException e) {
+        } catch (MatchEndedException | MaxNumberOfGamesException e) {
             fail(e);
         }
     }
@@ -64,7 +67,7 @@ class MatchTest {
 
             assertEquals(cpu1, match.getCurrentBlackPlayer());
             assertEquals(cpu2, match.getCurrentWhitePlayer());
-        } catch (NoSuchFieldException | IllegalAccessException | Match.MatchEndedException | Match.MaxNumberOfGamesException e) {
+        } catch (NoSuchFieldException | IllegalAccessException | MatchEndedException | MaxNumberOfGamesException e) {
             fail(e);
         }
     }
@@ -79,8 +82,8 @@ class MatchTest {
         try {
             match.startNewGame();
             fail("Is over the number of games!");
-        } catch (Match.MaxNumberOfGamesException ignored) {
-        } catch (Match.MatchEndedException e) {
+        } catch (MaxNumberOfGamesException ignored) {
+        } catch (MatchEndedException e) {
             fail(e);
         }
     }
@@ -94,7 +97,7 @@ class MatchTest {
     void getScoreAfterStart() {
         try {
             match.startNewGame();
-        } catch (Match.MatchEndedException | Match.MaxNumberOfGamesException e) {
+        } catch (MatchEndedException | MaxNumberOfGamesException e) {
             fail(e);
         }
         assertCpusScore(0, 0);
@@ -123,7 +126,7 @@ class MatchTest {
         try {
             match.getWinner();
             fail("Match not ended");
-        } catch (Match.MatchNotEndedException ignored) {
+        } catch (MatchNotEndedException ignored) {
         }
     }
 
@@ -134,7 +137,7 @@ class MatchTest {
                 startGameAndDraw();
             }
             assertNull(match.getWinner());
-        } catch (Match.MatchNotEndedException e) {
+        } catch (MatchNotEndedException e) {
             fail(e);
         }
     }
@@ -146,7 +149,7 @@ class MatchTest {
                 startGameAndPlayerWin(cpu1);
             }
             assertEquals(cpu1, match.getWinner());
-        } catch (Match.MatchNotEndedException e) {
+        } catch (MatchNotEndedException e) {
             fail(e);
         }
     }
@@ -158,7 +161,7 @@ class MatchTest {
                 startGameAndPlayerWin(cpu2);
             }
             assertEquals(cpu2, match.getWinner());
-        } catch (Match.MatchNotEndedException e) {
+        } catch (MatchNotEndedException e) {
             fail(e);
         }
     }
@@ -227,7 +230,7 @@ class MatchTest {
         try {
             match.isADraw();
             fail("Not throw MatchNotEndedException");
-        } catch (Match.MatchNotEndedException ignored) {
+        } catch (MatchNotEndedException ignored) {
         }
     }
 
@@ -238,7 +241,7 @@ class MatchTest {
         }
         try {
             assertTrue(match.isADraw());
-        } catch (Match.MatchNotEndedException e) {
+        } catch (MatchNotEndedException e) {
             fail(e);
         }
     }
@@ -251,7 +254,7 @@ class MatchTest {
         }
         try {
             assertFalse(match.isADraw());
-        } catch (Match.MatchNotEndedException e) {
+        } catch (MatchNotEndedException e) {
             fail(e);
         }
     }

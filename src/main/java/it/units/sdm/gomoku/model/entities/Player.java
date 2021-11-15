@@ -2,6 +2,10 @@ package it.units.sdm.gomoku.model.entities;
 
 import it.units.sdm.gomoku.model.custom_types.Buffer;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
+import it.units.sdm.gomoku.model.exceptions.BoardIsFullException;
+import it.units.sdm.gomoku.model.exceptions.CellAlreadyOccupiedException;
+import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
+import it.units.sdm.gomoku.model.exceptions.GameEndedException;
 import it.units.sdm.gomoku.mvvm_library.Observable;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservableProperty;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyProxy;
@@ -30,12 +34,12 @@ public abstract class Player implements Observable {
     }
 
     public synchronized void setNextMove(@NotNull final Coordinates nextMoveToMake, @NotNull final Game currentGame)
-            throws Game.GameEndedException, Board.CellOutOfBoardException, Board.CellAlreadyOccupiedException { // TODO: test
+            throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException { // TODO: test
         if (Objects.requireNonNull(currentGame)
                 .isEmptyCoordinatesOnBoard(Objects.requireNonNull(nextMoveToMake))) {
             nextMoveBuffer.insert(Objects.requireNonNull(nextMoveToMake));
         } else {
-            throw new Board.CellAlreadyOccupiedException(nextMoveToMake);
+            throw new CellAlreadyOccupiedException(nextMoveToMake);
         }
     }
 
@@ -43,7 +47,7 @@ public abstract class Player implements Observable {
         try {
             Objects.requireNonNull(currentGame).placeStoneAndChangeTurn(
                     Objects.requireNonNull(nextMoveBuffer.getAndRemoveLastElement()));
-        } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Game.GameEndedException | Board.CellOutOfBoardException e) {
+        } catch (BoardIsFullException | CellAlreadyOccupiedException | GameEndedException | CellOutOfBoardException e) {
             // TODO: handle this exception
         }
     }
