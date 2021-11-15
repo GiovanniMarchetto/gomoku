@@ -24,7 +24,7 @@ import static it.units.sdm.gomoku.model.entities.Board.BoardIsFullException;
 
 public class CPUPlayer extends Player {
 
-    private final static int DELAY_BEFORE_PLACING_STONE_MILLIS = 0;
+    private final static int DELAY_BEFORE_PLACING_STONE_MILLIS = 200;
     @NotNull
     private final static String CPU_DEFAULT_NAME = "CPU";
     @NotNull
@@ -45,13 +45,15 @@ public class CPUPlayer extends Player {
     @Override
     public void makeMove(@NotNull final Game currentGame) {
         Utility.runOnSeparateThread(() -> {
-            Coordinates coordinates = null;
+            Coordinates nextMoveToMake = null;
             try {
-                coordinates = chooseSmartEmptyCoordinates(Objects.requireNonNull(currentGame).getBoard());
                 Thread.sleep(DELAY_BEFORE_PLACING_STONE_MILLIS);
-                currentGame.placeStoneAndChangeTurn(coordinates);
-            } catch (BoardIsFullException | Board.CellAlreadyOccupiedException | Game.GameEndedException | Board.CellOutOfBoardException e) {
-                Utility.getLoggerOfClass(getClass()).severe("Illegal move: impossible to choose coordinate " + coordinates + ". " + e.getMessage());
+                nextMoveToMake = chooseSmartEmptyCoordinates(Objects.requireNonNull(currentGame).getBoard());
+                super.setNextMoveToMake(nextMoveToMake);
+                super.makeMove(currentGame);
+            } catch (BoardIsFullException e) {
+                Utility.getLoggerOfClass(getClass())
+                        .log(Level.SEVERE, "Illegal move: impossible to choose coordinate " + nextMoveToMake, e);
                 throw new IllegalStateException(e);
             } catch (InterruptedException e) {
                 Utility.getLoggerOfClass(getClass()).log(Level.SEVERE, "Thread interrupted for unknown reason.", e);
