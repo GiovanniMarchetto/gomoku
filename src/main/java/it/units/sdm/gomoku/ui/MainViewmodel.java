@@ -1,13 +1,15 @@
 package it.units.sdm.gomoku.ui;
 
+import it.units.sdm.gomoku.model.actors.HumanPlayer;
+import it.units.sdm.gomoku.model.actors.Player;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.entities.*;
 import it.units.sdm.gomoku.mvvm_library.Viewmodel;
-import it.units.sdm.gomoku.property_change_handlers.ObservableProperty;
 import it.units.sdm.gomoku.property_change_handlers.PropertyObserver;
-import it.units.sdm.gomoku.property_change_handlers.ProxyObservableProperty;
-import it.units.sdm.gomoku.property_change_handlers.SettableObservableProperty;
+import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservableProperty;
+import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyProxy;
+import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyThatCanSetPropertyValueAndFireEvents;
 import it.units.sdm.gomoku.ui.support.Setup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -23,13 +25,13 @@ import java.util.stream.Stream;
 public abstract class MainViewmodel extends Viewmodel {
 
     @NotNull
-    private final SettableObservableProperty<Player> currentPlayerProperty;
+    private final ObservablePropertyThatCanSetPropertyValueAndFireEvents<Player> currentPlayerProperty;
     @NotNull
-    private final SettableObservableProperty<Game.Status> currentGameStatusProperty;
+    private final ObservablePropertyThatCanSetPropertyValueAndFireEvents<Game.Status> currentGameStatusProperty;
     @NotNull
-    private final SettableObservableProperty<Boolean> userMustPlaceNewStoneProperty;
+    private final ObservablePropertyThatCanSetPropertyValueAndFireEvents<Boolean> userMustPlaceNewStoneProperty;
     @NotNull
-    private final SettableObservableProperty<Coordinates> lastMoveCoordinatesProperty;
+    private final ObservablePropertyThatCanSetPropertyValueAndFireEvents<Coordinates> lastMoveCoordinatesProperty;
     @NotNull
     private final List<PropertyObserver<?>> modelPropertyObservers;
     @Nullable
@@ -40,10 +42,10 @@ public abstract class MainViewmodel extends Viewmodel {
     private Board currentBoard;
 
     public MainViewmodel() {
-        this.currentPlayerProperty = new SettableObservableProperty<>();
-        this.currentGameStatusProperty = new SettableObservableProperty<>();
-        this.userMustPlaceNewStoneProperty = new SettableObservableProperty<>();
-        this.lastMoveCoordinatesProperty = new SettableObservableProperty<>();
+        this.currentPlayerProperty = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>();
+        this.currentGameStatusProperty = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>();
+        this.userMustPlaceNewStoneProperty = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>();
+        this.lastMoveCoordinatesProperty = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>();
         this.modelPropertyObservers = new ArrayList<>();
     }
 
@@ -211,22 +213,22 @@ public abstract class MainViewmodel extends Viewmodel {
 
     @NotNull
     public ObservableProperty<Player> getCurrentPlayerProperty() {
-        return new ProxyObservableProperty<>(currentPlayerProperty);
+        return new ObservablePropertyProxy<>(currentPlayerProperty);
     }
 
     @NotNull
     public ObservableProperty<Game.Status> getCurrentGameStatusProperty() {
-        return new ProxyObservableProperty<>(currentGameStatusProperty);
+        return new ObservablePropertyProxy<>(currentGameStatusProperty);
     }
 
     @NotNull
     public ObservableProperty<Boolean> getUserMustPlaceNewStoneProperty() {
-        return new ProxyObservableProperty<>(userMustPlaceNewStoneProperty);
+        return new ObservablePropertyProxy<>(userMustPlaceNewStoneProperty);
     }
 
     @NotNull
     public ObservableProperty<Coordinates> getLastMoveCoordinatesProperty() {
-        return new ProxyObservableProperty<>(lastMoveCoordinatesProperty);
+        return new ObservablePropertyProxy<>(lastMoveCoordinatesProperty);
     }
 
     @NotNull

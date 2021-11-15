@@ -1,9 +1,10 @@
-package it.units.sdm.gomoku.model.entities;
+package it.units.sdm.gomoku.model.actors;
 
+import it.units.sdm.gomoku.model.entities.Game;
 import it.units.sdm.gomoku.mvvm_library.Observable;
-import it.units.sdm.gomoku.property_change_handlers.ObservableProperty;
-import it.units.sdm.gomoku.property_change_handlers.ProxyObservableProperty;
-import it.units.sdm.gomoku.property_change_handlers.SettableObservableProperty;
+import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservableProperty;
+import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyProxy;
+import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyThatCanSetPropertyValueAndFireEvents;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -14,11 +15,11 @@ public abstract class Player implements Observable {
     private final String name;
 
     @NotNull
-    private final SettableObservableProperty<Boolean> coordinatesRequiredToContinueProperty;
+    private final ObservablePropertyThatCanSetPropertyValueAndFireEvents<Boolean> coordinatesRequiredToContinueProperty;
 
     protected Player(@NotNull String name) {
         this.name = Objects.requireNonNull(name);
-        coordinatesRequiredToContinueProperty = new SettableObservableProperty<>();
+        coordinatesRequiredToContinueProperty = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>();
         coordinatesRequiredToContinueProperty.setPropertyValueWithoutNotifying(false);
     }
 
@@ -36,7 +37,7 @@ public abstract class Player implements Observable {
 
     @NotNull
     public ObservableProperty<Boolean> getCoordinatesRequiredToContinueProperty() {
-        return new ProxyObservableProperty<>(coordinatesRequiredToContinueProperty);
+        return new ObservablePropertyProxy<>(coordinatesRequiredToContinueProperty);
     }
 
     protected void setCoordinatesRequired(final boolean coordinatesRequired) {

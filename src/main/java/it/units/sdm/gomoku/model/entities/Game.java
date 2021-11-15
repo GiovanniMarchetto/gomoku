@@ -1,11 +1,12 @@
 package it.units.sdm.gomoku.model.entities;
 
+import it.units.sdm.gomoku.model.actors.Player;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.mvvm_library.Observable;
-import it.units.sdm.gomoku.property_change_handlers.ObservableProperty;
-import it.units.sdm.gomoku.property_change_handlers.ProxyObservableProperty;
-import it.units.sdm.gomoku.property_change_handlers.SettableObservableProperty;
+import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservableProperty;
+import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyProxy;
+import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyThatCanSetPropertyValueAndFireEvents;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,9 +20,9 @@ public class Game implements Comparable<Game>, Observable {
     @NotNull
     public static final PositiveInteger NUMBER_OF_CONSECUTIVE_STONE_FOR_WINNING = new PositiveInteger(5);
     @NotNull
-    private final SettableObservableProperty<Status> gameStatus;
+    private final ObservablePropertyThatCanSetPropertyValueAndFireEvents<Status> gameStatus;
     @NotNull
-    private final SettableObservableProperty<Player> currentPlayer;
+    private final ObservablePropertyThatCanSetPropertyValueAndFireEvents<Player> currentPlayer;
     @NotNull
     private final Board board;
     @NotNull
@@ -35,8 +36,8 @@ public class Game implements Comparable<Game>, Observable {
         this.board = new Board(Objects.requireNonNull(boardSize));
         this.blackPlayer = Objects.requireNonNull(blackPlayer);
         this.whitePlayer = Objects.requireNonNull(whitePlayer);
-        this.currentPlayer = new SettableObservableProperty<>();
-        this.gameStatus = new SettableObservableProperty<>();
+        this.currentPlayer = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>();
+        this.gameStatus = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>();
         this.start = Instant.now();
     }
 
@@ -51,12 +52,12 @@ public class Game implements Comparable<Game>, Observable {
 
     @NotNull
     public ObservableProperty<Player> getCurrentPlayer() {
-        return new ProxyObservableProperty<>(currentPlayer);
+        return new ObservablePropertyProxy<>(currentPlayer);
     }
 
     @NotNull
     public ObservableProperty<Status> getGameStatus() {
-        return new ProxyObservableProperty<>(gameStatus);
+        return new ObservablePropertyProxy<>(gameStatus);
     }
 
     @NotNull

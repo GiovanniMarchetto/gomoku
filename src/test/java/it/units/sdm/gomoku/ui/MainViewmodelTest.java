@@ -1,9 +1,14 @@
 package it.units.sdm.gomoku.ui;
 
+import it.units.sdm.gomoku.model.actors.HumanPlayer;
+import it.units.sdm.gomoku.model.actors.Player;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
-import it.units.sdm.gomoku.model.entities.*;
-import it.units.sdm.gomoku.property_change_handlers.ObservableProperty;
-import it.units.sdm.gomoku.property_change_handlers.SettableObservableProperty;
+import it.units.sdm.gomoku.model.entities.Board;
+import it.units.sdm.gomoku.model.entities.Game;
+import it.units.sdm.gomoku.model.entities.Match;
+import it.units.sdm.gomoku.model.entities.Stone;
+import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservableProperty;
+import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyThatCanSetPropertyValueAndFireEvents;
 import it.units.sdm.gomoku.ui.support.Setup;
 import it.units.sdm.gomoku.utils.TestUtility;
 import org.junit.jupiter.api.BeforeEach;
@@ -212,8 +217,8 @@ class MainViewmodelTest {
         mainViewmodel.startNewMatch();
         try {
             @SuppressWarnings("unchecked")
-            SettableObservableProperty<Boolean> userMustPlaceNewStoneProperty =
-                    (SettableObservableProperty<Boolean>) TestUtility.getFieldValue("userMustPlaceNewStoneProperty", mainViewmodel);
+            ObservablePropertyThatCanSetPropertyValueAndFireEvents<Boolean> userMustPlaceNewStoneProperty =
+                    (ObservablePropertyThatCanSetPropertyValueAndFireEvents<Boolean>) TestUtility.getFieldValue("userMustPlaceNewStoneProperty", mainViewmodel);
             //noinspection ConstantConditions
             userMustPlaceNewStoneProperty.setPropertyValueWithoutNotifying(false);
             Coordinates coordinates = new Coordinates(0, 0);
@@ -261,8 +266,8 @@ class MainViewmodelTest {
 
         try {
             @SuppressWarnings("unchecked")
-            SettableObservableProperty<Boolean> userMustPlaceNewStoneProperty =
-                    (SettableObservableProperty<Boolean>) TestUtility.getFieldValue(
+            ObservablePropertyThatCanSetPropertyValueAndFireEvents<Boolean> userMustPlaceNewStoneProperty =
+                    (ObservablePropertyThatCanSetPropertyValueAndFireEvents<Boolean>) TestUtility.getFieldValue(
                             "userMustPlaceNewStoneProperty", mainViewmodel);
             //noinspection ConstantConditions
             userMustPlaceNewStoneProperty.setPropertyValueWithoutNotifying(true);

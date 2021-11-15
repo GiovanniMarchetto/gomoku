@@ -5,9 +5,9 @@ import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.mvvm_library.Observable;
-import it.units.sdm.gomoku.property_change_handlers.ObservableProperty;
-import it.units.sdm.gomoku.property_change_handlers.ProxyObservableProperty;
-import it.units.sdm.gomoku.property_change_handlers.SettableObservableProperty;
+import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservableProperty;
+import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyProxy;
+import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyThatCanSetPropertyValueAndFireEvents;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,7 +31,7 @@ public class Board implements Observable, Serializable {
     @NotNull
     private final Cell[][] matrix;
     @NotNull
-    private final SettableObservableProperty<Coordinates> lastMoveCoordinatesProperty;
+    private final ObservablePropertyThatCanSetPropertyValueAndFireEvents<Coordinates> lastMoveCoordinatesProperty;
 
     public Board(@NotNull PositiveInteger size) {
         this.size = size;
@@ -39,7 +39,7 @@ public class Board implements Observable, Serializable {
         this.matrix = IntStream.range(0, size.intValue())
                 .mapToObj(i -> IntStream.range(0, size.intValue()).mapToObj(j -> new Cell()).toArray(Cell[]::new))
                 .toArray(Cell[][]::new);
-        this.lastMoveCoordinatesProperty = new SettableObservableProperty<>();
+        this.lastMoveCoordinatesProperty = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>();
     }
 
     public Board(@PositiveIntegerType int size) {
@@ -60,7 +60,7 @@ public class Board implements Observable, Serializable {
 
     @NotNull
     public ObservableProperty<Coordinates> getLastMoveCoordinatesProperty() {
-        return new ProxyObservableProperty<>(lastMoveCoordinatesProperty);
+        return new ObservablePropertyProxy<>(lastMoveCoordinatesProperty);
     }
 
     public boolean isEmpty() {

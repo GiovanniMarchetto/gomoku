@@ -1,5 +1,7 @@
 package it.units.sdm.gomoku.property_change_handlers;
 
+import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservableProperty;
+import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyThatCanSetPropertyValueAndFireEvents;
 import it.units.sdm.gomoku.utils.TestUtility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,12 +12,12 @@ import java.util.Objects;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ObservablePropertyTest {
-    SettableObservableProperty<String> observable;
+    ObservablePropertyThatCanSetPropertyValueAndFireEvents<String> observable;
     String startString = "init";
 
     @BeforeEach
     void setup() {
-        observable = new SettableObservableProperty<>();
+        observable = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>();
     }
 
     @Test
@@ -67,7 +69,7 @@ class ObservablePropertyTest {
 
     @Test
     void testClonePropertyName() {
-        ObservableProperty<String> observableClone = observable.clone();
+        ObservablePropertyThatCanSetPropertyValueAndFireEvents<String> observableClone = observable.clone();
         assertEquals(observable.getPropertyName(), observableClone.getPropertyName());
     }
 

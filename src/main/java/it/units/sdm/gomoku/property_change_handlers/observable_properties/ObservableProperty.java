@@ -1,4 +1,4 @@
-package it.units.sdm.gomoku.property_change_handlers;
+package it.units.sdm.gomoku.property_change_handlers.observable_properties;
 
 import it.units.sdm.gomoku.mvvm_library.Observable;
 import org.jetbrains.annotations.NotNull;

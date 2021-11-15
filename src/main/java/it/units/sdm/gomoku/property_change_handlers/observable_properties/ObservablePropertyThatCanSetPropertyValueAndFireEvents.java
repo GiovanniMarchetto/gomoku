@@ -1,18 +1,18 @@
-package it.units.sdm.gomoku.property_change_handlers;
+package it.units.sdm.gomoku.property_change_handlers.observable_properties;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public class SettableObservableProperty<PropertyValueType> extends ObservableProperty<PropertyValueType> implements Cloneable {
+public class ObservablePropertyThatCanSetPropertyValueAndFireEvents<PropertyValueType> extends ObservableProperty<PropertyValueType> implements Cloneable {
 
-    public SettableObservableProperty() {
+    public ObservablePropertyThatCanSetPropertyValueAndFireEvents() {
         super();
     }
 
-    public SettableObservableProperty(@NotNull final SettableObservableProperty<PropertyValueType> settableObservableProperty) {
-        super(Objects.requireNonNull(settableObservableProperty));
+    public ObservablePropertyThatCanSetPropertyValueAndFireEvents(@NotNull final ObservablePropertyThatCanSetPropertyValueAndFireEvents<PropertyValueType> observablePropertyThatCanSetPropertyValueAndFireEvents) {
+        super(Objects.requireNonNull(observablePropertyThatCanSetPropertyValueAndFireEvents));
     }
 
     @Override
@@ -35,8 +35,8 @@ public class SettableObservableProperty<PropertyValueType> extends ObservablePro
     }
 
     @Override
-    public SettableObservableProperty<PropertyValueType> clone() {
-        return new SettableObservableProperty<>(this);
+    public ObservablePropertyThatCanSetPropertyValueAndFireEvents<PropertyValueType> clone() {
+        return new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>(this);
     }
 
 }

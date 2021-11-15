@@ -1,7 +1,7 @@
 package it.units.sdm.gomoku.ui.gui.views;
 
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
-import it.units.sdm.gomoku.property_change_handlers.SettableObservableProperty;
+import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyThatCanSetPropertyValueAndFireEvents;
 import it.units.sdm.gomoku.ui.gui.viewmodels.GUIMainViewmodel;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -23,7 +23,7 @@ public class GomokuCellFirstCellTest {
 
     @BeforeEach
     void setUp() {
-        var stoneRadiusProperty = new SettableObservableProperty<Double>();
+        var stoneRadiusProperty = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<Double>();
         stoneRadiusProperty.setPropertyValueWithoutNotifying(radius);
         gomokuCell = new GomokuCell(new GUIMainViewmodel(), coordinatesFirstCell, stoneRadiusProperty, boardSize);
     }
