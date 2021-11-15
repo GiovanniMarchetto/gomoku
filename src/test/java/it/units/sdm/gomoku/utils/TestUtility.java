@@ -85,7 +85,7 @@ public class TestUtility {
     private static Cell getCellFromStoneRepresentedAsString(@NotNull final String stoneColorAsString) {
         Cell cell = new Cell();
         try {
-            cell.setStone(new Stone(Stone.Color.valueOf(stoneColorAsString)));
+            cell.setStoneFromColor(Stone.Color.valueOf(stoneColorAsString));
         } catch (IllegalArgumentException ignored) {
         }
         return cell;

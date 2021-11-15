@@ -13,7 +13,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class CellTest {
+class CellTest { // TODO: rethink this
 
     private static final Stone blackStone = new Stone(Stone.Color.BLACK);
     private static final Stone whiteStone = new Stone(Stone.Color.WHITE);
@@ -26,9 +26,9 @@ class CellTest {
     private Cell cell;
 
     @BeforeAll
-    static void setCellList() {
-        blackCell.setStone(blackStone);
-        whiteCell.setStone(whiteStone);
+    static void setCellList() throws NoSuchFieldException, IllegalAccessException {
+        TestUtility.setFieldValue("stone", blackStone, blackCell);
+        TestUtility.setFieldValue("stone", whiteStone, whiteCell);
     }
 
     @BeforeEach
@@ -43,7 +43,7 @@ class CellTest {
 
     @Test
     void copyConstructorTest() {
-        cell.setStone(blackStone);
+        cell.setStoneFromColor(blackStone.color());
         Cell cell2 = new Cell(cell);
         assertEquals(cell, cell2);
     }
@@ -64,8 +64,8 @@ class CellTest {
     }
 
     @Test
-    void setStone() {
-        cell.setStone(blackStone);
+    void setStone() throws NoSuchFieldException, IllegalAccessException {
+        TestUtility.setFieldValue("stone", blackStone, cell);
         assertEquals(blackStone, cell.getStone());
     }
 
@@ -75,25 +75,25 @@ class CellTest {
     }
 
     @Test
-    void isEmptyFalse() {
-        cell.setStone(blackStone);
+    void isEmptyFalse() throws NoSuchFieldException, IllegalAccessException {
+        TestUtility.setFieldValue("stone", blackStone, cell);
         assertFalse(cell.isEmpty());
     }
 
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 3, 4, 5})
-    void isBelongingToChainOfTwoCellsInListWithChainOfTwo(int value) {
+    void isBelongingToChainOfTwoCellsInListWithChainOfTwo(int value) throws NoSuchFieldException, IllegalAccessException {
         NonNegativeInteger n = new NonNegativeInteger(value);
-        cell.setStone(blackStone);
+        TestUtility.setFieldValue("stone", blackStone, cell);
         assertEquals(value < 3,
                 cell.isBelongingToChainOfNCellsInList(n, cellList));
     }
 
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 3, 4, 5, 6, 7, 8})
-    void isBelongingToChainOfTwoCellsInListWithChainOfFive(int value) {
+    void isBelongingToChainOfTwoCellsInListWithChainOfFive(int value) throws NoSuchFieldException, IllegalAccessException {
         NonNegativeInteger n = new NonNegativeInteger(value);
-        cell.setStone(whiteStone);
+        TestUtility.setFieldValue("stone", whiteStone, cell);
         assertEquals(value < 6,
                 cell.isBelongingToChainOfNCellsInList(n, cellList));
     }
@@ -109,14 +109,14 @@ class CellTest {
     }
 
     @Test
-    void testToStringBlack() {
-        cell.setStone(blackStone);
+    void testToStringBlack() throws NoSuchFieldException, IllegalAccessException {
+        TestUtility.setFieldValue("stone", blackStone, cell);
         assertEquals("X", cell.toString());
     }
 
     @Test
-    void testToStringWhite() {
-        cell.setStone(whiteStone);
+    void testToStringWhite() throws NoSuchFieldException, IllegalAccessException {
+        TestUtility.setFieldValue("stone", whiteStone, cell);
         assertEquals("O", cell.toString());
     }
 
@@ -137,10 +137,10 @@ class CellTest {
     }
 
     @Test
-    void testEqualsBlackStone() {
+    void testEqualsBlackStone() throws NoSuchFieldException, IllegalAccessException {
         Cell cell1 = new Cell();
-        cell.setStone(blackStone);
-        cell1.setStone(blackStone);
+        TestUtility.setFieldValue("stone", blackStone, cell);
+        TestUtility.setFieldValue("stone", blackStone, cell1);
         assertEquals(cell, cell1);
     }
 
@@ -150,8 +150,8 @@ class CellTest {
     }
 
     @Test
-    void testHashCode() {
-        cell.setStone(blackStone);
+    void testHashCode() throws NoSuchFieldException, IllegalAccessException {
+        TestUtility.setFieldValue("stone", blackStone, cell);
         assertEquals(blackStone.hashCode(), cell.hashCode());
     }
 }

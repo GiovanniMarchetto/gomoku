@@ -25,7 +25,15 @@ public class Cell implements Cloneable {
         return stone;
     }
 
-    public synchronized void setStone(@Nullable Stone stone) {
+    public synchronized void removeStone() {
+        this.stone = null;
+    }
+
+    public synchronized void setStoneFromColor(@NotNull Stone.Color color) {
+        setStone(new Stone(Objects.requireNonNull(color)));
+    }
+
+    private synchronized void setStone(@Nullable Stone stone) {
         this.stone = stone;
     }
 
