@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -35,6 +36,25 @@ public class Board implements Observable, Serializable {
     private final Cell[][] matrix;
     @NotNull
     private final ObservablePropertyThatCanSetPropertyValueAndFireEvents<Coordinates> lastMoveCoordinatesProperty;
+
+    @NotNull
+    public static final Function<Stream<Stream<Cell>>, IntStream> groupCellStreamStreamByStoneToIntStreamOfMaxNumberSameColorStones =
+            streamStream -> streamStream    //  TODO: re-see this
+                    .map(cellStream -> cellStream
+                            .filter(cell -> !cell.isEmpty())
+                            .collect(Collectors.groupingBy(Cell::getStone, Collectors.counting())))
+                    .filter(map -> map.size() > 0)
+                    .map(map -> map.values().stream()
+                            .mapToInt(Math::toIntExact)
+                            .max()
+                            .orElseThrow(IllegalStateException::new))
+                    .mapToInt(i -> i);  // TODO: test + may be a method instead of a Function?
+    @NotNull
+    public final Function<Stream<Stream<Coordinates>>, Stream<Stream<Cell>>> mapCoordStreamStreamToCellStreamStream =
+            streamStream -> streamStream
+                    .map(coordStream -> coordStream
+                            .map(this::getCellAtCoordinatesOrNullIfInvalid)
+                            .filter(Objects::nonNull));  // TODO: test + refactor + may be a method instead of a Function?
 
     public Board(@NotNull PositiveInteger size) {
         this.size = size;

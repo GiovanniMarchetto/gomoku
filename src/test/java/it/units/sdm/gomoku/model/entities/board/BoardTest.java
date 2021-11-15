@@ -26,6 +26,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -103,7 +104,7 @@ public class BoardTest {
                     assertEqualityOfFieldsButDifferenceReference(innerFieldType, initialArrayElement, copiedArrayElement);
                 }
             }
-        } else {
+        } else if (!(fieldValueInInitial instanceof Function)) {  // TODO: resee this, needed?
             assert Objects.requireNonNull(fieldValueInInitial).equals(fieldValueInCopied);
             if (!Objects.requireNonNull(fieldType).isPrimitive()) {
                 assertNotSame(fieldValueInInitial, fieldValueInCopied);

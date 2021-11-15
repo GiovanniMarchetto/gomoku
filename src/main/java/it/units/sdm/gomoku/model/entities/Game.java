@@ -18,9 +18,10 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
+import static it.units.sdm.gomoku.model.entities.Board.groupCellStreamStreamByStoneToIntStreamOfMaxNumberSameColorStones;
 
 public class Game implements Comparable<Game>, Observable {
 
@@ -189,28 +190,11 @@ public class Game implements Comparable<Game>, Observable {
                                 IntStream.rangeClosed(-1, 1).mapToObj(yDirection ->
                                         getAllCoordinatesInsideBoardFromVersor.apply(xDirection, yDirection)));
 
-        Function<Stream<Stream<Coordinates>>, Stream<Stream<Cell>>> mapCoordStreamStreamToCellStreamStream =
-                streamStream -> streamStream
-                        .map(coordStream -> coordStream
-                                .map(board::getCellAtCoordinatesOrNullIfInvalid)
-                                .filter(Objects::nonNull));
-
-        Function<Stream<Stream<Cell>>, IntStream> groupCellStreamStreamByStoneToIntStreamOfMaxNumberSameColorStones =
-                streamStream -> streamStream    //  TODO: resee this
-                        .map(cellStream -> cellStream
-                                .filter(cell -> !cell.isEmpty())
-                                .collect(Collectors.groupingBy(Cell::getStone, Collectors.counting())))
-                        .filter(map -> map.size() > 0)
-                        .map(map -> map.values().stream()
-                                .mapToInt(Math::toIntExact)
-                                .max()
-                                .orElseThrow(IllegalStateException::new))
-                        .mapToInt(i -> i);
-
         Function<IntStream, Boolean> checkIfOneElementIsEqualToNumberOfConsecutive = intStream -> intStream
                 .anyMatch(value -> value == numberOfConsecutive.intValue());
 
-        return mapCoordStreamStreamToCellStreamStream
+        return board
+                .mapCoordStreamStreamToCellStreamStream
                 .andThen(groupCellStreamStreamByStoneToIntStreamOfMaxNumberSameColorStones)
                 .andThen(checkIfOneElementIsEqualToNumberOfConsecutive)
                 .apply(getAllStreamsOfCoordinatesOverAllDirections.get());
