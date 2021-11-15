@@ -260,6 +260,10 @@ public class Board implements Observable, Serializable {
         return result;
     }
 
+    public boolean isEmptyCellAtCoordinates(@NotNull final Coordinates coordinate) throws CellOutOfBoardException {   // TODO: test
+        return getCellAtCoordinates(Objects.requireNonNull(coordinate)).isEmpty();
+    }
+
     public static class BoardIsFullException extends Exception {
         public BoardIsFullException() {
             super("The board is entirely filled. No more space available.");
