@@ -110,10 +110,10 @@ public class BoardTest {
     }
 
     @NotNull
-    private Coordinates tryToOccupyNextEmptyCellAndReturnCoordinatesWithBlackStone() {
+    private Coordinates tryToOccupyEmptyCell() {
         try {
             CPUPlayer cpuPlayer = new CPUPlayer();
-            Coordinates coordinatesToOccupy = cpuPlayer.chooseNextEmptyCoordinates(board);
+            Coordinates coordinatesToOccupy = cpuPlayer.chooseRandomEmptyCoordinates(board);
             tryToOccupyCoordinatesWithColor(board, Stone.Color.BLACK,
                     coordinatesToOccupy.getX(), coordinatesToOccupy.getY());
             return coordinatesToOccupy;
@@ -197,10 +197,10 @@ public class BoardTest {
 
     @SuppressWarnings("ConstantConditions")// field declared int in the class
     @Test
-    void checkNumberOfFilledPositionAfterAddAStone() {
+    void checkNumberOfFilledPositionsAfterAddAStone() {
         try {
             int expected = ((int) TestUtility.getFieldValue("numberOfFilledPositions", board)) + 1;
-            tryToOccupyNextEmptyCellAndReturnCoordinatesWithBlackStone();
+            tryToOccupyEmptyCell();
             int actual = ((int) TestUtility.getFieldValue("numberOfFilledPositions", board));
             assertEquals(expected, actual);
         } catch (NoSuchFieldException | IllegalAccessException e) {
@@ -222,7 +222,7 @@ public class BoardTest {
 
     @Test
     void setLastMoveCoordinatesProperty() {
-        Coordinates expected = tryToOccupyNextEmptyCellAndReturnCoordinatesWithBlackStone();
+        Coordinates expected = tryToOccupyEmptyCell();
         assertEquals(expected, board.getLastMoveCoordinatesProperty().getPropertyValue());
     }
 
@@ -238,7 +238,7 @@ public class BoardTest {
         int totalCell = (int) Math.pow(BOARD_SIZE.intValue(), 2);
         IntStream.range(0, totalCell - 1)
                 .forEach(i -> {
-                    tryToOccupyNextEmptyCellAndReturnCoordinatesWithBlackStone();
+                    tryToOccupyEmptyCell();
                     assertTrue(board.isThereAnyEmptyCell());
                 });
     }
@@ -248,7 +248,7 @@ public class BoardTest {
         board = new Board(BOARD_SIZE);
         int totalCell = (int) Math.pow(BOARD_SIZE.intValue(), 2);
         IntStream.range(0, totalCell)
-                .forEach(i -> tryToOccupyNextEmptyCellAndReturnCoordinatesWithBlackStone());
+                .forEach(i -> tryToOccupyEmptyCell());
         assertFalse(board.isThereAnyEmptyCell());
     }
 

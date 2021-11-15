@@ -14,7 +14,6 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import static it.units.sdm.gomoku.model.entities.Board.BoardIsFullException;
 
@@ -71,7 +70,7 @@ public class CPUPlayer extends Player {
                 .map(i -> minChainToFind - i + maxChainToFind - 1).toArray();
 
         for (int i : chainToFind) {
-            Optional<Coordinates> optionalCoordinates = getStreamOfEmptyCoordinates(board)
+            Optional<Coordinates> optionalCoordinates = board.getStreamOfEmptyCoordinates()
                     .filter(c -> isHeadOfAChainOfStones(board, c, new PositiveInteger(i)))
                     .findAny();
             if (optionalCoordinates.isPresent()) {
@@ -104,22 +103,13 @@ public class CPUPlayer extends Player {
     }
 
     @NotNull
-    public Coordinates chooseNextEmptyCoordinates(@NotNull Board board) throws BoardIsFullException {
-        if (board.isThereAnyEmptyCell()) {
-            //noinspection OptionalGetWithoutIsPresent because is yet checked with isAnyEmptyPosition
-            return getStreamOfEmptyCoordinates(board).findFirst().get();
-        }
-        throw new BoardIsFullException();
-    }
-
-    @NotNull
     public Coordinates chooseNextEmptyCoordinatesFromCenter(@NotNull Board board) throws BoardIsFullException {
         int boardSize = board.getSize();
         double centerValue = boardSize / 2.0 - 0.5;
 
         if (board.isThereAnyEmptyCell()) {
             //noinspection OptionalGetWithoutIsPresent // because is yet checked with isThereAnyEmptyCell
-            return getStreamOfEmptyCoordinates(board).min((o1, o2) ->
+            return board.getStreamOfEmptyCoordinates().min((o1, o2) ->
                     (int) (getWeightRespectToCenter(centerValue, o1) - getWeightRespectToCenter(centerValue, o2))).get();
         }
         throw new BoardIsFullException();
@@ -128,7 +118,7 @@ public class CPUPlayer extends Player {
     @NotNull
     public Coordinates chooseRandomEmptyCoordinates(@NotNull Board board) throws BoardIsFullException {
         if (board.isThereAnyEmptyCell()) {
-            List<Coordinates> emptyCoordinates = getStreamOfEmptyCoordinates(board).toList();
+            List<Coordinates> emptyCoordinates = board.getStreamOfEmptyCoordinates().toList();
             return emptyCoordinates.get(rand.nextInt(emptyCoordinates.size()));
         }
         throw new BoardIsFullException();
@@ -136,20 +126,6 @@ public class CPUPlayer extends Player {
 
     private double getWeightRespectToCenter(double center, Coordinates coordinates) {
         return Math.pow(Math.abs(center - coordinates.getX()), 2) + Math.pow(Math.abs(center - coordinates.getY()), 2);
-    }
-
-    @NotNull
-    private Stream<Coordinates> getStreamOfEmptyCoordinates(@NotNull Board board) {
-        return IntStream.range(0, board.getSize()).boxed()
-                .flatMap(x -> IntStream.range(0, board.getSize())
-                        .mapToObj(y -> new Coordinates(x, y)))
-                .filter(c -> {
-                    try {
-                        return board.getCellAtCoordinates(c).isEmpty();
-                    } catch (Board.CellOutOfBoardException e) {
-                        return false;
-                    }
-                });
     }
 }
 

@@ -57,25 +57,6 @@ public class CPUPlayerTest {
     }
 
     @Nested
-    class firstEmpty {
-
-        @BeforeAll
-        static void setup() {
-            resetBoard();
-        }
-
-        @ParameterizedTest
-        @CsvSource({"0,0", "0,1", "0,2", "0,3", "0,4", "1,0"})
-        void chooseNextEmptyCoordinates(int x, int y) {
-            try {
-                checkAndOccupyCell(x, y, cpuPlayer.chooseNextEmptyCoordinates(board));
-            } catch (BoardIsFullException e) {
-                fail(e);
-            }
-        }
-    }
-
-    @Nested
     class fromCenter4x4 {
         @BeforeAll
         static void resetBoard() {

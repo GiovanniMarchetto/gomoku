@@ -225,6 +225,21 @@ public class Board implements Observable, Serializable {
                 .toArray(Cell[][]::new);
     }
 
+    @NotNull
+    public Stream<Coordinates> getStreamOfEmptyCoordinates() {  // Todo: test
+        return IntStream.range(0, getSize()).boxed()
+                .unordered().parallel()
+                .flatMap(x -> IntStream.range(0, getSize())
+                        .mapToObj(y -> new Coordinates(x, y)))
+                .filter(c -> {
+                    try {
+                        return getCellAtCoordinates(c).isEmpty();
+                    } catch (Board.CellOutOfBoardException e) {
+                        return false;
+                    }
+                });
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
