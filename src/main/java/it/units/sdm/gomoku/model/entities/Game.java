@@ -16,7 +16,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 import java.util.function.BiFunction;
-import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -197,29 +196,24 @@ public class Game implements Comparable<Game>, Observable {
                                 .filter(Objects::nonNull));
 
         Function<Stream<Stream<Cell>>, IntStream> groupCellStreamStreamByStoneToIntStreamOfMaxNumberSameColorStones =
-                streamStream -> streamStream
+                streamStream -> streamStream    //  TODO: resee this
                         .map(cellStream -> cellStream
                                 .filter(cell -> !cell.isEmpty())
-                                .collect(Collectors.groupingBy(Cell::getStone, Collectors.counting()))
-                                .values()
-                                .stream()
+                                .collect(Collectors.groupingBy(Cell::getStone, Collectors.counting())))
+                        .filter(map -> map.size() > 0)
+                        .map(map -> map.values().stream()
                                 .mapToInt(Math::toIntExact)
                                 .max()
-                                .orElseThrow(IllegalStateException::new)) //TODO BROKEN
+                                .orElseThrow(IllegalStateException::new))
                         .mapToInt(i -> i);
 
-        BiPredicate<IntStream, PositiveInteger> isAnyEqualToN = (intStream, N) -> intStream
-                .anyMatch(value -> value == N.intValue());
+        Function<IntStream, Boolean> checkIfOneElementIsEqualToNumberOfConsecutive = intStream -> intStream
+                .anyMatch(value -> value == numberOfConsecutive.intValue());
 
-        var a = getAllStreamsOfCoordinatesOverAllDirections.get();
-
-        var b = mapCoordStreamStreamToCellStreamStream.apply(a);
-
-        var c = groupCellStreamStreamByStoneToIntStreamOfMaxNumberSameColorStones.apply(b);
-
-        var d = isAnyEqualToN.test(c, numberOfConsecutive);
-
-        return d;
+        return mapCoordStreamStreamToCellStreamStream
+                .andThen(groupCellStreamStreamByStoneToIntStreamOfMaxNumberSameColorStones)
+                .andThen(checkIfOneElementIsEqualToNumberOfConsecutive)
+                .apply(getAllStreamsOfCoordinatesOverAllDirections.get());
     }
 
     public boolean isBoardEmpty() {    // TODO: test
