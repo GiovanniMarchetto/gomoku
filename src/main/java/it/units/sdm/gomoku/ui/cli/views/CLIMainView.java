@@ -10,22 +10,25 @@ import it.units.sdm.gomoku.ui.cli.viewmodels.CLIMainViewmodel;
 import org.jetbrains.annotations.NotNull;
 
 import java.beans.PropertyChangeEvent;
+import java.time.ZonedDateTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class CLIMainView extends View<CLIMainViewmodel> implements Observer {    // TODO : all events clutter the memory stack
     // TODO : refactor: a lot in common with view of GUI (e.g. property events), may refactor?
     // TODO : test
+    private final @NotNull ZonedDateTime time;
 
     public CLIMainView(@NotNull final CLIMainViewmodel cliMainViewmodel) {  // TODO : event-based flux of program to be tested
         super(cliMainViewmodel);
+        time = cliMainViewmodel.getGameStartTime();
         addObservedPropertyOfViewmodel(cliMainViewmodel.getCurrentGameStatusProperty(), evt -> {
-            if (evt.getNewValue() == Game.Status.STARTED) {
+            if (evt.getNewValue() == Game.Status.STARTED && time.equals(cliMainViewmodel.getGameStartTime())) {
                 System.out.println("\n\nNew game!");
             }
         });
         addObservedPropertyOfViewmodel(cliMainViewmodel.getUserMustPlaceNewStoneProperty(), evt -> {
-            if ((boolean) evt.getNewValue()) {
+            if ((boolean) evt.getNewValue() && time.equals(cliMainViewmodel.getGameStartTime())) {
                 try {
                     waitForAMoveOfAPlayer();
                 } catch (Board.BoardIsFullException | Game.GameEndedException e) {
