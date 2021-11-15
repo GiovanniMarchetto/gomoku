@@ -15,10 +15,7 @@ public class PositiveInteger extends NonNegativeInteger {
     }
 
     public PositiveInteger(@PositiveIntegerType int value) {
-        super(value);
-        if (value <= 0) {
-            throw new IllegalArgumentException("The value must be positive");
-        }
+        super(returnValueIfValidOrElseThrow(value));
     }
 
     public PositiveInteger(@NotNull final PositiveInteger positiveInteger) {
@@ -27,8 +24,7 @@ public class PositiveInteger extends NonNegativeInteger {
 
     public static boolean isPositiveIntegerFromString(@NotNull final String s) {
         try {
-            new PositiveInteger(Integer.parseInt(s));
-            return true;
+            return isValid(Integer.parseInt(s));
         } catch (Exception e) {
             return false;
         }
@@ -36,6 +32,14 @@ public class PositiveInteger extends NonNegativeInteger {
 
     public static boolean isValid(int value) {
         return value > 0;
+    }
+
+    private static int returnValueIfValidOrElseThrow(int value) {
+        if (isValid(value)) {
+            return value;
+        } else {
+            throw new IllegalArgumentException("The value must be positive");
+        }
     }
 
     /**
