@@ -27,7 +27,9 @@ public class Game implements Comparable<Game>, Observable {
     @NotNull
     private final Instant start;
     @NotNull
-    private final Player blackPlayer, whitePlayer;
+    private final Player blackPlayer;
+    @NotNull
+    private final Player whitePlayer;
     @Nullable
     private Player winner;  // available after the end of the game
 

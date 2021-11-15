@@ -105,7 +105,7 @@ public class Board implements Observable, Serializable {
             throws BoardIsFullException, CellAlreadyOccupiedException, CellOutOfBoardException {
         if (isThereAnyEmptyCell()) {
             if (isCellEmpty(Objects.requireNonNull(coordinates))) {
-                setStoneAtCoordinates(coordinates, new Stone(Objects.requireNonNull(stoneColor)));
+                setStoneAtCoordinates(coordinates, Objects.requireNonNull(stoneColor));
                 numberOfFilledPositions++;
                 lastMoveCoordinatesProperty.setPropertyValueAndFireIfPropertyChange(coordinates);
             } else {
@@ -120,10 +120,10 @@ public class Board implements Observable, Serializable {
         return getCellAtCoordinates(Objects.requireNonNull(coordinates)).isEmpty();
     }
 
-    private synchronized void setStoneAtCoordinates(@NotNull final Coordinates coordinates, @Nullable Stone stone)
+    private synchronized void setStoneAtCoordinates(@NotNull final Coordinates coordinates, @NotNull Stone.Color stoneColor)
             throws CellOutOfBoardException {
         if (isCoordinatesInsideBoard(Objects.requireNonNull(coordinates))) {
-            getCellAtCoordinates(coordinates).setStone(stone);
+            getCellAtCoordinates(coordinates).setStoneFromColor(stoneColor);
         } else {
             throw new CellOutOfBoardException(coordinates);
         }
