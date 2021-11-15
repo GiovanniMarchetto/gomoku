@@ -43,7 +43,7 @@ class CellTest { // TODO: rethink this
 
     @Test
     void copyConstructorTest() {
-        cell.setStoneFromColor(blackStone.color());
+        cell.setStoneFromColor(blackStone.getColor());
         Cell cell2 = new Cell(cell);
         assertEquals(cell, cell2);
     }

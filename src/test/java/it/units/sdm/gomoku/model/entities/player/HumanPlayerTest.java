@@ -57,12 +57,14 @@ class HumanPlayerTest {
 
     @Test
     void checkCoordinatesRequiredToContinuePropertyAfterMakeMove()
-            throws NoSuchFieldException, IllegalAccessException {
+            throws NoSuchFieldException, IllegalAccessException, InterruptedException {
         getCurrentGameAfterMakeMove();
         @SuppressWarnings("unchecked")
         ObservableProperty<Boolean> coordinatesRequiredToContinueProperty =
                 (ObservableProperty<Boolean>) TestUtility.getFieldValue(
                         "coordinatesRequiredToContinueProperty", humanPlayer);
+
+        Thread.sleep(100);  // TODO: rethink about the architecture_ here we have to wait for another thread (who knows which one) to update the model: is this correct?
 
         //noinspection ConstantConditions
         assertEquals(Boolean.TRUE, coordinatesRequiredToContinueProperty.getPropertyValue());
