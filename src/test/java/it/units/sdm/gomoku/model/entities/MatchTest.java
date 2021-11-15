@@ -1,5 +1,7 @@
 package it.units.sdm.gomoku.model.entities;
 
+import it.units.sdm.gomoku.model.actors.CPUPlayer;
+import it.units.sdm.gomoku.model.actors.Player;
 import it.units.sdm.gomoku.model.entities.game.GameTestUtility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

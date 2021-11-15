@@ -1,11 +1,15 @@
 package it.units.sdm.gomoku.ui;
 
+import it.units.sdm.gomoku.model.actors.HumanPlayer;
+import it.units.sdm.gomoku.model.actors.Player;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.entities.*;
 import it.units.sdm.gomoku.mvvm_library.Viewmodel;
-import it.units.sdm.gomoku.property_change_handlers.ObservableProperty;
 import it.units.sdm.gomoku.property_change_handlers.PropertyObserver;
+import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservableProperty;
+import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyProxy;
+import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyThatCanSetPropertyValueAndFireEvents;
 import it.units.sdm.gomoku.ui.support.Setup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,13 +25,13 @@ import java.util.stream.Stream;
 public abstract class MainViewmodel extends Viewmodel {
 
     @NotNull
-    private final ObservableProperty<Player> currentPlayerProperty;
+    private final ObservablePropertyThatCanSetPropertyValueAndFireEvents<Player> currentPlayerProperty;
     @NotNull
-    private final ObservableProperty<Game.Status> currentGameStatusProperty;
+    private final ObservablePropertyThatCanSetPropertyValueAndFireEvents<Game.Status> currentGameStatusProperty;
     @NotNull
-    private final ObservableProperty<Boolean> userMustPlaceNewStoneProperty;
+    private final ObservablePropertyThatCanSetPropertyValueAndFireEvents<Boolean> userMustPlaceNewStoneProperty;
     @NotNull
-    private final ObservableProperty<Coordinates> lastMoveCoordinatesProperty;
+    private final ObservablePropertyThatCanSetPropertyValueAndFireEvents<Coordinates> lastMoveCoordinatesProperty;
     @NotNull
     private final List<PropertyObserver<?>> modelPropertyObservers;
     @Nullable
@@ -38,10 +42,10 @@ public abstract class MainViewmodel extends Viewmodel {
     private Board currentBoard;
 
     public MainViewmodel() {
-        this.currentPlayerProperty = new ObservableProperty<>();
-        this.currentGameStatusProperty = new ObservableProperty<>();
-        this.userMustPlaceNewStoneProperty = new ObservableProperty<>();
-        this.lastMoveCoordinatesProperty = new ObservableProperty<>();
+        this.currentPlayerProperty = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>();
+        this.currentGameStatusProperty = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>();
+        this.userMustPlaceNewStoneProperty = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>();
+        this.lastMoveCoordinatesProperty = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>();
         this.modelPropertyObservers = new ArrayList<>();
     }
 
@@ -209,22 +213,22 @@ public abstract class MainViewmodel extends Viewmodel {
 
     @NotNull
     public ObservableProperty<Player> getCurrentPlayerProperty() {
-        return currentPlayerProperty;   // TODO: getting the property would allow to set the property and fire property change events (only the owner of the property should be able to do that, here we could simply a return a function "runnable" to make the binding without allowing to access the object fields
+        return new ObservablePropertyProxy<>(currentPlayerProperty);
     }
 
     @NotNull
     public ObservableProperty<Game.Status> getCurrentGameStatusProperty() {
-        return currentGameStatusProperty;
+        return new ObservablePropertyProxy<>(currentGameStatusProperty);
     }
 
     @NotNull
     public ObservableProperty<Boolean> getUserMustPlaceNewStoneProperty() {
-        return this.userMustPlaceNewStoneProperty;
+        return new ObservablePropertyProxy<>(userMustPlaceNewStoneProperty);
     }
 
     @NotNull
     public ObservableProperty<Coordinates> getLastMoveCoordinatesProperty() {
-        return this.lastMoveCoordinatesProperty;
+        return new ObservablePropertyProxy<>(lastMoveCoordinatesProperty);
     }
 
     @NotNull

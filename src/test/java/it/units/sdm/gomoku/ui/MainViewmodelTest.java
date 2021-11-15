@@ -1,8 +1,14 @@
 package it.units.sdm.gomoku.ui;
 
+import it.units.sdm.gomoku.model.actors.HumanPlayer;
+import it.units.sdm.gomoku.model.actors.Player;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
-import it.units.sdm.gomoku.model.entities.*;
-import it.units.sdm.gomoku.property_change_handlers.ObservableProperty;
+import it.units.sdm.gomoku.model.entities.Board;
+import it.units.sdm.gomoku.model.entities.Game;
+import it.units.sdm.gomoku.model.entities.Match;
+import it.units.sdm.gomoku.model.entities.Stone;
+import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservableProperty;
+import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyThatCanSetPropertyValueAndFireEvents;
 import it.units.sdm.gomoku.ui.support.Setup;
 import it.units.sdm.gomoku.utils.TestUtility;
 import org.junit.jupiter.api.BeforeEach;
@@ -211,8 +217,8 @@ class MainViewmodelTest {
         mainViewmodel.startNewMatch();
         try {
             @SuppressWarnings("unchecked")
-            ObservableProperty<Boolean> userMustPlaceNewStoneProperty =
-                    (ObservableProperty<Boolean>) TestUtility.getFieldValue("userMustPlaceNewStoneProperty", mainViewmodel);
+            ObservablePropertyThatCanSetPropertyValueAndFireEvents<Boolean> userMustPlaceNewStoneProperty =
+                    (ObservablePropertyThatCanSetPropertyValueAndFireEvents<Boolean>) TestUtility.getFieldValue("userMustPlaceNewStoneProperty", mainViewmodel);
             //noinspection ConstantConditions
             userMustPlaceNewStoneProperty.setPropertyValueWithoutNotifying(false);
             Coordinates coordinates = new Coordinates(0, 0);
@@ -237,21 +243,31 @@ class MainViewmodelTest {
         mainViewmodel.createMatchFromSetupAndStartGame(setupWithHuman);
         mainViewmodel.getCurrentGame().start();
 
-        while (true) {
-            try {
-                //give the time to fire and set the currentGame
-                if (TestUtility.getFieldValue("currentGame", humanPlayer) != null) {
-                    break;
+        final int REASONABLE_TIME_AFTER_WHICH_THREAD_WILL_BE_INTERRUPTED_IN_MILLIS = 10;
+        Thread separateThreadWhichWaitForCurrentGameToBeSet = new Thread(() -> {
+            while (true) {
+                try {
+                    if (TestUtility.getFieldValue("currentGame", humanPlayer) != null) {
+                        break;
+                    }
+                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    fail(e);
                 }
-            } catch (NoSuchFieldException | IllegalAccessException e) {
-                fail(e);
             }
+        });
+        separateThreadWhichWaitForCurrentGameToBeSet.start();
+        TestUtility.interruptThreadAfterDelayIfNotAlreadyJoined(    // TODO: resee this
+                separateThreadWhichWaitForCurrentGameToBeSet, REASONABLE_TIME_AFTER_WHICH_THREAD_WILL_BE_INTERRUPTED_IN_MILLIS);
+        try {
+            separateThreadWhichWaitForCurrentGameToBeSet.join();
+        } catch (InterruptedException e) {
+            fail(e);
         }
 
         try {
             @SuppressWarnings("unchecked")
-            ObservableProperty<Boolean> userMustPlaceNewStoneProperty =
-                    (ObservableProperty<Boolean>) TestUtility.getFieldValue(
+            ObservablePropertyThatCanSetPropertyValueAndFireEvents<Boolean> userMustPlaceNewStoneProperty =
+                    (ObservablePropertyThatCanSetPropertyValueAndFireEvents<Boolean>) TestUtility.getFieldValue(
                             "userMustPlaceNewStoneProperty", mainViewmodel);
             //noinspection ConstantConditions
             userMustPlaceNewStoneProperty.setPropertyValueWithoutNotifying(true);

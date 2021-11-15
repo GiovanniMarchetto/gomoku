@@ -2,7 +2,7 @@ package it.units.sdm.gomoku.ui.gui.views;
 
 import it.units.sdm.gomoku.EnvVariables;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
-import it.units.sdm.gomoku.property_change_handlers.ObservableProperty;
+import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyThatCanSetPropertyValueAndFireEvents;
 import it.units.sdm.gomoku.ui.gui.viewmodels.GUIMainViewmodel;
 import javafx.scene.shape.Line;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -17,7 +17,7 @@ class GomokuCellTest {
     private GomokuCell gomokuCell;
 
     void setUpGomokuCell(int x, int y) {
-        var stoneRadiusProperty = new ObservableProperty<Double>();
+        var stoneRadiusProperty = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<Double>();
         stoneRadiusProperty.setPropertyValueWithoutNotifying(radius);
         gomokuCell = new GomokuCell(new GUIMainViewmodel(), new Coordinates(x, y), stoneRadiusProperty, boardSize);
     }

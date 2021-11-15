@@ -1,7 +1,7 @@
 package it.units.sdm.gomoku.mvvm_library;
 
-import it.units.sdm.gomoku.property_change_handlers.ObservableProperty;
 import it.units.sdm.gomoku.property_change_handlers.PropertyObserver;
+import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservableProperty;
 import org.jetbrains.annotations.NotNull;
 
 import java.beans.PropertyChangeEvent;

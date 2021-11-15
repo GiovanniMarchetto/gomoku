@@ -1,7 +1,9 @@
-package it.units.sdm.gomoku.model.entities;
+package it.units.sdm.gomoku.model.actors;
 
 import it.units.sdm.gomoku.Utility;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
+import it.units.sdm.gomoku.model.entities.Board;
+import it.units.sdm.gomoku.model.entities.Game;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

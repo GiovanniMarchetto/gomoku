@@ -1,7 +1,12 @@
 package it.units.sdm.gomoku.model.entities.game;
 
+import it.units.sdm.gomoku.model.actors.CPUPlayer;
+import it.units.sdm.gomoku.model.actors.Player;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
-import it.units.sdm.gomoku.model.entities.*;
+import it.units.sdm.gomoku.model.entities.Board;
+import it.units.sdm.gomoku.model.entities.Cell;
+import it.units.sdm.gomoku.model.entities.Game;
+import it.units.sdm.gomoku.model.entities.Stone;
 import it.units.sdm.gomoku.utils.TestUtility;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.params.ParameterizedTest;

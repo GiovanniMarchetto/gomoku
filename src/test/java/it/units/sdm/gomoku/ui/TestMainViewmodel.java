@@ -1,7 +1,7 @@
 package it.units.sdm.gomoku.ui;
 
+import it.units.sdm.gomoku.model.actors.CPUPlayer;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
-import it.units.sdm.gomoku.model.entities.CPUPlayer;
 import it.units.sdm.gomoku.ui.support.Setup;
 
 public class TestMainViewmodel extends MainViewmodel {

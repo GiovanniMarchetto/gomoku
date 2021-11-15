@@ -1,19 +1,23 @@
 package it.units.sdm.gomoku.property_change_handlers;
 
+import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservableProperty;
+import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyThatCanSetPropertyValueAndFireEvents;
+import it.units.sdm.gomoku.utils.TestUtility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class ObservablePropertyTest {
-    ObservableProperty<String> observable;
+    ObservablePropertyThatCanSetPropertyValueAndFireEvents<String> observable;
     String startString = "init";
 
     @BeforeEach
     void setup() {
-        observable = new ObservableProperty<>();
+        observable = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>();
     }
 
     @Test
@@ -25,7 +29,7 @@ class ObservablePropertyTest {
     void getPropertyName() {
         int numberOfInstances = 0;
         try {
-            Field propertyValueField = observable.getClass().getDeclaredField("numberOfInstances");
+            Field propertyValueField = TestUtility.getFieldAlreadyMadeAccessible(observable.getClass(), "numberOfDistinctCreatedInstances");
             propertyValueField.setAccessible(true);
             numberOfInstances = (int) propertyValueField.get(observable);
         } catch (NoSuchFieldException | IllegalAccessException e) {
@@ -37,9 +41,8 @@ class ObservablePropertyTest {
     @Test
     void getPropertyValue() {
         try {
-            Field propertyValueField = observable.getClass().getDeclaredField("propertyValue");
-            propertyValueField.setAccessible(true);
-            propertyValueField.set(observable, startString);
+            TestUtility.setFieldValue("value", startString,
+                    Objects.requireNonNull(TestUtility.getFieldValue("propertyValueContainer", observable)));
         } catch (NoSuchFieldException | IllegalAccessException e) {
             fail(e);
         }
@@ -66,7 +69,7 @@ class ObservablePropertyTest {
 
     @Test
     void testClonePropertyName() {
-        ObservableProperty<String> observableClone = observable.clone();
+        ObservablePropertyThatCanSetPropertyValueAndFireEvents<String> observableClone = observable.clone();
         assertEquals(observable.getPropertyName(), observableClone.getPropertyName());
     }
 

@@ -22,6 +22,8 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -306,5 +308,11 @@ public class TestUtility {
     @NotNull
     public static String getStringDifferentFromGivenOne(String inputString) {   // TODO : test
         return inputString + "_whateverTrailingStringJustToMakeTheGivenStringDifferent";
+    }
+
+    public static void interruptThreadAfterDelayIfNotAlreadyJoined(
+            @NotNull final Thread threadToBeEventuallyInterrupted, int delayInMillisecs) {
+        Executors.newScheduledThreadPool(1)
+                .schedule(threadToBeEventuallyInterrupted::stop, delayInMillisecs, TimeUnit.MILLISECONDS);
     }
 }

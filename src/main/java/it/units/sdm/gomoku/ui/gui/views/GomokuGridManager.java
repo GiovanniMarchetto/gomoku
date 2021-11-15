@@ -2,7 +2,8 @@ package it.units.sdm.gomoku.ui.gui.views;
 
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.mvvm_library.Observable;
-import it.units.sdm.gomoku.property_change_handlers.ObservableProperty;
+import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyProxy;
+import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyThatCanSetPropertyValueAndFireEvents;
 import it.units.sdm.gomoku.ui.gui.viewmodels.GUIMainViewmodel;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
@@ -19,7 +20,7 @@ public class GomokuGridManager implements Observable {
 
 
     @NotNull
-    private final ObservableProperty<Double> gomokuStoneRadiusProperty;
+    private final ObservablePropertyThatCanSetPropertyValueAndFireEvents<Double> gomokuStoneRadiusProperty;
 
     //TODO : add nullable/notnull annotations
 
@@ -36,7 +37,7 @@ public class GomokuGridManager implements Observable {
         this.parentPane = parentPane;
         this.discardWidth = discardWidth;
         this.discardHeight = discardHeight;
-        gomokuStoneRadiusProperty = new ObservableProperty<>();
+        gomokuStoneRadiusProperty = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>();
         gridPane = new GridPane();
 
         parentPane.heightProperty().addListener(onPaneSizeChange());
@@ -78,7 +79,7 @@ public class GomokuGridManager implements Observable {
     }
 
     private void addCell(int row, int col) {
-        GomokuCell gc = new GomokuCell(vm, new Coordinates(row, col), gomokuStoneRadiusProperty/*TODO : here we are passing a private property...*/, boardSize);
+        GomokuCell gc = new GomokuCell(vm, new Coordinates(row, col), new ObservablePropertyProxy<>(gomokuStoneRadiusProperty), boardSize);
         gc.observe(this);
         ObservableList<Node> children = gc.getGroup().getChildren();
 
