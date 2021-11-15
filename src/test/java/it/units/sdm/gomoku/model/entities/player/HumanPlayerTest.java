@@ -72,19 +72,18 @@ class HumanPlayerTest {
 
     @Test
     void placeStoneAndCheckCoordinates()
-            throws Board.BoardIsFullException, Game.GameEndedException,
-            Board.CellOutOfBoardException, Board.CellAlreadyOccupiedException,
-            NoSuchFieldException, IllegalAccessException, InterruptedException {
-        getCurrentGameAfterMakeMove();
+            throws Game.GameEndedException, Board.CellOutOfBoardException,
+            Board.CellAlreadyOccupiedException, InterruptedException {
+        assert game.getBoard().isEmpty();
         humanPlayer.setNextMove(firstCoordinates, game);
+        humanPlayer.makeMove(game);
         Thread.sleep(100);  // TODO: rethink about the architecture_ here we have to wait for another thread (who knows which one) to update the model: is this correct?
         assertFalse(game.getBoard().getCellAtCoordinates(firstCoordinates).isEmpty());
     }
 
     @Test
     void placeStoneAndCheckCoordinatesRequiredToContinueProperty()
-            throws Board.BoardIsFullException, Game.GameEndedException,
-            Board.CellOutOfBoardException, Board.CellAlreadyOccupiedException,
+            throws Game.GameEndedException, Board.CellOutOfBoardException, Board.CellAlreadyOccupiedException,
             NoSuchFieldException, IllegalAccessException, InterruptedException {
         getCurrentGameAfterMakeMove();
         humanPlayer.setNextMove(firstCoordinates, game);
@@ -117,12 +116,10 @@ class HumanPlayerTest {
 //                    break;
 //                }
 //            }
-//            //TODO: depends on thread choices
-//            Thread.sleep(0, 1000);
             Thread.sleep(100);  // TODO: rethink about the architecture_ here we have to wait for another thread (who knows which one) to update the model: is this correct?
             //noinspection ConstantConditions
             assertEquals(Boolean.TRUE, coordinatesRequiredToContinueProperty.getPropertyValue());
-        } catch (Board.BoardIsFullException | Game.GameEndedException | Board.CellAlreadyOccupiedException e) {
+        } catch (Game.GameEndedException | Board.CellAlreadyOccupiedException e) {
             fail(e);
         }
     }
