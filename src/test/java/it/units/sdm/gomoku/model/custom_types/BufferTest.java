@@ -29,7 +29,7 @@ class BufferTest {
     private final static String sizeFieldNameInClass = "size";
 
     private final static int ARBITRARY_CHOSEN_SIZE = 10;
-    private final static int REASONABLE_MILLISECS_TO_PERMIT_THREAD_TO_START = 10;   // TODO: this kind of params are often used in test: might they be env variables?
+    private final static int REASONABLE_MILLISECS_TO_PERMIT_THREAD_TO_START = 100;   // TODO: this kind of params are often used in test: might they be env variables?
     private final static int REASONABLE_MILLISECS_AFTER_WHICH_THREAD_MUST_BE_INTERRUPTED =
             2 * REASONABLE_MILLISECS_TO_PERMIT_THREAD_TO_START;
 
