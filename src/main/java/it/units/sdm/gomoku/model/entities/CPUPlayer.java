@@ -88,9 +88,9 @@ public class CPUPlayer extends Player {
     }
 
     @NotNull
-    public Coordinates chooseRandomEmptyCoordinates(@NotNull Board board) throws BoardIsFullException {
-        if (board.isThereAnyEmptyCell()) {
-            List<Coordinates> emptyCoordinates = board.getStreamOfEmptyCoordinates().toList();
+    public Coordinates chooseRandomEmptyCoordinates(@NotNull Game game) throws BoardIsFullException {
+        if (game.isThereAnyEmptyCellOnBoard()) {
+            List<Coordinates> emptyCoordinates = game.getStreamOfEmptyCoordinatesOnBoard().toList();
             return emptyCoordinates.get(rand.nextInt(emptyCoordinates.size()));
         }
         throw new BoardIsFullException();

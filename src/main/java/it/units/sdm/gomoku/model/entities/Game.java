@@ -158,7 +158,7 @@ public class Game implements Comparable<Game>, Observable {
     public boolean isEmptyCoordinatesOnBoard(@NotNull final Coordinates proposedMove)
             throws GameEndedException, Board.CellOutOfBoardException {    // TODO : test
         if (isEnded()) {
-            throw new Game.GameEndedException();
+            throw new GameEndedException();
         } else if (!board.isThereAnyEmptyCell()) {
             throw new IllegalStateException("No space on board, game should be ended but it is not.");
         }
@@ -198,6 +198,10 @@ public class Game implements Comparable<Game>, Observable {
 
     public int getBoardSize() { // TODO: test
         return board.getSize();
+    }
+
+    public boolean isThereAnyEmptyCellOnBoard() {   // TODO: test
+        return board.isThereAnyEmptyCell();
     }
 
     public enum Status {STARTED, ENDED}

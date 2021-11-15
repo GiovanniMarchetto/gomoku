@@ -249,6 +249,13 @@ public class TestUtility {
         return accessibleObject;
     }
 
+
+    @NotNull
+    public static <T> Stream<T> sortStreamRandomlyAndGet(@NotNull final Stream<T> stream) { // TODO: test
+        return stream.sorted((o1, o2) -> new Random().nextInt(2) - 1);
+    }
+
+
     @NotNull
     private static List<AccessibleObject> getInheritedFieldsOrMethods(@Nullable Class<?> clazz,
                                                                       boolean trueIfFieldsDesiredOrFalseForMethods) {

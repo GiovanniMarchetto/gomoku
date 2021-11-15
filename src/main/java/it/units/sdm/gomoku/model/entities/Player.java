@@ -21,10 +21,10 @@ public abstract class Player implements Observable {
     @NotNull
     private final ObservablePropertyThatCanSetPropertyValueAndFireEvents<Boolean> coordinatesRequiredToContinueProperty;
 
-    protected Player(@NotNull String name) {
+    protected Player(@NotNull String playerName) {
         final int NUMBER_OF_MOVES_THAT_A_PLAYER_CAN_DO_IN_ONE_TURN = 1;
         nextMoveBuffer = new Buffer<>(NUMBER_OF_MOVES_THAT_A_PLAYER_CAN_DO_IN_ONE_TURN);
-        this.name = Objects.requireNonNull(name);
+        this.name = Objects.requireNonNull(playerName);
         coordinatesRequiredToContinueProperty = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>();
         coordinatesRequiredToContinueProperty.setPropertyValueWithoutNotifying(false);
     }

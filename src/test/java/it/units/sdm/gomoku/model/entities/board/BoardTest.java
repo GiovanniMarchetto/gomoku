@@ -5,7 +5,6 @@ import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.Board;
-import it.units.sdm.gomoku.model.entities.CPUPlayer;
 import it.units.sdm.gomoku.model.entities.Cell;
 import it.units.sdm.gomoku.model.entities.Stone;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyThatCanSetPropertyValueAndFireEvents;
@@ -109,17 +108,48 @@ public class BoardTest {
         }
     }
 
+    public static void occupyNEmptyCellsOnTheGivenBoardBoardWithGivenColor(
+            @NotNull final Board board, int numberOfEmptyCellsToOccupy, @NotNull final Stone.Color stoneColor)
+            throws NoSuchFieldException, IllegalAccessException {// TODO: test
+        synchronized (Objects.requireNonNull(board)) {
+            assert isThereEnoughEmptySpaceOnBoard(board, numberOfEmptyCellsToOccupy);
+            getNEmptyPositionsRandomlyTakenFromGivenBoard(numberOfEmptyCellsToOccupy, board) // TODO: message chain code smell
+                    .forEach(coord -> {
+                        try {
+                            board.occupyPosition(Objects.requireNonNull(stoneColor), coord);
+                        } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Board.CellOutOfBoardException ignored) {
+                        }
+                    });
+        }
+    }
+
+    @NotNull
+    public static Stream<Coordinates> getNEmptyPositionsRandomlyTakenFromGivenBoard(
+            int numberOfEmptyCellsToOccupy, @NotNull final Board board) {   // TODO: test
+        return TestUtility.sortStreamRandomlyAndGet(Objects.requireNonNull(board).getStreamOfEmptyCoordinates())
+                .limit(numberOfEmptyCellsToOccupy);
+    }
+
+    private static boolean isThereEnoughEmptySpaceOnBoard(@NotNull Board board, int numberOfEmptyCellsRequired) throws NoSuchFieldException, IllegalAccessException {   // TODO: test
+        //noinspection ConstantConditions
+        return (int) TestUtility.getFieldValue("numberOfFilledPositions", board) + numberOfEmptyCellsRequired < Math.pow(board.getSize(), 2);
+    }
+
     @NotNull
     private Coordinates tryToOccupyEmptyCell() {
-        try {
-            CPUPlayer cpuPlayer = new CPUPlayer();
-            Coordinates coordinatesToOccupy = cpuPlayer.chooseRandomEmptyCoordinates(board);
-            tryToOccupyCoordinatesWithColor(board, Stone.Color.BLACK,
-                    coordinatesToOccupy.getX(), coordinatesToOccupy.getY());
-            return coordinatesToOccupy;
-        } catch (Board.BoardIsFullException e) {
-            fail(e);
-            return null;
+        synchronized (board) {
+            try {
+                Coordinates coordinatesToOccupy =
+                        getNEmptyPositionsRandomlyTakenFromGivenBoard(1, board)
+                                .findAny()
+                                .orElseThrow(Board.BoardIsFullException::new);
+                tryToOccupyCoordinatesWithColor(board, Stone.Color.BLACK,
+                        coordinatesToOccupy.getX(), coordinatesToOccupy.getY());
+                return coordinatesToOccupy;
+            } catch (Board.BoardIsFullException e) {
+                fail(e);
+                return null;
+            }
         }
     }
 
@@ -233,7 +263,7 @@ public class BoardTest {
     }
 
     @Test
-    void checkIfIsThereAnyEmptyCellForEveryOccupyUntilBoardHasOnePositionFree() {
+    void checkIfThereIsAnyEmptyCellForEveryOccupyUntilBoardHasOnePositionFree() {
         board = new Board(BOARD_SIZE);
         int totalCell = (int) Math.pow(BOARD_SIZE.intValue(), 2);
         IntStream.range(0, totalCell - 1)

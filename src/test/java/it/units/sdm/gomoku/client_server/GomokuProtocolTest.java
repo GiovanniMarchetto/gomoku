@@ -6,8 +6,8 @@ import it.units.sdm.gomoku.client_server.fake_objects.SimpleClient;
 import it.units.sdm.gomoku.client_server.server.GomokuServer;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.Board;
-import it.units.sdm.gomoku.model.entities.CPUPlayer;
 import it.units.sdm.gomoku.model.entities.HumanPlayer;
+import it.units.sdm.gomoku.model.entities.Stone;
 import it.units.sdm.gomoku.ui.support.BoardSizes;
 import it.units.sdm.gomoku.ui.support.Setup;
 import it.units.sdm.gomoku.utils.TestUtility;
@@ -36,6 +36,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static it.units.sdm.gomoku.client_server.GomokuProtocol.Status;
+import static it.units.sdm.gomoku.model.entities.board.BoardTest.occupyNEmptyCellsOnTheGivenBoardBoardWithGivenColor;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Disabled("Disabled until refactoring of the rest of the project")
@@ -75,12 +76,13 @@ class GomokuProtocolTest {
         return IntStream.range(0, NUMBER_OF_ARGUMENTS)
                 .mapToObj(j -> {
                     Board board = new Board(EnvVariables.BOARD_SIZE);
-                    CPUPlayer cpuPlayer = new CPUPlayer();
                     final int MAX_NUMBER_OF_STONE_TO_PLACE_ON_THE_BOARD = 10;
-                    for (int i = 0; i < MAX_NUMBER_OF_STONE_TO_PLACE_ON_THE_BOARD; i++) {
+                    assert MAX_NUMBER_OF_STONE_TO_PLACE_ON_THE_BOARD <= EnvVariables.BOARD_SIZE.intValue();
+                    for (Stone.Color stoneColor : Stone.Color.values()) {
                         try {
-                            cpuPlayer.chooseRandomEmptyCoordinates(board);
-                        } catch (Board.BoardIsFullException ignored) {
+                            occupyNEmptyCellsOnTheGivenBoardBoardWithGivenColor(board, MAX_NUMBER_OF_STONE_TO_PLACE_ON_THE_BOARD / Stone.Color.values().length, stoneColor);
+                        } catch (NoSuchFieldException | IllegalAccessException e) {
+                            fail(e);
                         }
                     }
                     return board;

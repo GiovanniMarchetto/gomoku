@@ -1,17 +1,10 @@
 package it.units.sdm.gomoku.model.entities.player;
 
-import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
 import it.units.sdm.gomoku.model.entities.Stone;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.RepeatedTest;
-
-import static it.units.sdm.gomoku.model.entities.Board.BoardIsFullException;
-import static it.units.sdm.gomoku.model.entities.board.BoardTest.tryToOccupyCoordinatesWithColor;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 
 public class CPUPlayerTest {    // TODO: resee this class
@@ -41,19 +34,19 @@ public class CPUPlayerTest {    // TODO: resee this class
 //            fail(e);
 //        }
 //    }
-
-    @RepeatedTest(NUMBER_OF_REPETITION)
-    void checkRandomChosenCoordinatesReferToEmptyCell() throws Board.CellOutOfBoardException {
-        try {
-            Coordinates actual = cpuPlayer.chooseRandomEmptyCoordinates(board);
-            assertTrue(board.getCellAtCoordinates(actual).isEmpty());
-            tryToOccupyCoordinatesWithColor(board, cpuStoneColor, actual.getX(), actual.getY());
-        } catch (BoardIsFullException e) {
-            if (board.isThereAnyEmptyCell()) {
-                fail(e);
-            }
-        }
-    }
+//
+//    @RepeatedTest(NUMBER_OF_REPETITION)
+//    void checkRandomChosenCoordinatesReferToEmptyCell() throws Board.CellOutOfBoardException {
+//        try {
+//            Coordinates actual = cpuPlayer.chooseRandomEmptyCoordinates(board);
+//            assertTrue(board.getCellAtCoordinates(actual).isEmpty());
+//            tryToOccupyCoordinatesWithColor(board, cpuStoneColor, actual.getX(), actual.getY());
+//        } catch (BoardIsFullException e) {
+//            if (board.isThereAnyEmptyCell()) {
+//                fail(e);
+//            }
+//        }
+//    }
 //
 //    @Nested
 //    class fromCenter4x4 {

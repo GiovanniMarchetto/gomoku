@@ -4,14 +4,12 @@ import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
 import it.units.sdm.gomoku.model.entities.Stone;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.util.stream.IntStream;
 
 import static it.units.sdm.gomoku.model.entities.Board.BoardIsFullException;
 import static it.units.sdm.gomoku.model.entities.Board.CellAlreadyOccupiedException;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class CPUPlayerSmartChooseEmptyCoordinatesTest { //   TODO: re-see this class
@@ -39,16 +37,16 @@ public class CPUPlayerSmartChooseEmptyCoordinatesTest { //   TODO: re-see this c
 //        tryToAssertSmartChooseEmptyCoordinates(expected);
 //
 //    }
-
-    @NotNull
-    private Coordinates getNextEmptyCoordinates() {
-        try {
-            return cpuPlayer.chooseRandomEmptyCoordinates(board);
-        } catch (BoardIsFullException e) {
-            fail(e.getMessage());
-            return new Coordinates(0, 0);
-        }
-    }
+//
+//    @NotNull
+//    private Coordinates getNextEmptyCoordinates() {   // TODO: resee this test
+//        try {
+//            return cpuPlayer.chooseRandomEmptyCoordinates(board);
+//        } catch (BoardIsFullException e) {
+//            fail(e.getMessage());
+//            return new Coordinates(0, 0);
+//        }
+//    }
 
 //    @ParameterizedTest    // TODO: resee this test: what should do?
 //    @ValueSource(ints = {2, 3, 4})
@@ -58,14 +56,14 @@ public class CPUPlayerSmartChooseEmptyCoordinatesTest { //   TODO: re-see this c
 //        Coordinates expected = new Coordinates(N - minChain, N);
 //        tryToAssertSmartChooseEmptyCoordinates(expected);
 //    }
-
-    private void tryToAssertSmartChooseEmptyCoordinates(Coordinates expected) {
-        try {
-            assertEquals(expected, cpuPlayer.chooseRandomEmptyCoordinates(board));
-        } catch (BoardIsFullException e) {
-            fail(e.getMessage());
-        }
-    }
+//
+//    private void tryToAssertSmartChooseEmptyCoordinates(Coordinates expected) {
+//        try {
+//            assertEquals(expected, cpuPlayer.chooseRandomEmptyCoordinates(board));
+//        } catch (BoardIsFullException e) {
+//            fail(e.getMessage());
+//        }
+//    }
 
     private void occupyCoordinateFromXAndY(int x, int y) {
         try {
