@@ -29,17 +29,14 @@ public abstract class Player implements Observable {
         coordinatesRequiredToContinueProperty.setPropertyValueWithoutNotifying(false);
     }
 
-    public void setNextMove(@NotNull final Coordinates nextMoveToMake, @NotNull final Game currentGame)
-            throws Game.GameEndedException, Board.BoardIsFullException,
-            Board.CellAlreadyOccupiedException, Board.CellOutOfBoardException { // TODO: test and refactor
-        if (Objects.requireNonNull(currentGame).isEnded()) {
-            throw new Game.GameEndedException();
-        } else if (!currentGame.getBoard().isThereAnyEmptyCell()) {
-            throw new Board.BoardIsFullException();
-        } else if (!currentGame.getBoard().getCellAtCoordinates(nextMoveToMake).isEmpty()) {
+    public synchronized void setNextMove(@NotNull final Coordinates nextMoveToMake, @NotNull final Game currentGame)
+            throws Game.GameEndedException, Board.CellOutOfBoardException, Board.CellAlreadyOccupiedException { // TODO: test
+        if (Objects.requireNonNull(currentGame)
+                .isEmptyCoordinatesOnBoard(Objects.requireNonNull(nextMoveToMake))) {
+            nextMoveBuffer.insert(Objects.requireNonNull(nextMoveToMake));
+        } else {
             throw new Board.CellAlreadyOccupiedException(nextMoveToMake);
         }
-        nextMoveBuffer.insert(Objects.requireNonNull(nextMoveToMake));
     }
 
     public void makeMove(@NotNull final Game currentGame) {             // TODO : test
