@@ -59,7 +59,7 @@ public class Cell implements Cloneable {
         if (isEmpty()) {
             return " ";
         } else {
-            return switch (Objects.requireNonNull(stone).color()) {
+            return switch (Objects.requireNonNull(stone).getColor()) {
                 case BLACK -> "X";
                 case WHITE -> "O";
             };

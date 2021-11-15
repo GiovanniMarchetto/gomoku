@@ -121,7 +121,7 @@ public class BoardAlgorithmTest {
         Board b = new Board(cellMatrix.length);
         //noinspection ConstantConditions //check in the method
         occupyAllPositionsIfValidPredicateWithGivenColor(b,
-                coords -> cellMatrix[coords.getX()][coords.getY()].getStone().color(),
+                coords -> cellMatrix[coords.getX()][coords.getY()].getStone().getColor(),   // TODO: message chain
                 coords -> !cellMatrix[coords.getX()][coords.getY()].isEmpty());
 
         return b;

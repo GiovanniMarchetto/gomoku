@@ -61,7 +61,7 @@ public class GameTestBasedOnCsv {
                 })
                 .filter(coords -> {
                     try {
-                        return Objects.requireNonNull(board.getCellAtCoordinates(coords).getStone()).color() == color;
+                        return Objects.requireNonNull(board.getCellAtCoordinates(coords).getStone()).getColor() == color;   // TODO: message chain
                     } catch (Board.CellOutOfBoardException e) {
                         fail(e);
                         return false;
@@ -84,7 +84,7 @@ public class GameTestBasedOnCsv {
 
         if (blackCoordinatesList.size() != whiteCoordinatesList.size()) {
             Stone stone = Objects.requireNonNull(board.getCellAtCoordinates(coordinatesToControl).getStone());
-            int lastStone = stone.color() == Stone.Color.WHITE ? 1 : 0;
+            int lastStone = stone.getColor() == Stone.Color.WHITE ? 1 : 0;  // TODO: re-see this to clarify
             if (blackCoordinatesList.size() != (whiteCoordinatesList.size() + lastStone)) {
                 fail("The construction of the game in the csv is wrong");
             }

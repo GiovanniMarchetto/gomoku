@@ -49,7 +49,7 @@ public class TestUtility {
                         .forEach(y -> {
                             try {
                                 //noinspection ConstantConditions // just filtered out
-                                board.occupyPosition(cellMatrix[x][y].getStone().color(), new Coordinates(x, y));
+                                board.occupyPosition(cellMatrix[x][y].getStone().getColor(), new Coordinates(x, y));    // TODO: message chain
                             } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Board.CellOutOfBoardException e) {
                                 fail(e);
                             }

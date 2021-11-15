@@ -119,7 +119,7 @@ public class GomokuCell implements Observer {
         } else {
             circle.setOpacity(1);
             //noinspection ConstantConditions // already checked
-            circle.setFill(cell.getStone().color() == Stone.Color.BLACK ? Color.BLACK : Color.WHITE);
+            circle.setFill(cell.getStone().getColor() == Stone.Color.BLACK ? Color.BLACK : Color.WHITE);
             circle.setStroke(Color.DARKRED);
             circle.setStrokeWidth(3.0);
         }

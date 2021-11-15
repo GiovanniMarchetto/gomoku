@@ -308,7 +308,7 @@ public class BoardTest {
                 //noinspection ConstantConditions //check before
                 assertTrue(boardMatrixFromCsv[x][y].isEmpty()
                         && !cell.isEmpty()
-                        && stoneColor == cell.getStone().color());
+                        && stoneColor == cell.getStone().getColor());   // TODO: message chain
             } catch (Board.BoardIsFullException e) {
                 assertFalse(board.isThereAnyEmptyCell());
             } catch (Board.CellAlreadyOccupiedException e) {
