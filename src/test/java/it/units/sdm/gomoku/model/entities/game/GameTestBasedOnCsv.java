@@ -2,6 +2,7 @@ package it.units.sdm.gomoku.model.entities.game;
 
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.*;
+import it.units.sdm.gomoku.model.exceptions.*;
 import it.units.sdm.gomoku.utils.TestUtility;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -39,14 +40,14 @@ public class GameTestBasedOnCsv {
                 game.placeStoneAndChangeTurn(whiteCoordinatesList.get(i));
             }
             game.placeStoneAndChangeTurn(coordinatesToControl);
-        } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Game.GameEndedException | Board.CellOutOfBoardException e) {
+        } catch (BoardIsFullException | CellAlreadyOccupiedException | GameEndedException | CellOutOfBoardException e) {
             fail(e);
         }
     }
 
     @NotNull
     private List<Coordinates> getListOfCoordinatesOfAColor(Coordinates coordinatesToControl, Board board, Stone.Color color) {
-        //noinspection ConstantConditions //the empty cells are filtered before the color request
+        //the empty cells are filtered before the color request
         return IntStream.range(0, board.getSize())
                 .boxed().sequential()
                 .flatMap(x -> IntStream.range(0, board.getSize())
@@ -54,7 +55,7 @@ public class GameTestBasedOnCsv {
                 .filter(coords -> {
                     try {
                         return !board.getCellAtCoordinates(coords).isEmpty();
-                    } catch (Board.CellOutOfBoardException e) {
+                    } catch (CellOutOfBoardException e) {
                         fail(e);
                         return false;
                     }
@@ -62,7 +63,7 @@ public class GameTestBasedOnCsv {
                 .filter(coords -> {
                     try {
                         return Objects.requireNonNull(board.getCellAtCoordinates(coords).getStone()).getColor() == color;   // TODO: message chain
-                    } catch (Board.CellOutOfBoardException e) {
+                    } catch (CellOutOfBoardException e) {
                         fail(e);
                         return false;
                     }
@@ -73,7 +74,7 @@ public class GameTestBasedOnCsv {
 
     @ParameterizedTest
     @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfMoveControlRecordFields")
-    void setUpFromCsvCorrectness(Cell[][] cellMatrix, Coordinates coordinatesToControl) throws Board.CellOutOfBoardException {
+    void setUpFromCsvCorrectness(Cell[][] cellMatrix, Coordinates coordinatesToControl) throws CellOutOfBoardException {
         game = new Game(cellMatrix.length, cpuBlack, cpuWhite);
         game.start();
 
@@ -122,7 +123,7 @@ public class GameTestBasedOnCsv {
                 game.getWinner();
                 fail("The game is not ended!");
             }
-        } catch (Game.GameNotEndedException ignored1) {
+        } catch (GameNotEndedException ignored1) {
         }
     }
 
@@ -135,7 +136,7 @@ public class GameTestBasedOnCsv {
                 Player winner = game.getWinner();
                 assertEquals(isThereAWinner, winner != null);
             }
-        } catch (Game.GameNotEndedException e) {
+        } catch (GameNotEndedException e) {
             fail(e);
         }
     }

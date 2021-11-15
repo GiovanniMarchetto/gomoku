@@ -4,6 +4,10 @@ import it.units.sdm.gomoku.Utility;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
+import it.units.sdm.gomoku.model.exceptions.BoardIsFullException;
+import it.units.sdm.gomoku.model.exceptions.CellAlreadyOccupiedException;
+import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
+import it.units.sdm.gomoku.model.exceptions.GameEndedException;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -11,8 +15,6 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.stream.IntStream;
-
-import static it.units.sdm.gomoku.model.entities.Board.BoardIsFullException;
 
 public class CPUPlayer extends Player {
 
@@ -35,7 +37,7 @@ public class CPUPlayer extends Player {
     }
 
     @Override
-    public void makeMove(@NotNull final Game currentGame) throws IllegalStateException, IllegalArgumentException, IndexOutOfBoundsException {
+    public void makeMove(@NotNull final Game currentGame) {
         Utility.runOnSeparateThread(() -> {
             Coordinates nextMoveToMake = null;
             try {
@@ -43,7 +45,7 @@ public class CPUPlayer extends Player {
                 nextMoveToMake = chooseSmartEmptyCoordinates(currentGame);
                 super.setNextMove(nextMoveToMake, currentGame);
                 super.makeMove(currentGame);
-            } catch (Game.GameEndedException e) {
+            } catch (BoardIsFullException | GameEndedException | CellOutOfBoardException | CellAlreadyOccupiedException e) {
                 // TODO: correctly handled exception?
                 Utility.getLoggerOfClass(getClass())
                         .log(Level.SEVERE, "Illegal move: impossible to choose coordinate " + nextMoveToMake, e);
@@ -55,14 +57,10 @@ public class CPUPlayer extends Player {
     }
 
     @NotNull
-    public Coordinates chooseSmartEmptyCoordinates(@NotNull final Game game) throws IllegalStateException {
+    public Coordinates chooseSmartEmptyCoordinates(@NotNull final Game game) throws BoardIsFullException {
 
         if (Objects.requireNonNull(game).isBoardEmpty()) {
-            try {
-                return chooseNextEmptyCoordinatesFromCenter(game);
-            } catch (BoardIsFullException e) {
-                throw new IllegalStateException(e);
-            }
+            return chooseNextEmptyCoordinatesFromCenter(game);
         }
 
         final int MAX_CHAIN_LENGTH_TO_FIND_EXCLUDED = 5;
@@ -77,11 +75,7 @@ public class CPUPlayer extends Player {
                         .filter(coord -> game.isHeadOfAChainOfStones(coord, new PositiveInteger(chainLength))))
                 .toList();
 
-        try {
-            return smartCoordinates.size() > 0 ? smartCoordinates.get(0) : chooseNextEmptyCoordinatesFromCenter(game);
-        } catch (BoardIsFullException e) {
-            throw new IllegalStateException(e);
-        }
+        return smartCoordinates.size() > 0 ? smartCoordinates.get(0) : chooseNextEmptyCoordinatesFromCenter(game);
     }
 
     @NotNull

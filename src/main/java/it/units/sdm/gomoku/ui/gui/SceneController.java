@@ -1,6 +1,8 @@
 package it.units.sdm.gomoku.ui.gui;
 
 import it.units.sdm.gomoku.mvvm_library.View;
+import it.units.sdm.gomoku.ui.exceptions.SceneControllerAlreadyInstantiatedException;
+import it.units.sdm.gomoku.ui.exceptions.SceneControllerNotInstantiatedException;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
@@ -181,17 +183,4 @@ public class SceneController {  // todo : TEST
 
     public enum ViewName {START_VIEW, MAIN_VIEW, SUMMARY_VIEW}
 
-    public static class SceneControllerNotInstantiatedException extends IllegalStateException {
-        //   TODO : test ?
-        public SceneControllerNotInstantiatedException(@NotNull final String errorMessage) {
-            super(Objects.requireNonNull(errorMessage));
-        }
-    }
-
-    public static class SceneControllerAlreadyInstantiatedException extends IllegalStateException { // TODO: needed?
-        //   TODO : test ?
-        public SceneControllerAlreadyInstantiatedException(@NotNull final String errorMessage) {
-            super(Objects.requireNonNull(errorMessage));
-        }
-    }
 }

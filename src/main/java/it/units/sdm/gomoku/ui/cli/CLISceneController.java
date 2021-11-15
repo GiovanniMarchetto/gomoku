@@ -6,7 +6,7 @@ import it.units.sdm.gomoku.ui.cli.viewmodels.CLIMainViewmodel;
 import it.units.sdm.gomoku.ui.cli.views.CLIMainView;
 import it.units.sdm.gomoku.ui.cli.views.CLIStartView;
 import it.units.sdm.gomoku.ui.cli.views.CLISummaryView;
-import it.units.sdm.gomoku.ui.gui.SceneController;
+import it.units.sdm.gomoku.ui.exceptions.SceneControllerNotInstantiatedException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -64,7 +64,7 @@ public class CLISceneController {   // TODO : refactor (common things with GUI)
     public static void initialize() {
         // TODO : very similar to SceneController.initialize()
         if (wasAlreadyInstantiated()) {
-            throw new SceneController.SceneControllerNotInstantiatedException(CLISceneController.class.getCanonicalName() + " not instantiated."); // TODO: not too correct to throw an exception of SceneController (another class)
+            throw new SceneControllerNotInstantiatedException(CLISceneController.class.getCanonicalName() + " not instantiated."); // TODO: not too correct to throw an exception of SceneController (another class)
         } else {
             singleInstance = new CLISceneController();
         }
@@ -74,7 +74,7 @@ public class CLISceneController {   // TODO : refactor (common things with GUI)
         if (wasAlreadyInstantiated()) {
             return singleInstance;
         } else {
-            throw new SceneController.SceneControllerNotInstantiatedException(CLISceneController.class.getCanonicalName() + " not instantiated."); // TODO: not too correct to throw an exception of SceneController (another class)
+            throw new SceneControllerNotInstantiatedException(CLISceneController.class.getCanonicalName() + " not instantiated."); // TODO: not too correct to throw an exception of SceneController (another class)
         }
     }
 

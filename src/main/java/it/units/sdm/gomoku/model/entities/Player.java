@@ -2,13 +2,16 @@ package it.units.sdm.gomoku.model.entities;
 
 import it.units.sdm.gomoku.model.custom_types.Buffer;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
+import it.units.sdm.gomoku.model.exceptions.BoardIsFullException;
+import it.units.sdm.gomoku.model.exceptions.CellAlreadyOccupiedException;
+import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
+import it.units.sdm.gomoku.model.exceptions.GameEndedException;
 import it.units.sdm.gomoku.mvvm_library.Observable;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservableProperty;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyProxy;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyThatCanSetPropertyValueAndFireEvents;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.Objects;
 
 public abstract class Player implements Observable {
@@ -31,20 +34,12 @@ public abstract class Player implements Observable {
     }
 
     public synchronized void setNextMove(@NotNull final Coordinates nextMoveToMake, @NotNull final Game currentGame)
-            throws Game.GameEndedException { // TODO: test
-        try {
-            if (Objects.requireNonNull(currentGame)
-                    .isEmptyCoordinatesOnBoard(Objects.requireNonNull(nextMoveToMake))) {
-                nextMoveBuffer.insert(Objects.requireNonNull(nextMoveToMake));
-            } else {
-                throw new Board.CellAlreadyOccupiedException(nextMoveToMake);
-            }
-        } catch (Board.CellOutOfBoardException e) {
-            throw new IndexOutOfBoundsException(e.getMessage() +
-                    (System.lineSeparator() + Arrays.toString(e.getStackTrace())
-                            .replaceAll(System.lineSeparator(), System.lineSeparator() + "\t")));
-        } catch (Board.CellAlreadyOccupiedException e) {
-            throw new IllegalArgumentException(e);
+            throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException { // TODO: test
+        if (Objects.requireNonNull(currentGame)
+                .isEmptyCoordinatesOnBoard(Objects.requireNonNull(nextMoveToMake))) {
+            nextMoveBuffer.insert(Objects.requireNonNull(nextMoveToMake));
+        } else {
+            throw new CellAlreadyOccupiedException(nextMoveToMake);
         }
     }
 
@@ -52,7 +47,7 @@ public abstract class Player implements Observable {
         try {
             Objects.requireNonNull(currentGame).placeStoneAndChangeTurn(
                     Objects.requireNonNull(nextMoveBuffer.getAndRemoveLastElement()));
-        } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Game.GameEndedException | Board.CellOutOfBoardException e) {
+        } catch (BoardIsFullException | CellAlreadyOccupiedException | GameEndedException | CellOutOfBoardException e) {
             // TODO: handle this exception
         }
     }

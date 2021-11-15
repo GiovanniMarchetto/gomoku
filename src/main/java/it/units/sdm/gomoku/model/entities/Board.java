@@ -4,6 +4,9 @@ import it.units.sdm.gomoku.Utility;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
+import it.units.sdm.gomoku.model.exceptions.BoardIsFullException;
+import it.units.sdm.gomoku.model.exceptions.CellAlreadyOccupiedException;
+import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
 import it.units.sdm.gomoku.mvvm_library.Observable;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservableProperty;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyProxy;
@@ -234,7 +237,7 @@ public class Board implements Observable, Serializable {
                 .filter(c -> {
                     try {
                         return getCellAtCoordinates(c).isEmpty();
-                    } catch (Board.CellOutOfBoardException e) {
+                    } catch (CellOutOfBoardException e) {
                         return false;
                     }
                 });
@@ -264,21 +267,4 @@ public class Board implements Observable, Serializable {
         return getCellAtCoordinates(Objects.requireNonNull(coordinate)).isEmpty();
     }
 
-    public static class BoardIsFullException extends Exception {
-        public BoardIsFullException() {
-            super("The board is entirely filled. No more space available.");
-        }
-    }
-
-    public static class CellAlreadyOccupiedException extends Exception {
-        public CellAlreadyOccupiedException(@NotNull final Coordinates coordinates) {
-            super(Objects.requireNonNull(coordinates) + " already occupied.");
-        }
-    }
-
-    public static class CellOutOfBoardException extends Exception {
-        public CellOutOfBoardException(@NotNull final Coordinates invalidCoords) {
-            super(Objects.requireNonNull(invalidCoords) + " is out of board.");
-        }
-    }
 }

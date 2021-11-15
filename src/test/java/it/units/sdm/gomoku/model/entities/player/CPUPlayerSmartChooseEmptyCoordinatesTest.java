@@ -4,12 +4,13 @@ import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
 import it.units.sdm.gomoku.model.entities.Stone;
+import it.units.sdm.gomoku.model.exceptions.BoardIsFullException;
+import it.units.sdm.gomoku.model.exceptions.CellAlreadyOccupiedException;
+import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.util.stream.IntStream;
 
-import static it.units.sdm.gomoku.model.entities.Board.BoardIsFullException;
-import static it.units.sdm.gomoku.model.entities.Board.CellAlreadyOccupiedException;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class CPUPlayerSmartChooseEmptyCoordinatesTest { //   TODO: re-see this class
@@ -68,7 +69,7 @@ public class CPUPlayerSmartChooseEmptyCoordinatesTest { //   TODO: re-see this c
     private void occupyCoordinateFromXAndY(int x, int y) {
         try {
             board.occupyPosition(stoneColor, new Coordinates(x, y));
-        } catch (BoardIsFullException | CellAlreadyOccupiedException | Board.CellOutOfBoardException e) {
+        } catch (BoardIsFullException | CellAlreadyOccupiedException | CellOutOfBoardException e) {
             fail(e.getMessage());
         }
     }

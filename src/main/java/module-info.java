@@ -11,9 +11,11 @@ module it.units.sdm.gomoku {
     opens it.units.sdm.gomoku.ui.gui.views to javafx.fxml;
     opens it.units.sdm.gomoku.ui.support to javafx.fxml;
     opens it.units.sdm.gomoku.ui.gui to javafx.fxml;
+    opens it.units.sdm.gomoku.ui to javafx.fxml;
 
     exports it.units.sdm.gomoku;
     exports it.units.sdm.gomoku.model.entities;
+    exports it.units.sdm.gomoku.model.exceptions;
     exports it.units.sdm.gomoku.model.custom_types;
     exports it.units.sdm.gomoku.mvvm_library;
     exports it.units.sdm.gomoku.ui.cli;
@@ -22,9 +24,9 @@ module it.units.sdm.gomoku {
     exports it.units.sdm.gomoku.ui.gui.viewmodels;
     exports it.units.sdm.gomoku.ui.support;
     exports it.units.sdm.gomoku.ui;
+    exports it.units.sdm.gomoku.ui.exceptions;
     exports it.units.sdm.gomoku.ui.cli.viewmodels;
     exports it.units.sdm.gomoku.ui.cli.views;
     exports it.units.sdm.gomoku.property_change_handlers;
-    opens it.units.sdm.gomoku.ui to javafx.fxml;
     exports it.units.sdm.gomoku.property_change_handlers.observable_properties;
 }

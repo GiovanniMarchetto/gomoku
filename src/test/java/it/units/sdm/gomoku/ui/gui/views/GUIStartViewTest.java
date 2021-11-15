@@ -8,6 +8,7 @@ import it.units.sdm.gomoku.model.entities.CPUPlayer;
 import it.units.sdm.gomoku.model.entities.Match;
 import it.units.sdm.gomoku.ui.MainViewmodel;
 import it.units.sdm.gomoku.ui.StartViewmodel;
+import it.units.sdm.gomoku.ui.exceptions.SceneControllerNotInstantiatedException;
 import it.units.sdm.gomoku.ui.gui.GUIMain;
 import it.units.sdm.gomoku.ui.gui.SceneController;
 import it.units.sdm.gomoku.ui.support.BoardSizes;
@@ -332,7 +333,7 @@ class GUIStartViewTest {
             setFieldsInViewFromSetup(setup);
             try {
                 guiStartView.startMatchButtonOnMouseClicked(null);// whatever ("null" or "Foo" included) parameter is ok  // TODO: re-see this
-            } catch (SceneController.SceneControllerNotInstantiatedException ignored) {
+            } catch (SceneControllerNotInstantiatedException ignored) {
             }
             Match matchAfterUserConfirmFieldsInStartView = getCurrentMatchOrNullIfExceptionThrown.apply(mainViewmodel);
             throwIfExceptionWasThrown.run();

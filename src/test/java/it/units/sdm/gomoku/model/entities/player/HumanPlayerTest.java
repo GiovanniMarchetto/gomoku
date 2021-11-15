@@ -1,9 +1,11 @@
 package it.units.sdm.gomoku.model.entities.player;
 
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
-import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.entities.Game;
 import it.units.sdm.gomoku.model.entities.HumanPlayer;
+import it.units.sdm.gomoku.model.exceptions.CellAlreadyOccupiedException;
+import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
+import it.units.sdm.gomoku.model.exceptions.GameEndedException;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservableProperty;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyThatCanSetPropertyValueAndFireEvents;
 import it.units.sdm.gomoku.utils.TestUtility;
@@ -72,8 +74,8 @@ class HumanPlayerTest { // TODO: some of this are tests of class Player
 
     @Test
     void placeStoneAndCheckCoordinates()
-            throws Game.GameEndedException, Board.CellOutOfBoardException,
-            Board.CellAlreadyOccupiedException, InterruptedException {
+            throws GameEndedException, CellOutOfBoardException,
+            CellAlreadyOccupiedException, InterruptedException {
         assert game.getBoard().isEmpty();
         humanPlayer.setNextMove(firstCoordinates, game);
         humanPlayer.makeMove(game);
@@ -83,7 +85,7 @@ class HumanPlayerTest { // TODO: some of this are tests of class Player
 
     @Test
     void placeStoneAndCheckCoordinatesRequiredToContinueProperty()
-            throws Game.GameEndedException, Board.CellOutOfBoardException, Board.CellAlreadyOccupiedException,
+            throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException,
             NoSuchFieldException, IllegalAccessException, InterruptedException {
         humanPlayer.setNextMove(firstCoordinates, game);
         Thread.sleep(100);  // TODO: rethink about the architecture_ here we have to wait for another thread (who knows which one) to update the model: is this correct?
@@ -102,10 +104,9 @@ class HumanPlayerTest { // TODO: some of this are tests of class Player
         try {
             humanPlayer.setNextMove(outOfBoundCoordinates, game);
             fail("Coordinates out of board but accepted");
-        } catch (Game.GameEndedException e) {
+        } catch (CellOutOfBoardException ignored) {   // correct to go here to pass the test
+        } catch (GameEndedException | CellAlreadyOccupiedException e) {
             fail(e);
-        } catch (IndexOutOfBoundsException ignored) {
-            // execution should arrive here to pass the test
         }
     }
 

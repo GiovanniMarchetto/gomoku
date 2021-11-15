@@ -1,10 +1,13 @@
 package it.units.sdm.gomoku.model.entities.game;
 
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
-import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
 import it.units.sdm.gomoku.model.entities.Game;
 import it.units.sdm.gomoku.model.entities.Player;
+import it.units.sdm.gomoku.model.exceptions.BoardIsFullException;
+import it.units.sdm.gomoku.model.exceptions.CellAlreadyOccupiedException;
+import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
+import it.units.sdm.gomoku.model.exceptions.GameEndedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +19,7 @@ public class GameTestUtility {
     static void tryToPlaceStoneAndChangeTurn(Coordinates coordinates, Game game) {
         try {
             game.placeStoneAndChangeTurn(coordinates);
-        } catch (Board.BoardIsFullException | Game.GameEndedException | Board.CellAlreadyOccupiedException | Board.CellOutOfBoardException e) {
+        } catch (BoardIsFullException | GameEndedException | CellAlreadyOccupiedException | CellOutOfBoardException e) {
             fail(e);
         }
     }
@@ -24,7 +27,11 @@ public class GameTestUtility {
     public static void disputeGameWithSmartAlgorithm(Game game) {
         final CPUPlayer cpuPlayer = new CPUPlayer();
         while (!game.isEnded()) {
-            tryToPlaceStoneAndChangeTurn(cpuPlayer.chooseSmartEmptyCoordinates(game), game);
+            try {
+                tryToPlaceStoneAndChangeTurn(cpuPlayer.chooseSmartEmptyCoordinates(game), game);
+            } catch (BoardIsFullException e) {
+                fail(e);
+            }
         }
     }
 
@@ -62,7 +69,7 @@ public class GameTestUtility {
                 game.placeStoneAndChangeTurn(new Coordinates(0, i));
                 game.placeStoneAndChangeTurn(new Coordinates(1, i));
             }
-        } catch (Board.BoardIsFullException | Board.CellAlreadyOccupiedException | Game.GameEndedException | Board.CellOutOfBoardException e) {
+        } catch (BoardIsFullException | CellAlreadyOccupiedException | GameEndedException | CellOutOfBoardException e) {
             fail(e);
         }
     }

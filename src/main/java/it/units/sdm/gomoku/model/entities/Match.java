@@ -3,6 +3,10 @@ package it.units.sdm.gomoku.model.entities;
 import it.units.sdm.gomoku.Length;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
+import it.units.sdm.gomoku.model.exceptions.GameNotEndedException;
+import it.units.sdm.gomoku.model.exceptions.MatchEndedException;
+import it.units.sdm.gomoku.model.exceptions.MatchNotEndedException;
+import it.units.sdm.gomoku.model.exceptions.MaxNumberOfGamesException;
 import it.units.sdm.gomoku.ui.support.Setup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -128,7 +132,7 @@ public class Match {
                         .filter(aGame -> {
                             try {
                                 return aGame.getWinner() == Objects.requireNonNull(player);
-                            } catch (Game.GameNotEndedException e) {
+                            } catch (GameNotEndedException e) {
                                 return false;
                             }
                         })
@@ -177,21 +181,4 @@ public class Match {
         return gameList.get(numberOfGamesPlayed - 1);
     }
 
-    public static class MatchEndedException extends Exception {
-        public MatchEndedException() {
-            super("Match already ended!");
-        }
-    }
-
-    public static class MatchNotEndedException extends Exception {
-        public MatchNotEndedException() {
-            super("Match not ended yet!");
-        }
-    }
-
-    public static class MaxNumberOfGamesException extends Exception {
-        public MaxNumberOfGamesException() {
-            super("All the games provided by the match have been played");
-        }
-    }
 }
