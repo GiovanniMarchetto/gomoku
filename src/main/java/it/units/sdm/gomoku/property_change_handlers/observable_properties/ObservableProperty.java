@@ -57,7 +57,8 @@ public abstract class ObservableProperty<PropertyValueType> implements Observabl
 
     @Override
     public boolean equals(Object o) {   //  todo: test
-        if (this == o) return true;
+        if (this == o)
+            return true; // todo: replace all reference comparison with a method "isSameReference" instead of == ? It may be an interface like "ReferenceComparable" with only one mehod "compareRef(Object other)" with a default implementation: in this way classes should simply declare to implement the interface without implementing any method
         if (!(o instanceof ObservableProperty<?> that)) return false;
         return Objects.equals(propertyName, that.propertyName)
                 && Objects.equals(propertyValueContainer, that.propertyValueContainer);
