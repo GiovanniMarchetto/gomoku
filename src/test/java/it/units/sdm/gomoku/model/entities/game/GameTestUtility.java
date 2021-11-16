@@ -26,9 +26,10 @@ public class GameTestUtility {
 
     public static void disputeGameWithSmartAlgorithm(Game game) {
         final CPUPlayer cpuPlayer = new CPUPlayer();
+        cpuPlayer.setCurrentGame(game);
         while (!game.isEnded()) {
             try {
-                tryToPlaceStoneAndChangeTurn(cpuPlayer.chooseSmartEmptyCoordinates(game), game);
+                tryToPlaceStoneAndChangeTurn(cpuPlayer.chooseSmartEmptyCoordinates(), game);
             } catch (BoardIsFullException e) {
                 fail(e);
             }

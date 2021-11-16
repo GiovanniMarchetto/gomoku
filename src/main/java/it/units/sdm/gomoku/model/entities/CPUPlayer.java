@@ -41,7 +41,7 @@ public class CPUPlayer extends Player {
                 Coordinates nextMoveToMake = null;
                 try {
                     Thread.sleep(DELAY_BEFORE_PLACING_STONE_MILLIS);
-                    nextMoveToMake = chooseSmartEmptyCoordinates(currentGame);
+                    nextMoveToMake = chooseSmartEmptyCoordinates();
                     super.setNextMove(nextMoveToMake, currentGame);
                     try {//TODO:temporary
                         super.makeMove();
@@ -62,10 +62,10 @@ public class CPUPlayer extends Player {
     }
 
     @NotNull
-    public Coordinates chooseSmartEmptyCoordinates(@NotNull final Game game) throws BoardIsFullException {
+    public Coordinates chooseSmartEmptyCoordinates() throws BoardIsFullException {
 
-        if (Objects.requireNonNull(game).isBoardEmpty()) {
-            return chooseNextEmptyCoordinatesFromCenter(game);
+        if (Objects.requireNonNull(getCurrentGame()).isBoardEmpty()) {
+            return chooseNextEmptyCoordinatesFromCenter();
         }
 
         final int MAX_CHAIN_LENGTH_TO_FIND_EXCLUDED = 5;
@@ -76,28 +76,28 @@ public class CPUPlayer extends Player {
 
         List<Coordinates> smartCoordinates = possibleChainLengths
                 .boxed()
-                .flatMap(chainLength -> game.getStreamOfEmptyCoordinatesOnBoard()
-                        .filter(coord -> game.isHeadOfAChainOfStones(coord, new PositiveInteger(chainLength))))
+                .flatMap(chainLength -> getCurrentGame().getStreamOfEmptyCoordinatesOnBoard()
+                        .filter(coord -> getCurrentGame().isHeadOfAChainOfStones(coord, new PositiveInteger(chainLength))))
                 .toList();
 
-        return smartCoordinates.size() > 0 ? smartCoordinates.get(0) : chooseNextEmptyCoordinatesFromCenter(game);
+        return smartCoordinates.size() > 0 ? smartCoordinates.get(0) : chooseNextEmptyCoordinatesFromCenter();
     }
 
     @NotNull
-    public Coordinates chooseNextEmptyCoordinatesFromCenter(@NotNull Game game) throws BoardIsFullException {
-        int boardSize = game.getBoardSize();
+    public Coordinates chooseNextEmptyCoordinatesFromCenter() throws BoardIsFullException {
+        int boardSize = Objects.requireNonNull(getCurrentGame()).getBoardSize();
         double centerValue = boardSize / 2.0 - 0.5; // TODO : why -0.5?
 
-        return game.getStreamOfEmptyCoordinatesOnBoard()
+        return getCurrentGame().getStreamOfEmptyCoordinatesOnBoard()
                 .min((coord1, coord2) ->
                         (int) (getWeightRespectToCenter(centerValue, coord1) - getWeightRespectToCenter(centerValue, coord2)))
-                .orElseThrow(() -> new IllegalStateException("Board is full: the game should be already ended but it is not."));
+                .orElseThrow(BoardIsFullException::new);
     }
 
     @NotNull
-    public Coordinates chooseRandomEmptyCoordinates(@NotNull Game game) throws BoardIsFullException {
-        if (game.isThereAnyEmptyCellOnBoard()) {
-            List<Coordinates> emptyCoordinates = game.getStreamOfEmptyCoordinatesOnBoard().toList();
+    public Coordinates chooseRandomEmptyCoordinates() throws BoardIsFullException {
+        if (Objects.requireNonNull(getCurrentGame()).isThereAnyEmptyCellOnBoard()) {
+            List<Coordinates> emptyCoordinates = getCurrentGame().getStreamOfEmptyCoordinatesOnBoard().toList();
             return emptyCoordinates.get(rand.nextInt(emptyCoordinates.size()));
         }
         throw new BoardIsFullException();
