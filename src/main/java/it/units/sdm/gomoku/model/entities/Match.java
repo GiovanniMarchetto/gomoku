@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 import static it.units.sdm.gomoku.model.custom_types.PositiveInteger.PositiveIntegerType;
 
@@ -91,6 +92,8 @@ public class Match {
                 }
                 Game newGame = new Game(boardSize, currentBlackPlayer, currentWhitePlayer);
                 gameList.add(newGame);
+                Stream.of(currentBlackPlayer, currentWhitePlayer)
+                        .forEach(player -> player.setCurrentGame(newGame));
                 return newGame;
             } else {
                 throw new MatchEndedException();

@@ -1,5 +1,6 @@
 package it.units.sdm.gomoku.ui;
 
+import it.units.sdm.gomoku.Utility;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.entities.*;
@@ -17,6 +18,7 @@ import java.beans.PropertyChangeEvent;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -81,7 +83,13 @@ public abstract class MainViewmodel extends Viewmodel {
                 evt -> {
                     currentPlayerProperty.setPropertyValueAndFireIfPropertyChange((Player) evt.getNewValue());
                     if (!isCurrentGameEnded()) {
-                        Objects.requireNonNull(currentPlayerProperty.getPropertyValue()).makeMove(getCurrentGame());
+                        try {
+                            Objects.requireNonNull(currentPlayerProperty.getPropertyValue()).makeMove();
+                        } catch (NoGameSetException e) {
+                            Utility.getLoggerOfClass(getClass())
+                                    .log(Level.SEVERE, "Current game is null but should not", e);
+                            throw new IllegalStateException(e);
+                        }
                     }
                 });
 

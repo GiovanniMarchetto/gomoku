@@ -6,6 +6,7 @@ import it.units.sdm.gomoku.model.entities.HumanPlayer;
 import it.units.sdm.gomoku.model.exceptions.CellAlreadyOccupiedException;
 import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
 import it.units.sdm.gomoku.model.exceptions.GameEndedException;
+import it.units.sdm.gomoku.model.exceptions.NoGameSetException;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservableProperty;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyThatCanSetPropertyValueAndFireEvents;
 import it.units.sdm.gomoku.utils.TestUtility;
@@ -26,8 +27,8 @@ class HumanPlayerTest { // TODO: some of this are tests of class Player
     //region Support Methods
     @NotNull
     private Game getCurrentGameAfterMakeMove()  // TODO: still needed?
-            throws NoSuchFieldException, IllegalAccessException {
-        humanPlayer.makeMove(game);
+            throws NoSuchFieldException, IllegalAccessException, NoGameSetException {
+        humanPlayer.makeMove();
 //        Game currentGame;
 //        do {//wait for separate thread
 //            currentGame = (Game) TestUtility.getFieldValue("currentGame", humanPlayer);
@@ -41,6 +42,7 @@ class HumanPlayerTest { // TODO: some of this are tests of class Player
     void setup() {
         humanPlayer = new HumanPlayer("human");
         game = new Game(boardSize, humanPlayer, humanWhite);
+        humanPlayer.setCurrentGame(game);
         game.start();
     }
 
@@ -59,7 +61,7 @@ class HumanPlayerTest { // TODO: some of this are tests of class Player
 
     @Test
     void checkCoordinatesRequiredToContinuePropertyAfterMakeMove()
-            throws NoSuchFieldException, IllegalAccessException, InterruptedException {
+            throws NoSuchFieldException, IllegalAccessException, InterruptedException, NoGameSetException {
         getCurrentGameAfterMakeMove();
         @SuppressWarnings("unchecked")
         ObservableProperty<Boolean> coordinatesRequiredToContinueProperty =
@@ -75,10 +77,10 @@ class HumanPlayerTest { // TODO: some of this are tests of class Player
     @Test
     void placeStoneAndCheckCoordinates()
             throws GameEndedException, CellOutOfBoardException,
-            CellAlreadyOccupiedException, InterruptedException {
+            CellAlreadyOccupiedException, InterruptedException, NoGameSetException {
         assert game.getBoard().isEmpty();
         humanPlayer.setNextMove(firstCoordinates, game);
-        humanPlayer.makeMove(game);
+        humanPlayer.makeMove();
         Thread.sleep(100);  // TODO: rethink about the architecture_ here we have to wait for another thread (who knows which one) to update the model: is this correct?
         assertFalse(game.getBoard().getCellAtCoordinates(firstCoordinates).isEmpty());
     }
