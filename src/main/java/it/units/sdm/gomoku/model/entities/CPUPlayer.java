@@ -4,10 +4,7 @@ import it.units.sdm.gomoku.Utility;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
-import it.units.sdm.gomoku.model.exceptions.BoardIsFullException;
-import it.units.sdm.gomoku.model.exceptions.CellAlreadyOccupiedException;
-import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
-import it.units.sdm.gomoku.model.exceptions.GameEndedException;
+import it.units.sdm.gomoku.model.exceptions.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -37,23 +34,31 @@ public class CPUPlayer extends Player {
     }
 
     @Override
-    public void makeMove(@NotNull final Game currentGame) {
-        Utility.runOnSeparateThread(() -> {
-            Coordinates nextMoveToMake = null;
-            try {
-                Thread.sleep(DELAY_BEFORE_PLACING_STONE_MILLIS);
-                nextMoveToMake = chooseSmartEmptyCoordinates(currentGame);
-                super.setNextMove(nextMoveToMake, currentGame);
-                super.makeMove(currentGame);
-            } catch (BoardIsFullException | GameEndedException | CellOutOfBoardException | CellAlreadyOccupiedException e) {
-                // TODO: correctly handled exception?
-                Utility.getLoggerOfClass(getClass())
-                        .log(Level.SEVERE, "Illegal move: impossible to choose coordinate " + nextMoveToMake, e);
-                throw new IllegalStateException(e);
-            } catch (InterruptedException e) {
-                Utility.getLoggerOfClass(getClass()).log(Level.SEVERE, "Thread interrupted for unknown reason.", e);
-            }
-        });
+    public void makeMove() throws NoGameSetException {
+        Game currentGame = getCurrentGame();
+        if (currentGame != null) {
+            Utility.runOnSeparateThread(() -> {//TODO: separate thread in model?
+                Coordinates nextMoveToMake = null;
+                try {
+                    Thread.sleep(DELAY_BEFORE_PLACING_STONE_MILLIS);
+                    nextMoveToMake = chooseSmartEmptyCoordinates(currentGame);
+                    super.setNextMove(nextMoveToMake, currentGame);
+                    try {//TODO:temporary
+                        super.makeMove();
+                    } catch (NoGameSetException ignored) {
+                    }
+                } catch (BoardIsFullException | GameEndedException | CellOutOfBoardException | CellAlreadyOccupiedException e) {
+                    // TODO: correctly handled exception?
+                    Utility.getLoggerOfClass(getClass())
+                            .log(Level.SEVERE, "Illegal move: impossible to choose coordinate " + nextMoveToMake, e);
+                    throw new IllegalStateException(e);
+                } catch (InterruptedException e) {
+                    Utility.getLoggerOfClass(getClass()).log(Level.SEVERE, "Thread interrupted for unknown reason.", e);
+                }
+            });
+        } else {
+            throw new NoGameSetException();
+        }
     }
 
     @NotNull
