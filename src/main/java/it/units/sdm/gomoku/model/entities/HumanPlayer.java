@@ -12,9 +12,13 @@ public class HumanPlayer extends Player {
 
     @Override
     public void makeMove() throws NoGameSetException {  // TODO: test + refactor
-        setCoordinatesRequired(true);
-        super.makeMove();
-        setCoordinatesRequired(false);
+        if (isCurrentGameSet()) {
+            setCoordinatesRequired(true);
+            super.makeMove();
+            setCoordinatesRequired(false);
+        } else {
+            throw new NoGameSetException();
+        }
     }
 
 }

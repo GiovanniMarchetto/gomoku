@@ -83,13 +83,15 @@ public abstract class MainViewmodel extends Viewmodel {
                 evt -> {
                     currentPlayerProperty.setPropertyValueAndFireIfPropertyChange((Player) evt.getNewValue());
                     if (!isCurrentGameEnded()) {
-                        try {
-                            Objects.requireNonNull(currentPlayerProperty.getPropertyValue()).makeMove();
-                        } catch (NoGameSetException e) {
-                            Utility.getLoggerOfClass(getClass())
-                                    .log(Level.SEVERE, "Current game is null but should not", e);
-                            throw new IllegalStateException(e);
-                        }
+                        Utility.runOnSeparateThread(() -> {
+                            try {
+                                Objects.requireNonNull(currentPlayerProperty.getPropertyValue()).makeMove();
+                            } catch (NoGameSetException e) {
+                                Utility.getLoggerOfClass(getClass())
+                                        .log(Level.SEVERE, "Current game is null but should not", e);
+                                throw new IllegalStateException(e);
+                            }
+                        });
                     }
                 });
 
@@ -99,6 +101,9 @@ public abstract class MainViewmodel extends Viewmodel {
                     currentGameStatusProperty.setPropertyValueAndFireIfPropertyChange((Game.Status) evt.getNewValue());
                     if (evt.getNewValue().equals(Game.Status.ENDED)) {
                         endGame();
+                        stopObserving(currentGame);   // TODO : should fade away
+                        assert currentBoard != null;
+                        stopObserving(currentBoard);
                     }
                 });
 
