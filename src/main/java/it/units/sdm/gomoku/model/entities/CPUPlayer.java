@@ -37,7 +37,6 @@ public class CPUPlayer extends Player {
     public void makeMove() throws NoGameSetException {
         Game currentGame = getCurrentGame();
         if (currentGame != null) {
-            Utility.runOnSeparateThread(() -> {//TODO: separate thread in model?
                 Coordinates nextMoveToMake = null;
                 try {
                     Thread.sleep(DELAY_BEFORE_PLACING_STONE_MILLIS);
@@ -55,7 +54,6 @@ public class CPUPlayer extends Player {
                 } catch (InterruptedException e) {
                     Utility.getLoggerOfClass(getClass()).log(Level.SEVERE, "Thread interrupted for unknown reason.", e);
                 }
-            });
         } else {
             throw new NoGameSetException();
         }

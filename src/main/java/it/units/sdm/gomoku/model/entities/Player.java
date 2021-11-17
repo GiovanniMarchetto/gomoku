@@ -16,15 +16,12 @@ public abstract class Player implements Observable {
 
     @NotNull
     private final String name;
-
-    @Nullable
-    private Game currentGame;
-
     @NotNull
     private final Buffer<Coordinates> nextMoveBuffer;
-
     @NotNull
     private final ObservablePropertyThatCanSetPropertyValueAndFireEvents<Boolean> coordinatesRequiredToContinueProperty;
+    @Nullable
+    private Game currentGame;
 
     protected Player(@NotNull String playerName) {
         final int NUMBER_OF_MOVES_THAT_A_PLAYER_CAN_DO_IN_ONE_TURN = 1;
@@ -91,5 +88,9 @@ public abstract class Player implements Observable {
     @Override
     public int hashCode() {
         return name.hashCode();
+    }
+
+    protected boolean isCurrentGameSet() {
+        return getCurrentGame() != null;
     }
 }
