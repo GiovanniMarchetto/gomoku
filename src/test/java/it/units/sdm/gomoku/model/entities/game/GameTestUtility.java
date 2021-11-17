@@ -56,7 +56,7 @@ public class GameTestUtility {
     public static void disputeGameAndPlayerWin(Game game, Player player) {
         placeTwoChainOfFourIn0And1Rows(game);
 
-        if (player == game.getCurrentPlayer().getPropertyValue()) {
+        if (player == game.getCurrentPlayerProperty().getPropertyValue()) {
             tryToPlaceStoneAndChangeTurn(new Coordinates(0, 4), game);
         } else {
             tryToPlaceStoneAndChangeTurn(new Coordinates(2, 0), game);

@@ -45,7 +45,7 @@ class MainViewmodelTest {
     void beforeTriggerFirstMoveCurrentPlayerIsNull() {
         try {
             mainViewmodel.startNewMatch();
-            assertNull(mainViewmodel.getCurrentGame().getCurrentPlayer().getPropertyValue());
+            assertNull(mainViewmodel.getCurrentGame().getCurrentPlayerProperty().getPropertyValue());
         } catch (NullPointerException e) {
             fail(e);
         }
@@ -58,9 +58,9 @@ class MainViewmodelTest {
             mainViewmodel.triggerFirstMove();
 
             Game currentGame = mainViewmodel.getCurrentGame();
-            assertEquals(Game.Status.STARTED, currentGame.getGameStatus().getPropertyValue());
+            assertEquals(Game.Status.STARTED, currentGame.getGameStatusProperty().getPropertyValue());
 
-            Player currentPlayer = currentGame.getCurrentPlayer().getPropertyValue();
+            Player currentPlayer = currentGame.getCurrentPlayerProperty().getPropertyValue();
             assertEquals(cpuPlayer1, currentPlayer);
 
             //noinspection ConstantConditions

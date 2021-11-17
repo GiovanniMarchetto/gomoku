@@ -28,9 +28,9 @@ public class Game implements Comparable<Game>, Observable {
     @NotNull
     public static final PositiveInteger NUMBER_OF_CONSECUTIVE_STONE_FOR_WINNING = new PositiveInteger(5);
     @NotNull
-    private final ObservablePropertyThatCanSetPropertyValueAndFireEvents<Status> gameStatus;
+    private final ObservablePropertyThatCanSetPropertyValueAndFireEvents<Status> gameStatusProperty;
     @NotNull
-    private final ObservablePropertyThatCanSetPropertyValueAndFireEvents<Player> currentPlayer;
+    private final ObservablePropertyThatCanSetPropertyValueAndFireEvents<Player> currentPlayerProperty;
     @NotNull
     private final Board board;
     @NotNull
@@ -46,8 +46,8 @@ public class Game implements Comparable<Game>, Observable {
         this.board = new Board(Objects.requireNonNull(boardSize));
         this.blackPlayer = Objects.requireNonNull(blackPlayer);
         this.whitePlayer = Objects.requireNonNull(whitePlayer);
-        this.currentPlayer = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>();
-        this.gameStatus = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>();
+        this.currentPlayerProperty = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>();
+        this.gameStatusProperty = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>();
         this.start = Instant.now();
     }
 
@@ -56,18 +56,18 @@ public class Game implements Comparable<Game>, Observable {
     }
 
     public void start() {
-        gameStatus.setPropertyValueAndFireIfPropertyChange(Status.STARTED); // TODO : rename all properties "*" in "*Property"
-        currentPlayer.setPropertyValueAndFireIfPropertyChange(blackPlayer);
+        gameStatusProperty.setPropertyValueAndFireIfPropertyChange(Status.STARTED); // TODO : rename all properties "*" in "*Property"
+        currentPlayerProperty.setPropertyValueAndFireIfPropertyChange(blackPlayer);
     }
 
     @NotNull
-    public ObservableProperty<Player> getCurrentPlayer() {
-        return new ObservablePropertyProxy<>(currentPlayer);
+    public ObservableProperty<Player> getCurrentPlayerProperty() {
+        return new ObservablePropertyProxy<>(currentPlayerProperty);
     }
 
     @NotNull
-    public ObservableProperty<Status> getGameStatus() {
-        return new ObservablePropertyProxy<>(gameStatus);
+    public ObservableProperty<Status> getGameStatusProperty() {
+        return new ObservablePropertyProxy<>(gameStatusProperty);
     }
 
     @NotNull
@@ -88,13 +88,13 @@ public class Game implements Comparable<Game>, Observable {
     public void placeStoneAndChangeTurn(@NotNull final Coordinates coordinates)
             throws BoardIsFullException, CellAlreadyOccupiedException, GameEndedException, CellOutOfBoardException {
 
-        final Player player = Objects.requireNonNull(currentPlayer.getPropertyValue());
+        final Player player = Objects.requireNonNull(currentPlayerProperty.getPropertyValue());
 
         placeStone(player, coordinates);
 
         setWinnerIfPlayerWon(player, coordinates);
 
-        setGameStatusIfGameEnded();
+        setGameStatusPropertyIfGameEnded();
 
         changeTurn();
     }
@@ -114,14 +114,14 @@ public class Game implements Comparable<Game>, Observable {
         }
     }
 
-    private void setGameStatusIfGameEnded() {
+    private void setGameStatusPropertyIfGameEnded() {
         if (isEnded()) {
-            gameStatus.setPropertyValueAndFireIfPropertyChange(Status.ENDED);
+            gameStatusProperty.setPropertyValueAndFireIfPropertyChange(Status.ENDED);
         }
     }
 
     private void changeTurn() { // TODO: dovrebbe fare il controllo/throware se il gioco è finito? (secondo me si)
-        currentPlayer.setPropertyValueAndFireIfPropertyChange(currentPlayer.getPropertyValue() == blackPlayer ? whitePlayer : blackPlayer);
+        currentPlayerProperty.setPropertyValueAndFireIfPropertyChange(currentPlayerProperty.getPropertyValue() == blackPlayer ? whitePlayer : blackPlayer);
     }
 
     private boolean hasThePlayerWonWithLastMove(@NotNull final Coordinates lastMove) {

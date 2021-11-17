@@ -79,24 +79,26 @@ public abstract class MainViewmodel extends Viewmodel {
 
         assert currentGame != null;
         addObservedProperty(
-                currentGame.getCurrentPlayer(),
+                currentGame.getCurrentPlayerProperty(),
                 evt -> {
                     currentPlayerProperty.setPropertyValueAndFireIfPropertyChange((Player) evt.getNewValue());
                     if (!isCurrentGameEnded()) {
                         Utility.runOnSeparateThread(() -> {
                             try {
                                 Objects.requireNonNull(currentPlayerProperty.getPropertyValue()).makeMove();
-                            } catch (NoGameSetException e) {
+                            } catch (NoGameSetException | BoardIsFullException | GameEndedException e) {
                                 Utility.getLoggerOfClass(getClass())
-                                        .log(Level.SEVERE, "Current game is null but should not", e);
+                                        .log(Level.SEVERE, "Error with current player property: " + e.getMessage(), e);
                                 throw new IllegalStateException(e);
+                            } catch (CellOutOfBoardException | CellAlreadyOccupiedException e) {
+                                //TODO: notify the user and re-request coordinates
                             }
                         });
                     }
                 });
 
         addObservedProperty(
-                currentGame.getGameStatus(),
+                currentGame.getGameStatusProperty(),
                 evt -> {
                     currentGameStatusProperty.setPropertyValueAndFireIfPropertyChange((Game.Status) evt.getNewValue());
                     if (evt.getNewValue().equals(Game.Status.ENDED)) {
@@ -220,7 +222,7 @@ public abstract class MainViewmodel extends Viewmodel {
 
     @Nullable
     public Player getCurrentPlayer() {
-        return Objects.requireNonNull(currentGame).getCurrentPlayer().getPropertyValue();
+        return Objects.requireNonNull(currentGame).getCurrentPlayerProperty().getPropertyValue();
     }
 
     @NotNull

@@ -35,21 +35,18 @@ public abstract class Player implements Observable {
 
     public synchronized void setNextMove(@NotNull final Coordinates nextMoveToMake)
             throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException { // TODO: test
-        if (Objects.requireNonNull(currentGame)
-                .isEmptyCoordinatesOnBoard(Objects.requireNonNull(nextMoveToMake))) {
-            nextMoveBuffer.insert(Objects.requireNonNull(nextMoveToMake));
+        Objects.requireNonNull(currentGame);
+        Objects.requireNonNull(nextMoveToMake);
+        if (currentGame.isEmptyCoordinatesOnBoard(nextMoveToMake)) {
+            nextMoveBuffer.insert(nextMoveToMake);
         } else {
             throw new CellAlreadyOccupiedException(nextMoveToMake);
         }
     }
 
-    public void makeMove() throws NoGameSetException {             // TODO : test
-        try {
-            Objects.requireNonNull(currentGame).placeStoneAndChangeTurn(
-                    Objects.requireNonNull(nextMoveBuffer.getAndRemoveLastElement()));
-        } catch (BoardIsFullException | CellAlreadyOccupiedException | GameEndedException | CellOutOfBoardException e) {
-            // TODO: handle this exception
-        }
+    public void makeMove() throws NoGameSetException, BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {             // TODO : test
+        Objects.requireNonNull(currentGame).placeStoneAndChangeTurn(
+                Objects.requireNonNull(nextMoveBuffer.getAndRemoveLastElement()));
     }
 
     @NotNull

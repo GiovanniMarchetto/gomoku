@@ -35,10 +35,10 @@ class GameTest {
     @Test
     void getGameStatus() {
         try {
-            Field gameStatusField = TestUtility.getFieldAlreadyMadeAccessible(Game.class, "gameStatus");
+            Field gameStatusField = TestUtility.getFieldAlreadyMadeAccessible(Game.class, "gameStatusProperty");
             @SuppressWarnings("unchecked")
             ObservablePropertyThatCanSetPropertyValueAndFireEvents<Game.Status> gameStatusProperty = (ObservablePropertyThatCanSetPropertyValueAndFireEvents<Game.Status>) gameStatusField.get(game);
-            assertEquals(gameStatusProperty, game.getGameStatus());
+            assertEquals(gameStatusProperty, game.getGameStatusProperty());
         } catch (NoSuchFieldException | IllegalAccessException e) {
             fail(e);
         }
@@ -46,22 +46,22 @@ class GameTest {
 
     @Test
     void checkGameStatusBeforeStart() {
-        assertNull(game.getGameStatus().getPropertyValue());
+        assertNull(game.getGameStatusProperty().getPropertyValue());
     }
 
     @Test
     void checkGameStatusAfterStart() {
         game.start();
-        assertEquals(Game.Status.STARTED, game.getGameStatus().getPropertyValue());
+        assertEquals(Game.Status.STARTED, game.getGameStatusProperty().getPropertyValue());
     }
 
     @Test
     void getCurrentPlayer() {
         try {
-            Field currentPlayerField = TestUtility.getFieldAlreadyMadeAccessible(Game.class, "currentPlayer");
+            Field currentPlayerField = TestUtility.getFieldAlreadyMadeAccessible(Game.class, "currentPlayerProperty");
             @SuppressWarnings("unchecked")
             ObservablePropertyThatCanSetPropertyValueAndFireEvents<Player> currentPlayerProperty = (ObservablePropertyThatCanSetPropertyValueAndFireEvents<Player>) currentPlayerField.get(game);
-            assertEquals(currentPlayerProperty, game.getCurrentPlayer());
+            assertEquals(currentPlayerProperty, game.getCurrentPlayerProperty());
         } catch (NoSuchFieldException | IllegalAccessException e) {
             fail(e);
         }
@@ -69,13 +69,13 @@ class GameTest {
 
     @Test
     void checkCurrentPlayerBeforeStart() {
-        assertNull(game.getCurrentPlayer().getPropertyValue());
+        assertNull(game.getCurrentPlayerProperty().getPropertyValue());
     }
 
     @Test
     void checkCurrentPlayerAfterStart() {
         game.start();
-        assertEquals(cpuBlack, game.getCurrentPlayer().getPropertyValue());
+        assertEquals(cpuBlack, game.getCurrentPlayerProperty().getPropertyValue());
     }
 
     @Test
@@ -162,7 +162,7 @@ class GameTest {
     void changeTurnAfterFirstPlaceStone() {
         game.start();
         tryToPlaceStoneAndChangeTurn(firstCoordinates, game);
-        assertEquals(cpuWhite, game.getCurrentPlayer().getPropertyValue());
+        assertEquals(cpuWhite, game.getCurrentPlayerProperty().getPropertyValue());
     }
 
     @Test
@@ -170,7 +170,7 @@ class GameTest {
         game.start();
         tryToPlaceStoneAndChangeTurn(firstCoordinates, game);
         tryToPlaceStoneAndChangeTurn(secondCoordinates, game);
-        assertEquals(cpuBlack, game.getCurrentPlayer().getPropertyValue());
+        assertEquals(cpuBlack, game.getCurrentPlayerProperty().getPropertyValue());
     }
 
     @Test
@@ -199,14 +199,14 @@ class GameTest {
     void setGameStatusIfGameEndedWhenPlaceStone() {
         game.start();
         disputeGameAndPlayerWin(game, cpuBlack);
-        assertEquals(Game.Status.ENDED, game.getGameStatus().getPropertyValue());
+        assertEquals(Game.Status.ENDED, game.getGameStatusProperty().getPropertyValue());
     }
 
     @Test
     void setGameStatusIfGameNotEnded() {
         game.start();
         placeTwoChainOfFourIn0And1Rows(game);
-        assertNotEquals(Game.Status.ENDED, game.getGameStatus().getPropertyValue());
+        assertNotEquals(Game.Status.ENDED, game.getGameStatusProperty().getPropertyValue());
     }
 
     @Test

@@ -347,7 +347,7 @@ public class CLIProgramFluxTest {
             assertEquals(this.boardOfFirstGame, boardOfFirstGame);
 
             assert firstGameOfMatch != null;
-            assertEquals(firstPlayerExpected, firstGameOfMatch.getCurrentPlayer().getPropertyValue());
+            assertEquals(firstPlayerExpected, firstGameOfMatch.getCurrentPlayerProperty().getPropertyValue());
             assertEquals(Stone.Color.BLACK, firstGameOfMatch.getColorOfPlayer(firstPlayerExpected));
         } catch (NoSuchFieldException | IllegalAccessException e) {
             fail(e);
