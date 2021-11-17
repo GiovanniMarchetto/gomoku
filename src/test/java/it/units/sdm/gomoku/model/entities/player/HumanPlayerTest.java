@@ -79,7 +79,7 @@ class HumanPlayerTest { // TODO: some of this are tests of class Player
             throws GameEndedException, CellOutOfBoardException,
             CellAlreadyOccupiedException, InterruptedException, NoGameSetException {
         assert game.getBoard().isEmpty();
-        humanPlayer.setNextMove(firstCoordinates, game);
+        humanPlayer.setNextMove(firstCoordinates);
         humanPlayer.makeMove();
         Thread.sleep(100);  // TODO: rethink about the architecture_ here we have to wait for another thread (who knows which one) to update the model: is this correct?
         assertFalse(game.getBoard().getCellAtCoordinates(firstCoordinates).isEmpty());
@@ -89,7 +89,7 @@ class HumanPlayerTest { // TODO: some of this are tests of class Player
     void placeStoneAndCheckCoordinatesRequiredToContinueProperty()
             throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException,
             NoSuchFieldException, IllegalAccessException, InterruptedException {
-        humanPlayer.setNextMove(firstCoordinates, game);
+        humanPlayer.setNextMove(firstCoordinates);
         Thread.sleep(100);  // TODO: rethink about the architecture_ here we have to wait for another thread (who knows which one) to update the model: is this correct?
 
         @SuppressWarnings("unchecked")
@@ -104,7 +104,7 @@ class HumanPlayerTest { // TODO: some of this are tests of class Player
     @Test
     void tryToInsertInvalidCoordinatesAsNextMove_shouldFail() {
         try {
-            humanPlayer.setNextMove(outOfBoundCoordinates, game);
+            humanPlayer.setNextMove(outOfBoundCoordinates);
             fail("Coordinates out of board but accepted");
         } catch (CellOutOfBoardException ignored) {   // correct to go here to pass the test
         } catch (GameEndedException | CellAlreadyOccupiedException e) {

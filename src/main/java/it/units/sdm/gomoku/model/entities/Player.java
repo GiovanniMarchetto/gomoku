@@ -2,6 +2,7 @@ package it.units.sdm.gomoku.model.entities;
 
 import it.units.sdm.gomoku.model.custom_types.Buffer;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
+import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.exceptions.*;
 import it.units.sdm.gomoku.mvvm_library.Observable;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservableProperty;
@@ -11,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.stream.Stream;
 
 public abstract class Player implements Observable {
 
@@ -34,7 +36,7 @@ public abstract class Player implements Observable {
         coordinatesRequiredToContinueProperty.setPropertyValueWithoutNotifying(false);
     }
 
-    public synchronized void setNextMove(@NotNull final Coordinates nextMoveToMake, @NotNull final Game currentGame)
+    public synchronized void setNextMove(@NotNull final Coordinates nextMoveToMake)
             throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException { // TODO: test
         if (Objects.requireNonNull(currentGame)
                 .isEmptyCoordinatesOnBoard(Objects.requireNonNull(nextMoveToMake))) {
@@ -91,5 +93,22 @@ public abstract class Player implements Observable {
     @Override
     public int hashCode() {
         return name.hashCode();
+    }
+
+    protected boolean isFirstMove() {   // TODO: test
+        return Objects.requireNonNull(currentGame).isBoardEmpty();
+    }
+
+    protected Stream<Coordinates> getStreamOfEmptyCoordinatesOnBoard() {   // TODO: test
+        return Objects.requireNonNull(currentGame).getStreamOfEmptyCoordinatesOnBoard();
+    }
+
+    protected boolean isHeadOfAChainOfStones(@NotNull final Coordinates coord, @NotNull final PositiveInteger positiveInteger) {   // TODO: test
+        return Objects.requireNonNull(currentGame)
+                .isHeadOfAChainOfStones(Objects.requireNonNull(coord), Objects.requireNonNull(positiveInteger));
+    }
+
+    protected int getBoardSize() {    // TODO: test
+        return Objects.requireNonNull(currentGame).getBoardSize();
     }
 }

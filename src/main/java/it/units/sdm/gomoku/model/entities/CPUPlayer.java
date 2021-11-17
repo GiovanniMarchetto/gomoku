@@ -8,7 +8,6 @@ import it.units.sdm.gomoku.model.exceptions.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.stream.IntStream;
@@ -35,36 +34,26 @@ public class CPUPlayer extends Player {
 
     @Override
     public void makeMove() throws NoGameSetException {
-        Game currentGame = getCurrentGame();
-        if (currentGame != null) {
-            Utility.runOnSeparateThread(() -> {//TODO: separate thread in model?
-                Coordinates nextMoveToMake = null;
-                try {
-                    Thread.sleep(DELAY_BEFORE_PLACING_STONE_MILLIS);
-                    nextMoveToMake = chooseSmartEmptyCoordinates();
-                    super.setNextMove(nextMoveToMake, currentGame);
-                    try {//TODO:temporary
-                        super.makeMove();
-                    } catch (NoGameSetException ignored) {
-                    }
-                } catch (BoardIsFullException | GameEndedException | CellOutOfBoardException | CellAlreadyOccupiedException e) {
-                    // TODO: correctly handled exception?
-                    Utility.getLoggerOfClass(getClass())
-                            .log(Level.SEVERE, "Illegal move: impossible to choose coordinate " + nextMoveToMake, e);
-                    throw new IllegalStateException(e);
-                } catch (InterruptedException e) {
-                    Utility.getLoggerOfClass(getClass()).log(Level.SEVERE, "Thread interrupted for unknown reason.", e);
-                }
-            });
-        } else {
-            throw new NoGameSetException();
+        Coordinates nextMoveToMake = null;
+        try {
+            Thread.sleep(DELAY_BEFORE_PLACING_STONE_MILLIS);
+            nextMoveToMake = chooseSmartEmptyCoordinates();
+            super.setNextMove(nextMoveToMake);
+            super.makeMove();
+        } catch (BoardIsFullException | GameEndedException | CellOutOfBoardException | CellAlreadyOccupiedException e) {
+            // TODO: correctly handled exception?
+            Utility.getLoggerOfClass(getClass())
+                    .log(Level.SEVERE, "Illegal move: impossible to choose coordinate " + nextMoveToMake, e);
+            throw new IllegalStateException(e);
+        } catch (InterruptedException e) {
+            Utility.getLoggerOfClass(getClass()).log(Level.SEVERE, "Thread interrupted for unknown reason.", e);
         }
     }
 
     @NotNull
     public Coordinates chooseSmartEmptyCoordinates() throws BoardIsFullException {
 
-        if (Objects.requireNonNull(getCurrentGame()).isBoardEmpty()) {
+        if (isFirstMove()) {
             return chooseNextEmptyCoordinatesFromCenter();
         }
 
@@ -76,8 +65,8 @@ public class CPUPlayer extends Player {
 
         List<Coordinates> smartCoordinates = possibleChainLengths
                 .boxed()
-                .flatMap(chainLength -> getCurrentGame().getStreamOfEmptyCoordinatesOnBoard()
-                        .filter(coord -> getCurrentGame().isHeadOfAChainOfStones(coord, new PositiveInteger(chainLength))))
+                .flatMap(chainLength -> getStreamOfEmptyCoordinatesOnBoard()
+                        .filter(coord -> isHeadOfAChainOfStones(coord, new PositiveInteger(chainLength))))
                 .toList();
 
         return smartCoordinates.size() > 0 ? smartCoordinates.get(0) : chooseNextEmptyCoordinatesFromCenter();
@@ -85,23 +74,23 @@ public class CPUPlayer extends Player {
 
     @NotNull
     public Coordinates chooseNextEmptyCoordinatesFromCenter() throws BoardIsFullException {
-        int boardSize = Objects.requireNonNull(getCurrentGame()).getBoardSize();
+        int boardSize = getBoardSize();
         double centerValue = boardSize / 2.0 - 0.5; // TODO : why -0.5?
 
-        return getCurrentGame().getStreamOfEmptyCoordinatesOnBoard()
+        return getStreamOfEmptyCoordinatesOnBoard()
                 .min((coord1, coord2) ->
                         (int) (getWeightRespectToCenter(centerValue, coord1) - getWeightRespectToCenter(centerValue, coord2)))
                 .orElseThrow(BoardIsFullException::new);
     }
 
-    @NotNull
-    public Coordinates chooseRandomEmptyCoordinates() throws BoardIsFullException {
-        if (Objects.requireNonNull(getCurrentGame()).isThereAnyEmptyCellOnBoard()) {
-            List<Coordinates> emptyCoordinates = getCurrentGame().getStreamOfEmptyCoordinatesOnBoard().toList();
-            return emptyCoordinates.get(rand.nextInt(emptyCoordinates.size()));
-        }
-        throw new BoardIsFullException();
-    }
+//    @NotNull
+//    public Coordinates chooseRandomEmptyCoordinates() throws BoardIsFullException { // TODO: delete if not needed
+//        if (Objects.requireNonNull(getCurrentGame()).isThereAnyEmptyCellOnBoard()) {
+//            List<Coordinates> emptyCoordinates = getCurrentGame().getStreamOfEmptyCoordinatesOnBoard().toList();
+//            return emptyCoordinates.get(rand.nextInt(emptyCoordinates.size()));
+//        }
+//        throw new BoardIsFullException();
+//    }
 
     private double getWeightRespectToCenter(double center, Coordinates coordinates) {
         return Math.pow(Math.abs(center - coordinates.getX()), 2) + Math.pow(Math.abs(center - coordinates.getY()), 2);
