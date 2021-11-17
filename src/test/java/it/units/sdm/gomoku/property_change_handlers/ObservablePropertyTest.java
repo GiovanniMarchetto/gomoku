@@ -39,13 +39,9 @@ class ObservablePropertyTest {
     }
 
     @Test
-    void getPropertyValue() {
-        try {
-            TestUtility.setFieldValue("value", startString,
-                    Objects.requireNonNull(TestUtility.getFieldValue("propertyValueContainer", observable)));
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            fail(e);
-        }
+    void getPropertyValue() throws NoSuchFieldException, IllegalAccessException {//TODO: move to other class test
+        TestUtility.setFieldValue("value", startString,
+                Objects.requireNonNull(TestUtility.getFieldValue("propertyValueContainer", observable)));
         assertEquals(startString, observable.getPropertyValue());
     }
 
