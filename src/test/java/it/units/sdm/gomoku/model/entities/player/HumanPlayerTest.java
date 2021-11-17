@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class HumanPlayerTest { // TODO: some of this are tests of class Player
     private final int boardSize = 5;
-    private final HumanPlayer humanWhite = new HumanPlayer("white");
+    private final HumanPlayer humanWhite = new HumanPlayer("white");    // TODO: initialize this fields in setup? Maybe currentGame not properly set
     private final Coordinates firstCoordinates = new Coordinates(0, 0);
     private final Coordinates outOfBoundCoordinates = new Coordinates(boardSize, boardSize);
     private HumanPlayer humanPlayer;
@@ -26,7 +26,7 @@ class HumanPlayerTest { // TODO: some of this are tests of class Player
     private void setCurrentGameAndSetNextMoveAndMakeMove()  // TODO: still needed?
             throws NoGameSetException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
         humanPlayer.setCurrentGame(game);
-        humanPlayer.setNextMove(firstCoordinates, game);
+        humanPlayer.setNextMove(firstCoordinates);
         humanPlayer.makeMove();
     }
     //endregion Support Methods
@@ -36,6 +36,7 @@ class HumanPlayerTest { // TODO: some of this are tests of class Player
     void setup() {
         humanPlayer = new HumanPlayer("human");
         game = new Game(boardSize, humanPlayer, humanWhite);
+        humanPlayer.setCurrentGame(game);
         game.start();
     }
 
