@@ -17,8 +17,8 @@ public class ObservablePropertyThatCanSetPropertyValueAndFireEvents<PropertyValu
 
     @Override
     @NotNull
-    public ObservableProperty<PropertyValueType> setPropertyValueWithoutNotifying(@Nullable final PropertyValueType propertyValue) {
-        return super.setPropertyValueWithoutNotifying(propertyValue);
+    public ObservableProperty<PropertyValueType> setPropertyValueWithoutNotifying(@Nullable final PropertyValueType newPropertyValue) {
+        return super.setPropertyValueWithoutNotifying(newPropertyValue);
     }
 
     @Override
@@ -30,8 +30,8 @@ public class ObservablePropertyThatCanSetPropertyValueAndFireEvents<PropertyValu
     @Override
     @NotNull
     public ObservableProperty<PropertyValueType> setPropertyValueAndFireIfPropertyChange(
-            @Nullable final PropertyValueType propertyNewValue) {   // TODO : synchronized needed?
-        return super.setPropertyValueAndFireIfPropertyChange(propertyNewValue);
+            @Nullable final PropertyValueType newPropertyValue) {   // TODO : synchronized needed?
+        return super.setPropertyValueAndFireIfPropertyChange(newPropertyValue);
     }
 
     @Override

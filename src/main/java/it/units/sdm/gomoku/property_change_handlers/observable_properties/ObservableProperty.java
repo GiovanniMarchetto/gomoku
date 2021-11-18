@@ -34,8 +34,8 @@ public abstract class ObservableProperty<PropertyValueType> implements Observabl
 
     @NotNull
     protected synchronized ObservableProperty<PropertyValueType> setPropertyValueWithoutNotifying(
-            @Nullable final PropertyValueType propertyValue) {   // TODO : synchronized needed?
-        this.propertyValueContainer.setValue(propertyValue);
+            @Nullable final PropertyValueType newPropertyValue) {   // TODO : synchronized needed?
+        this.propertyValueContainer.setValue(newPropertyValue);
         return this;
     }
 
@@ -46,10 +46,10 @@ public abstract class ObservableProperty<PropertyValueType> implements Observabl
 
     @NotNull
     protected synchronized ObservableProperty<PropertyValueType> setPropertyValueAndFireIfPropertyChange(
-            @Nullable final PropertyValueType propertyNewValue) {   // TODO : synchronized needed?
+            @Nullable final PropertyValueType newPropertyValue) {   // TODO : synchronized needed?
         PropertyValueType oldValue = getPropertyValue();
-        if (!Objects.equals(oldValue, propertyNewValue)) {
-            setPropertyValueWithoutNotifying(propertyNewValue);
+        if (!Objects.equals(oldValue, newPropertyValue)) {
+            setPropertyValueWithoutNotifying(newPropertyValue);
             firePropertyChange(propertyName, oldValue, getPropertyValue());
         }
         return this;
