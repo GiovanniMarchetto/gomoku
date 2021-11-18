@@ -190,6 +190,7 @@ public class BoardTest {
 
     @ParameterizedTest
     @MethodSource("boardSupplier")
+        // TODO: use jqwik in parametrized tests?
     void copyConstructorCreatesObjectOfSameClass(Board boardToCopy) {
         //noinspection InstantiatingObjectToGetClassObject
         assertSame(boardToCopy.getClass(), new Board((boardToCopy)).getClass());
