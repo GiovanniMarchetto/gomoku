@@ -13,7 +13,7 @@ import javafx.scene.layout.VBox;
 
 import static it.units.sdm.gomoku.ui.gui.GUIMain.guiMainViewmodel;
 
-public class SummaryView extends View<GUIMainViewmodel> {
+public class GUISummaryView extends View<GUIMainViewmodel> {
 
     @FXML
     private Button newMatchButton;
@@ -31,7 +31,7 @@ public class SummaryView extends View<GUIMainViewmodel> {
     @FXML
     private Label scoreOfMatchLabel;
 
-    public SummaryView() {
+    public GUISummaryView() {
         super(guiMainViewmodel);
     }
 
