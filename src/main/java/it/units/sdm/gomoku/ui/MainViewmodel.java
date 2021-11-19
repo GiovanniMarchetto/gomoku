@@ -75,6 +75,8 @@ public abstract class MainViewmodel extends Viewmodel {
 
     private void observePropertiesOfModel() {
 
+        modelPropertyObservers.forEach(PropertyObserver::stopObserving); //TODO: this should stay here? Refactor!
+
         modelPropertyObservers.clear();
 
         assert currentGame != null;
