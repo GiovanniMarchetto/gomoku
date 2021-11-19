@@ -84,6 +84,12 @@ public class GUIMainView extends View<GUIMainViewmodel> implements Observer {
     }
 
     @Override
+    public void onViewDisappearing() {
+        super.onViewDisappearing();
+        stopObservingAllViewModelProperties();
+    }
+
+    @Override
     public void propertyChange(PropertyChangeEvent evt) {
     }
 }

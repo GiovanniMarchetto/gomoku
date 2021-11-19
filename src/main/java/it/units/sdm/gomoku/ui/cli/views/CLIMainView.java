@@ -57,6 +57,12 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
     }
 
     @Override
+    public void onViewDisappearing() {
+        super.onViewDisappearing();
+        stopObservingAllViewModelProperties();
+    }
+
+    @Override
     public void propertyChange(PropertyChangeEvent evt) {
     }
 
