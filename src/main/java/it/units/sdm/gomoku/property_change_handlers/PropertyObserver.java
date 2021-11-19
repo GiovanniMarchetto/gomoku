@@ -13,6 +13,9 @@ public class PropertyObserver<ObservedPropertyValueType> implements Observer {
     // TODO : to be tested
 
     @NotNull
+    private final ObservableProperty<ObservedPropertyValueType> observedProperty;
+
+    @NotNull
     private final Consumer<PropertyChangeEvent> actionOnPropertyChange;
     @Nullable
     private volatile PropertyChangeEvent lastObservedEvt;   // TODO : only for tests purposes
@@ -20,12 +23,17 @@ public class PropertyObserver<ObservedPropertyValueType> implements Observer {
     public PropertyObserver(@NotNull final ObservableProperty<ObservedPropertyValueType> observedProperty,
                             @NotNull final Consumer<PropertyChangeEvent> actionOnPropertyChange) {
         this.actionOnPropertyChange = Objects.requireNonNull(actionOnPropertyChange);
-        observe(Objects.requireNonNull(observedProperty));
+        this.observedProperty = Objects.requireNonNull(observedProperty);
+        observe(observedProperty);
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         lastObservedEvt = evt;  // TODO : is evt.name IN-dependent?
         actionOnPropertyChange.accept(evt);
+    }
+
+    public void stopObserving() {
+        stopObserving(observedProperty);
     }
 }
