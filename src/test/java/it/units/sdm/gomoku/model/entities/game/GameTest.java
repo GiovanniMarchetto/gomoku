@@ -135,7 +135,7 @@ class GameTest {
     void getWinnerWithDraw() {
         game.start();
         try {
-            disputeGameAndDraw(game, BOARD_SIZE);
+            disputeGameAndDraw(game);
             assertNull(game.getWinner());
         } catch (GameNotEndedException e) {
             fail(e);
@@ -225,7 +225,7 @@ class GameTest {
     @Test
     void checkIsEndedWithDraw() { //i.e. board is full
         game.start();
-        disputeGameAndDraw(game, BOARD_SIZE);
+        disputeGameAndDraw(game);
         assertTrue(game.isEnded());
     }
 

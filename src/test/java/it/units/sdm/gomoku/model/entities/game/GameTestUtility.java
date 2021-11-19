@@ -36,8 +36,9 @@ public class GameTestUtility {
         }
     }
 
-    public static void disputeGameAndDraw(Game game, int boardSize) {
+    public static void disputeGameAndDraw(Game game) {
         List<Coordinates> remainCoordinates = new ArrayList<>();
+        int boardSize = game.getBoardSize();
         for (int x = 0; x < boardSize; x++) {
             for (int y = 0; y < boardSize; y++) {
                 if (x % 3 == 0 && y == 0) {

@@ -43,7 +43,7 @@ class MatchTest {
 
     private void startGameAndDraw() {
         startNewGameComplete();
-        GameTestUtility.disputeGameAndDraw(currentGame, boardSizeTest);
+        GameTestUtility.disputeGameAndDraw(currentGame);
     }
     //endregion Support Methods
 

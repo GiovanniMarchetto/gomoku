@@ -1,75 +1,73 @@
 package it.units.sdm.gomoku.model.entities.player;
 
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
-import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
-import it.units.sdm.gomoku.model.entities.Stone;
+import it.units.sdm.gomoku.model.entities.Game;
+import it.units.sdm.gomoku.model.entities.game.GameTestUtility;
 import it.units.sdm.gomoku.model.exceptions.BoardIsFullException;
 import it.units.sdm.gomoku.model.exceptions.CellAlreadyOccupiedException;
 import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
+import it.units.sdm.gomoku.model.exceptions.GameEndedException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.stream.IntStream;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class CPUPlayerSmartChooseEmptyCoordinatesTest { //   TODO: re-see this class
 
     private static final int BOARD_SIZE = 5;
-    private static Board board = null;
-    private final CPUPlayer cpuPlayer = new CPUPlayer("cpuPlayer");
-    private final Stone.Color stoneColor = Stone.Color.BLACK;
+    private static Game game;
+    private final CPUPlayer cpuPlayer = new CPUPlayer();
+    private final CPUPlayer cpuPlayerWhite = new CPUPlayer();
 
     @BeforeEach
     void setUp() {
-        board = new Board(BOARD_SIZE);
+        game = new Game(BOARD_SIZE, cpuPlayer, cpuPlayerWhite);
+        game.start();
+        cpuPlayer.setCurrentGame(game);
     }
 
-//    @Test // TODO: resee this test: what should do?
-//    void emptyBoard() {
-//        Coordinates expected = getNextEmptyCoordinates();
-//        tryToAssertSmartChooseEmptyCoordinates(expected);
-//    }
+    @Test
+    void occupyTheCenterOfTheBoardIfTheBoardIsEmpty() throws BoardIsFullException {
+        Coordinates expected = cpuPlayer.chooseNextEmptyCoordinatesFromCenter();
+        assertEquals(expected, cpuPlayer.chooseSmartEmptyCoordinates());
+    }
 
-//    @Test   // TODO: resee this test: what should do?
-//    void noChains() {
-//        occupyCoordinateFromXAndY(0, 0);
-//        Coordinates expected = getNextEmptyCoordinates();
-//        tryToAssertSmartChooseEmptyCoordinates(expected);
-//
-//    }
-//
-//    @NotNull
-//    private Coordinates getNextEmptyCoordinates() {   // TODO: resee this test
-//        try {
-//            return cpuPlayer.chooseRandomEmptyCoordinates(board);
-//        } catch (BoardIsFullException e) {
-//            fail(e.getMessage());
-//            return new Coordinates(0, 0);
-//        }
-//    }
+    @Test
+    void occupyTheCenterOfTheBoardIfThereAreNoChainInTheBoard() throws BoardIsFullException {
+        occupyNStonesInARow(BOARD_SIZE, 0);
+        Coordinates expected = cpuPlayer.chooseNextEmptyCoordinatesFromCenter();
+        assertEquals(expected, cpuPlayer.chooseSmartEmptyCoordinates());
+    }
 
-//    @ParameterizedTest    // TODO: resee this test: what should do?
-//    @ValueSource(ints = {2, 3, 4})
-//    void chainOfN(int N) {
-//        final int minChain = 2;
-//        IntStream.rangeClosed(minChain, N).forEach(i -> occupyNStonesInARow(i, i - minChain));
-//        Coordinates expected = new Coordinates(N - minChain, N);
-//        tryToAssertSmartChooseEmptyCoordinates(expected);
-//    }
-//
-//    private void tryToAssertSmartChooseEmptyCoordinates(Coordinates expected) {
-//        try {
-//            assertEquals(expected, cpuPlayer.chooseRandomEmptyCoordinates(board));
-//        } catch (BoardIsFullException e) {
-//            fail(e.getMessage());
-//        }
-//    }
+    @ParameterizedTest
+    @ValueSource(ints = {2, 3, 4})
+    void blockTheChainOfNStones(int N) throws BoardIsFullException {
+        IntStream.range(0, N).forEach(i -> occupyNStonesInARow(2, i));
+        Coordinates expected = new Coordinates(N, 0);
+        assertEquals(expected, cpuPlayer.chooseSmartEmptyCoordinates());
+    }
+
+    @Test
+    void throwBoardIsFullExceptionIfTheBoardIsFull() {
+        try {
+            GameTestUtility.disputeGameAndDraw(game);
+            Coordinates findCoordinates = cpuPlayer.chooseSmartEmptyCoordinates();
+            fail("The board is full! But the smart choose find: " + findCoordinates);
+        } catch (BoardIsFullException ignored) {
+        }
+    }
 
     private void occupyCoordinateFromXAndY(int x, int y) {
         try {
-            board.occupyPosition(stoneColor, new Coordinates(x, y));
-        } catch (BoardIsFullException | CellAlreadyOccupiedException | CellOutOfBoardException e) {
+            game.placeStoneAndChangeTurn(new Coordinates(x, y));
+        } catch (BoardIsFullException | CellAlreadyOccupiedException
+                | CellOutOfBoardException | GameEndedException e) {
             fail(e.getMessage());
         }
     }
