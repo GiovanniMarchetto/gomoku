@@ -38,4 +38,8 @@ public abstract class View<T extends Viewmodel> implements Observable {  // TODO
         propertiesObservedInViewModel.add(new PropertyObserver<>(
                 Objects.requireNonNull(observedProperty), Objects.requireNonNull(actionOnPropertyChange)));
     }
+
+    protected void stopObservingAllViewModelProperties() {
+        propertiesObservedInViewModel.forEach(PropertyObserver::stopObserving);
+    }
 }
