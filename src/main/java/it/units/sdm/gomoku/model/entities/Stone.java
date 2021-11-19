@@ -2,7 +2,7 @@ package it.units.sdm.gomoku.model.entities;
 
 import org.jetbrains.annotations.NotNull;
 
-public class Stone {    // TODO: test
+public class Stone {
 
     public enum Color {BLACK, WHITE}
 
