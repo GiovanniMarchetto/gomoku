@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.AbstractMap;
@@ -32,6 +33,8 @@ public class SceneController {  // todo : TEST
     private final Stage stage;
     private double sceneWidth = 0;
     private double sceneHeight = 0;
+    @Nullable
+    private static View<?> currentView;
 
     @SafeVarargs
     private SceneController(@NotNull final Stage stage, @NotNull final String firstStageTitle,  // TODO: should pass a setup objects instead of so many parameters?
@@ -78,6 +81,10 @@ public class SceneController {  // todo : TEST
         parentPane.getChildren().add(fxmlLoader.load());
         var scene = new Scene(Objects.requireNonNull(parentPane), sceneWidth, sceneHeight);
         if (fxmlLoader.getController() instanceof View view) {
+            if (currentView != null) {
+                currentView.onViewDisappearing();
+            }
+            currentView = view;
             view.onViewInitialized();
         }
         return scene;

@@ -83,6 +83,9 @@ public class CLISceneController {   // TODO : refactor (common things with GUI)
     }
 
     public static void passToNewView(@NotNull final CLIViewName viewName) {
+        if (currentView != null) {
+            currentView.onViewDisappearing();
+        }
         currentView = getInstance().getView(Objects.requireNonNull(viewName));
         currentView.onViewInitialized();
     }

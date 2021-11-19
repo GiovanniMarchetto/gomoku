@@ -30,6 +30,9 @@ public abstract class View<T extends Viewmodel> implements Observable {  // TODO
     public void onViewInitialized() {
     }
 
+    public void onViewDisappearing() {
+    }
+
     protected <S> void addObservedPropertyOfViewmodel(@NotNull final ObservableProperty<S> observedProperty,
                                                       @NotNull final Consumer<PropertyChangeEvent> actionOnPropertyChange) {
         propertiesObservedInViewModel.add(new PropertyObserver<>(
