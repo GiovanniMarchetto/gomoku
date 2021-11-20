@@ -271,4 +271,11 @@ class BufferTest {
         assertEquals(oneElementToInsert, elementRemovedFromBuffer);
     }
 
+    @Test
+    void testIsEmpty() throws NoSuchFieldException, IllegalAccessException {
+        List<?> listUsedByTheBuffer = getActualBuffer(bufferOfIntegerUsedInTests);
+        assert listUsedByTheBuffer != null;
+        assert listUsedByTheBuffer.isEmpty();
+        assertTrue(isBufferEmpty(bufferOfIntegerUsedInTests));
+    }
 }

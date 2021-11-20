@@ -27,7 +27,6 @@ public class Buffer<ElementType> {
     }
 
     public synchronized boolean isEmpty() {
-        // TODO: TEST
         return buffer.isEmpty();
     }
 
