@@ -1,17 +1,25 @@
 package it.units.sdm.gomoku.model.entities.player;
 
+import it.units.sdm.gomoku.model.custom_types.Buffer;
+import it.units.sdm.gomoku.model.custom_types.Color;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
+import it.units.sdm.gomoku.model.entities.Cell;
 import it.units.sdm.gomoku.model.entities.Game;
 import it.units.sdm.gomoku.model.entities.Player;
+import it.units.sdm.gomoku.model.entities.Stone;
+import it.units.sdm.gomoku.model.exceptions.BoardIsFullException;
 import it.units.sdm.gomoku.model.exceptions.CellAlreadyOccupiedException;
 import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
 import it.units.sdm.gomoku.model.exceptions.GameEndedException;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertySettable;
 import it.units.sdm.gomoku.utils.TestUtility;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -30,10 +38,13 @@ class PlayerTest {
         game.start();
     }
 
-//    @Test
-//    void registerMoveFromUserIfValidCoordinates() {
-//
-//    }
+    @Test
+    void registerMoveFromUserIfValidCoordinates() throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException, NoSuchFieldException, IllegalAccessException {
+        player.setMoveToBeMade(SAMPLE_VALID_COORDINATES);
+        Buffer<?> bufferOfPlayer = ((Buffer<?>) TestUtility.getFieldValue("nextMoveBuffer", player));
+        assert bufferOfPlayer != null;
+        assertEquals(SAMPLE_VALID_COORDINATES, bufferOfPlayer.getAndRemoveLastElement());
+    }
 
     @Test
     void dontRegisterMoveFromUserIfGameNotSet() throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
@@ -56,6 +67,27 @@ class PlayerTest {
             catchedException = true;
         }
         assertTrue(catchedException);
+    }
+
+    @Test
+    void dontRegisterMoveFromUserIfBoardCellIsAlreadyOccupied() throws BoardIsFullException, CellOutOfBoardException, CellAlreadyOccupiedException, GameEndedException {
+        final Color SAMPLE_COLOR = Color.BLACK;
+        game.getBoard().occupyPosition(SAMPLE_COLOR, SAMPLE_VALID_COORDINATES);
+        Stone justPlacedStone = getCellAtCoordinates(SAMPLE_VALID_COORDINATES).getStone();
+        assert justPlacedStone != null;
+        assert justPlacedStone.getColor().equals(SAMPLE_COLOR);   // TODO : code smell message chain
+        boolean catchedException = false;
+        try {
+            player.setMoveToBeMade(SAMPLE_VALID_COORDINATES);
+        } catch (CellAlreadyOccupiedException e) {
+            catchedException = true;
+        }
+        assertTrue(catchedException);
+    }
+
+    @NotNull
+    private Cell getCellAtCoordinates(@NotNull final Coordinates coordinates) throws CellOutOfBoardException {
+        return game.getBoard().getCellAtCoordinates(Objects.requireNonNull(coordinates));   // TODO: message chain code smell?
     }
 
     @ParameterizedTest
