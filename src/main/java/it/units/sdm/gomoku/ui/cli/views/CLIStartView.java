@@ -87,14 +87,14 @@ public class CLIStartView extends View<StartViewmodel> {// TODO : refactor this 
                 getViewmodelAssociatedWithView().setPlayer1Name("CPU1");
                 getViewmodelAssociatedWithView().setPlayer1CPUSkillFactor(askAndGetCPUPlayerSkillFactor(1));
                 getViewmodelAssociatedWithView().setPlayer2Name("CPU2");
-                getViewmodelAssociatedWithView().setPlayer1CPUSkillFactor(askAndGetCPUPlayerSkillFactor(2));
+                getViewmodelAssociatedWithView().setPlayer2CPUSkillFactor(askAndGetCPUPlayerSkillFactor(2));
                 getViewmodelAssociatedWithView().setPlayer1CPU(true);
                 getViewmodelAssociatedWithView().setPlayer2CPU(true);
             }
             case PERSON_VS_CPU -> {
                 getViewmodelAssociatedWithView().setPlayer1Name(askAndGetPlayerName(1));
                 getViewmodelAssociatedWithView().setPlayer2Name("CPU");
-                getViewmodelAssociatedWithView().setPlayer1CPUSkillFactor(askAndGetCPUPlayerSkillFactor(2));
+                getViewmodelAssociatedWithView().setPlayer2CPUSkillFactor(askAndGetCPUPlayerSkillFactor(2));
                 getViewmodelAssociatedWithView().setPlayer1CPU(false);
                 getViewmodelAssociatedWithView().setPlayer2CPU(true);
             }
