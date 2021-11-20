@@ -1,5 +1,6 @@
 package it.units.sdm.gomoku.model.entities.game;
 
+import it.units.sdm.gomoku.model.custom_types.Color;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.*;
 import it.units.sdm.gomoku.model.exceptions.*;
@@ -28,8 +29,8 @@ public class GameTestBasedOnCsv {
 
         Board board = TestUtility.createBoardFromCellMatrix(cellMatrix);
 
-        List<Coordinates> blackCoordinatesList = getListOfCoordinatesOfAColor(coordinatesToControl, board, Stone.Color.BLACK);
-        List<Coordinates> whiteCoordinatesList = getListOfCoordinatesOfAColor(coordinatesToControl, board, Stone.Color.WHITE);
+        List<Coordinates> blackCoordinatesList = getListOfCoordinatesOfAColor(coordinatesToControl, board, Color.BLACK);
+        List<Coordinates> whiteCoordinatesList = getListOfCoordinatesOfAColor(coordinatesToControl, board, Color.WHITE);
 
         try {
             for (int i = 0; i < blackCoordinatesList.size(); i++) {
@@ -46,7 +47,7 @@ public class GameTestBasedOnCsv {
     }
 
     @NotNull
-    private List<Coordinates> getListOfCoordinatesOfAColor(Coordinates coordinatesToControl, Board board, Stone.Color color) {
+    private List<Coordinates> getListOfCoordinatesOfAColor(Coordinates coordinatesToControl, Board board, Color color) {
         //the empty cells are filtered before the color request
         return IntStream.range(0, board.getSize())
                 .boxed().sequential()
@@ -80,12 +81,12 @@ public class GameTestBasedOnCsv {
 
         Board board = TestUtility.createBoardFromCellMatrix(cellMatrix);
 
-        List<Coordinates> blackCoordinatesList = getListOfCoordinatesOfAColor(coordinatesToControl, board, Stone.Color.BLACK);
-        List<Coordinates> whiteCoordinatesList = getListOfCoordinatesOfAColor(coordinatesToControl, board, Stone.Color.WHITE);
+        List<Coordinates> blackCoordinatesList = getListOfCoordinatesOfAColor(coordinatesToControl, board, Color.BLACK);
+        List<Coordinates> whiteCoordinatesList = getListOfCoordinatesOfAColor(coordinatesToControl, board, Color.WHITE);
 
         if (blackCoordinatesList.size() != whiteCoordinatesList.size()) {
             Stone stone = Objects.requireNonNull(board.getCellAtCoordinates(coordinatesToControl).getStone());
-            int lastStone = stone.getColor() == Stone.Color.WHITE ? 1 : 0;  // TODO: re-see this to clarify
+            int lastStone = stone.getColor() == Color.WHITE ? 1 : 0;  // TODO: re-see this to clarify
             if (blackCoordinatesList.size() != (whiteCoordinatesList.size() + lastStone)) {
                 fail("The construction of the game in the csv is wrong");
             }

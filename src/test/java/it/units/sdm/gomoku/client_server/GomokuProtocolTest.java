@@ -4,10 +4,10 @@ import it.units.sdm.gomoku.EnvVariables;
 import it.units.sdm.gomoku.client_server.fake_objects.ConsumerClient;
 import it.units.sdm.gomoku.client_server.fake_objects.SimpleClient;
 import it.units.sdm.gomoku.client_server.server.GomokuServer;
+import it.units.sdm.gomoku.model.custom_types.Color;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.entities.HumanPlayer;
-import it.units.sdm.gomoku.model.entities.Stone;
 import it.units.sdm.gomoku.ui.support.BoardSizes;
 import it.units.sdm.gomoku.ui.support.Setup;
 import it.units.sdm.gomoku.utils.TestUtility;
@@ -78,9 +78,9 @@ class GomokuProtocolTest {
                     Board board = new Board(EnvVariables.BOARD_SIZE);
                     final int MAX_NUMBER_OF_STONE_TO_PLACE_ON_THE_BOARD = 10;
                     assert MAX_NUMBER_OF_STONE_TO_PLACE_ON_THE_BOARD <= EnvVariables.BOARD_SIZE.intValue();
-                    for (Stone.Color stoneColor : Stone.Color.values()) {
+                    for (Color stoneColor : Color.values()) {
                         try {
-                            occupyNEmptyCellsOnTheGivenBoardBoardWithGivenColor(board, MAX_NUMBER_OF_STONE_TO_PLACE_ON_THE_BOARD / Stone.Color.values().length, stoneColor);
+                            occupyNEmptyCellsOnTheGivenBoardBoardWithGivenColor(board, MAX_NUMBER_OF_STONE_TO_PLACE_ON_THE_BOARD / Color.values().length, stoneColor);
                         } catch (NoSuchFieldException | IllegalAccessException e) {
                             fail(e);
                         }

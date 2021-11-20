@@ -1,9 +1,9 @@
 package it.units.sdm.gomoku.model.entities.player;
 
+import it.units.sdm.gomoku.model.custom_types.Color;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
-import it.units.sdm.gomoku.model.entities.Stone;
 import org.junit.jupiter.api.BeforeAll;
 
 
@@ -13,7 +13,7 @@ public class CPUPlayerTest {    // TODO: resee this class
     private static final PositiveInteger BOARD_SIZE_5 = new PositiveInteger(5);
     private static final PositiveInteger BOARD_SIZE_4 = new PositiveInteger(4);
     private static Board board = null;
-    private static final Stone.Color cpuStoneColor = Stone.Color.BLACK;
+    private static final Color cpuStoneColor = Color.BLACK;
     private final CPUPlayer cpuPlayer = new CPUPlayer("cpuPlayer");
 
     @BeforeAll

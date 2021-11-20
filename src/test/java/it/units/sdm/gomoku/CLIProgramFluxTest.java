@@ -1,5 +1,6 @@
 package it.units.sdm.gomoku;
 
+import it.units.sdm.gomoku.model.custom_types.Color;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.*;
@@ -348,7 +349,7 @@ public class CLIProgramFluxTest {
 
             assert firstGameOfMatch != null;
             assertEquals(firstPlayerExpected, firstGameOfMatch.getCurrentPlayerProperty().getPropertyValue());
-            assertEquals(Stone.Color.BLACK, firstGameOfMatch.getColorOfPlayer(firstPlayerExpected));
+            assertEquals(Color.BLACK, firstGameOfMatch.getColorOfPlayer(firstPlayerExpected));
         } catch (NoSuchFieldException | IllegalAccessException e) {
             fail(e);
         }

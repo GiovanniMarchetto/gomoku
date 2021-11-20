@@ -1,5 +1,6 @@
 package it.units.sdm.gomoku.model.entities;
 
+import it.units.sdm.gomoku.model.custom_types.Color;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.exceptions.*;
@@ -81,8 +82,8 @@ public class Game implements Comparable<Game>, Observable {
     }
 
     @NotNull
-    public Stone.Color getColorOfPlayer(@NotNull final Player player) {
-        return player.equals(blackPlayer) ? Stone.Color.BLACK : Stone.Color.WHITE;
+    public Color getColorOfPlayer(@NotNull final Player player) {
+        return player.equals(blackPlayer) ? Color.BLACK : Color.WHITE;
     }
 
     public void placeStoneAndChangeTurn(@NotNull final Coordinates coordinates)

@@ -1,6 +1,5 @@
 package it.units.sdm.gomoku.ui.gui.views;
 
-import it.units.sdm.gomoku.model.entities.Stone;
 import it.units.sdm.gomoku.mvvm_library.Observer;
 import it.units.sdm.gomoku.mvvm_library.View;
 import it.units.sdm.gomoku.ui.gui.GUIMain;
@@ -55,7 +54,7 @@ public class GUIMainView extends View<GUIMainViewmodel> implements Observer {
                         SceneController.executeOnJavaFxUiThread(() -> {
                             currentPlayerLabel.setText(evt.getNewValue().toString());
                             currentPlayerCircle.setFill(
-                                    getViewmodelAssociatedWithView().getColorOfCurrentPlayer() == Stone.Color.BLACK
+                                    getViewmodelAssociatedWithView().getColorOfCurrentPlayer() == it.units.sdm.gomoku.model.custom_types.Color.BLACK
                                             ? Color.BLACK : Color.WHITE);
                         }));
 

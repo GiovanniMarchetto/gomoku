@@ -3,7 +3,6 @@ package it.units.sdm.gomoku.ui.gui.views;
 import it.units.sdm.gomoku.Utility;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.Cell;
-import it.units.sdm.gomoku.model.entities.Stone;
 import it.units.sdm.gomoku.model.exceptions.BoardIsFullException;
 import it.units.sdm.gomoku.model.exceptions.CellAlreadyOccupiedException;
 import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
@@ -121,7 +120,7 @@ public class GomokuCell implements Observer {
         } else {
             circle.setOpacity(1);
             //noinspection ConstantConditions // already checked
-            circle.setFill(cell.getStone().getColor() == Stone.Color.BLACK ? Color.BLACK : Color.WHITE);
+            circle.setFill(cell.getStone().getColor() == it.units.sdm.gomoku.model.custom_types.Color.BLACK ? Color.BLACK : Color.WHITE);
             circle.setStroke(Color.DARKRED);
             circle.setStrokeWidth(3.0);
         }
