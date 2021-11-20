@@ -4,11 +4,9 @@ import it.units.sdm.gomoku.mvvm_library.View;
 import it.units.sdm.gomoku.ui.StartViewmodel;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -18,6 +16,14 @@ import static it.units.sdm.gomoku.ui.gui.GUIMain.guiMainViewmodel;
 
 
 public class GUIStartView extends View<StartViewmodel> {
+    @FXML
+    private VBox player1CPUSkillVBox;
+    @FXML
+    private Slider player1CPUSkillSlider;
+    @FXML
+    private VBox player2CPUSkillVBox;
+    @FXML
+    private Slider player2CPUSkillSlider;
 
     // TODO : add notnull / nullable annotations and final in method params
 
@@ -44,6 +50,10 @@ public class GUIStartView extends View<StartViewmodel> {
     private void initialize() {// TODO : refactor this method
         boardSizeChoiceBox.getItems().addAll(boardSizes);
         boardSizeChoiceBox.setValue(boardSizes.get(boardSizes.size() / 2));
+        player1CPUSkillVBox.managedProperty().bind(player1CPUSkillVBox.visibleProperty());
+        player2CPUSkillVBox.managedProperty().bind(player2CPUSkillVBox.visibleProperty());
+        player1CPUSkillVBox.visibleProperty().bind(player1CPUCheckBox.selectedProperty());
+        player2CPUSkillVBox.visibleProperty().bind(player2CPUCheckBox.selectedProperty());
         setDefaultValuesInViewmodel();
         allowOnlyNumberInNumberOfGamesTextField();
         disableStartMatchButtonIfInvalidInputFieldValues();
@@ -56,6 +66,10 @@ public class GUIStartView extends View<StartViewmodel> {
         addTextPropertyListener(player2NameTextField, getViewmodelAssociatedWithView()::setPlayer2Name);
         addSelectedPropertyListener(player1CPUCheckBox, getViewmodelAssociatedWithView()::setPlayer1CPU);
         addSelectedPropertyListener(player2CPUCheckBox, getViewmodelAssociatedWithView()::setPlayer2CPU);
+        addValuePropertyListener(player1CPUSkillSlider, number ->
+                getViewmodelAssociatedWithView().setPlayer1CPUSkillFactor(number.doubleValue() / 100));
+        addValuePropertyListener(player2CPUSkillSlider, number ->
+                getViewmodelAssociatedWithView().setPlayer2CPUSkillFactor(number.doubleValue() / 100));
         addSelectedItemPropertyListener(boardSizeChoiceBox, getViewmodelAssociatedWithView()::setSelectedBoardSize);
         addTextPropertyListener(numberOfGamesTextField, getViewmodelAssociatedWithView()::setNumberOfGames);
     }
@@ -66,6 +80,8 @@ public class GUIStartView extends View<StartViewmodel> {
         getViewmodelAssociatedWithView().setPlayer2Name(player2NameTextField.getText());
         getViewmodelAssociatedWithView().setPlayer1CPU(player1CPUCheckBox.isSelected());
         getViewmodelAssociatedWithView().setPlayer2CPU(player2CPUCheckBox.isSelected());
+        getViewmodelAssociatedWithView().setPlayer1CPUSkillFactor(player1CPUSkillSlider.getValue() / 100);
+        getViewmodelAssociatedWithView().setPlayer2CPUSkillFactor(player2CPUSkillSlider.getValue() / 100);
         getViewmodelAssociatedWithView().setSelectedBoardSize(boardSizeChoiceBox.getValue());
         getViewmodelAssociatedWithView().setNumberOfGames(numberOfGamesTextField.getText());
     }
@@ -76,6 +92,10 @@ public class GUIStartView extends View<StartViewmodel> {
 
     private void addSelectedPropertyListener(CheckBox checkBox, Consumer<Boolean> actionOnChange) {
         addPropertyListener(checkBox.selectedProperty(), actionOnChange);
+    }
+
+    private void addValuePropertyListener(Slider slider, Consumer<Number> actionOnChange) {
+        addPropertyListener(slider.valueProperty(), actionOnChange);
     }
 
     private <T> void addSelectedItemPropertyListener(ChoiceBox<T> choiceBox, Consumer<T> actionOnChange) {

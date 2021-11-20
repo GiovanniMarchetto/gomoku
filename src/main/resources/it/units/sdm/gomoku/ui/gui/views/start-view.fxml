@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
@@ -13,7 +14,7 @@
     <Text text="Choose players"
           style="-fx-font-size: 15; -fx-font-weight: bold"
           GridPane.columnIndex="0" GridPane.rowIndex="0"
-          GridPane.columnSpan="2"/>
+          GridPane.columnSpan="3"/>
 
     <Label text="Player One:"
            GridPane.columnIndex="0" GridPane.rowIndex="1"/>
@@ -24,32 +25,68 @@
     <CheckBox fx:id="player1CPUCheckBox" text="CPU"
               GridPane.columnIndex="2" GridPane.rowIndex="1"/>
 
+    <VBox fx:id="player1CPUSkillVBox"
+          GridPane.columnIndex="0" GridPane.rowIndex="2"
+          GridPane.columnSpan="3" spacing="5">
+        <Label text="CPU skill:"/>
+        <Slider fx:id="player1CPUSkillSlider"
+                showTickLabels="true"
+                majorTickUnit="10"
+                showTickMarks="true"
+                minorTickCount="1"
+                snapToTicks="true"
+                min="0"
+                max="100"
+                value="50"/>
+        <padding>
+            <Insets bottom="20"/>
+        </padding>
+    </VBox>
+
 
     <Label text="Player Two:"
-           GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+           GridPane.columnIndex="0" GridPane.rowIndex="3"/>
 
     <TextField fx:id="player2NameTextField" text="Two"
-               GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+               GridPane.columnIndex="1" GridPane.rowIndex="3"/>
 
     <CheckBox fx:id="player2CPUCheckBox" text="CPU"
-              GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+              GridPane.columnIndex="2" GridPane.rowIndex="3"/>
+
+    <VBox fx:id="player2CPUSkillVBox"
+          GridPane.columnIndex="0" GridPane.rowIndex="4"
+          GridPane.columnSpan="3" spacing="5">
+        <Label text="CPU skill:"/>
+        <Slider fx:id="player2CPUSkillSlider"
+                showTickLabels="true"
+                majorTickUnit="10"
+                showTickMarks="true"
+                minorTickCount="1"
+                snapToTicks="true"
+                min="0"
+                max="100"
+                value="50"/>
+        <padding>
+            <Insets bottom="20"/>
+        </padding>
+    </VBox>
 
 
     <Label text="Board size:"
-           GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+           GridPane.columnIndex="0" GridPane.rowIndex="5"/>
 
     <ChoiceBox fx:id="boardSizeChoiceBox"
-               GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+               GridPane.columnIndex="1" GridPane.rowIndex="5"/>
 
 
     <Label text="How many games:"
-           GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+           GridPane.columnIndex="0" GridPane.rowIndex="6"/>
 
     <TextField fx:id="numberOfGamesTextField" text="1"
-               GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+               GridPane.columnIndex="1" GridPane.rowIndex="6"/>
 
 
-    <HBox GridPane.columnIndex="2" GridPane.rowIndex="6" spacing="5">
+    <HBox GridPane.columnIndex="2" GridPane.rowIndex="7" spacing="5">
         <Button fx:id="startMatchButton" text="Start Match!" onMouseClicked="#startMatchButtonOnMouseClicked"/>
     </HBox>
 
