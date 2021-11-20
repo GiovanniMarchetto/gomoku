@@ -4,7 +4,7 @@ import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
 import it.units.sdm.gomoku.model.entities.Setup;
 
-public class TestMainViewmodel extends MainViewmodel {
+public class FakeMainViewmodel extends MainViewmodel {
 
     public static final CPUPlayer cpuPlayer1 = new CPUPlayer();
     public static final CPUPlayer cpuPlayer2 = new CPUPlayer();
