@@ -48,7 +48,7 @@ public abstract class Player implements Observable {
         }
         Objects.requireNonNull(nextMoveToMake);
 
-        if (currentGame.isEmptyCoordinatesOnBoard(nextMoveToMake)) {
+        if (currentGame.isCellAtCoordinatesEmpty(nextMoveToMake)) {
             nextMoveBuffer.insert(nextMoveToMake);
         } else {
             throw new CellAlreadyOccupiedException(nextMoveToMake);

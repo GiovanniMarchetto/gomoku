@@ -161,7 +161,7 @@ public class Game implements Comparable<Game>, Observable {
                 board;
     }
 
-    public boolean isEmptyCoordinatesOnBoard(@NotNull final Coordinates proposedMove)
+    public boolean isCellAtCoordinatesEmpty(@NotNull final Coordinates proposedMove)
             throws GameEndedException, CellOutOfBoardException {    // TODO : test
         if (isEnded()) {
             throw new GameEndedException();
