@@ -83,7 +83,7 @@ public abstract class MainViewmodel extends Viewmodel {
         addObservedProperty(
                 currentGame.getCurrentPlayerProperty(),
                 evt -> {
-                    currentPlayerProperty.setPropertyValueAndFireIfPropertyChange((Player) evt.getNewValue());
+                    currentPlayerProperty.setPropertyValue((Player) evt.getNewValue());
                     if (!isCurrentGameEnded()) {
                         Utility.runOnSeparateThread(() -> {
                             try {
@@ -102,7 +102,7 @@ public abstract class MainViewmodel extends Viewmodel {
         addObservedProperty(
                 currentGame.getGameStatusProperty(),
                 evt -> {
-                    currentGameStatusProperty.setPropertyValueAndFireIfPropertyChange((Game.Status) evt.getNewValue());
+                    currentGameStatusProperty.setPropertyValue((Game.Status) evt.getNewValue());
                     if (evt.getNewValue().equals(Game.Status.ENDED)) {
                         endGame();
                         stopObserving(currentGame);   // TODO : should fade away
@@ -114,14 +114,14 @@ public abstract class MainViewmodel extends Viewmodel {
         assert currentBoard != null;
         addObservedProperty(
                 currentBoard.getLastMoveCoordinatesProperty(),
-                evt -> lastMoveCoordinatesProperty.setPropertyValueAndFireIfPropertyChange(
+                evt -> lastMoveCoordinatesProperty.setPropertyValue(
                         (Coordinates) evt.getNewValue()));
 
         Stream.of(getCurrentBlackPlayer(), getCurrentWhitePlayer())
                 .forEach(player ->
                         addObservedProperty(
                                 player.getCoordinatesRequiredToContinueProperty(),
-                                evt -> userMustPlaceNewStoneProperty.setPropertyValueAndFireIfPropertyChange((boolean) evt.getNewValue())));
+                                evt -> userMustPlaceNewStoneProperty.setPropertyValue((boolean) evt.getNewValue())));
 
     }
 

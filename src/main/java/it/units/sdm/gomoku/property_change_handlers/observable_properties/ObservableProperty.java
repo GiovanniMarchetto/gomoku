@@ -43,7 +43,7 @@ public abstract class ObservableProperty<PropertyValueType> implements Observabl
     }
 
     @NotNull
-    protected synchronized ObservableProperty<PropertyValueType> setPropertyValueAndFireIfPropertyChange(
+    protected synchronized ObservableProperty<PropertyValueType> setPropertyValue(
             @Nullable final PropertyValueType newPropertyValue) {   // TODO : synchronized needed?
         PropertyValueType oldValue = getPropertyValue();
         if (!Objects.equals(oldValue, newPropertyValue)) {

@@ -108,8 +108,8 @@ class ConcreteFakeObservableProperty<T> extends ObservableProperty<T> {
 
     @Override
     @NotNull
-    protected ObservableProperty<T> setPropertyValueAndFireIfPropertyChange(@Nullable T newPropertyValue) {
-        return super.setPropertyValueAndFireIfPropertyChange(newPropertyValue);
+    protected ObservableProperty<T> setPropertyValue(@Nullable T newPropertyValue) {
+        return super.setPropertyValue(newPropertyValue);
     }
 
     @Override

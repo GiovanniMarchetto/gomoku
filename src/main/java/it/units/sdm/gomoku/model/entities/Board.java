@@ -131,7 +131,7 @@ public class Board implements Observable, Serializable {
             if (isCellEmpty(Objects.requireNonNull(coordinates))) {
                 setStoneAtCoordinates(coordinates, Objects.requireNonNull(stoneColor));
                 numberOfFilledPositions++;
-                lastMoveCoordinatesProperty.setPropertyValueAndFireIfPropertyChange(coordinates);
+                lastMoveCoordinatesProperty.setPropertyValue(coordinates);
             } else {
                 throw new CellAlreadyOccupiedException(coordinates);
             }

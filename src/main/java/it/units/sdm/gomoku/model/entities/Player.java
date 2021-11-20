@@ -74,7 +74,7 @@ public abstract class Player implements Observable {
     }
 
     protected void setCoordinatesRequired(final boolean coordinatesRequired) {
-        coordinatesRequiredToContinueProperty.setPropertyValueAndFireIfPropertyChange(coordinatesRequired);
+        coordinatesRequiredToContinueProperty.setPropertyValue(coordinatesRequired);
     }
 
     @Override

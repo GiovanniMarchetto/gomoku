@@ -57,8 +57,8 @@ public class Game implements Comparable<Game>, Observable {
     }
 
     public void start() {
-        gameStatusProperty.setPropertyValueAndFireIfPropertyChange(Status.STARTED); // TODO : rename all properties "*" in "*Property"
-        currentPlayerProperty.setPropertyValueAndFireIfPropertyChange(blackPlayer);
+        gameStatusProperty.setPropertyValue(Status.STARTED); // TODO : rename all properties "*" in "*Property"
+        currentPlayerProperty.setPropertyValue(blackPlayer);
     }
 
     @NotNull
@@ -117,12 +117,12 @@ public class Game implements Comparable<Game>, Observable {
 
     private void setGameStatusPropertyIfGameEnded() {
         if (isEnded()) {
-            gameStatusProperty.setPropertyValueAndFireIfPropertyChange(Status.ENDED);
+            gameStatusProperty.setPropertyValue(Status.ENDED);
         }
     }
 
     private void changeTurn() { // TODO: dovrebbe fare il controllo/throware se il gioco è finito? (secondo me si)
-        currentPlayerProperty.setPropertyValueAndFireIfPropertyChange(currentPlayerProperty.getPropertyValue() == blackPlayer ? whitePlayer : blackPlayer);
+        currentPlayerProperty.setPropertyValue(currentPlayerProperty.getPropertyValue() == blackPlayer ? whitePlayer : blackPlayer);
     }
 
     private boolean hasThePlayerWonWithLastMove(@NotNull final Coordinates lastMove) {

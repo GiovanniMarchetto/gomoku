@@ -32,20 +32,20 @@ class PropertyObserverBooleanTest {
 
     @Test
     void onChange() {
-        observable.setPropertyValueAndFireIfPropertyChange(true);
+        observable.setPropertyValue(true);
         assertTrue(valueToChange.get());
     }
 
     @Test
     void onNoChangeButValueModifyDirectly() {
         valueToChange.set(true);
-        observable.setPropertyValueAndFireIfPropertyChange(false);
+        observable.setPropertyValue(false);
         assertTrue(valueToChange.get());
     }
 
     @Test
     void onNoChange() {
-        observable.setPropertyValueAndFireIfPropertyChange(false);
+        observable.setPropertyValue(false);
         assertFalse(valueToChange.get());
     }
 

@@ -93,7 +93,7 @@ public class GomokuGridManager implements Observable {
         double minSideOfTotalSpaceForGrid = Math.min(spaceInHeightForGrid, spaceInWidthForGrid);
         if (minSideOfTotalSpaceForGrid == 0) return;
         double newRadiusValue = minSideOfTotalSpaceForGrid / (boardSize * 2.5);
-        gomokuStoneRadiusProperty.setPropertyValueAndFireIfPropertyChange(newRadiusValue);
+        gomokuStoneRadiusProperty.setPropertyValue(newRadiusValue);
     }
 
     public GridPane getGridPane() {

@@ -27,11 +27,12 @@ public class ObservablePropertyThatCanSetPropertyValueAndFireEvents<PropertyValu
 
     @Override
     @NotNull
-    public ObservableProperty<PropertyValueType> setPropertyValueAndFireIfPropertyChange(
+    public ObservableProperty<PropertyValueType> setPropertyValue(
             @Nullable final PropertyValueType newPropertyValue) {   // TODO : synchronized needed?
-        return super.setPropertyValueAndFireIfPropertyChange(newPropertyValue);
+        return super.setPropertyValue(newPropertyValue);
     }
 
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
     @Override
     public ObservablePropertyThatCanSetPropertyValueAndFireEvents<PropertyValueType> clone() {
         return new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>(this);

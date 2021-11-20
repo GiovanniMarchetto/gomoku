@@ -85,7 +85,7 @@ class ObservablePropertyTest {
             observedPropertyHasNotified.set(true);
             observedPropertyAfterSetterInvocation.set((String) evt.getNewValue());
         });
-        observable.setPropertyValueAndFireIfPropertyChange(newValue);
+        observable.setPropertyValue(newValue);
         if (shouldNotify) { // TODO: split test (this test assert more than one thing)
             assertTrue(observedPropertyHasNotified.get());
             assertEquals(newValue, observedPropertyAfterSetterInvocation.get());

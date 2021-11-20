@@ -33,7 +33,7 @@ class PropertyObserverTest {
 
     @Test
     void onChange() {
-        observable.setPropertyValueAndFireIfPropertyChange(changeValue);
+        observable.setPropertyValue(changeValue);
         assertEquals(observable.getPropertyValue(), related);
     }
 
@@ -41,13 +41,13 @@ class PropertyObserverTest {
     void onNoChangeButValueModifyDirectly() {
         String expected = "directly";
         related = expected;
-        observable.setPropertyValueAndFireIfPropertyChange(startObservableValue);
+        observable.setPropertyValue(startObservableValue);
         assertEquals(expected, related);
     }
 
     @Test
     void onNoChange() {
-        observable.setPropertyValueAndFireIfPropertyChange(startObservableValue);
+        observable.setPropertyValue(startObservableValue);
         assertNotEquals(related, observable.getPropertyValue());
     }
 
