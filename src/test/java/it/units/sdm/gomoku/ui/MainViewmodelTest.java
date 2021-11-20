@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Objects;
 
-import static it.units.sdm.gomoku.ui.TestMainViewmodel.*;
+import static it.units.sdm.gomoku.ui.FakeMainViewmodel.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MainViewmodelTest {
@@ -24,7 +24,7 @@ class MainViewmodelTest {
 
     @BeforeEach
     void setUp() {
-        mainViewmodel = new TestMainViewmodel();
+        mainViewmodel = new FakeMainViewmodel();
     }
 
     @Test
