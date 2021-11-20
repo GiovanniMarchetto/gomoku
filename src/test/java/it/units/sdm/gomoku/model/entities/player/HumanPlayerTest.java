@@ -3,7 +3,10 @@ package it.units.sdm.gomoku.model.entities.player;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.Game;
 import it.units.sdm.gomoku.model.entities.HumanPlayer;
-import it.units.sdm.gomoku.model.exceptions.*;
+import it.units.sdm.gomoku.model.exceptions.BoardIsFullException;
+import it.units.sdm.gomoku.model.exceptions.CellAlreadyOccupiedException;
+import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
+import it.units.sdm.gomoku.model.exceptions.GameEndedException;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservableProperty;
 import it.units.sdm.gomoku.utils.TestUtility;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +24,7 @@ class HumanPlayerTest { // TODO: some of this are tests of class Player
 
     //region Support Methods
     private void setCurrentGameAndSetNextMoveAndMakeMove()  // TODO: still needed?
-            throws NoGameSetException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException, BoardIsFullException {
+            throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException, BoardIsFullException {
         humanPlayer.setCurrentGame(game);
         humanPlayer.setMoveToBeMade(firstCoordinates);
         humanPlayer.makeMove();
@@ -39,7 +42,7 @@ class HumanPlayerTest { // TODO: some of this are tests of class Player
 
     @Test
     void dontRequireMoveToFirstHumanPlayerAfterHasDoneTheFirstMove()
-            throws NoSuchFieldException, IllegalAccessException, NoGameSetException,
+            throws NoSuchFieldException, IllegalAccessException,
             GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException, BoardIsFullException {
         setCurrentGameAndSetNextMoveAndMakeMove();
 
@@ -54,7 +57,7 @@ class HumanPlayerTest { // TODO: some of this are tests of class Player
 
     @Test
     void updateBoardAfterAValidFirstMoveIsMade()
-            throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException, NoGameSetException, BoardIsFullException {
+            throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException, BoardIsFullException {
         assert game.getBoard().isEmpty();
         humanPlayer.setMoveToBeMade(firstCoordinates);
         humanPlayer.makeMove();
@@ -69,5 +72,4 @@ class HumanPlayerTest { // TODO: some of this are tests of class Player
         } catch (CellOutOfBoardException ignored) {   // correct to go here to pass the test
         }
     }
-
 }

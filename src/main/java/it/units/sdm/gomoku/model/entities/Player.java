@@ -35,7 +35,7 @@ public abstract class Player implements Observable {
     public void makeMove() throws BoardIsFullException,
             GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException { // TODO : test
         if (currentGame == null) {
-            throw new IllegalStateException(new NoGameSetException());
+            throw new IllegalStateException(new GameNotSetException());
         }
         Coordinates nextMove = Objects.requireNonNull(nextMoveBuffer.getAndRemoveLastElement());
         currentGame.placeStoneAndChangeTurn(nextMove);
@@ -44,7 +44,7 @@ public abstract class Player implements Observable {
     public synchronized void setMoveToBeMade(@NotNull final Coordinates nextMoveToMake)
             throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException { // TODO: test
         if (currentGame == null) {
-            throw new IllegalStateException(new NoGameSetException());
+            throw new IllegalStateException(new GameNotSetException());
         }
         Objects.requireNonNull(nextMoveToMake);
 
