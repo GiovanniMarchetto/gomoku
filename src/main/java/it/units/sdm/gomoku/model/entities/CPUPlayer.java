@@ -4,7 +4,10 @@ import it.units.sdm.gomoku.Utility;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
-import it.units.sdm.gomoku.model.exceptions.*;
+import it.units.sdm.gomoku.model.exceptions.BoardIsFullException;
+import it.units.sdm.gomoku.model.exceptions.CellAlreadyOccupiedException;
+import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
+import it.units.sdm.gomoku.model.exceptions.GameEndedException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 
@@ -60,7 +63,7 @@ public class CPUPlayer extends Player {
     }
 
     @Override
-    public void makeMove() throws NoGameSetException {
+    public void makeMove() {
         Coordinates nextMoveToMake = null;
         try {
             Thread.sleep(DELAY_BEFORE_PLACING_STONE_MILLIS);

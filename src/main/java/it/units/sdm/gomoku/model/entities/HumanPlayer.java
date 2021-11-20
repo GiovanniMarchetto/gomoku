@@ -1,6 +1,9 @@
 package it.units.sdm.gomoku.model.entities;
 
-import it.units.sdm.gomoku.model.exceptions.*;
+import it.units.sdm.gomoku.model.exceptions.BoardIsFullException;
+import it.units.sdm.gomoku.model.exceptions.CellAlreadyOccupiedException;
+import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
+import it.units.sdm.gomoku.model.exceptions.GameEndedException;
 import org.jetbrains.annotations.NotNull;
 
 public class HumanPlayer extends Player {
@@ -11,11 +14,11 @@ public class HumanPlayer extends Player {
     }
 
     @Override
-    public void makeMove() throws NoGameSetException, BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {  // TODO: test + refactor
+    public void makeMove() throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {  // TODO: test + refactor
         setCoordinatesRequired(true);
         try {
             super.makeMove();
-        } catch (NoGameSetException | BoardIsFullException | GameEndedException | CellOutOfBoardException | CellAlreadyOccupiedException e) {
+        } catch (BoardIsFullException | GameEndedException | CellOutOfBoardException | CellAlreadyOccupiedException e) {
             throw e;
         } finally {
             setCoordinatesRequired(false);

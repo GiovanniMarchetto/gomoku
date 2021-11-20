@@ -88,7 +88,7 @@ public abstract class MainViewmodel extends Viewmodel {
                         Utility.runOnSeparateThread(() -> {
                             try {
                                 Objects.requireNonNull(currentPlayerProperty.getPropertyValue()).makeMove();
-                            } catch (NoGameSetException | BoardIsFullException | GameEndedException e) {
+                            } catch (BoardIsFullException | GameEndedException e) {
                                 Utility.getLoggerOfClass(getClass())
                                         .log(Level.SEVERE, "Error with current player property: " + e.getMessage(), e);
                                 throw new IllegalStateException(e);

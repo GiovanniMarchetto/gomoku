@@ -32,17 +32,20 @@ public abstract class Player implements Observable {
         this.coordinatesRequiredToContinueProperty = new ObservablePropertySettable<>(false);
     }
 
-    public void makeMove() throws NoGameSetException, BoardIsFullException,
+    public void makeMove() throws BoardIsFullException,
             GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException { // TODO : test
-
+        if (currentGame == null) {
+            throw new IllegalStateException(new NoGameSetException());
+        }
         Coordinates nextMove = Objects.requireNonNull(nextMoveBuffer.getAndRemoveLastElement());
-        Objects.requireNonNull(currentGame).placeStoneAndChangeTurn(nextMove);
+        currentGame.placeStoneAndChangeTurn(nextMove);
     }
 
     public synchronized void setMoveToBeMade(@NotNull final Coordinates nextMoveToMake)
             throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException { // TODO: test
-
-        Objects.requireNonNull(currentGame);
+        if (currentGame == null) {
+            throw new IllegalStateException(new NoGameSetException());
+        }
         Objects.requireNonNull(nextMoveToMake);
 
         if (currentGame.isEmptyCoordinatesOnBoard(nextMoveToMake)) {
