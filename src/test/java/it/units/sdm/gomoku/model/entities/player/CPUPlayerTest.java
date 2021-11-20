@@ -5,6 +5,10 @@ import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 public class CPUPlayerTest {    // TODO: resee this class
@@ -12,13 +16,19 @@ public class CPUPlayerTest {    // TODO: resee this class
     public static final int NUMBER_OF_REPETITION = 10;
     private static final PositiveInteger BOARD_SIZE_5 = new PositiveInteger(5);
     private static final PositiveInteger BOARD_SIZE_4 = new PositiveInteger(4);
-    private static Board board = null;
     private static final Color cpuStoneColor = Color.BLACK;
+    private static Board board = null;
     private final CPUPlayer cpuPlayer = new CPUPlayer("cpuPlayer");
 
     @BeforeAll
     static void resetBoard() {
         board = new Board(BOARD_SIZE_5);
+    }
+
+    @ParameterizedTest
+    @CsvSource({"foo,false", "-1,false", "-0.1,false", "0,true", "0.5,true", "1,true", "1.0,true", "1.05,false", "8,false"})
+    void validateStringIfIsSkillFactor(String input, boolean validSkillFactor) {
+        assertEquals(validSkillFactor, CPUPlayer.isValidSkillFactorFromString(input));
     }
 
 //    private void checkAndOccupyCell(int x, int y, Coordinates actual) {   // TODO: re-see this tests
