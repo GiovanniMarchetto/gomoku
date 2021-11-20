@@ -38,9 +38,10 @@ class PlayerTest {
         game.start();
     }
 
-    @Test
-    void dontMakeMoveIfGameNotSet() {
-        // TODO
+    @NotNull
+    private static Buffer<Coordinates> getNextMoveBuffer(@NotNull final Player player) throws NoSuchFieldException, IllegalAccessException {
+        //noinspection unchecked    // buffer for moves contains coordinates
+        return (Buffer<Coordinates>) Objects.requireNonNull(TestUtility.getFieldValue("nextMoveBuffer", Objects.requireNonNull(player)));
     }
 
     @Test
@@ -54,10 +55,25 @@ class PlayerTest {
     }
 
     @Test
+    void dontMakeMoveIfGameNotSet() throws NoSuchFieldException, IllegalAccessException, BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
+        Player playerWithNoGameSet = new FakePlayer(SAMPLE_NAME);
+        Buffer<Coordinates> bufferWithMoveOfPlayer = getNextMoveBuffer(playerWithNoGameSet);
+        assert bufferWithMoveOfPlayer.isEmpty();
+        bufferWithMoveOfPlayer.insert(SAMPLE_VALID_COORDINATES);
+        assert bufferWithMoveOfPlayer.getNumberOfElements() == 1;
+        boolean catchedException = false;
+        try {
+            playerWithNoGameSet.makeMove();
+        } catch (IllegalStateException e) {
+            catchedException = true;
+        }
+        assertTrue(catchedException);   // TODO: code duplication with dontRegisterMoveFromUserIfGameNotSet
+    }
+
+    @Test
     void registerMoveFromUserIfValidCoordinates() throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException, NoSuchFieldException, IllegalAccessException {
         player.setMoveToBeMade(SAMPLE_VALID_COORDINATES);
-        Buffer<?> bufferOfPlayer = ((Buffer<?>) TestUtility.getFieldValue("nextMoveBuffer", player));
-        assert bufferOfPlayer != null;
+        Buffer<?> bufferOfPlayer = getNextMoveBuffer(player);
         assertEquals(SAMPLE_VALID_COORDINATES, bufferOfPlayer.getAndRemoveLastElement());
     }
 
@@ -77,7 +93,9 @@ class PlayerTest {
     void dontRegisterMoveFromUserIfMoveIsNull() throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
         boolean catchedException = false;
         try {
-            player.setMoveToBeMade(null);
+            Coordinates invalidMove = null;
+            //noinspection ConstantConditions   // test for invalid moves
+            player.setMoveToBeMade(invalidMove);
         } catch (NullPointerException e) {
             catchedException = true;
         }
