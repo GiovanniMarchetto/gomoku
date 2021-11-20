@@ -1,6 +1,6 @@
 package it.units.sdm.gomoku.property_change_handlers;
 
-import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyThatCanSetPropertyValueAndFireEvents;
+import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertySettable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +12,7 @@ class PropertyObserverTest {
     private final String changeValue = "change";
     private final String startRelatedValue = "bingo";
     private String related;
-    private final ObservablePropertyThatCanSetPropertyValueAndFireEvents<String> observable = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>(startObservableValue);
+    private final ObservablePropertySettable<String> observable = new ObservablePropertySettable<>(startObservableValue);
 
     @BeforeEach
     void setup() {

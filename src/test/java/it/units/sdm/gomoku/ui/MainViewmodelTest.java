@@ -8,7 +8,7 @@ import it.units.sdm.gomoku.model.exceptions.CellAlreadyOccupiedException;
 import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
 import it.units.sdm.gomoku.model.exceptions.GameEndedException;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservableProperty;
-import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyThatCanSetPropertyValueAndFireEvents;
+import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertySettable;
 import it.units.sdm.gomoku.utils.TestUtility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -216,8 +216,8 @@ class MainViewmodelTest {
         mainViewmodel.startNewMatch();
         try {
             @SuppressWarnings("unchecked")
-            ObservablePropertyThatCanSetPropertyValueAndFireEvents<Boolean> userMustPlaceNewStoneProperty =
-                    (ObservablePropertyThatCanSetPropertyValueAndFireEvents<Boolean>) TestUtility.getFieldValue("userMustPlaceNewStoneProperty", mainViewmodel);
+            ObservablePropertySettable<Boolean> userMustPlaceNewStoneProperty =
+                    (ObservablePropertySettable<Boolean>) TestUtility.getFieldValue("userMustPlaceNewStoneProperty", mainViewmodel);
             assert userMustPlaceNewStoneProperty != null;
             TestUtility.setFieldValue("value", false,
                     Objects.requireNonNull(TestUtility.getFieldValue("propertyValueContainer", userMustPlaceNewStoneProperty)));
@@ -266,8 +266,8 @@ class MainViewmodelTest {
         separateThreadWhichWaitForCurrentGameToBeSet.join();
 
         @SuppressWarnings("unchecked")
-        ObservablePropertyThatCanSetPropertyValueAndFireEvents<Boolean> userMustPlaceNewStoneProperty =
-                (ObservablePropertyThatCanSetPropertyValueAndFireEvents<Boolean>) TestUtility.getFieldValue(
+        ObservablePropertySettable<Boolean> userMustPlaceNewStoneProperty =
+                (ObservablePropertySettable<Boolean>) TestUtility.getFieldValue(
                         "userMustPlaceNewStoneProperty", mainViewmodel);
         assert userMustPlaceNewStoneProperty != null;
         TestUtility.setFieldValue("value", true,

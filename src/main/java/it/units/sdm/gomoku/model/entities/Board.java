@@ -11,7 +11,7 @@ import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
 import it.units.sdm.gomoku.mvvm_library.Observable;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservableProperty;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyProxy;
-import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyThatCanSetPropertyValueAndFireEvents;
+import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertySettable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,7 +36,7 @@ public class Board implements Observable, Serializable {
     @NotNull
     private final Cell[][] matrix;
     @NotNull
-    private final ObservablePropertyThatCanSetPropertyValueAndFireEvents<Coordinates> lastMoveCoordinatesProperty;
+    private final ObservablePropertySettable<Coordinates> lastMoveCoordinatesProperty;
 
     @NotNull
     public static final Function<Stream<Stream<Cell>>, IntStream> groupCellStreamStreamByStoneToIntStreamOfMaxNumberSameColorStones =
@@ -63,7 +63,7 @@ public class Board implements Observable, Serializable {
         this.matrix = IntStream.range(0, size.intValue())
                 .mapToObj(i -> IntStream.range(0, size.intValue()).mapToObj(j -> new Cell()).toArray(Cell[]::new))
                 .toArray(Cell[][]::new);
-        this.lastMoveCoordinatesProperty = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>();
+        this.lastMoveCoordinatesProperty = new ObservablePropertySettable<>();
     }
 
     public Board(@PositiveIntegerType int size) {

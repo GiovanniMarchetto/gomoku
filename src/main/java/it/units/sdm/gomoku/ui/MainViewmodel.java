@@ -10,7 +10,7 @@ import it.units.sdm.gomoku.mvvm_library.Viewmodel;
 import it.units.sdm.gomoku.property_change_handlers.PropertyObserver;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservableProperty;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyProxy;
-import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyThatCanSetPropertyValueAndFireEvents;
+import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertySettable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,13 +26,13 @@ import java.util.stream.Stream;
 public abstract class MainViewmodel extends Viewmodel {
 
     @NotNull
-    private final ObservablePropertyThatCanSetPropertyValueAndFireEvents<Player> currentPlayerProperty;
+    private final ObservablePropertySettable<Player> currentPlayerProperty;
     @NotNull
-    private final ObservablePropertyThatCanSetPropertyValueAndFireEvents<Game.Status> currentGameStatusProperty;
+    private final ObservablePropertySettable<Game.Status> currentGameStatusProperty;
     @NotNull
-    private final ObservablePropertyThatCanSetPropertyValueAndFireEvents<Boolean> userMustPlaceNewStoneProperty;
+    private final ObservablePropertySettable<Boolean> userMustPlaceNewStoneProperty;
     @NotNull
-    private final ObservablePropertyThatCanSetPropertyValueAndFireEvents<Coordinates> lastMoveCoordinatesProperty;
+    private final ObservablePropertySettable<Coordinates> lastMoveCoordinatesProperty;
     @NotNull
     private final List<PropertyObserver<?>> modelPropertyObservers;
     @Nullable
@@ -43,10 +43,10 @@ public abstract class MainViewmodel extends Viewmodel {
     private Board currentBoard;
 
     public MainViewmodel() {
-        this.currentPlayerProperty = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>();
-        this.currentGameStatusProperty = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>();
-        this.userMustPlaceNewStoneProperty = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>();
-        this.lastMoveCoordinatesProperty = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>();
+        this.currentPlayerProperty = new ObservablePropertySettable<>();
+        this.currentGameStatusProperty = new ObservablePropertySettable<>();
+        this.userMustPlaceNewStoneProperty = new ObservablePropertySettable<>();
+        this.lastMoveCoordinatesProperty = new ObservablePropertySettable<>();
         this.modelPropertyObservers = new ArrayList<>();
     }
 

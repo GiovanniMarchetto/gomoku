@@ -10,7 +10,7 @@ import it.units.sdm.gomoku.model.entities.Cell;
 import it.units.sdm.gomoku.model.exceptions.BoardIsFullException;
 import it.units.sdm.gomoku.model.exceptions.CellAlreadyOccupiedException;
 import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
-import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyThatCanSetPropertyValueAndFireEvents;
+import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertySettable;
 import it.units.sdm.gomoku.utils.TestUtility;
 import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -247,7 +247,7 @@ public class BoardTest {
     void getLastMoveCoordinatesProperty() {
         try {
             @SuppressWarnings("unchecked")
-            ObservablePropertyThatCanSetPropertyValueAndFireEvents<Coordinates> expected = (ObservablePropertyThatCanSetPropertyValueAndFireEvents<Coordinates>)
+            ObservablePropertySettable<Coordinates> expected = (ObservablePropertySettable<Coordinates>)
                     TestUtility.getFieldValue("lastMoveCoordinatesProperty", board);
             assertEquals(expected, board.getLastMoveCoordinatesProperty());
         } catch (NoSuchFieldException | IllegalAccessException e) {

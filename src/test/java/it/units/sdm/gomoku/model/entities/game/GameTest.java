@@ -8,7 +8,7 @@ import it.units.sdm.gomoku.model.entities.Game;
 import it.units.sdm.gomoku.model.entities.Player;
 import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
 import it.units.sdm.gomoku.model.exceptions.GameNotEndedException;
-import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyThatCanSetPropertyValueAndFireEvents;
+import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertySettable;
 import it.units.sdm.gomoku.utils.TestUtility;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,7 +41,7 @@ class GameTest {
         try {
             Field gameStatusField = TestUtility.getFieldAlreadyMadeAccessible(Game.class, "gameStatusProperty");
             @SuppressWarnings("unchecked")
-            ObservablePropertyThatCanSetPropertyValueAndFireEvents<Game.Status> gameStatusProperty = (ObservablePropertyThatCanSetPropertyValueAndFireEvents<Game.Status>) gameStatusField.get(game);
+            ObservablePropertySettable<Game.Status> gameStatusProperty = (ObservablePropertySettable<Game.Status>) gameStatusField.get(game);
             assertEquals(gameStatusProperty, game.getGameStatusProperty());
         } catch (NoSuchFieldException | IllegalAccessException e) {
             fail(e);
@@ -64,7 +64,7 @@ class GameTest {
         try {
             Field currentPlayerField = TestUtility.getFieldAlreadyMadeAccessible(Game.class, "currentPlayerProperty");
             @SuppressWarnings("unchecked")
-            ObservablePropertyThatCanSetPropertyValueAndFireEvents<Player> currentPlayerProperty = (ObservablePropertyThatCanSetPropertyValueAndFireEvents<Player>) currentPlayerField.get(game);
+            ObservablePropertySettable<Player> currentPlayerProperty = (ObservablePropertySettable<Player>) currentPlayerField.get(game);
             assertEquals(currentPlayerProperty, game.getCurrentPlayerProperty());
         } catch (NoSuchFieldException | IllegalAccessException e) {
             fail(e);

@@ -1,6 +1,6 @@
 package it.units.sdm.gomoku.property_change_handlers;
 
-import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyThatCanSetPropertyValueAndFireEvents;
+import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertySettable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -10,12 +10,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PropertyObserverBooleanTest {
-    ObservablePropertyThatCanSetPropertyValueAndFireEvents<Boolean> observable;
+    ObservablePropertySettable<Boolean> observable;
     AtomicBoolean valueToChange;
 
     @BeforeEach
     void setup() {
-        observable = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>(false);
+        observable = new ObservablePropertySettable<>(false);
         valueToChange = new AtomicBoolean(false);
 
         new PropertyObserver<>(

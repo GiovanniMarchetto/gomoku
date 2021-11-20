@@ -3,7 +3,7 @@ package it.units.sdm.gomoku.ui.gui.views;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.mvvm_library.Observable;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyProxy;
-import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyThatCanSetPropertyValueAndFireEvents;
+import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertySettable;
 import it.units.sdm.gomoku.ui.gui.viewmodels.GUIMainViewmodel;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
@@ -20,7 +20,7 @@ public class GomokuGridManager implements Observable {
 
 
     @NotNull
-    private final ObservablePropertyThatCanSetPropertyValueAndFireEvents<Double> gomokuStoneRadiusProperty;
+    private final ObservablePropertySettable<Double> gomokuStoneRadiusProperty;
 
     //TODO : add nullable/notnull annotations
 
@@ -37,7 +37,7 @@ public class GomokuGridManager implements Observable {
         this.parentPane = parentPane;
         this.discardWidth = discardWidth;
         this.discardHeight = discardHeight;
-        gomokuStoneRadiusProperty = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>();
+        gomokuStoneRadiusProperty = new ObservablePropertySettable<>();
         gridPane = new GridPane();
 
         parentPane.heightProperty().addListener(onPaneSizeChange());

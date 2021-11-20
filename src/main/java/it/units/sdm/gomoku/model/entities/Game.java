@@ -7,7 +7,7 @@ import it.units.sdm.gomoku.model.exceptions.*;
 import it.units.sdm.gomoku.mvvm_library.Observable;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservableProperty;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyProxy;
-import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyThatCanSetPropertyValueAndFireEvents;
+import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertySettable;
 import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,9 +29,9 @@ public class Game implements Comparable<Game>, Observable {
     @NotNull
     public static final PositiveInteger NUMBER_OF_CONSECUTIVE_STONE_FOR_WINNING = new PositiveInteger(5);
     @NotNull
-    private final ObservablePropertyThatCanSetPropertyValueAndFireEvents<Status> gameStatusProperty;
+    private final ObservablePropertySettable<Status> gameStatusProperty;
     @NotNull
-    private final ObservablePropertyThatCanSetPropertyValueAndFireEvents<Player> currentPlayerProperty;
+    private final ObservablePropertySettable<Player> currentPlayerProperty;
     @NotNull
     private final Board board;
     @NotNull
@@ -47,8 +47,8 @@ public class Game implements Comparable<Game>, Observable {
         this.board = new Board(Objects.requireNonNull(boardSize));
         this.blackPlayer = Objects.requireNonNull(blackPlayer);
         this.whitePlayer = Objects.requireNonNull(whitePlayer);
-        this.currentPlayerProperty = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>();
-        this.gameStatusProperty = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>();
+        this.currentPlayerProperty = new ObservablePropertySettable<>();
+        this.gameStatusProperty = new ObservablePropertySettable<>();
         this.start = Instant.now();
     }
 

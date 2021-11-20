@@ -7,7 +7,7 @@ import it.units.sdm.gomoku.model.exceptions.*;
 import it.units.sdm.gomoku.mvvm_library.Observable;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservableProperty;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyProxy;
-import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyThatCanSetPropertyValueAndFireEvents;
+import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertySettable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,14 +22,14 @@ public abstract class Player implements Observable {
     @NotNull
     private final Buffer<Coordinates> nextMoveBuffer;
     @NotNull
-    private final ObservablePropertyThatCanSetPropertyValueAndFireEvents<Boolean> coordinatesRequiredToContinueProperty;
+    private final ObservablePropertySettable<Boolean> coordinatesRequiredToContinueProperty;
     @Nullable
     private Game currentGame;
 
     protected Player(@NotNull final String playerName) {
         this.nextMoveBuffer = new Buffer<>(NUMBER_OF_MOVES_THAT_A_PLAYER_CAN_DO_IN_ONE_TURN);
         this.name = Objects.requireNonNull(playerName);
-        this.coordinatesRequiredToContinueProperty = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>(false);
+        this.coordinatesRequiredToContinueProperty = new ObservablePropertySettable<>(false);
     }
 
     public synchronized void setNextMove(@NotNull final Coordinates nextMoveToMake)
