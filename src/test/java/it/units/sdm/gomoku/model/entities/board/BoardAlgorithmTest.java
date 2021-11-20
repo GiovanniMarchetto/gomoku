@@ -1,10 +1,10 @@
 package it.units.sdm.gomoku.model.entities.board;
 
+import it.units.sdm.gomoku.model.custom_types.Color;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.entities.Cell;
-import it.units.sdm.gomoku.model.entities.Stone;
 import it.units.sdm.gomoku.model.exceptions.BoardIsFullException;
 import it.units.sdm.gomoku.model.exceptions.CellAlreadyOccupiedException;
 import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
@@ -131,7 +131,7 @@ public class BoardAlgorithmTest {
     }
 
     private void occupyAllPositionsIfValidPredicateWithGivenColor(
-            Board b, Function<Coordinates, Stone.Color> getStoneColorFromCoords, Predicate<Coordinates> predicate) {
+            Board b, Function<Coordinates, Color> getStoneColorFromCoords, Predicate<Coordinates> predicate) {
         generateCoordinates(b.getSize())
                 .filter(predicate)
                 .forEach(coords -> {

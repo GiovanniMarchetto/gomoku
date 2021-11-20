@@ -1,5 +1,6 @@
 package it.units.sdm.gomoku.model.entities;
 
+import it.units.sdm.gomoku.model.custom_types.Color;
 import it.units.sdm.gomoku.utils.TestUtility;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -13,22 +14,22 @@ class StoneTest {
     private Stone stone;
 
     @ParameterizedTest
-    @EnumSource(Stone.Color.class)
-    void isConstructorSetTheRightColor(Stone.Color color) throws NoSuchFieldException, IllegalAccessException {
+    @EnumSource(Color.class)
+    void isConstructorSetTheRightColor(Color color) throws NoSuchFieldException, IllegalAccessException {
         stone = new Stone(color);
         assertEquals(color, TestUtility.getFieldValue("color", stone));
     }
 
     @ParameterizedTest
-    @EnumSource(Stone.Color.class)
-    void isTheColorReturnedFromTheGetterTheSameSetFromTheConstructor(Stone.Color color) {
+    @EnumSource(Color.class)
+    void isTheColorReturnedFromTheGetterTheSameSetFromTheConstructor(Color color) {
         stone = new Stone(color);
         assertEquals(color, stone.getColor());
     }
 
     @ParameterizedTest
-    @EnumSource(Stone.Color.class)
-    void areEqualsTwoDistinctStonesWithTheSameColor(Stone.Color color) {
+    @EnumSource(Color.class)
+    void areEqualsTwoDistinctStonesWithTheSameColor(Color color) {
         stone = new Stone(color);
         Stone stone2 = new Stone(color);
         assertEquals(stone, stone2);
@@ -36,11 +37,11 @@ class StoneTest {
 
 
     @ParameterizedTest
-    @EnumSource(Stone.Color.class)
-    void areNotEqualsTwoDistinctStonesWithDifferentColor(Stone.Color color) {
+    @EnumSource(Color.class)
+    void areNotEqualsTwoDistinctStonesWithDifferentColor(Color color) {
         stone = new Stone(color);
-        Optional<Stone.Color> colorOptional =
-                Arrays.stream(Stone.Color.values()).filter(color1 -> color1 != color).findAny();
+        Optional<Color> colorOptional =
+                Arrays.stream(Color.values()).filter(color1 -> color1 != color).findAny();
         if (colorOptional.isPresent()) {
             Stone stone2 = new Stone(colorOptional.get());
             assertNotEquals(stone, stone2);

@@ -1,6 +1,7 @@
 package it.units.sdm.gomoku.utils;
 
 import it.units.sdm.gomoku.EnvVariables;
+import it.units.sdm.gomoku.model.custom_types.Color;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.Board;
@@ -88,7 +89,7 @@ public class TestUtility {
     private static Cell getCellFromStoneRepresentedAsString(@NotNull final String stoneColorAsString) {
         Cell cell = new Cell();
         try {
-            cell.setStoneFromColor(Stone.Color.valueOf(stoneColorAsString));
+            cell.setStoneFromColor(Color.valueOf(stoneColorAsString));
         } catch (IllegalArgumentException ignored) {
         }
         return cell;
@@ -101,8 +102,8 @@ public class TestUtility {
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
                 switch (random.nextInt(3)) {
-                    case 0 -> s.append(Stone.Color.BLACK);
-                    case 1 -> s.append(Stone.Color.WHITE);
+                    case 0 -> s.append(Color.BLACK);
+                    case 1 -> s.append(Color.WHITE);
                     default -> s.append("null");
                 }
                 if (j < N - 1) {
@@ -192,7 +193,7 @@ public class TestUtility {
     @NotNull
     private static Map<Stone, Integer> getHowManyStonesPerColorAsMapStartingFromStringRepresentingTheMatrixInCSVFormat(@NotNull final String boardAsStringMatrix) {
         Stone[] possibleStoneTypes_equivalencyClass =
-                new Stone[]{new Stone(Stone.Color.BLACK), new Stone(Stone.Color.WHITE), null};
+                new Stone[]{new Stone(Color.BLACK), new Stone(Color.WHITE), null};
         return Arrays.stream(possibleStoneTypes_equivalencyClass)
                 .unordered().parallel()
                 .map(stoneType -> new AbstractMap.SimpleEntry<>(

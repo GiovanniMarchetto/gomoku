@@ -1,12 +1,12 @@
 package it.units.sdm.gomoku.model.entities.board;
 
 import it.units.sdm.gomoku.EnvVariables;
+import it.units.sdm.gomoku.model.custom_types.Color;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.entities.Cell;
-import it.units.sdm.gomoku.model.entities.Stone;
 import it.units.sdm.gomoku.model.exceptions.BoardIsFullException;
 import it.units.sdm.gomoku.model.exceptions.CellAlreadyOccupiedException;
 import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
@@ -60,7 +60,7 @@ public class BoardTest {
         return Stream.of(Arguments.of(TestUtility.createBoardFromCellMatrix(boardMatrixFromCsv)));   // TODO : provide more boards
     }
 
-    public static void tryToOccupyCoordinatesWithColor(Board board, Stone.Color color, int x, int y) {
+    public static void tryToOccupyCoordinatesWithColor(Board board, Color color, int x, int y) {
         try {
             board.occupyPosition(color, new Coordinates(x, y));
         } catch (CellAlreadyOccupiedException | BoardIsFullException | CellOutOfBoardException e) {
@@ -113,7 +113,7 @@ public class BoardTest {
     }
 
     public static void occupyNEmptyCellsOnTheGivenBoardBoardWithGivenColor(
-            @NotNull final Board board, int numberOfEmptyCellsToOccupy, @NotNull final Stone.Color stoneColor)
+            @NotNull final Board board, int numberOfEmptyCellsToOccupy, @NotNull final Color stoneColor)
             throws NoSuchFieldException, IllegalAccessException {// TODO: test
         synchronized (Objects.requireNonNull(board)) {
             assert isThereEnoughEmptySpaceOnBoard(board, numberOfEmptyCellsToOccupy);
@@ -147,7 +147,7 @@ public class BoardTest {
                         getNEmptyPositionsRandomlyTakenFromGivenBoard(1, board)
                                 .findAny()
                                 .orElseThrow(BoardIsFullException::new);
-                tryToOccupyCoordinatesWithColor(board, Stone.Color.BLACK,
+                tryToOccupyCoordinatesWithColor(board, Color.BLACK,
                         coordinatesToOccupy.getX(), coordinatesToOccupy.getY());
                 return coordinatesToOccupy;
             } catch (BoardIsFullException e) {
@@ -171,8 +171,8 @@ public class BoardTest {
     private Board setupForTestEquals() {
         board = new Board(BOARD_SIZE);
         Board board2 = new Board(board);
-        tryToOccupyCoordinatesWithColor(board, Stone.Color.BLACK, 0, 0);
-        tryToOccupyCoordinatesWithColor(board2, Stone.Color.WHITE, 0, 0);
+        tryToOccupyCoordinatesWithColor(board, Color.BLACK, 0, 0);
+        tryToOccupyCoordinatesWithColor(board2, Color.WHITE, 0, 0);
         return board2;
     }
     //endregion Support Methods
@@ -337,7 +337,7 @@ public class BoardTest {
         try {
             Coordinates coordinates = new Coordinates(x, y);
             try {
-                Stone.Color stoneColor = Stone.Color.BLACK;
+                Color stoneColor = Color.BLACK;
                 board.occupyPosition(stoneColor, coordinates);
                 Cell cell = board.getCellAtCoordinates(coordinates);
                 //noinspection ConstantConditions //check before
@@ -384,15 +384,15 @@ public class BoardTest {
     @Test
     void testEqualsWithDifferentNumberOfFilledPosition() {
         Board board2 = setupForTestEquals();
-        tryToOccupyCoordinatesWithColor(board, Stone.Color.BLACK, 0, 1);
+        tryToOccupyCoordinatesWithColor(board, Color.BLACK, 0, 1);
         assertNotEquals(board2, board);
     }
 
     @Test
     void testEqualsWithDifferentLastMoveCoordinatesProperty() {
         Board board2 = setupForTestEquals();
-        tryToOccupyCoordinatesWithColor(board, Stone.Color.BLACK, 0, 1);
-        tryToOccupyCoordinatesWithColor(board2, Stone.Color.WHITE, 0, 2);
+        tryToOccupyCoordinatesWithColor(board, Color.BLACK, 0, 1);
+        tryToOccupyCoordinatesWithColor(board2, Color.WHITE, 0, 2);
         assertNotEquals(board2, board);
     }
 

@@ -1,7 +1,11 @@
 package it.units.sdm.gomoku.model.entities.game;
 
+import it.units.sdm.gomoku.model.custom_types.Color;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
-import it.units.sdm.gomoku.model.entities.*;
+import it.units.sdm.gomoku.model.entities.Board;
+import it.units.sdm.gomoku.model.entities.CPUPlayer;
+import it.units.sdm.gomoku.model.entities.Game;
+import it.units.sdm.gomoku.model.entities.Player;
 import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
 import it.units.sdm.gomoku.model.exceptions.GameNotEndedException;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyThatCanSetPropertyValueAndFireEvents;
@@ -91,12 +95,12 @@ class GameTest {
 
     @Test
     void getColorOfPlayerBlack() {
-        Assertions.assertEquals(Stone.Color.BLACK, game.getColorOfPlayer(cpuBlack));
+        Assertions.assertEquals(Color.BLACK, game.getColorOfPlayer(cpuBlack));
     }
 
     @Test
     void getColorOfPlayerWhite() {
-        assertEquals(Stone.Color.WHITE, game.getColorOfPlayer(cpuWhite));
+        assertEquals(Color.WHITE, game.getColorOfPlayer(cpuWhite));
     }
 
     @Test

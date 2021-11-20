@@ -1,5 +1,6 @@
 package it.units.sdm.gomoku.model.entities;
 
+import it.units.sdm.gomoku.model.custom_types.Color;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,7 +30,7 @@ public class Cell implements Cloneable {
         this.stone = null;
     }
 
-    public synchronized void setStoneFromColor(@NotNull Stone.Color color) {
+    public synchronized void setStoneFromColor(@NotNull Color color) {
         setStone(new Stone(Objects.requireNonNull(color)));
     }
 

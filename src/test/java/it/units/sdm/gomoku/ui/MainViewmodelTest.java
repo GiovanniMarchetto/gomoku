@@ -1,5 +1,6 @@
 package it.units.sdm.gomoku.ui;
 
+import it.units.sdm.gomoku.model.custom_types.Color;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.*;
 import it.units.sdm.gomoku.model.exceptions.BoardIsFullException;
@@ -64,7 +65,7 @@ class MainViewmodelTest {
             assertEquals(cpuPlayer1, currentPlayer);
 
             //noinspection ConstantConditions
-            assertEquals(Stone.Color.BLACK, currentGame.getColorOfPlayer(currentPlayer));
+            assertEquals(Color.BLACK, currentGame.getColorOfPlayer(currentPlayer));
         } catch (NullPointerException e) {
             fail(e);
         }

@@ -1,6 +1,7 @@
 package it.units.sdm.gomoku.model.entities;
 
 import it.units.sdm.gomoku.Utility;
+import it.units.sdm.gomoku.model.custom_types.Color;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
@@ -124,7 +125,7 @@ public class Board implements Observable, Serializable {
         }
     }
 
-    public synchronized void occupyPosition(@NotNull Stone.Color stoneColor, @NotNull Coordinates coordinates)
+    public synchronized void occupyPosition(@NotNull Color stoneColor, @NotNull Coordinates coordinates)
             throws BoardIsFullException, CellAlreadyOccupiedException, CellOutOfBoardException {
         if (isThereAnyEmptyCell()) {
             if (isCellEmpty(Objects.requireNonNull(coordinates))) {
@@ -143,7 +144,7 @@ public class Board implements Observable, Serializable {
         return getCellAtCoordinates(Objects.requireNonNull(coordinates)).isEmpty();
     }
 
-    private synchronized void setStoneAtCoordinates(@NotNull final Coordinates coordinates, @NotNull Stone.Color stoneColor)
+    private synchronized void setStoneAtCoordinates(@NotNull final Coordinates coordinates, @NotNull Color stoneColor)
             throws CellOutOfBoardException {
         if (isCoordinatesInsideBoard(Objects.requireNonNull(coordinates))) {
             getCellAtCoordinates(coordinates).setStoneFromColor(stoneColor);

@@ -1,5 +1,6 @@
 package it.units.sdm.gomoku.model.entities;
 
+import it.units.sdm.gomoku.model.custom_types.Color;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.utils.TestUtility;
 import org.junit.jupiter.api.BeforeAll;
@@ -15,8 +16,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CellTest { // TODO: rethink this
 
-    private static final Stone blackStone = new Stone(Stone.Color.BLACK);
-    private static final Stone whiteStone = new Stone(Stone.Color.WHITE);
+    private static final Stone blackStone = new Stone(Color.BLACK);
+    private static final Stone whiteStone = new Stone(Color.WHITE);
     private static final Cell emptyCell = new Cell();
     private static final Cell blackCell = new Cell();
     private static final Cell whiteCell = new Cell();

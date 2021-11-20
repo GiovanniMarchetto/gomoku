@@ -1,7 +1,7 @@
 package it.units.sdm.gomoku.utils;
 
+import it.units.sdm.gomoku.model.custom_types.Color;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
-import it.units.sdm.gomoku.model.entities.Stone;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -12,7 +12,7 @@ import static it.units.sdm.gomoku.model.custom_types.NonNegativeInteger.NonNegat
 public class ArgumentsToTestCheckNConsecutiveStones_ObjectRepresentation {
     // TODO : refactoring needed
 
-    private final Stone.Color[][] matrix;
+    private final Color[][] matrix;
     private final Coordinates coordinates;
     private final boolean isGameEndedExpected;
 
@@ -23,8 +23,8 @@ public class ArgumentsToTestCheckNConsecutiveStones_ObjectRepresentation {
         if (Predicates.isSquareMatrixOfGivenSize.test(matrixOfStonesAsString, matrixOfStonesAsString.length)) {
             // TODO : resee this and eventually delete
 
-            Map<Character, Stone.Color> correspondence_firstChar_Stone =
-                    Arrays.stream(Stone.Color.values())
+            Map<Character, Color> correspondence_firstChar_Stone =
+                    Arrays.stream(Color.values())
                             .map(enumValue -> new AbstractMap.SimpleEntry<>(enumValue.toString().charAt(0), enumValue))
                             .collect(Collectors.toConcurrentMap(Map.Entry::getKey, Map.Entry::getValue));
 
@@ -32,8 +32,8 @@ public class ArgumentsToTestCheckNConsecutiveStones_ObjectRepresentation {
                 this.matrix = Arrays.stream(matrixOfStonesAsString)
                         .map(aRow -> Arrays.stream(aRow)
                                 .map(aCellAsString -> correspondence_firstChar_Stone.get(aCellAsString.charAt(0)))
-                                .toArray(Stone.Color[]::new))
-                        .toArray(Stone.Color[][]::new);
+                                .toArray(Color[]::new))
+                        .toArray(Color[][]::new);
 
                 this.coordinates = new Coordinates(xCoordinateOfLastMove, yCoordinateOfLastMove);
                 this.isGameEndedExpected = isGameEndedExpected;

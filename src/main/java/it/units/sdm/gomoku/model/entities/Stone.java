@@ -1,10 +1,9 @@
 package it.units.sdm.gomoku.model.entities;
 
+import it.units.sdm.gomoku.model.custom_types.Color;
 import org.jetbrains.annotations.NotNull;
 
 public class Stone {
-
-    public enum Color {BLACK, WHITE}
 
     @NotNull
     public final Color color;
