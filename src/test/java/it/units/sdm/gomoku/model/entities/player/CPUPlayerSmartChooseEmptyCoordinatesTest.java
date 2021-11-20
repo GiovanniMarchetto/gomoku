@@ -23,7 +23,7 @@ public class CPUPlayerSmartChooseEmptyCoordinatesTest { //   TODO: re-see this c
     private static final int BOARD_SIZE = 5;
     private static Game game;
     private final CPUPlayer cpuPlayer = new CPUPlayer();
-    private final CPUPlayer cpuPlayerNaive = new CPUPlayer("Naive", 1.0);
+    private final CPUPlayer cpuPlayerNaive = new CPUPlayer("Naive", 0.0);
 
     @BeforeEach
     void setUp() {

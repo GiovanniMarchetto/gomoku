@@ -27,9 +27,9 @@ public class StartViewmodel extends Viewmodel {
     private volatile String player1Name;    // TODO : volatile fields?
     private volatile String player2Name;
     private volatile boolean player1CPU;
-    private volatile double player1CPUNaivety;
+    private volatile String player1CPUSkillFactor;
     private volatile boolean player2CPU;
-    private volatile double player2CPUNaivety;
+    private volatile String player2CPUSkillFactor;
     private volatile String selectedBoardSize;
     private volatile String numberOfGames;
 
@@ -42,8 +42,8 @@ public class StartViewmodel extends Viewmodel {
     }
 
     private Setup createSetup() {
-        Player player1 = isPlayer1CPU() ? new CPUPlayer(getPlayer1Name(), player1CPUNaivety) : new HumanPlayer(getPlayer1Name());
-        Player player2 = isPlayer2CPU() ? new CPUPlayer(getPlayer2Name(), player2CPUNaivety) : new HumanPlayer(getPlayer2Name());
+        Player player1 = isPlayer1CPU() ? new CPUPlayer(getPlayer1Name(), Double.parseDouble(player1CPUSkillFactor)) : new HumanPlayer(getPlayer1Name());
+        Player player2 = isPlayer2CPU() ? new CPUPlayer(getPlayer2Name(), Double.parseDouble(player2CPUSkillFactor)) : new HumanPlayer(getPlayer2Name());
         return new Setup(player1, player2, new PositiveInteger(Integer.parseInt(getNumberOfGames())), getSelectedBoardSizeValue());
     }
 
@@ -72,12 +72,12 @@ public class StartViewmodel extends Viewmodel {
         this.player1CPU = player1CPU;
     }
 
-    public double getPlayer1CPUNaivety() {
-        return player1CPUNaivety;
+    public String getPlayer1CPUSkillFactor() {
+        return player1CPUSkillFactor;
     }
 
-    public void setPlayer1CPUNaivety(double player1CPUNaivety) {
-        this.player1CPUNaivety = player1CPUNaivety;
+    public void setPlayer1CPUSkillFactor(@NotNull final String player1CPUSkillFactor) {
+        this.player1CPUSkillFactor = Objects.requireNonNull(player1CPUSkillFactor);
     }
 
     public boolean isPlayer2CPU() {
@@ -88,12 +88,12 @@ public class StartViewmodel extends Viewmodel {
         this.player2CPU = player2CPU;
     }
 
-    public double getPlayer2CPUNaivety() {
-        return player2CPUNaivety;
+    public String getPlayer2CPUSkillFactor() {
+        return player2CPUSkillFactor;
     }
 
-    public void setPlayer2CPUNaivety(double player2CPUNaivety) {
-        this.player2CPUNaivety = player2CPUNaivety;
+    public void setPlayer2CPUSkillFactor(@NotNull final String player2CPUSkillFactor) {
+        this.player2CPUSkillFactor = Objects.requireNonNull(player2CPUSkillFactor);
     }
 
     public String getSelectedBoardSize() {

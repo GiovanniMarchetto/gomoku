@@ -1,6 +1,7 @@
 package it.units.sdm.gomoku.ui.cli.views;
 
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
+import it.units.sdm.gomoku.model.entities.CPUPlayer;
 import it.units.sdm.gomoku.mvvm_library.View;
 import it.units.sdm.gomoku.ui.StartViewmodel;
 import it.units.sdm.gomoku.ui.cli.IOUtility;
@@ -17,35 +18,14 @@ public class CLIStartView extends View<StartViewmodel> {// TODO : refactor this 
         super(startViewmodel);
     }
 
-    @Override
-    public void onViewInitialized() {
-        super.onViewInitialized();
-
-        switch (askAndGetNumberOfPlayers()) {   // TODO : all tests are missing (see GUIStartViewTest)
-            // TODO : refactor?
-            case CPU_VS_CPU -> {
-                getViewmodelAssociatedWithView().setPlayer1Name("CPU1");
-                getViewmodelAssociatedWithView().setPlayer2Name("CPU2");
-                getViewmodelAssociatedWithView().setPlayer1CPU(true);
-                getViewmodelAssociatedWithView().setPlayer2CPU(true);
-            }
-            case PERSON_VS_CPU -> {
-                getViewmodelAssociatedWithView().setPlayer1Name(askAndGetPlayerName(1));
-                getViewmodelAssociatedWithView().setPlayer2Name("CPU");
-                getViewmodelAssociatedWithView().setPlayer1CPU(false);
-                getViewmodelAssociatedWithView().setPlayer2CPU(true);
-            }
-            case PERSON_VS_PERSON -> {
-                getViewmodelAssociatedWithView().setPlayer1Name(askAndGetPlayerName(1));
-                getViewmodelAssociatedWithView().setPlayer2Name(askAndGetPlayerName(2));
-                getViewmodelAssociatedWithView().setPlayer1CPU(false);
-                getViewmodelAssociatedWithView().setPlayer2CPU(false);
-            }
-        }
-        getViewmodelAssociatedWithView().setSelectedBoardSize(askAndGetBoardSize());
-        getViewmodelAssociatedWithView().setNumberOfGames(askAndGetNumberOfGames());
-
-        getViewmodelAssociatedWithView().createAndStartMatch();
+    private static String askAndGetCPUPlayerSkillFactor(int playerNumber) { //TODO: test
+        System.out.print("Skill factor of player " + playerNumber + ": ");
+        return IOUtility.checkInputAndGet(
+                CPUPlayer::isValidSkillFactorFromString,
+                System.out,
+                "Specify a double between " + CPUPlayer.MIN_SKILL_FACTOR
+                        + " and " + CPUPlayer.MAX_SKILL_FACTOR + " : "
+        );
     }
 
     @NotNull
@@ -95,5 +75,39 @@ public class CLIStartView extends View<StartViewmodel> {// TODO : refactor this 
                 System.out,
                 "Insert a positive integer value for the number of games: "
         );
+    }
+
+    @Override
+    public void onViewInitialized() {
+        super.onViewInitialized();
+
+        switch (askAndGetNumberOfPlayers()) {   // TODO : all tests are missing (see GUIStartViewTest)
+            // TODO : refactor
+            case CPU_VS_CPU -> {
+                getViewmodelAssociatedWithView().setPlayer1Name("CPU1");
+                getViewmodelAssociatedWithView().setPlayer1CPUSkillFactor(askAndGetCPUPlayerSkillFactor(1));
+                getViewmodelAssociatedWithView().setPlayer2Name("CPU2");
+                getViewmodelAssociatedWithView().setPlayer1CPUSkillFactor(askAndGetCPUPlayerSkillFactor(2));
+                getViewmodelAssociatedWithView().setPlayer1CPU(true);
+                getViewmodelAssociatedWithView().setPlayer2CPU(true);
+            }
+            case PERSON_VS_CPU -> {
+                getViewmodelAssociatedWithView().setPlayer1Name(askAndGetPlayerName(1));
+                getViewmodelAssociatedWithView().setPlayer2Name("CPU");
+                getViewmodelAssociatedWithView().setPlayer1CPUSkillFactor(askAndGetCPUPlayerSkillFactor(2));
+                getViewmodelAssociatedWithView().setPlayer1CPU(false);
+                getViewmodelAssociatedWithView().setPlayer2CPU(true);
+            }
+            case PERSON_VS_PERSON -> {
+                getViewmodelAssociatedWithView().setPlayer1Name(askAndGetPlayerName(1));
+                getViewmodelAssociatedWithView().setPlayer2Name(askAndGetPlayerName(2));
+                getViewmodelAssociatedWithView().setPlayer1CPU(false);
+                getViewmodelAssociatedWithView().setPlayer2CPU(false);
+            }
+        }
+        getViewmodelAssociatedWithView().setSelectedBoardSize(askAndGetBoardSize());
+        getViewmodelAssociatedWithView().setNumberOfGames(askAndGetNumberOfGames());
+
+        getViewmodelAssociatedWithView().createAndStartMatch();
     }
 }

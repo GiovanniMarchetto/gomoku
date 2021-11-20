@@ -6,6 +6,7 @@ import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.exceptions.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Range;
 
 import java.util.List;
 import java.util.Random;
@@ -14,23 +15,31 @@ import java.util.stream.IntStream;
 
 public class CPUPlayer extends Player {
 
+    public final static double MIN_SKILL_FACTOR = 0.0;
+    public final static double MAX_SKILL_FACTOR = 1.0;
     private final static int DELAY_BEFORE_PLACING_STONE_MILLIS = 200;
-    private final static int DEFAULT_NAIVETY = 0;
+    private final static int DEFAULT_SKILL_FACTOR = 1;
     @NotNull
     private final static String CPU_DEFAULT_NAME = "CPU";
     @NotNull
     private final static NonNegativeInteger numberOfCpuPlayers = new NonNegativeInteger();
-    private final double naivety;
+    private final double skillFactor;
     @NotNull
     private final Random rand = new Random();
 
-    public CPUPlayer(@NotNull String name, double naivety) {
+    public CPUPlayer(@NotNull String name,
+                     @Range(from = (int) MIN_SKILL_FACTOR, to = (int) MAX_SKILL_FACTOR) double skillFactor)
+            throws IllegalArgumentException {
         super(name);
-        this.naivety = naivety;
+        if (skillFactor >= MIN_SKILL_FACTOR && skillFactor <= MAX_SKILL_FACTOR) {
+            this.skillFactor = skillFactor;
+        } else {
+            throw new IllegalArgumentException();
+        }
     }
 
     public CPUPlayer(@NotNull String name) {
-        this(name, DEFAULT_NAIVETY);
+        this(name, DEFAULT_SKILL_FACTOR);
     }
 
     public CPUPlayer() {
@@ -59,13 +68,22 @@ public class CPUPlayer extends Player {
         }
     }
 
+    public static boolean isValidSkillFactorFromString(@NotNull final String value) {
+        try {
+            double input = Double.parseDouble(value);
+            return input >= CPUPlayer.MIN_SKILL_FACTOR && input <= CPUPlayer.MAX_SKILL_FACTOR;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
     @NotNull
     public Coordinates chooseSmartEmptyCoordinates() throws BoardIsFullException {
 
         final int MAX_CHAIN_LENGTH_TO_FIND_EXCLUDED = 5;
         final int MIN_CHAIN_LENGTH_TO_FIND_INCLUDED = 2;
 
-        if (isFirstMove() || rand.nextDouble() < naivety) {
+        if (isFirstMove() || isNaiveMove()) {
             return chooseNextEmptyCoordinatesFromCenter();
         }
 
@@ -80,6 +98,10 @@ public class CPUPlayer extends Player {
                 .toList();
 
         return smartCoordinates.size() > 0 ? smartCoordinates.get(0) : chooseNextEmptyCoordinatesFromCenter();
+    }
+
+    private boolean isNaiveMove() {
+        return rand.nextDouble() > skillFactor;
     }
 
     @NotNull
