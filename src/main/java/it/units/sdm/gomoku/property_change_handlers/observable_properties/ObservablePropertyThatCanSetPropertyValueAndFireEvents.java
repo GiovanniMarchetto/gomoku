@@ -11,14 +11,12 @@ public class ObservablePropertyThatCanSetPropertyValueAndFireEvents<PropertyValu
         super();
     }
 
-    public ObservablePropertyThatCanSetPropertyValueAndFireEvents(@NotNull final ObservablePropertyThatCanSetPropertyValueAndFireEvents<PropertyValueType> observablePropertyThatCanSetPropertyValueAndFireEvents) {
-        super(Objects.requireNonNull(observablePropertyThatCanSetPropertyValueAndFireEvents));
+    public ObservablePropertyThatCanSetPropertyValueAndFireEvents(@Nullable final PropertyValueType initialValue) {
+        super(initialValue);
     }
 
-    @Override
-    @NotNull
-    public ObservableProperty<PropertyValueType> setPropertyValueWithoutNotifying(@Nullable final PropertyValueType newPropertyValue) {
-        return super.setPropertyValueWithoutNotifying(newPropertyValue);
+    public ObservablePropertyThatCanSetPropertyValueAndFireEvents(@NotNull final ObservablePropertyThatCanSetPropertyValueAndFireEvents<PropertyValueType> observablePropertyThatCanSetPropertyValueAndFireEvents) {
+        super(Objects.requireNonNull(observablePropertyThatCanSetPropertyValueAndFireEvents));
     }
 
     @Override

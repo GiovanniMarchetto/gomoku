@@ -113,12 +113,6 @@ class ConcreteFakeObservableProperty<T> extends ObservableProperty<T> {
     }
 
     @Override
-    @NotNull
-    protected synchronized ObservableProperty<T> setPropertyValueWithoutNotifying(@Nullable T newPropertyValue) {
-        return super.setPropertyValueWithoutNotifying(newPropertyValue);
-    }
-
-    @Override
     public String toString() {
         return "ConcreteFakeObservableProperty{propertyName=" + getPropertyNameUsingReflection() +
                 ", propertyValue=" + getPropertyValueUsingReflection() + "}";

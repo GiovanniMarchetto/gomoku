@@ -218,8 +218,9 @@ class MainViewmodelTest {
             @SuppressWarnings("unchecked")
             ObservablePropertyThatCanSetPropertyValueAndFireEvents<Boolean> userMustPlaceNewStoneProperty =
                     (ObservablePropertyThatCanSetPropertyValueAndFireEvents<Boolean>) TestUtility.getFieldValue("userMustPlaceNewStoneProperty", mainViewmodel);
-            //noinspection ConstantConditions
-            userMustPlaceNewStoneProperty.setPropertyValueWithoutNotifying(false);
+            assert userMustPlaceNewStoneProperty != null;
+            TestUtility.setFieldValue("value", false,
+                    Objects.requireNonNull(TestUtility.getFieldValue("propertyValueContainer", userMustPlaceNewStoneProperty)));
             Coordinates coordinates = new Coordinates(0, 0);
             mainViewmodel.placeStoneFromUser(coordinates);
             assertTrue(mainViewmodel.getCellAtCoordinatesInCurrentBoard(coordinates).isEmpty());
@@ -268,8 +269,9 @@ class MainViewmodelTest {
         ObservablePropertyThatCanSetPropertyValueAndFireEvents<Boolean> userMustPlaceNewStoneProperty =
                 (ObservablePropertyThatCanSetPropertyValueAndFireEvents<Boolean>) TestUtility.getFieldValue(
                         "userMustPlaceNewStoneProperty", mainViewmodel);
-        //noinspection ConstantConditions
-        userMustPlaceNewStoneProperty.setPropertyValueWithoutNotifying(true);
+        assert userMustPlaceNewStoneProperty != null;
+        TestUtility.setFieldValue("value", true,
+                Objects.requireNonNull(TestUtility.getFieldValue("propertyValueContainer", userMustPlaceNewStoneProperty)));
         Coordinates coordinates = new Coordinates(0, 0);
         mainViewmodel.placeStoneFromUser(coordinates);
         Thread.sleep(100);  // TODO: rethink about the architecture_ here we have to wait for another thread (who knows which one) to update the model: is this correct?

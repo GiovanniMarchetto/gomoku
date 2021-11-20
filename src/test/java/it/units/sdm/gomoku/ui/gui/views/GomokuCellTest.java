@@ -17,8 +17,7 @@ class GomokuCellTest {
     private GomokuCell gomokuCell;
 
     void setUpGomokuCell(int x, int y) {
-        var stoneRadiusProperty = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<Double>();
-        stoneRadiusProperty.setPropertyValueWithoutNotifying(radius);
+        var stoneRadiusProperty = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>(radius);
         gomokuCell = new GomokuCell(new GUIMainViewmodel(), new Coordinates(x, y), stoneRadiusProperty, boardSize);
     }
 

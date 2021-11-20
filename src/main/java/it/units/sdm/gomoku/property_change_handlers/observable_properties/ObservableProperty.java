@@ -22,6 +22,11 @@ public abstract class ObservableProperty<PropertyValueType> implements Observabl
         this.propertyName = String.valueOf(numberOfDistinctCreatedInstances++);
     }
 
+    protected ObservableProperty(@Nullable final PropertyValueType initialValue) {
+        this();
+        this.propertyValueContainer.setValue(initialValue);
+    }
+
     protected ObservableProperty(@NotNull final ObservableProperty<PropertyValueType> observableProperty) {
         this.propertyName = observableProperty.propertyName;
         this.propertyValueContainer = observableProperty.propertyValueContainer;
@@ -30,13 +35,6 @@ public abstract class ObservableProperty<PropertyValueType> implements Observabl
     @Nullable
     public PropertyValueType getPropertyValue() {
         return propertyValueContainer.getValue();
-    }
-
-    @NotNull
-    protected synchronized ObservableProperty<PropertyValueType> setPropertyValueWithoutNotifying(
-            @Nullable final PropertyValueType newPropertyValue) {   // TODO : synchronized needed?
-        this.propertyValueContainer.setValue(newPropertyValue);
-        return this;
     }
 
     @NotNull
@@ -49,7 +47,7 @@ public abstract class ObservableProperty<PropertyValueType> implements Observabl
             @Nullable final PropertyValueType newPropertyValue) {   // TODO : synchronized needed?
         PropertyValueType oldValue = getPropertyValue();
         if (!Objects.equals(oldValue, newPropertyValue)) {
-            setPropertyValueWithoutNotifying(newPropertyValue);
+            this.propertyValueContainer.setValue(newPropertyValue);
             firePropertyChange(propertyName, oldValue, getPropertyValue());
         }
         return this;

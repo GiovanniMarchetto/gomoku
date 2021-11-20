@@ -16,6 +16,7 @@ import java.util.stream.Stream;
 
 public abstract class Player implements Observable {
 
+    private static final int NUMBER_OF_MOVES_THAT_A_PLAYER_CAN_DO_IN_ONE_TURN = 1;
     @NotNull
     private final String name;
     @NotNull
@@ -25,12 +26,10 @@ public abstract class Player implements Observable {
     @Nullable
     private Game currentGame;
 
-    protected Player(@NotNull String playerName) {
-        final int NUMBER_OF_MOVES_THAT_A_PLAYER_CAN_DO_IN_ONE_TURN = 1;
-        nextMoveBuffer = new Buffer<>(NUMBER_OF_MOVES_THAT_A_PLAYER_CAN_DO_IN_ONE_TURN);
+    protected Player(@NotNull final String playerName) {
+        this.nextMoveBuffer = new Buffer<>(NUMBER_OF_MOVES_THAT_A_PLAYER_CAN_DO_IN_ONE_TURN);
         this.name = Objects.requireNonNull(playerName);
-        coordinatesRequiredToContinueProperty = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>();
-        coordinatesRequiredToContinueProperty.setPropertyValueWithoutNotifying(false);
+        this.coordinatesRequiredToContinueProperty = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>(false);
     }
 
     public synchronized void setNextMove(@NotNull final Coordinates nextMoveToMake)
@@ -44,7 +43,8 @@ public abstract class Player implements Observable {
         }
     }
 
-    public void makeMove() throws NoGameSetException, BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {             // TODO : test
+    public void makeMove() throws NoGameSetException, BoardIsFullException,
+            GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {             // TODO : test
         Objects.requireNonNull(currentGame).placeStoneAndChangeTurn(
                 Objects.requireNonNull(nextMoveBuffer.getAndRemoveLastElement()));
     }

@@ -15,8 +15,7 @@ class PropertyObserverBooleanTest {
 
     @BeforeEach
     void setup() {
-        observable = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>();
-        observable.setPropertyValueWithoutNotifying(false);
+        observable = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>(false);
         valueToChange = new AtomicBoolean(false);
 
         new PropertyObserver<>(
@@ -47,12 +46,6 @@ class PropertyObserverBooleanTest {
     @Test
     void onNoChange() {
         observable.setPropertyValueAndFireIfPropertyChange(false);
-        assertFalse(valueToChange.get());
-    }
-
-    @Test
-    void onChangeWithoutNotify() {
-        observable.setPropertyValueWithoutNotifying(true);
         assertFalse(valueToChange.get());
     }
 

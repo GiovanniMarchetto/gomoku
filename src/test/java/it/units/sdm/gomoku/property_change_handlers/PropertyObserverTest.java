@@ -8,15 +8,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class PropertyObserverTest {
-    private final ObservablePropertyThatCanSetPropertyValueAndFireEvents<String> observable = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>();
     private final String startObservableValue = "test";
     private final String changeValue = "change";
     private final String startRelatedValue = "bingo";
     private String related;
+    private final ObservablePropertyThatCanSetPropertyValueAndFireEvents<String> observable = new ObservablePropertyThatCanSetPropertyValueAndFireEvents<>(startObservableValue);
 
     @BeforeEach
     void setup() {
-        observable.setPropertyValueWithoutNotifying(startObservableValue);
         related = startRelatedValue;
 
         new PropertyObserver<>(
@@ -50,12 +49,6 @@ class PropertyObserverTest {
     void onNoChange() {
         observable.setPropertyValueAndFireIfPropertyChange(startObservableValue);
         assertNotEquals(related, observable.getPropertyValue());
-    }
-
-    @Test
-    void onChangeWithoutNotify() {
-        observable.setPropertyValueWithoutNotifying(changeValue);
-        assertNotEquals(related,observable.getPropertyValue());
     }
 
 }

@@ -73,12 +73,6 @@ class ObservablePropertyTest {
         assertEquals(sampleString, observable.getPropertyValue());
     }
 
-    @Test
-    void setPropertyValueWithoutNotifying() {
-        observable.setPropertyValueWithoutNotifying(sampleString);
-        assertEquals(sampleString, observable.getPropertyValue());
-    }
-
     @ParameterizedTest
     @CsvSource({"a,b,true", "a,a,false"})
     void fireEventsWhenSetPropertyValueIfPropertyValueChangesAndShouldNotify(
