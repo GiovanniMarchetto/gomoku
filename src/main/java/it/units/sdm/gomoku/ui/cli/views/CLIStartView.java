@@ -19,7 +19,7 @@ public class CLIStartView extends View<StartViewmodel> {// TODO : refactor this 
     }
 
     private static String askAndGetCPUPlayerSkillFactor(int playerNumber) { //TODO: test
-        System.out.print("Skill factor of player " + playerNumber + ": ");
+        System.out.print("Skill factor of player " + playerNumber + " (between 0 and 1): ");
         return IOUtility.checkInputAndGet(
                 CPUPlayer::isValidSkillFactorFromString,
                 System.out,
