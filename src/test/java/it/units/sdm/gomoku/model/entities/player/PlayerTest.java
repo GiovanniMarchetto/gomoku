@@ -47,6 +47,17 @@ class PlayerTest {
         assertTrue(catchedException);
     }
 
+    @Test
+    void dontRegisterMoveFromUserIfMoveIsNull() throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
+        boolean catchedException = false;
+        try {
+            player.setMoveToBeMade(null);
+        } catch (NullPointerException e) {
+            catchedException = true;
+        }
+        assertTrue(catchedException);
+    }
+
     @ParameterizedTest
     @ValueSource(strings = {"Chan"})
     void createNewInstanceWithName(String playerName) {
