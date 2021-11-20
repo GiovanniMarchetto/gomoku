@@ -14,6 +14,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import static org.junit.jupiter.api.Assertions.*;
 
 class PlayerTest {
+    private final int BOARD_SIZE = 5;
     private final String name = "player";
     private final Player cpuPlayer = new CPUPlayer();
     private Player player;
@@ -22,13 +23,14 @@ class PlayerTest {
     @BeforeEach
     void setup() {
         player = new HumanPlayer(name);
-        int boardSize = 5;
-        game = new Game(boardSize, player, cpuPlayer);
+        game = new Game(BOARD_SIZE, player, cpuPlayer);
         game.start();
     }
 
     @Test
-    void getName() {
+    void isNamePassedInConstructorTheSameReturnedFromTheGetter() {
+        String name = "Chan";
+        player = new HumanPlayer(name);
         assertEquals(name, player.getName());
     }
 
