@@ -27,26 +27,32 @@ class PlayerTest {
     private final static int BOARD_SIZE = 5;
     private final static String SAMPLE_NAME = "player";
     private final static Coordinates SAMPLE_VALID_COORDINATES = new Coordinates(0, 0);
-    private Player player;
+    private Player blackPlayer;
+    private Player whitePlayer;
     private Game game;
 
-    @BeforeEach
-    void setup() {
-        player = new FakePlayer(SAMPLE_NAME);
-        game = new Game(BOARD_SIZE, player, player);
-        player.setCurrentGame(game);
-        game.start();
-    }
-
+    @SuppressWarnings("unchecked") // buffer for moves contains coordinates
     @NotNull
     private static Buffer<Coordinates> getNextMoveBuffer(@NotNull final Player player) throws NoSuchFieldException, IllegalAccessException {
-        //noinspection unchecked    // buffer for moves contains coordinates
         return (Buffer<Coordinates>) Objects.requireNonNull(TestUtility.getFieldValue("nextMoveBuffer", Objects.requireNonNull(player)));
     }
 
-    @Test
-    void makeMoveIfValid() {
-        // TODO
+    private static void insertCoordinatesInBufferOfPlayerIfBufferIsEmpty(
+            @NotNull final Coordinates coordinates, @NotNull final Player playerWithNoGameSet)
+            throws NoSuchFieldException, IllegalAccessException {
+        Buffer<Coordinates> bufferWithMoveOfPlayer = getNextMoveBuffer(Objects.requireNonNull(playerWithNoGameSet));
+        assert bufferWithMoveOfPlayer.isEmpty();
+        bufferWithMoveOfPlayer.insert(Objects.requireNonNull(coordinates));
+        assert bufferWithMoveOfPlayer.getNumberOfElements() == 1;
+    }
+
+    @BeforeEach
+    void setup() {
+        blackPlayer = new FakePlayer(SAMPLE_NAME);
+        whitePlayer = new FakePlayer(SAMPLE_NAME);
+        game = new Game(BOARD_SIZE, blackPlayer, whitePlayer);
+        blackPlayer.setCurrentGame(game);
+        game.start();
     }
 
     @Test
@@ -55,12 +61,20 @@ class PlayerTest {
     }
 
     @Test
+    void makeMoveIfValid() throws NoSuchFieldException, IllegalAccessException, CellOutOfBoardException, BoardIsFullException, GameEndedException, CellAlreadyOccupiedException {
+        insertCoordinatesInBufferOfPlayerIfBufferIsEmpty(SAMPLE_VALID_COORDINATES, blackPlayer);
+        Color currentPlayerColor = game.getColorOfPlayer(blackPlayer);
+        assert currentPlayerColor.equals(Color.BLACK);
+        blackPlayer.makeMove();
+        Stone justPlaced = getCellAtCoordinates(SAMPLE_VALID_COORDINATES).getStone();   // TODO : code chain code smell=?
+        assert justPlaced != null;
+        assertEquals(justPlaced.getColor(), currentPlayerColor);
+    }
+
+    @Test
     void dontMakeMoveIfGameNotSet() throws NoSuchFieldException, IllegalAccessException, BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
         Player playerWithNoGameSet = new FakePlayer(SAMPLE_NAME);
-        Buffer<Coordinates> bufferWithMoveOfPlayer = getNextMoveBuffer(playerWithNoGameSet);
-        assert bufferWithMoveOfPlayer.isEmpty();
-        bufferWithMoveOfPlayer.insert(SAMPLE_VALID_COORDINATES);
-        assert bufferWithMoveOfPlayer.getNumberOfElements() == 1;
+        insertCoordinatesInBufferOfPlayerIfBufferIsEmpty(SAMPLE_VALID_COORDINATES, playerWithNoGameSet);
         boolean catchedException = false;
         try {
             playerWithNoGameSet.makeMove();
@@ -72,8 +86,8 @@ class PlayerTest {
 
     @Test
     void registerMoveFromUserIfValidCoordinates() throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException, NoSuchFieldException, IllegalAccessException {
-        player.setMoveToBeMade(SAMPLE_VALID_COORDINATES);
-        Buffer<?> bufferOfPlayer = getNextMoveBuffer(player);
+        blackPlayer.setMoveToBeMade(SAMPLE_VALID_COORDINATES);
+        Buffer<?> bufferOfPlayer = getNextMoveBuffer(blackPlayer);
         assertEquals(SAMPLE_VALID_COORDINATES, bufferOfPlayer.getAndRemoveLastElement());
     }
 
@@ -95,7 +109,7 @@ class PlayerTest {
         try {
             Coordinates invalidMove = null;
             //noinspection ConstantConditions   // test for invalid moves
-            player.setMoveToBeMade(invalidMove);
+            blackPlayer.setMoveToBeMade(invalidMove);
         } catch (NullPointerException e) {
             catchedException = true;
         }
@@ -111,7 +125,7 @@ class PlayerTest {
         assert justPlacedStone.getColor().equals(SAMPLE_COLOR);   // TODO : code smell message chain
         boolean catchedException = false;
         try {
-            player.setMoveToBeMade(SAMPLE_VALID_COORDINATES);
+            blackPlayer.setMoveToBeMade(SAMPLE_VALID_COORDINATES);
         } catch (CellAlreadyOccupiedException e) {
             catchedException = true;
         }
@@ -126,15 +140,15 @@ class PlayerTest {
     @ParameterizedTest
     @ValueSource(strings = {"Chan"})
     void createNewInstanceWithName(String playerName) {
-        player = new FakePlayer(playerName);
-        assertEquals(playerName, player.getName());
+        blackPlayer = new FakePlayer(playerName);
+        assertEquals(playerName, blackPlayer.getName());
     }
 
     @Test
     void testCurrentGameSetter()
             throws NoSuchFieldException, IllegalAccessException {
-        player.setCurrentGame(game);
-        assertEquals(game, TestUtility.getFieldValue("currentGame", player));
+        blackPlayer.setCurrentGame(game);
+        assertEquals(game, TestUtility.getFieldValue("currentGame", blackPlayer));
     }
 
 
@@ -150,8 +164,8 @@ class PlayerTest {
         try {
             @SuppressWarnings("unchecked")
             ObservablePropertySettable<Boolean> coordinatesRequiredToContinueProperty = (ObservablePropertySettable<Boolean>)
-                    TestUtility.getFieldValue("coordinatesRequiredToContinueProperty", player);
-            assertEquals(coordinatesRequiredToContinueProperty, player.getCoordinatesRequiredToContinueProperty());
+                    TestUtility.getFieldValue("coordinatesRequiredToContinueProperty", blackPlayer);
+            assertEquals(coordinatesRequiredToContinueProperty, blackPlayer.getCoordinatesRequiredToContinueProperty());
         } catch (NoSuchFieldException | IllegalAccessException e) {
             fail(e);
         }
@@ -159,13 +173,13 @@ class PlayerTest {
 
     @Test
     void checkCoordinatesRequiredAtStart() {
-        assertEquals(Boolean.FALSE, player.getCoordinatesRequiredToContinueProperty().getPropertyValue());
+        assertEquals(Boolean.FALSE, blackPlayer.getCoordinatesRequiredToContinueProperty().getPropertyValue());
     }
 
     @Test
     void testEquals() {
         Player player2 = new FakePlayer(SAMPLE_NAME);
-        assertEquals(player, player2);
+        assertEquals(blackPlayer, player2);
     }
 
     @Test
@@ -177,6 +191,6 @@ class PlayerTest {
 
     @Test
     void testHashCode() {
-        assertEquals(SAMPLE_NAME.hashCode(), player.hashCode());
+        assertEquals(SAMPLE_NAME.hashCode(), blackPlayer.hashCode());
     }
 }
