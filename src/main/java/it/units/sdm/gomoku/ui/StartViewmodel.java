@@ -27,7 +27,9 @@ public class StartViewmodel extends Viewmodel {
     private volatile String player1Name;    // TODO : volatile fields?
     private volatile String player2Name;
     private volatile boolean player1CPU;
+    private volatile double player1CPUNaivety;
     private volatile boolean player2CPU;
+    private volatile double player2CPUNaivety;
     private volatile String selectedBoardSize;
     private volatile String numberOfGames;
 
@@ -40,8 +42,8 @@ public class StartViewmodel extends Viewmodel {
     }
 
     private Setup createSetup() {
-        Player player1 = isPlayer1CPU() ? new CPUPlayer(getPlayer1Name()) : new HumanPlayer(getPlayer1Name());
-        Player player2 = isPlayer2CPU() ? new CPUPlayer(getPlayer2Name()) : new HumanPlayer(getPlayer2Name());
+        Player player1 = isPlayer1CPU() ? new CPUPlayer(getPlayer1Name(), player1CPUNaivety) : new HumanPlayer(getPlayer1Name());
+        Player player2 = isPlayer2CPU() ? new CPUPlayer(getPlayer2Name(), player2CPUNaivety) : new HumanPlayer(getPlayer2Name());
         return new Setup(player1, player2, new PositiveInteger(Integer.parseInt(getNumberOfGames())), getSelectedBoardSizeValue());
     }
 
@@ -70,12 +72,28 @@ public class StartViewmodel extends Viewmodel {
         this.player1CPU = player1CPU;
     }
 
+    public double getPlayer1CPUNaivety() {
+        return player1CPUNaivety;
+    }
+
+    public void setPlayer1CPUNaivety(double player1CPUNaivety) {
+        this.player1CPUNaivety = player1CPUNaivety;
+    }
+
     public boolean isPlayer2CPU() {
         return player2CPU;
     }
 
     public void setPlayer2CPU(boolean player2CPU) {
         this.player2CPU = player2CPU;
+    }
+
+    public double getPlayer2CPUNaivety() {
+        return player2CPUNaivety;
+    }
+
+    public void setPlayer2CPUNaivety(double player2CPUNaivety) {
+        this.player2CPUNaivety = player2CPUNaivety;
     }
 
     public String getSelectedBoardSize() {
