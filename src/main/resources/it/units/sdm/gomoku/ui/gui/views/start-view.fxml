@@ -29,6 +29,7 @@
           GridPane.columnIndex="0" GridPane.rowIndex="2"
           GridPane.columnSpan="3" spacing="5">
         <Label text="CPU skill:"/>
+        <!--suppress JavaFxRedundantPropertyValue -->
         <Slider fx:id="player1CPUSkillSlider"
                 showTickLabels="true"
                 majorTickUnit="10"
@@ -57,6 +58,7 @@
           GridPane.columnIndex="0" GridPane.rowIndex="4"
           GridPane.columnSpan="3" spacing="5">
         <Label text="CPU skill:"/>
+        <!--suppress JavaFxRedundantPropertyValue -->
         <Slider fx:id="player2CPUSkillSlider"
                 showTickLabels="true"
                 majorTickUnit="10"
