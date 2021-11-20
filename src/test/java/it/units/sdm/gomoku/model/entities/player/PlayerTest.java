@@ -56,8 +56,9 @@ class PlayerTest {
     }
 
     @Test
-    void changeTurnAfterAMoveIsMade() {
-        // TODO
+    void changeTurnAfterAMoveIsMade() throws BoardIsFullException, GameEndedException, CellOutOfBoardException, NoSuchFieldException, IllegalAccessException, CellAlreadyOccupiedException {
+        makeMoveIfValid();
+        assertEquals(game.getCurrentPlayerProperty().getPropertyValue(), whitePlayer);
     }
 
     @Test
