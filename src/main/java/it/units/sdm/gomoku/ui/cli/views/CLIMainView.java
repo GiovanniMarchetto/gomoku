@@ -64,8 +64,6 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
     }
 
     private void waitForAMoveOfAPlayer() throws BoardIsFullException, GameEndedException {  // TODO : not tested
-        int rowCoord, colCoord;
-
         CLIMainViewmodel viewmodel = getViewmodelAssociatedWithView();
 
         System.out.println(viewmodel.getCurrentBoardAsString());
@@ -73,30 +71,36 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
 
         System.out.println("Insert next move:");
         Coordinates coordInsertedByTheUser = null;
-        try {
-            System.out.print("\tRow coordinate: ");
-            rowCoord = IOUtility.getAIntFromStdIn();
-            System.out.print("\tColumn coordinate: ");
-            colCoord = IOUtility.getAIntFromStdIn();
-            coordInsertedByTheUser = new Coordinates(rowCoord, colCoord);
-            viewmodel.placeStoneFromUser(coordInsertedByTheUser);
-        } catch (CellOutOfBoardException e) {
-            System.out.println("Valid coordinates values are between " + 0 +
-                    " and " + (viewmodel.getBoardSize() - 1) + " included.");
-        } catch (IllegalArgumentException e) {
-            System.out.println("Invalid coordinates value.");
-        } catch (BoardIsFullException e) {
-            Logger.getLogger(getClass().getCanonicalName())
-                    .log(Level.SEVERE, "Should never happen: no more empty position" +
-                            " available on the board but game should be already ended", e);
-            throw e;
-        } catch (CellAlreadyOccupiedException e) {
-            System.out.println("The position " + coordInsertedByTheUser + " is already occupied.");
-        } catch (GameEndedException e) {
-            Logger.getLogger(getClass().getCanonicalName())
-                    .log(Level.SEVERE, "Should never happen: the game is already ended", e);
-            throw e;
+
+        boolean invalidMove = true;
+        while (invalidMove) {
+            try {
+                System.out.print("\tRow coordinate: ");
+                int rowCoord = IOUtility.getAIntFromStdIn();
+
+                System.out.print("\tColumn coordinate: ");
+                int colCoord = IOUtility.getAIntFromStdIn();
+
+                coordInsertedByTheUser = new Coordinates(rowCoord, colCoord);
+                viewmodel.placeStoneFromUser(coordInsertedByTheUser);
+                invalidMove = false;
+            } catch (CellOutOfBoardException e) {
+                System.out.println("Valid coordinates values are between " + 0 +
+                        " and " + (viewmodel.getBoardSize() - 1) + " included.");
+            } catch (IllegalArgumentException e) {
+                System.out.println("Invalid coordinates value.");
+            } catch (BoardIsFullException e) {
+                Logger.getLogger(getClass().getCanonicalName())
+                        .log(Level.SEVERE, "Should never happen: no more empty position" +
+                                " available on the board but game should be already ended", e);
+                throw e;
+            } catch (CellAlreadyOccupiedException e) {
+                System.out.println("The position " + coordInsertedByTheUser + " is already occupied.");
+            } catch (GameEndedException e) {
+                Logger.getLogger(getClass().getCanonicalName())
+                        .log(Level.SEVERE, "Should never happen: the game is already ended", e);
+                throw e;
+            }
         }
     }
-
 }
