@@ -26,7 +26,7 @@ class BufferTest {
     @NotNull
     private final static String actualBufferFieldNameInClass = "buffer";
     @NotNull
-    private final static String sizeFieldNameInClass = "size";
+    private final static String capacityFieldNameInClass = "BUFFER_CAPACITY";
 
     private final static int ARBITRARY_CHOSEN_SIZE = 10;
     private final static int REASONABLE_MILLISECS_TO_PERMIT_THREAD_TO_START = 100;   // TODO: this kind of params are often used in test: might they be env variables?
@@ -63,7 +63,7 @@ class BufferTest {
     private static void fillBufferWithIntegers(@NotNull final Buffer<Integer> buffer)
             throws NoSuchFieldException, IllegalAccessException {
         //noinspection ConstantConditions
-        IntStream.range(0, (int) TestUtility.getFieldValue(sizeFieldNameInClass, buffer))
+        IntStream.range(0, (int) TestUtility.getFieldValue(capacityFieldNameInClass, buffer))
                 .boxed()
                 .forEach(buffer::insert);
     }
@@ -75,13 +75,9 @@ class BufferTest {
 
     @ParameterizedTest
     @CsvFileSource(resources = EnvVariables.POSITIVE_INTS_LOWER_THAN_10000_PROVIDER_RESOURCE_LOCATION)
-    void constructorCreatesObjectWithCorrectSize(int size) {
+    void constructorCreatesObjectWithCorrectSize(int size) throws NoSuchFieldException, IllegalAccessException {
         Buffer<Integer> buffer = new Buffer<>(size);
-        try {
-            assertEquals(TestUtility.getFieldValue(sizeFieldNameInClass, buffer), size);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            fail(e);
-        }
+        assertEquals(TestUtility.getFieldValue(capacityFieldNameInClass, buffer), size);
     }
 
     @ParameterizedTest
