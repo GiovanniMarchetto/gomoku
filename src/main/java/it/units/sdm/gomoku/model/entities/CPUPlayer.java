@@ -15,21 +15,32 @@ import java.util.stream.IntStream;
 public class CPUPlayer extends Player {
 
     private final static int DELAY_BEFORE_PLACING_STONE_MILLIS = 200;
+    private final static int DEFAULT_NAIVETY = 0;
     @NotNull
     private final static String CPU_DEFAULT_NAME = "CPU";
     @NotNull
     private final static NonNegativeInteger numberOfCpuPlayers = new NonNegativeInteger();
+    private final double naivety;
     @NotNull
     private final Random rand = new Random();
 
     // TODO : add field with difficulty (e.g., a threshold as double in [0,1]: generate random in [0,1] and if generated random value is > threshold => place stone smartly, else place stone randomly/naively
 
-    public CPUPlayer(@NotNull String name) {
+    public CPUPlayer(@NotNull String name, double naivety) {
         super(name);
+        this.naivety = naivety;
+    }
+
+    public CPUPlayer(@NotNull String name) {
+        this(name, DEFAULT_NAIVETY);
     }
 
     public CPUPlayer() {
-        super(CPU_DEFAULT_NAME + numberOfCpuPlayers.incrementAndGet());
+        this(CPU_DEFAULT_NAME + numberOfCpuPlayers.incrementAndGet());
+    }
+
+    private static double getWeightRespectToCenter(int center, Coordinates coordinates) {
+        return Math.pow(center - coordinates.getX(), 2) + Math.pow(center - coordinates.getY(), 2);
     }
 
     @Override
@@ -53,12 +64,13 @@ public class CPUPlayer extends Player {
     @NotNull
     public Coordinates chooseSmartEmptyCoordinates() throws BoardIsFullException {
 
-        if (isFirstMove()) {
+        final int MAX_CHAIN_LENGTH_TO_FIND_EXCLUDED = 5;
+        final int MIN_CHAIN_LENGTH_TO_FIND_INCLUDED = 2;
+
+        if (isFirstMove() || rand.nextDouble() < naivety) {
             return chooseNextEmptyCoordinatesFromCenter();
         }
 
-        final int MAX_CHAIN_LENGTH_TO_FIND_EXCLUDED = 5;
-        final int MIN_CHAIN_LENGTH_TO_FIND_INCLUDED = 2;
         IntStream possibleChainLengths =
                 IntStream.range(MIN_CHAIN_LENGTH_TO_FIND_INCLUDED, MAX_CHAIN_LENGTH_TO_FIND_EXCLUDED)
                         .map(i -> MIN_CHAIN_LENGTH_TO_FIND_INCLUDED - i + MAX_CHAIN_LENGTH_TO_FIND_EXCLUDED - 1);
@@ -75,25 +87,12 @@ public class CPUPlayer extends Player {
     @NotNull
     public Coordinates chooseNextEmptyCoordinatesFromCenter() throws BoardIsFullException {
         int boardSize = getBoardSize();
-        double centerValue = boardSize / 2.0 - 0.5; // TODO : why -0.5?
+        int moreCenterValue = (int) Math.ceil(boardSize / 2.0) - 1;
 
         return getStreamOfEmptyCoordinatesOnBoard()
                 .min((coord1, coord2) ->
-                        (int) (getWeightRespectToCenter(centerValue, coord1) - getWeightRespectToCenter(centerValue, coord2)))
+                        (int) (getWeightRespectToCenter(moreCenterValue, coord1) - getWeightRespectToCenter(moreCenterValue, coord2)))
                 .orElseThrow(BoardIsFullException::new);
-    }
-
-//    @NotNull
-//    public Coordinates chooseRandomEmptyCoordinates() throws BoardIsFullException { // TODO: delete if not needed
-//        if (Objects.requireNonNull(getCurrentGame()).isThereAnyEmptyCellOnBoard()) {
-//            List<Coordinates> emptyCoordinates = getCurrentGame().getStreamOfEmptyCoordinatesOnBoard().toList();
-//            return emptyCoordinates.get(rand.nextInt(emptyCoordinates.size()));
-//        }
-//        throw new BoardIsFullException();
-//    }
-
-    private double getWeightRespectToCenter(double center, Coordinates coordinates) {
-        return Math.pow(Math.abs(center - coordinates.getX()), 2) + Math.pow(Math.abs(center - coordinates.getY()), 2);
     }
 }
 

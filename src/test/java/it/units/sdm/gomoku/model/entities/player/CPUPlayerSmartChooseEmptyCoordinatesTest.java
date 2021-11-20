@@ -23,13 +23,14 @@ public class CPUPlayerSmartChooseEmptyCoordinatesTest { //   TODO: re-see this c
     private static final int BOARD_SIZE = 5;
     private static Game game;
     private final CPUPlayer cpuPlayer = new CPUPlayer();
-    private final CPUPlayer cpuPlayerWhite = new CPUPlayer();
+    private final CPUPlayer cpuPlayerNaive = new CPUPlayer("Naive", 1.0);
 
     @BeforeEach
     void setUp() {
-        game = new Game(BOARD_SIZE, cpuPlayer, cpuPlayerWhite);
+        game = new Game(BOARD_SIZE, cpuPlayer, cpuPlayerNaive);
         game.start();
         cpuPlayer.setCurrentGame(game);
+        cpuPlayerNaive.setCurrentGame(game);
     }
 
     @Test
@@ -51,6 +52,20 @@ public class CPUPlayerSmartChooseEmptyCoordinatesTest { //   TODO: re-see this c
         IntStream.range(0, N).forEach(i -> occupyNStonesInARow(2, i));
         Coordinates expected = new Coordinates(N, 0);
         assertEquals(expected, cpuPlayer.chooseSmartEmptyCoordinates());
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, 1, 2, 3, BOARD_SIZE, BOARD_SIZE * BOARD_SIZE - 1})
+    void occupyStoneFromCenterIfCPUHaveMaximumNaivety(int numberOfMoves) throws BoardIsFullException {
+        IntStream.range(0, numberOfMoves).forEach(i -> {
+            try {
+                game.placeStoneAndChangeTurn(cpuPlayer.chooseNextEmptyCoordinatesFromCenter());
+            } catch (BoardIsFullException | CellAlreadyOccupiedException | GameEndedException | CellOutOfBoardException e) {
+                fail(e);
+            }
+        });
+        Coordinates expected = cpuPlayer.chooseNextEmptyCoordinatesFromCenter();
+        assertEquals(expected, cpuPlayerNaive.chooseSmartEmptyCoordinates());
     }
 
     @Test
