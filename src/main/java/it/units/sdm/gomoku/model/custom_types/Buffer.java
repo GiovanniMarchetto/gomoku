@@ -16,14 +16,19 @@ public class Buffer<ElementType> {
     @NotNull
     private final List<ElementType> buffer;
     @PositiveIntegerType
-    private final int size;
+    private final int BUFFER_CAPACITY;
 
-    public Buffer(@PositiveIntegerType int size) {
-        if (!PositiveInteger.isValid(size)) {
+    public Buffer(@PositiveIntegerType int bufferCapacity) {
+        if (!PositiveInteger.isValid(bufferCapacity)) {
             throw new IllegalArgumentException("Invalid size: it must be a positive integer.");
         }
-        this.size = size;
+        this.BUFFER_CAPACITY = bufferCapacity;
         this.buffer = new CopyOnWriteArrayList<>();
+    }
+
+    public synchronized boolean isEmpty() {
+        // TODO: TEST
+        return buffer.isEmpty();
     }
 
     @NonNegativeIntegerType
@@ -48,7 +53,7 @@ public class Buffer<ElementType> {
     }
 
     private void waitWhileTheBufferIsFull() {
-        waitWhileThereAreNElementsInBuffer(size);
+        waitWhileThereAreNElementsInBuffer(BUFFER_CAPACITY);
     }
 
     private void waitWhileTheBufferIsEmpty() {
