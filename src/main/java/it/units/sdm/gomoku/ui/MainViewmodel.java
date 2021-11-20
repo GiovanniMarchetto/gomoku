@@ -184,7 +184,7 @@ public abstract class MainViewmodel extends Viewmodel {
             throws BoardIsFullException, CellAlreadyOccupiedException, GameEndedException, CellOutOfBoardException {
         if (Boolean.TRUE.equals(userMustPlaceNewStoneProperty.getPropertyValue())) {
             Objects.requireNonNull(getCurrentPlayer())
-                    .setNextMove(Objects.requireNonNull(coordinates));
+                    .setMoveToBeMade(Objects.requireNonNull(coordinates));
         }
     }
 

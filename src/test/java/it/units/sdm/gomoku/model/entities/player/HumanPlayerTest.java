@@ -23,7 +23,7 @@ class HumanPlayerTest { // TODO: some of this are tests of class Player
     private void setCurrentGameAndSetNextMoveAndMakeMove()  // TODO: still needed?
             throws NoGameSetException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException, BoardIsFullException {
         humanPlayer.setCurrentGame(game);
-        humanPlayer.setNextMove(firstCoordinates);
+        humanPlayer.setMoveToBeMade(firstCoordinates);
         humanPlayer.makeMove();
     }
     //endregion Support Methods
@@ -56,7 +56,7 @@ class HumanPlayerTest { // TODO: some of this are tests of class Player
     void updateBoardAfterAValidFirstMoveIsMade()
             throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException, NoGameSetException, BoardIsFullException {
         assert game.getBoard().isEmpty();
-        humanPlayer.setNextMove(firstCoordinates);
+        humanPlayer.setMoveToBeMade(firstCoordinates);
         humanPlayer.makeMove();
         assertFalse(game.getBoard().getCellAtCoordinates(firstCoordinates).isEmpty());
     }
@@ -64,7 +64,7 @@ class HumanPlayerTest { // TODO: some of this are tests of class Player
     @Test
     void doNotAcceptInvalidCoordinate() throws GameEndedException, CellAlreadyOccupiedException {
         try {
-            humanPlayer.setNextMove(outOfBoundCoordinates);
+            humanPlayer.setMoveToBeMade(outOfBoundCoordinates);
             fail("Coordinates out of board but accepted");
         } catch (CellOutOfBoardException ignored) {   // correct to go here to pass the test
         }

@@ -65,7 +65,7 @@ public class CPUPlayer extends Player {
         try {
             Thread.sleep(DELAY_BEFORE_PLACING_STONE_MILLIS);
             nextMoveToMake = chooseSmartEmptyCoordinates();
-            super.setNextMove(nextMoveToMake);
+            super.setMoveToBeMade(nextMoveToMake);
             super.makeMove();
         } catch (BoardIsFullException | GameEndedException | CellOutOfBoardException | CellAlreadyOccupiedException e) {
             // TODO: correctly handled exception?
