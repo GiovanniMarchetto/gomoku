@@ -46,8 +46,17 @@ public class CPUPlayer extends Player {
         this(CPU_DEFAULT_NAME + numberOfCpuPlayers.incrementAndGet());
     }
 
-    private static double getWeightRespectToCenter(int center, Coordinates coordinates) {
+    private static double getWeightRespectToCenter(double center, Coordinates coordinates) {
         return Math.pow(center - coordinates.getX(), 2) + Math.pow(center - coordinates.getY(), 2);
+    }
+
+    public static boolean isValidSkillFactorFromString(@NotNull final String value) {
+        try {
+            double input = Double.parseDouble(value);
+            return input >= CPUPlayer.MIN_SKILL_FACTOR && input <= CPUPlayer.MAX_SKILL_FACTOR;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 
     @Override
@@ -65,15 +74,6 @@ public class CPUPlayer extends Player {
             throw new IllegalStateException(e);
         } catch (InterruptedException e) {
             Utility.getLoggerOfClass(getClass()).log(Level.SEVERE, "Thread interrupted for unknown reason.", e);
-        }
-    }
-
-    public static boolean isValidSkillFactorFromString(@NotNull final String value) {
-        try {
-            double input = Double.parseDouble(value);
-            return input >= CPUPlayer.MIN_SKILL_FACTOR && input <= CPUPlayer.MAX_SKILL_FACTOR;
-        } catch (NumberFormatException e) {
-            return false;
         }
     }
 
@@ -107,7 +107,7 @@ public class CPUPlayer extends Player {
     @NotNull
     public Coordinates chooseNextEmptyCoordinatesFromCenter() throws BoardIsFullException {
         int boardSize = getBoardSize();
-        int moreCenterValue = (int) Math.ceil(boardSize / 2.0) - 1;
+        double moreCenterValue = boardSize / 2.0 - 0.5;
 
         return getStreamOfEmptyCoordinatesOnBoard()
                 .min((coord1, coord2) ->

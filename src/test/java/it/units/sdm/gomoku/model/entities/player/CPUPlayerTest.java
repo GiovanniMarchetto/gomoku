@@ -1,28 +1,47 @@
 package it.units.sdm.gomoku.model.entities.player;
 
-import it.units.sdm.gomoku.model.custom_types.Color;
-import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
-import it.units.sdm.gomoku.model.entities.Board;
+import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
-import org.junit.jupiter.api.BeforeAll;
+import it.units.sdm.gomoku.model.entities.Game;
+import it.units.sdm.gomoku.model.exceptions.BoardIsFullException;
+import it.units.sdm.gomoku.model.exceptions.CellAlreadyOccupiedException;
+import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
+import it.units.sdm.gomoku.model.exceptions.GameEndedException;
+import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.RepetitionInfo;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
+import java.util.stream.IntStream;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 
-public class CPUPlayerTest {    // TODO: resee this class
+public class CPUPlayerTest {
 
-    public static final int NUMBER_OF_REPETITION = 10;
-    private static final PositiveInteger BOARD_SIZE_5 = new PositiveInteger(5);
-    private static final PositiveInteger BOARD_SIZE_4 = new PositiveInteger(4);
-    private static final Color cpuStoneColor = Color.BLACK;
-    private static Board board = null;
-    private final CPUPlayer cpuPlayer = new CPUPlayer("cpuPlayer");
+    private static final int BOARD_SIZE_5 = 5;
+    private static final int BOARD_SIZE_4 = 4;
+    private static final CPUPlayer cpuPlayer = new CPUPlayer();
+    private static final CPUPlayer cpuPlayerNaive = new CPUPlayer("Naive", 0.0);
+    private static final Coordinates[] coordinatesInOrderFromCenterForBoard5x5 = {
+            new Coordinates(2, 2), new Coordinates(1, 2), new Coordinates(2, 1), new Coordinates(2, 3), new Coordinates(3, 2),
+            new Coordinates(1, 1), new Coordinates(1, 3), new Coordinates(3, 1), new Coordinates(3, 3), new Coordinates(0, 2),
+            new Coordinates(2, 0), new Coordinates(2, 4), new Coordinates(4, 2), new Coordinates(0, 1), new Coordinates(0, 3),
+            new Coordinates(1, 0), new Coordinates(1, 4), new Coordinates(3, 0), new Coordinates(3, 4), new Coordinates(4, 1),
+            new Coordinates(4, 3), new Coordinates(0, 0), new Coordinates(0, 4), new Coordinates(4, 0), new Coordinates(4, 4)};
+    private static final Coordinates[] coordinatesInOrderFromCenterForBoard4x4 = {
+            new Coordinates(1, 1), new Coordinates(1, 2), new Coordinates(2, 1), new Coordinates(2, 2),
+            new Coordinates(0, 1), new Coordinates(0, 2), new Coordinates(1, 0), new Coordinates(1, 3),
+            new Coordinates(2, 0), new Coordinates(2, 3), new Coordinates(3, 1), new Coordinates(3, 2),
+            new Coordinates(0, 0), new Coordinates(0, 3), new Coordinates(3, 0), new Coordinates(3, 3)};
+    private static Game game;
 
-    @BeforeAll
-    static void resetBoard() {
-        board = new Board(BOARD_SIZE_5);
+    private void setUpBoardFromSize(int boardSize) {
+        game = new Game(boardSize, cpuPlayer, cpuPlayerNaive);
+        game.start();
+        cpuPlayer.setCurrentGame(game);
+        cpuPlayerNaive.setCurrentGame(game);
     }
 
     @ParameterizedTest
@@ -31,77 +50,38 @@ public class CPUPlayerTest {    // TODO: resee this class
         assertEquals(validSkillFactor, CPUPlayer.isValidSkillFactorFromString(input));
     }
 
-//    private void checkAndOccupyCell(int x, int y, Coordinates actual) {   // TODO: re-see this tests
-//        Coordinates expected = new Coordinates(x, y);
-//        assertEquals(expected, actual);
-//        tryToOccupyCoordinatesWithColor(board, cpuStoneColor, x, y);
-//    }
-//
-//    private void checkFromCenterAndOccupyCell(int x, int y) {// TODO: re-see this
-//        try {
-//            checkAndOccupyCell(x, y, cpuPlayer.chooseNextEmptyCoordinatesFromCenter(game));
-//        } catch (BoardIsFullException e) {
-//            fail(e);
-//        }
-//    }
-//
-//    @RepeatedTest(NUMBER_OF_REPETITION)
-//    void checkRandomChosenCoordinatesReferToEmptyCell() throws Board.CellOutOfBoardException {
-//        try {
-//            Coordinates actual = cpuPlayer.chooseRandomEmptyCoordinates(board);
-//            assertTrue(board.getCellAtCoordinates(actual).isEmpty());
-//            tryToOccupyCoordinatesWithColor(board, cpuStoneColor, actual.getX(), actual.getY());
-//        } catch (BoardIsFullException e) {
-//            if (board.isThereAnyEmptyCell()) {
-//                fail(e);
-//            }
-//        }
-//    }
-//
-//    @Nested
-//    class fromCenter4x4 {
-//        @BeforeAll
-//        static void resetBoard() {
-//            board = new Board(BOARD_SIZE_4);
-//        }
-//
-//        @ParameterizedTest
-//        @CsvSource({"1,1", "1,2", "2,1", "2,2", "0,1", "0,2", "1,0", "1,3", "2,0", "2,3", "3,1", "3,2", "0,0", "0,3", "3,0", "3,3"})
-//        void chooseFromCenterBoard4x4(int x, int y) {
-//            checkFromCenterAndOccupyCell(x, y);
-//        }
-//    }
-//
-//    @Nested
-//    class fromCenter5x5 {
-//        @BeforeAll
-//        static void setup() {
-//            resetBoard();
-//        }
-//
-//        @ParameterizedTest
-//        @CsvSource({"2,2", "1,2", "2,1", "2,3", "3,2", "1,1", "1,3", "3,1", "3,3", "0,2",
-//                "2,0", "2,4", "4,2", "0,1", "0,3", "1,0", "1,4", "3,0", "3,4", "4,1",
-//                "4,3", "0,0", "0,4", "4,0", "4,4"})
-//        void chooseFromCenterBoard5x5(int x, int y) {
-//            checkFromCenterAndOccupyCell(x, y);
-//        }
-//    }
-//
-//    @Nested
-//    class fromCenter5x5WithSomeOccupy {
-//        @BeforeAll
-//        static void occupyThreeCells() {
-//            resetBoard();
-//            tryToOccupyCoordinatesWithColor(board, cpuStoneColor, 0, 1);
-//            tryToOccupyCoordinatesWithColor(board, cpuStoneColor, 0, 3);
-//            tryToOccupyCoordinatesWithColor(board, cpuStoneColor, 1, 2);
-//        }
-//
-//        @ParameterizedTest
-//        @CsvSource({"2,2", "2,1", "2,3", "3,2", "1,1"})
-//        void chooseNextEmptyCoordinatesFromCenter(int x, int y) {
-//            checkFromCenterAndOccupyCell(x, y);
-//        }
-//    }
+    @RepeatedTest(BOARD_SIZE_4 * BOARD_SIZE_4)
+    void occupyNCellFromCenterInBoard4x4(RepetitionInfo repetitionInfo) throws BoardIsFullException {
+        setUpBoardFromSize(BOARD_SIZE_4);
+
+        int index = repetitionInfo.getCurrentRepetition() - 1;
+        IntStream.range(0, index)
+                .forEach(i -> {
+                    try {
+                        game.placeStoneAndChangeTurn(coordinatesInOrderFromCenterForBoard4x4[i]);
+                    } catch (BoardIsFullException | CellAlreadyOccupiedException | GameEndedException | CellOutOfBoardException e) {
+                        fail(e);
+                        //game cannot end because the board is too small
+                    }
+                });
+        assertEquals(coordinatesInOrderFromCenterForBoard4x4[index], cpuPlayer.chooseNextEmptyCoordinatesFromCenter());
+    }
+
+    @RepeatedTest(BOARD_SIZE_5 * BOARD_SIZE_5)
+    void occupyNCellFromCenterInBoard5x5(RepetitionInfo repetitionInfo) throws BoardIsFullException {
+        setUpBoardFromSize(BOARD_SIZE_5);
+
+        int index = repetitionInfo.getCurrentRepetition() - 1;
+        IntStream.range(0, index)
+                .forEach(i -> {
+                    try {
+                        game.placeStoneAndChangeTurn(coordinatesInOrderFromCenterForBoard5x5[i]);
+                    } catch (BoardIsFullException | CellAlreadyOccupiedException | GameEndedException | CellOutOfBoardException e) {
+                        fail(e);
+                        //game cannot end because the board is too small
+                    }
+                });
+        assertEquals(coordinatesInOrderFromCenterForBoard5x5[index], cpuPlayer.chooseNextEmptyCoordinatesFromCenter());
+    }
+
 }
