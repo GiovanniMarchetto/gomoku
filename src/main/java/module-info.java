@@ -7,6 +7,7 @@ module it.units.sdm.gomoku {
     requires java.desktop;
 
     opens it.units.sdm.gomoku to javafx.fxml;
+    opens it.units.sdm.gomoku.model.entities to javafx.fxml;
     opens it.units.sdm.gomoku.mvvm_library to javafx.fxml;
     opens it.units.sdm.gomoku.ui.gui.views to javafx.fxml;
     opens it.units.sdm.gomoku.ui.support to javafx.fxml;

@@ -9,7 +9,6 @@ import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
 import it.units.sdm.gomoku.model.exceptions.GameEndedException;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservableProperty;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyThatCanSetPropertyValueAndFireEvents;
-import it.units.sdm.gomoku.ui.support.Setup;
 import it.units.sdm.gomoku.utils.TestUtility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

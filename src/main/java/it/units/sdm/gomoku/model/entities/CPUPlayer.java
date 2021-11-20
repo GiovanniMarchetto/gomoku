@@ -24,8 +24,6 @@ public class CPUPlayer extends Player {
     @NotNull
     private final Random rand = new Random();
 
-    // TODO : add field with difficulty (e.g., a threshold as double in [0,1]: generate random in [0,1] and if generated random value is > threshold => place stone smartly, else place stone randomly/naively
-
     public CPUPlayer(@NotNull String name, double naivety) {
         super(name);
         this.naivety = naivety;

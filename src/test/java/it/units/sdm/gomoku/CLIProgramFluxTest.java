@@ -13,7 +13,6 @@ import it.units.sdm.gomoku.ui.cli.CLIMain;
 import it.units.sdm.gomoku.ui.cli.CLISceneController;
 import it.units.sdm.gomoku.ui.cli.IOUtility;
 import it.units.sdm.gomoku.ui.cli.views.CLIMainView;
-import it.units.sdm.gomoku.ui.support.Setup;
 import it.units.sdm.gomoku.utils.TestUtility;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

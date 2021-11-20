@@ -4,7 +4,7 @@ import it.units.sdm.gomoku.client_server.interfaces.Protocol;
 import it.units.sdm.gomoku.client_server.server.GomokuServer;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.Board;
-import it.units.sdm.gomoku.ui.support.Setup;
+import it.units.sdm.gomoku.model.entities.Setup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

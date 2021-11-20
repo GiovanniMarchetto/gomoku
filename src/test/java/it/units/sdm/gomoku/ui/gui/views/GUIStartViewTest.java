@@ -6,13 +6,13 @@ import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
 import it.units.sdm.gomoku.model.entities.Match;
+import it.units.sdm.gomoku.model.entities.Setup;
 import it.units.sdm.gomoku.ui.MainViewmodel;
 import it.units.sdm.gomoku.ui.StartViewmodel;
 import it.units.sdm.gomoku.ui.exceptions.SceneControllerNotInstantiatedException;
 import it.units.sdm.gomoku.ui.gui.GUIMain;
 import it.units.sdm.gomoku.ui.gui.SceneController;
 import it.units.sdm.gomoku.ui.support.BoardSizes;
-import it.units.sdm.gomoku.ui.support.Setup;
 import it.units.sdm.gomoku.utils.TestUtility;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -48,8 +48,8 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static it.units.sdm.gomoku.model.entities.Setup.getSetupFromMatch;
 import static it.units.sdm.gomoku.ui.StartViewmodel.boardSizes;
-import static it.units.sdm.gomoku.ui.support.Setup.getSetupFromMatch;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GUIStartViewTest {

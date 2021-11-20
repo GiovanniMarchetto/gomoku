@@ -7,7 +7,6 @@ import it.units.sdm.gomoku.model.exceptions.GameNotEndedException;
 import it.units.sdm.gomoku.model.exceptions.MatchEndedException;
 import it.units.sdm.gomoku.model.exceptions.MatchNotEndedException;
 import it.units.sdm.gomoku.model.exceptions.MaxNumberOfGamesException;
-import it.units.sdm.gomoku.ui.support.Setup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
