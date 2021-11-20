@@ -27,9 +27,9 @@ public class StartViewmodel extends Viewmodel {
     private volatile String player1Name;    // TODO : volatile fields?
     private volatile String player2Name;
     private volatile boolean player1CPU;
-    private volatile String player1CPUSkillFactor;
+    private volatile double player1CPUSkillFactor;
     private volatile boolean player2CPU;
-    private volatile String player2CPUSkillFactor;
+    private volatile double player2CPUSkillFactor;
     private volatile String selectedBoardSize;
     private volatile String numberOfGames;
 
@@ -42,8 +42,8 @@ public class StartViewmodel extends Viewmodel {
     }
 
     private Setup createSetup() {
-        Player player1 = isPlayer1CPU() ? new CPUPlayer(getPlayer1Name(), Double.parseDouble(player1CPUSkillFactor)) : new HumanPlayer(getPlayer1Name());
-        Player player2 = isPlayer2CPU() ? new CPUPlayer(getPlayer2Name(), Double.parseDouble(player2CPUSkillFactor)) : new HumanPlayer(getPlayer2Name());
+        Player player1 = isPlayer1CPU() ? new CPUPlayer(getPlayer1Name(), player1CPUSkillFactor) : new HumanPlayer(getPlayer1Name());
+        Player player2 = isPlayer2CPU() ? new CPUPlayer(getPlayer2Name(), player2CPUSkillFactor) : new HumanPlayer(getPlayer2Name());
         return new Setup(player1, player2, new PositiveInteger(Integer.parseInt(getNumberOfGames())), getSelectedBoardSizeValue());
     }
 
@@ -72,12 +72,16 @@ public class StartViewmodel extends Viewmodel {
         this.player1CPU = player1CPU;
     }
 
-    public String getPlayer1CPUSkillFactor() {
+    public double getPlayer1CPUSkillFactor() {
         return player1CPUSkillFactor;
     }
 
     public void setPlayer1CPUSkillFactor(@NotNull final String player1CPUSkillFactor) {
-        this.player1CPUSkillFactor = Objects.requireNonNull(player1CPUSkillFactor);
+        setPlayer1CPUSkillFactor(Double.parseDouble(Objects.requireNonNull(player1CPUSkillFactor)));
+    }
+
+    public void setPlayer1CPUSkillFactor(double player1CPUSkillFactor) {
+        this.player1CPUSkillFactor = player1CPUSkillFactor;
     }
 
     public boolean isPlayer2CPU() {
@@ -88,12 +92,16 @@ public class StartViewmodel extends Viewmodel {
         this.player2CPU = player2CPU;
     }
 
-    public String getPlayer2CPUSkillFactor() {
+    public double getPlayer2CPUSkillFactor() {
         return player2CPUSkillFactor;
     }
 
     public void setPlayer2CPUSkillFactor(@NotNull final String player2CPUSkillFactor) {
-        this.player2CPUSkillFactor = Objects.requireNonNull(player2CPUSkillFactor);
+        setPlayer2CPUSkillFactor(Double.parseDouble(Objects.requireNonNull(player2CPUSkillFactor)));
+    }
+
+    public void setPlayer2CPUSkillFactor(double player2CPUSkillFactor) {
+        this.player2CPUSkillFactor = player2CPUSkillFactor;
     }
 
     public String getSelectedBoardSize() {

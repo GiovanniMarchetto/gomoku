@@ -17,8 +17,8 @@ public class CPUPlayer extends Player {
 
     public final static double MIN_SKILL_FACTOR = 0.0;
     public final static double MAX_SKILL_FACTOR = 1.0;
+    public final static double DEFAULT_SKILL_FACTOR = 1.0;
     private final static int DELAY_BEFORE_PLACING_STONE_MILLIS = 200;
-    private final static int DEFAULT_SKILL_FACTOR = 1;
     @NotNull
     private final static String CPU_DEFAULT_NAME = "CPU";
     @NotNull
