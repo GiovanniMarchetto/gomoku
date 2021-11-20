@@ -27,11 +27,11 @@ class PlayerTest {
         game.start();
     }
 
-    @Test
-    void isNamePassedInConstructorTheSameReturnedFromTheGetter() {
-        String name = "Chan";
-        player = new HumanPlayer(name);
-        assertEquals(name, player.getName());
+    @ParameterizedTest
+    @ValueSource(strings = {"Chan"})
+    void createNewInstanceWithName(String playerName) {
+        player = new HumanPlayer(playerName);
+        assertEquals(playerName, player.getName());
     }
 
     @Test
