@@ -1,9 +1,13 @@
 package it.units.sdm.gomoku.model.entities.player;
 
+import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
 import it.units.sdm.gomoku.model.entities.Game;
 import it.units.sdm.gomoku.model.entities.HumanPlayer;
 import it.units.sdm.gomoku.model.entities.Player;
+import it.units.sdm.gomoku.model.exceptions.CellAlreadyOccupiedException;
+import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
+import it.units.sdm.gomoku.model.exceptions.GameEndedException;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertySettable;
 import it.units.sdm.gomoku.utils.TestUtility;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,16 +19,30 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class PlayerTest {
     private final int BOARD_SIZE = 5;
-    private final String name = "player";
+    private final String SAMPLE_NAME = "player";
     private final Player cpuPlayer = new CPUPlayer();
+    private final Coordinates SAMPLE_VALID_COORDINATES = new Coordinates(0, 0);
     private Player player;
     private Game game;
 
     @BeforeEach
     void setup() {
-        player = new HumanPlayer(name);
+        player = new HumanPlayer(SAMPLE_NAME);
         game = new Game(BOARD_SIZE, player, cpuPlayer);
+        player.setCurrentGame(game);
         game.start();
+    }
+
+    @Test
+    void dontRegisterMoveFromUserIfGameNotSet() throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
+        Player playerWithNoGameSet = new HumanPlayer(SAMPLE_NAME);
+        boolean catchedException = false;
+        try {
+            playerWithNoGameSet.setMoveToBeMade(SAMPLE_VALID_COORDINATES);
+        } catch (IllegalStateException e) {
+            catchedException = true;
+        }
+        assertTrue(catchedException);
     }
 
     @ParameterizedTest
@@ -35,13 +53,7 @@ class PlayerTest {
     }
 
     @Test
-    void assertCurrentGameNullAtStart()
-            throws NoSuchFieldException, IllegalAccessException {
-        assertNull(TestUtility.getFieldValue("currentGame", player));
-    }
-
-    @Test
-    void assertCurrentGameIsCorrectlySet()
+    void testCurrentGameSetter()
             throws NoSuchFieldException, IllegalAccessException {
         player.setCurrentGame(game);
         assertEquals(game, TestUtility.getFieldValue("currentGame", player));
@@ -74,7 +86,7 @@ class PlayerTest {
 
     @Test
     void testEquals() {
-        Player player2 = new HumanPlayer(name);
+        Player player2 = new HumanPlayer(SAMPLE_NAME);
         assertEquals(player, player2);
     }
 
@@ -87,6 +99,6 @@ class PlayerTest {
 
     @Test
     void testHashCode() {
-        assertEquals(name.hashCode(), player.hashCode());
+        assertEquals(SAMPLE_NAME.hashCode(), player.hashCode());
     }
 }
