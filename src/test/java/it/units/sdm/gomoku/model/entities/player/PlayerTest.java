@@ -39,6 +39,21 @@ class PlayerTest {
     }
 
     @Test
+    void dontMakeMoveIfGameNotSet() {
+        // TODO
+    }
+
+    @Test
+    void makeMoveIfValid() {
+        // TODO
+    }
+
+    @Test
+    void changeTurnAfterAMoveIsMade() {
+        // TODO
+    }
+
+    @Test
     void registerMoveFromUserIfValidCoordinates() throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException, NoSuchFieldException, IllegalAccessException {
         player.setMoveToBeMade(SAMPLE_VALID_COORDINATES);
         Buffer<?> bufferOfPlayer = ((Buffer<?>) TestUtility.getFieldValue("nextMoveBuffer", player));
