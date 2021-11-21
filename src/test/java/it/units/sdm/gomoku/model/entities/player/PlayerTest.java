@@ -33,8 +33,10 @@ class PlayerTest {
 
     @SuppressWarnings("unchecked") // buffer for moves contains coordinates
     @NotNull
-    private static Buffer<Coordinates> getNextMoveBuffer(@NotNull final Player player) throws NoSuchFieldException, IllegalAccessException {
-        return (Buffer<Coordinates>) Objects.requireNonNull(TestUtility.getFieldValue("nextMoveBuffer", Objects.requireNonNull(player)));
+    private static Buffer<Coordinates> getNextMoveBuffer(@NotNull final Player player)
+            throws NoSuchFieldException, IllegalAccessException {
+        return (Buffer<Coordinates>) Objects.requireNonNull(
+                TestUtility.getFieldValue("nextMoveBuffer", Objects.requireNonNull(player)));
     }
 
     private static void insertCoordinatesInBufferOfPlayerIfBufferIsEmpty(
@@ -56,86 +58,97 @@ class PlayerTest {
     }
 
     @Test
-    void changeTurnAfterAMoveIsMade() throws BoardIsFullException, GameEndedException, CellOutOfBoardException, NoSuchFieldException, IllegalAccessException, CellAlreadyOccupiedException {
+    void changeTurnAfterAMoveIsMade()
+            throws BoardIsFullException, GameEndedException, CellOutOfBoardException,
+            NoSuchFieldException, IllegalAccessException, CellAlreadyOccupiedException {
         makeMoveIfValid();
         assertEquals(game.getCurrentPlayerProperty().getPropertyValue(), whitePlayer);
     }
 
     @Test
-    void makeMoveIfValid() throws NoSuchFieldException, IllegalAccessException, CellOutOfBoardException, BoardIsFullException, GameEndedException, CellAlreadyOccupiedException {
+    void makeMoveIfValid()
+            throws NoSuchFieldException, IllegalAccessException, CellOutOfBoardException,
+            BoardIsFullException, GameEndedException, CellAlreadyOccupiedException {
         insertCoordinatesInBufferOfPlayerIfBufferIsEmpty(SAMPLE_VALID_COORDINATES, blackPlayer);
         Color currentPlayerColor = game.getColorOfPlayer(blackPlayer);
         assert currentPlayerColor.equals(Color.BLACK);
         blackPlayer.makeMove();
-        Stone justPlaced = getCellAtCoordinates(SAMPLE_VALID_COORDINATES).getStone();   // TODO : code chain code smell=?
+        Stone justPlaced = getCellAtCoordinates(SAMPLE_VALID_COORDINATES).getStone();
         assert justPlaced != null;
         assertEquals(justPlaced.getColor(), currentPlayerColor);
     }
 
     @Test
-    void dontMakeMoveIfGameNotSet() throws NoSuchFieldException, IllegalAccessException, BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
+    void dontMakeMoveIfGameNotSet()
+            throws NoSuchFieldException, IllegalAccessException, BoardIsFullException,
+            GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
         Player playerWithNoGameSet = new FakePlayer(SAMPLE_NAME);
         insertCoordinatesInBufferOfPlayerIfBufferIsEmpty(SAMPLE_VALID_COORDINATES, playerWithNoGameSet);
-        boolean catchedException = false;
+        boolean caughtException = false;
         try {
             playerWithNoGameSet.makeMove();
         } catch (IllegalStateException e) {
-            catchedException = true;
+            caughtException = true;
         }
-        assertTrue(catchedException);   // TODO: code duplication with dontRegisterMoveFromUserIfGameNotSet
+        assertTrue(caughtException);
     }
 
     @Test
-    void registerMoveFromUserIfValidCoordinates() throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException, NoSuchFieldException, IllegalAccessException {
+    void registerMoveFromUserIfValidCoordinates()
+            throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException,
+            NoSuchFieldException, IllegalAccessException {
         blackPlayer.setMoveToBeMade(SAMPLE_VALID_COORDINATES);
         Buffer<?> bufferOfPlayer = getNextMoveBuffer(blackPlayer);
         assertEquals(SAMPLE_VALID_COORDINATES, bufferOfPlayer.getAndRemoveLastElement());
     }
 
     @Test
-    void dontRegisterMoveFromUserIfGameNotSet() throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
+    void dontRegisterMoveFromUserIfGameNotSet()
+            throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
         Player playerWithNoGameSet = new FakePlayer(SAMPLE_NAME);
-        boolean catchedException = false;
+        boolean caughtException = false;
         try {
             playerWithNoGameSet.setMoveToBeMade(SAMPLE_VALID_COORDINATES);
         } catch (IllegalStateException e) {
-            catchedException = true;
+            caughtException = true;
         }
-        assertTrue(catchedException);
+        assertTrue(caughtException);
     }
 
     @Test
-    void dontRegisterMoveFromUserIfMoveIsNull() throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
-        boolean catchedException = false;
+    void dontRegisterMoveFromUserIfMoveIsNull()
+            throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
+        boolean caughtException = false;
         try {
             Coordinates invalidMove = null;
             //noinspection ConstantConditions   // test for invalid moves
             blackPlayer.setMoveToBeMade(invalidMove);
         } catch (NullPointerException e) {
-            catchedException = true;
+            caughtException = true;
         }
-        assertTrue(catchedException);
+        assertTrue(caughtException);
     }
 
     @Test
-    void dontRegisterMoveFromUserIfBoardCellIsAlreadyOccupied() throws BoardIsFullException, CellOutOfBoardException, CellAlreadyOccupiedException, GameEndedException {
+    void dontRegisterMoveFromUserIfBoardCellIsAlreadyOccupied()
+            throws BoardIsFullException, CellOutOfBoardException, CellAlreadyOccupiedException, GameEndedException {
         final Color SAMPLE_COLOR = Color.BLACK;
         game.getBoard().occupyPosition(SAMPLE_COLOR, SAMPLE_VALID_COORDINATES);
         Stone justPlacedStone = getCellAtCoordinates(SAMPLE_VALID_COORDINATES).getStone();
         assert justPlacedStone != null;
-        assert justPlacedStone.getColor().equals(SAMPLE_COLOR);   // TODO : code smell message chain
-        boolean catchedException = false;
+        assert justPlacedStone.getColor().equals(SAMPLE_COLOR);
+        boolean caughtException = false;
         try {
             blackPlayer.setMoveToBeMade(SAMPLE_VALID_COORDINATES);
         } catch (CellAlreadyOccupiedException e) {
-            catchedException = true;
+            caughtException = true;
         }
-        assertTrue(catchedException);
+        assertTrue(caughtException);
     }
 
     @NotNull
     private Cell getCellAtCoordinates(@NotNull final Coordinates coordinates) throws CellOutOfBoardException {
-        return game.getBoard().getCellAtCoordinates(Objects.requireNonNull(coordinates));   // TODO: message chain code smell?
+        return game.getBoard().getCellAtCoordinates(Objects.requireNonNull(coordinates));
     }
 
     @ParameterizedTest
@@ -152,7 +165,6 @@ class PlayerTest {
         assertEquals(game, TestUtility.getFieldValue("currentGame", blackPlayer));
     }
 
-
     @ParameterizedTest
     @ValueSource(strings = {"massimiliano", "matteo", "giovanni", "Travis Scott"})
     void testToString(String name) {
@@ -161,7 +173,7 @@ class PlayerTest {
     }
 
     @Test
-    void getCoordinatesRequiredToContinueProperty() {
+    void testCoordinatesRequiredToContinuePropertyGetter() {
         try {
             @SuppressWarnings("unchecked")
             ObservablePropertySettable<Boolean> coordinatesRequiredToContinueProperty = (ObservablePropertySettable<Boolean>)
@@ -173,21 +185,18 @@ class PlayerTest {
     }
 
     @Test
-    void checkCoordinatesRequiredAtStart() {
+    void setCoordinatesRequiredToContinuePropertyValueToFalseInTheConstructor() {
         assertEquals(Boolean.FALSE, blackPlayer.getCoordinatesRequiredToContinueProperty().getPropertyValue());
     }
 
     @Test
     void testEquals() {
-        Player player2 = new FakePlayer(SAMPLE_NAME);
-        assertEquals(blackPlayer, player2);
+        assertEquals(blackPlayer, whitePlayer);
     }
 
     @Test
     void testEquality() {
-        Player player1 = new FakePlayer("player");
-        Player player2 = new FakePlayer("player");
-        assertNotSame(player1, player2);
+        assertNotSame(blackPlayer, whitePlayer);
     }
 
     @Test
