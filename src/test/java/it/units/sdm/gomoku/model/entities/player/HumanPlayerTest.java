@@ -7,69 +7,48 @@ import it.units.sdm.gomoku.model.exceptions.BoardIsFullException;
 import it.units.sdm.gomoku.model.exceptions.CellAlreadyOccupiedException;
 import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
 import it.units.sdm.gomoku.model.exceptions.GameEndedException;
-import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservableProperty;
-import it.units.sdm.gomoku.utils.TestUtility;
+import it.units.sdm.gomoku.property_change_handlers.PropertyObserver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
-class HumanPlayerTest { // TODO: some of this are tests of class Player
-    private final int boardSize = 5;
-    private final HumanPlayer humanWhite = new HumanPlayer("white");    // TODO: initialize this fields in setup? Maybe currentGame not properly set
-    private final Coordinates firstCoordinates = new Coordinates(0, 0);
-    private final Coordinates outOfBoundCoordinates = new Coordinates(boardSize, boardSize);
-    private HumanPlayer humanPlayer;
-    private Game game;
-
-    //region Support Methods
-    private void setCurrentGameAndSetNextMoveAndMakeMove()  // TODO: still needed?
-            throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException, BoardIsFullException {
-        humanPlayer.setCurrentGame(game);
-        humanPlayer.setMoveToBeMade(firstCoordinates);
-        humanPlayer.makeMove();
-    }
-    //endregion Support Methods
-
+class HumanPlayerTest {
+    private final HumanPlayer humanWhite = new HumanPlayer("white");
+    private final Coordinates SAMPLE_VALID_COORDINATES = new Coordinates(0, 0);
+    private final HumanPlayer humanPlayer = new HumanPlayer("human");
 
     @BeforeEach
     void setup() {
-        humanPlayer = new HumanPlayer("human");
-        game = new Game(boardSize, humanPlayer, humanWhite);
+        final int BOARD_SIZE = 5;
+        Game game = new Game(BOARD_SIZE, humanPlayer, humanWhite);
         humanPlayer.setCurrentGame(game);
         game.start();
     }
 
     @Test
-    void dontRequireMoveToFirstHumanPlayerAfterHasDoneTheFirstMove()
-            throws NoSuchFieldException, IllegalAccessException,
-            GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException, BoardIsFullException {
-        setCurrentGameAndSetNextMoveAndMakeMove();
-
-        @SuppressWarnings("unchecked")
-        ObservableProperty<Boolean> coordinatesRequiredToContinueProperty =
-                (ObservableProperty<Boolean>) TestUtility.getFieldValue(
-                        "coordinatesRequiredToContinueProperty", humanPlayer);
-
-        //noinspection ConstantConditions
-        assertEquals(Boolean.FALSE, coordinatesRequiredToContinueProperty.getPropertyValue());
-    }
-
-    @Test
-    void updateBoardAfterAValidFirstMoveIsMade()
-            throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException, BoardIsFullException {
-        assert game.getBoard().isEmpty();
-        humanPlayer.setMoveToBeMade(firstCoordinates);
+    void dontRequireCoordinatesAfterTheMoveIsMade() throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
+        humanPlayer.setMoveToBeMade(SAMPLE_VALID_COORDINATES);
         humanPlayer.makeMove();
-        assertFalse(game.getBoard().getCellAtCoordinates(firstCoordinates).isEmpty());
+        assertEquals(false, humanPlayer.getCoordinatesRequiredToContinueProperty().getPropertyValue());
     }
 
     @Test
-    void doNotAcceptInvalidCoordinate() throws GameEndedException, CellAlreadyOccupiedException {
-        try {
-            humanPlayer.setMoveToBeMade(outOfBoundCoordinates);
-            fail("Coordinates out of board but accepted");
-        } catch (CellOutOfBoardException ignored) {   // correct to go here to pass the test
-        }
+    void requireCoordinatesBeforeMakingAMove() {
+        Thread waitForHumanMoveAndThenMakeTheMoveThread = new Thread(() -> {
+            try {
+                humanPlayer.makeMove();
+            } catch (BoardIsFullException | GameEndedException | CellOutOfBoardException | CellAlreadyOccupiedException e) {
+                fail(e);
+            }
+        });
+        new PropertyObserver<>(
+                humanPlayer.getCoordinatesRequiredToContinueProperty(),
+                evt -> {
+                    assertEquals(true, evt.getNewValue());
+                    waitForHumanMoveAndThenMakeTheMoveThread.interrupt();
+                });
+        waitForHumanMoveAndThenMakeTheMoveThread.start();
     }
 }

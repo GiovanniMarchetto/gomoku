@@ -7,7 +7,6 @@ import it.units.sdm.gomoku.model.exceptions.GameEndedException;
 import org.jetbrains.annotations.NotNull;
 
 public class HumanPlayer extends Player {
-    // TODO: TO BE TESTED
 
     public HumanPlayer(@NotNull String name) {
         super(name);
@@ -18,8 +17,6 @@ public class HumanPlayer extends Player {
         setCoordinatesRequired(true);
         try {
             super.makeMove();
-        } catch (BoardIsFullException | GameEndedException | CellOutOfBoardException | CellAlreadyOccupiedException e) {
-            throw e;
         } finally {
             setCoordinatesRequired(false);
         }
