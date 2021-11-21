@@ -18,7 +18,7 @@ import java.util.stream.IntStream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class CPUPlayerSmartChooseEmptyCoordinatesTest { //   TODO: re-see this class
+public class CPUPlayerSmartChooseEmptyCoordinatesTest {
 
     private static final int BOARD_SIZE = 5;
     private static Game game;
@@ -34,62 +34,63 @@ public class CPUPlayerSmartChooseEmptyCoordinatesTest { //   TODO: re-see this c
     }
 
     @Test
-    void occupyTheCenterOfTheBoardIfTheBoardIsEmpty() throws BoardIsFullException {
-        Coordinates expected = cpuPlayer.chooseNextEmptyCoordinatesFromCenter();
-        assertEquals(expected, cpuPlayer.chooseSmartEmptyCoordinates());
+    void chooseTheCenterOfTheBoardIfTheBoardIsEmpty() throws BoardIsFullException {
+        Coordinates expected = cpuPlayer.chooseEmptyCoordinatesFromCenter();
+        assertEquals(expected, cpuPlayer.chooseEmptyCoordinatesSmartly());
     }
 
     @Test
-    void occupyTheCenterOfTheBoardIfThereAreNoChainInTheBoard() throws BoardIsFullException {
-        occupyNStonesInARow(BOARD_SIZE, 0);
-        Coordinates expected = cpuPlayer.chooseNextEmptyCoordinatesFromCenter();
-        assertEquals(expected, cpuPlayer.chooseSmartEmptyCoordinates());
+    void chooseTheCenterOfTheBoardIfThereAreNoChainInTheBoard() throws BoardIsFullException {
+        occupyNCellInARow(BOARD_SIZE, 0);
+        Coordinates expected = cpuPlayer.chooseEmptyCoordinatesFromCenter();
+        assertEquals(expected, cpuPlayer.chooseEmptyCoordinatesSmartly());
     }
 
     @ParameterizedTest
     @ValueSource(ints = {2, 3, 4})
-    void blockTheChainOfNStones(int N) throws BoardIsFullException {
-        IntStream.range(0, N).forEach(i -> occupyNStonesInARow(2, i));
-        Coordinates expected = new Coordinates(N, 0);
-        assertEquals(expected, cpuPlayer.chooseSmartEmptyCoordinates());
+    void chooseTheCoordinatesConsecutiveToAChainOfMStones(int M) throws BoardIsFullException {
+        createAChainOfMStonesInAColumnStartingFromFirstRow(M);
+        Coordinates expected = new Coordinates(M, 0);
+        assertEquals(expected, cpuPlayer.chooseEmptyCoordinatesSmartly());
+    }
+
+    private void createAChainOfMStonesInAColumnStartingFromFirstRow(int M) {
+        IntStream.range(0, M).forEach(i -> occupyNCellInARow(2, i));
     }
 
     @ParameterizedTest
     @ValueSource(ints = {0, 1, 2, 3, BOARD_SIZE, BOARD_SIZE * BOARD_SIZE - 1})
-    void occupyStoneFromCenterIfCPUHaveMaximumNaivety(int numberOfMoves) throws BoardIsFullException {
+    void chooseStoneFromCenterIfCPUHasMinimumSkill(int numberOfMoves) throws BoardIsFullException {
         IntStream.range(0, numberOfMoves).forEach(i -> {
             try {
-                game.placeStoneAndChangeTurn(cpuPlayer.chooseNextEmptyCoordinatesFromCenter());
+                game.placeStoneAndChangeTurn(cpuPlayer.chooseEmptyCoordinatesFromCenter());
             } catch (BoardIsFullException | CellAlreadyOccupiedException | GameEndedException | CellOutOfBoardException e) {
                 fail(e);
             }
         });
-        Coordinates expected = cpuPlayer.chooseNextEmptyCoordinatesFromCenter();
-        assertEquals(expected, cpuPlayerNaive.chooseSmartEmptyCoordinates());
+        Coordinates expected = cpuPlayer.chooseEmptyCoordinatesFromCenter();
+        assertEquals(expected, cpuPlayerNaive.chooseEmptyCoordinatesSmartly());
     }
 
     @Test
-    void throwBoardIsFullExceptionIfTheBoardIsFull() {
+    void throwExceptionWhenChoosingSmartlyNextCoordinatesIfTheBoardIsFull() {
         try {
             GameTestUtility.disputeGameAndDraw(game);
-            Coordinates findCoordinates = cpuPlayer.chooseSmartEmptyCoordinates();
+            Coordinates findCoordinates = cpuPlayer.chooseEmptyCoordinatesSmartly();
             fail("The board is full! But the smart choose find: " + findCoordinates);
         } catch (BoardIsFullException ignored) {
         }
     }
 
-    private void occupyCoordinateFromXAndY(int x, int y) {
-        try {
-            game.placeStoneAndChangeTurn(new Coordinates(x, y));
-        } catch (BoardIsFullException | CellAlreadyOccupiedException
-                | CellOutOfBoardException | GameEndedException e) {
-            fail(e.getMessage());
-        }
-    }
-
-    private void occupyNStonesInARow(int n, int row) {
-        IntStream.range(0, n)
-                .forEach(col -> occupyCoordinateFromXAndY(row, col));
+    private void occupyNCellInARow(int n, int row) {
+        IntStream.range(0, n).forEach(col -> {
+            try {
+                game.placeStoneAndChangeTurn(new Coordinates(row, col));
+            } catch (BoardIsFullException | CellAlreadyOccupiedException
+                    | CellOutOfBoardException | GameEndedException e) {
+                fail(e.getMessage());
+            }
+        });
     }
 
 }

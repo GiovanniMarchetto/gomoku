@@ -21,7 +21,7 @@ public class CPUPlayer extends Player {
     public final static double MIN_SKILL_FACTOR = 0.0;
     public final static double MAX_SKILL_FACTOR = 1.0;
     public final static double DEFAULT_SKILL_FACTOR = 1.0;
-    private final static int DELAY_BEFORE_PLACING_STONE_MILLIS = 200;
+    private final static int DELAY_BEFORE_PLACING_STONE_MILLIS = 100;
     @NotNull
     private final static String CPU_DEFAULT_NAME = "CPU";
     @NotNull
@@ -67,11 +67,10 @@ public class CPUPlayer extends Player {
         Coordinates nextMoveToMake = null;
         try {
             Thread.sleep(DELAY_BEFORE_PLACING_STONE_MILLIS);
-            nextMoveToMake = chooseSmartEmptyCoordinates();
+            nextMoveToMake = chooseEmptyCoordinatesSmartly();
             super.setMoveToBeMade(nextMoveToMake);
             super.makeMove();
         } catch (BoardIsFullException | GameEndedException | CellOutOfBoardException | CellAlreadyOccupiedException e) {
-            // TODO: correctly handled exception?
             Utility.getLoggerOfClass(getClass())
                     .log(Level.SEVERE, "Illegal move: impossible to choose coordinate " + nextMoveToMake, e);
             throw new IllegalStateException(e);
@@ -81,13 +80,25 @@ public class CPUPlayer extends Player {
     }
 
     @NotNull
-    public Coordinates chooseSmartEmptyCoordinates() throws BoardIsFullException {
+    public Coordinates chooseEmptyCoordinatesFromCenter() throws BoardIsFullException {
+        int boardSize = getBoardSizeInCurrentGame();
+        double moreCenterValue = boardSize / 2.0 - 0.5;
+
+        return getStreamOfEmptyCoordinatesOnBoardInCurrentGame()
+                .min((coord1, coord2) ->
+                        (int) (getWeightRespectToCenter(moreCenterValue, coord1)
+                                - getWeightRespectToCenter(moreCenterValue, coord2)))
+                .orElseThrow(BoardIsFullException::new);
+    }
+
+    @NotNull
+    public Coordinates chooseEmptyCoordinatesSmartly() throws BoardIsFullException {
 
         final int MAX_CHAIN_LENGTH_TO_FIND_EXCLUDED = 5;
         final int MIN_CHAIN_LENGTH_TO_FIND_INCLUDED = 2;
 
         if (isFirstMove() || isNaiveMove()) {
-            return chooseNextEmptyCoordinatesFromCenter();
+            return chooseEmptyCoordinatesFromCenter();
         }
 
         IntStream possibleChainLengths =
@@ -100,22 +111,11 @@ public class CPUPlayer extends Player {
                         .filter(coord -> isHeadOfAChainOfStonesInCurrentGame(coord, new PositiveInteger(chainLength))))
                 .toList();
 
-        return smartCoordinates.size() > 0 ? smartCoordinates.get(0) : chooseNextEmptyCoordinatesFromCenter();
+        return smartCoordinates.size() > 0 ? smartCoordinates.get(0) : chooseEmptyCoordinatesFromCenter();
     }
 
     private boolean isNaiveMove() {
         return rand.nextDouble() > skillFactor;
-    }
-
-    @NotNull
-    public Coordinates chooseNextEmptyCoordinatesFromCenter() throws BoardIsFullException {
-        int boardSize = getBoardSizeInCurrentGame();
-        double moreCenterValue = boardSize / 2.0 - 0.5;
-
-        return getStreamOfEmptyCoordinatesOnBoardInCurrentGame()
-                .min((coord1, coord2) ->
-                        (int) (getWeightRespectToCenter(moreCenterValue, coord1) - getWeightRespectToCenter(moreCenterValue, coord2)))
-                .orElseThrow(BoardIsFullException::new);
     }
 }
 

@@ -29,7 +29,7 @@ public class GameTestUtility {
         cpuPlayer.setCurrentGame(game);
         while (!game.isEnded()) {
             try {
-                tryToPlaceStoneAndChangeTurn(cpuPlayer.chooseSmartEmptyCoordinates(), game);
+                tryToPlaceStoneAndChangeTurn(cpuPlayer.chooseEmptyCoordinatesSmartly(), game);
             } catch (BoardIsFullException e) {
                 fail(e);
             }
