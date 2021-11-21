@@ -1,6 +1,7 @@
 package it.units.sdm.gomoku.model.entities.player;
 
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
+import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
 import it.units.sdm.gomoku.model.entities.Game;
 import it.units.sdm.gomoku.model.entities.game.GameTestUtility;
@@ -46,7 +47,7 @@ public class CPUPlayerTest {
     }
 
     private void setUpBoardFromSize(int boardSize) {
-        game = new Game(boardSize, cpuPlayerSmart, cpuPlayerNaive);
+        game = new Game(new PositiveInteger(boardSize), cpuPlayerSmart, cpuPlayerNaive);
         game.start();
         cpuPlayerSmart.setCurrentGame(game);
         cpuPlayerNaive.setCurrentGame(game);

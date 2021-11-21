@@ -3,6 +3,7 @@ package it.units.sdm.gomoku.model.entities.player;
 import it.units.sdm.gomoku.model.custom_types.Buffer;
 import it.units.sdm.gomoku.model.custom_types.Color;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
+import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.Cell;
 import it.units.sdm.gomoku.model.entities.Game;
 import it.units.sdm.gomoku.model.entities.Player;
@@ -61,7 +62,7 @@ class PlayerTest {
     void setup() {
         blackPlayer = new FakePlayer(SAMPLE_NAME);
         whitePlayer = new FakePlayer(SAMPLE_NAME);
-        game = new Game(BOARD_SIZE, blackPlayer, whitePlayer);
+        game = new Game(new PositiveInteger(BOARD_SIZE), blackPlayer, whitePlayer);
         blackPlayer.setCurrentGame(game);
         whitePlayer.setCurrentGame(game);
         game.start();

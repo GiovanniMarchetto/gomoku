@@ -2,6 +2,7 @@ package it.units.sdm.gomoku.model.entities.game;
 
 import it.units.sdm.gomoku.model.custom_types.Color;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
+import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
 import it.units.sdm.gomoku.model.entities.Game;
@@ -33,7 +34,7 @@ class GameTest {
 
     @BeforeEach
     void setUp() {
-        game = new Game(BOARD_SIZE, cpuBlack, cpuWhite);
+        game = new Game(new PositiveInteger(BOARD_SIZE), cpuBlack, cpuWhite);
     }
 
     @Test
@@ -256,7 +257,7 @@ class GameTest {
         } catch (InterruptedException e) {
             fail(e);
         }
-        Game gameNewer = new Game(BOARD_SIZE, cpuBlack, cpuWhite);
+        Game gameNewer = new Game(new PositiveInteger(BOARD_SIZE), cpuBlack, cpuWhite);
         assertTrue(game.compareTo(gameNewer) < 0);
     }
 

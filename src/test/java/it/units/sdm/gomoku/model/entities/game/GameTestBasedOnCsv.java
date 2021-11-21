@@ -2,6 +2,7 @@ package it.units.sdm.gomoku.model.entities.game;
 
 import it.units.sdm.gomoku.model.custom_types.Color;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
+import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.*;
 import it.units.sdm.gomoku.model.exceptions.*;
 import it.units.sdm.gomoku.utils.TestUtility;
@@ -24,7 +25,7 @@ public class GameTestBasedOnCsv {
     private Game game;
 
     private void setUpFromCsv(Cell[][] cellMatrix, Coordinates coordinatesToControl) {
-        game = new Game(cellMatrix.length, cpuBlack, cpuWhite);
+        game = new Game(new PositiveInteger(cellMatrix.length), cpuBlack, cpuWhite);
         game.start();
 
         Board board = TestUtility.createBoardFromCellMatrix(cellMatrix);
@@ -76,7 +77,7 @@ public class GameTestBasedOnCsv {
     @ParameterizedTest
     @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfMoveControlRecordFields")
     void setUpFromCsvCorrectness(Cell[][] cellMatrix, Coordinates coordinatesToControl) throws CellOutOfBoardException {
-        game = new Game(cellMatrix.length, cpuBlack, cpuWhite);
+        game = new Game(new PositiveInteger(cellMatrix.length), cpuBlack, cpuWhite);
         game.start();
 
         Board board = TestUtility.createBoardFromCellMatrix(cellMatrix);

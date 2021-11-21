@@ -1,6 +1,7 @@
 package it.units.sdm.gomoku.model.entities.player;
 
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
+import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.Game;
 import it.units.sdm.gomoku.model.entities.HumanPlayer;
 import it.units.sdm.gomoku.model.exceptions.BoardIsFullException;
@@ -22,7 +23,7 @@ class HumanPlayerTest {
     @BeforeEach
     void setup() {
         final int BOARD_SIZE = 5;
-        Game game = new Game(BOARD_SIZE, humanPlayer, humanWhite);
+        Game game = new Game(new PositiveInteger(BOARD_SIZE), humanPlayer, humanWhite);
         humanPlayer.setCurrentGame(game);
         game.start();
     }

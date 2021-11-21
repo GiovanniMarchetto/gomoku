@@ -52,10 +52,6 @@ public class Game implements Comparable<Game>, Observable {
         this.start = Instant.now();
     }
 
-    public Game(int boardSize, @NotNull Player blackPlayer, @NotNull Player whitePlayer) {
-        this(new PositiveInteger(boardSize), blackPlayer, whitePlayer);
-    }
-
     public void start() {
         gameStatusProperty.setPropertyValue(Status.STARTED); // TODO : rename all properties "*" in "*Property"
         currentPlayerProperty.setPropertyValue(blackPlayer);
