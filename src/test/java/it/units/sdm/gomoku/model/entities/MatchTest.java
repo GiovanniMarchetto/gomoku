@@ -1,9 +1,9 @@
 package it.units.sdm.gomoku.model.entities;
 
 import it.units.sdm.gomoku.model.entities.game.GameTestUtility;
+import it.units.sdm.gomoku.model.exceptions.GameNotEndedException;
 import it.units.sdm.gomoku.model.exceptions.MatchEndedException;
 import it.units.sdm.gomoku.model.exceptions.MatchNotEndedException;
-import it.units.sdm.gomoku.model.exceptions.MaxNumberOfGamesException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -31,7 +31,7 @@ class MatchTest {
         try {
             currentGame = match.initializeNewGame();
             currentGame.start();
-        } catch (MatchEndedException | MaxNumberOfGamesException e) {
+        } catch (MatchEndedException | GameNotEndedException e) {
             fail(e);
         }
     }
@@ -53,7 +53,7 @@ class MatchTest {
     }
 
     @Test
-    void addFirstGameOfTheMatchToGameList() throws MatchEndedException, MaxNumberOfGamesException, NoSuchFieldException, IllegalAccessException {
+    void addFirstGameOfTheMatchToGameList() throws MatchEndedException, NoSuchFieldException, IllegalAccessException, GameNotEndedException {
         currentGame = match.initializeNewGame();
         Field fieldGameList = match.getClass().getDeclaredField("gameList");
         fieldGameList.setAccessible(true);
@@ -63,34 +63,33 @@ class MatchTest {
     }
 
     @Test
-    void setFirstPlayerAsTheBlackOneInTheFirstGame() throws MatchEndedException, MaxNumberOfGamesException {
+    void setFirstPlayerAsTheBlackOneInTheFirstGame() throws MatchEndedException, GameNotEndedException {
         match.initializeNewGame();
         assertEquals(cpu1, match.getCurrentBlackPlayer());
     }
 
     @Test
-    void setFirstPlayerAsTheWhiteOneInTheSecondGame() throws MatchEndedException, MaxNumberOfGamesException {
+    void setFirstPlayerAsTheWhiteOneInTheSecondGame() throws MatchEndedException, GameNotEndedException {
         currentGame = match.initializeNewGame();
         GameTestUtility.disputeGameAndDraw(currentGame);
         match.initializeNewGame();
         assertEquals(cpu1, match.getCurrentWhitePlayer());
     }
 
-    @Test
-    void maxNumberOfGamesException() {
-        for (int i = 0; i < NUMBER_OF_GAMES; i++) {
-            startNewGameComplete();
-            GameTestUtility.disputeGameWithSmartAlgorithm(currentGame);
-        }
-
-        try {
-            match.initializeNewGame();
-            fail("Is over the number of games!");
-        } catch (MaxNumberOfGamesException ignored) {
-        } catch (MatchEndedException e) {
-            fail(e);
-        }
-    }
+//    @Test
+//    void maxNumberOfGamesException() {//TODO: substute with not game ended exception
+//        for (int i = 0; i < NUMBER_OF_GAMES; i++) {
+//            startNewGameComplete();
+//            GameTestUtility.disputeGameWithSmartAlgorithm(currentGame);
+//        }
+//
+//        try {
+//            match.initializeNewGame();
+//            fail("Is over the number of games!");
+//        } catch (MatchEndedException | GameNotEndedException e) {
+//            fail(e);
+//        }
+//    }
 
     @Test
     void getScoreBeforeStart() {
@@ -98,12 +97,8 @@ class MatchTest {
     }
 
     @Test
-    void getScoreAfterStart() {
-        try {
-            match.initializeNewGame();
-        } catch (MatchEndedException | MaxNumberOfGamesException e) {
-            fail(e);
-        }
+    void getScoreAfterStart() throws MatchEndedException, GameNotEndedException {
+        match.initializeNewGame();
         assertCpusScore(0, 0);
     }
 

@@ -138,7 +138,7 @@ public abstract class MainViewmodel extends Viewmodel {
             observe(currentGame);   // TODO : should fade away
             observe(currentBoard);
 
-        } catch (MatchEndedException | MaxNumberOfGamesException e) {
+        } catch (MatchEndedException | GameNotEndedException e) {
             e.printStackTrace();    // TODO : handle this exception
         }
     }

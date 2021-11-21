@@ -6,7 +6,6 @@ import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.exceptions.GameNotEndedException;
 import it.units.sdm.gomoku.model.exceptions.MatchEndedException;
 import it.units.sdm.gomoku.model.exceptions.MatchNotEndedException;
-import it.units.sdm.gomoku.model.exceptions.MaxNumberOfGamesException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,19 +18,14 @@ public class Match {
 
     @NotNull
     private final static PositiveInteger DEFAULT_MAXIMUM_GAMES = new PositiveInteger(1);
-
     @NotNull
     private final List<Game> gameList;
-
     @NotNull
     private final PositiveInteger boardSize;
-
     @NotNull
     private final PositiveInteger numberOfGames;
-
     @NotNull
     private Player currentBlackPlayer;
-
     @NotNull
     private Player currentWhitePlayer;
 
@@ -80,25 +74,23 @@ public class Match {
 
 
     @NotNull
-    public Game initializeNewGame() throws MatchEndedException, MaxNumberOfGamesException {
-        if (gameList.size() < getNumberOfGames()) {
-//                if (!isCurrentGameEnded())
-            if (!isEnded()) {
-                //TODO: need exception for lastGame not Ended?
-                if (gameList.size() > 0) {
-                    invertCurrentPlayersColors();
-                }
-                Game newGame = new Game(boardSize, currentBlackPlayer, currentWhitePlayer);
-                gameList.add(newGame);
-                Stream.of(currentBlackPlayer, currentWhitePlayer)
-                        .forEach(player -> player.setCurrentGame(newGame));
-                return newGame;
-            } else {
-                throw new MatchEndedException();
-            }
-        } else {
-            throw new MaxNumberOfGamesException();
+    public Game initializeNewGame() throws MatchEndedException, GameNotEndedException {
+//        if (!isCurrentGameEnded()) {//TODO: de-comment this and correct tests
+//            throw new GameNotEndedException();
+//        }
+
+        if (isEnded()) {
+            throw new MatchEndedException();
         }
+
+        if (gameList.size() > 0) {
+            invertCurrentPlayersColors();
+        }
+        Game newGame = new Game(boardSize, currentBlackPlayer, currentWhitePlayer);
+        gameList.add(newGame);
+        Stream.of(currentBlackPlayer, currentWhitePlayer)
+                .forEach(player -> player.setCurrentGame(newGame));
+        return newGame;
     }
 
     private void invertCurrentPlayersColors() {
