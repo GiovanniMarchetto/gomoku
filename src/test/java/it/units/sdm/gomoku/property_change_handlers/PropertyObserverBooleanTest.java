@@ -10,16 +10,16 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PropertyObserverBooleanTest {
-    ObservablePropertySettable<Boolean> observable;
+    ObservablePropertySettable<Boolean> observableProperty;
     AtomicBoolean valueToChange;
 
     @BeforeEach
     void setup() {
-        observable = new ObservablePropertySettable<>(false);
+        observableProperty = new ObservablePropertySettable<>(false);
         valueToChange = new AtomicBoolean(false);
 
         new PropertyObserver<>(
-                observable,
+                observableProperty,
                 propertyChangeEvent ->
                         valueToChange.set((Boolean) propertyChangeEvent.getNewValue())
         );
@@ -32,20 +32,20 @@ class PropertyObserverBooleanTest {
 
     @Test
     void onChange() {
-        observable.setPropertyValue(true);
+        observableProperty.setPropertyValue(true);
         assertTrue(valueToChange.get());
     }
 
     @Test
     void onNoChangeButValueModifyDirectly() {
         valueToChange.set(true);
-        observable.setPropertyValue(false);
+        observableProperty.setPropertyValue(false);
         assertTrue(valueToChange.get());
     }
 
     @Test
     void onNoChange() {
-        observable.setPropertyValue(false);
+        observableProperty.setPropertyValue(false);
         assertFalse(valueToChange.get());
     }
 

@@ -53,7 +53,7 @@ public class Game implements Comparable<Game>, Observable {
     }
 
     public void start() {
-        gameStatusProperty.setPropertyValue(Status.STARTED); // TODO : rename all properties "*" in "*Property"
+        gameStatusProperty.setPropertyValue(Status.STARTED);
         currentPlayerProperty.setPropertyValue(blackPlayer);
     }
 

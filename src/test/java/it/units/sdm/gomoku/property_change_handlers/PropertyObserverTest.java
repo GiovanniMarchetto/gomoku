@@ -12,14 +12,14 @@ class PropertyObserverTest {
     private final String changeValue = "change";
     private final String startRelatedValue = "bingo";
     private String related;
-    private final ObservablePropertySettable<String> observable = new ObservablePropertySettable<>(startObservableValue);
+    private final ObservablePropertySettable<String> observableProperty = new ObservablePropertySettable<>(startObservableValue);
 
     @BeforeEach
     void setup() {
         related = startRelatedValue;
 
         new PropertyObserver<>(
-                observable,
+                observableProperty,
                 propertyChangeEvent ->
                         related = (String) propertyChangeEvent.getNewValue()
         );
@@ -28,27 +28,27 @@ class PropertyObserverTest {
     @Test
     void onStart() {
         assertNotEquals(startRelatedValue, startObservableValue);
-        assertNotEquals(related, observable.getPropertyValue());
+        assertNotEquals(related, observableProperty.getPropertyValue());
     }
 
     @Test
     void onChange() {
-        observable.setPropertyValue(changeValue);
-        assertEquals(observable.getPropertyValue(), related);
+        observableProperty.setPropertyValue(changeValue);
+        assertEquals(observableProperty.getPropertyValue(), related);
     }
 
     @Test
     void onNoChangeButValueModifyDirectly() {
         String expected = "directly";
         related = expected;
-        observable.setPropertyValue(startObservableValue);
+        observableProperty.setPropertyValue(startObservableValue);
         assertEquals(expected, related);
     }
 
     @Test
     void onNoChange() {
-        observable.setPropertyValue(startObservableValue);
-        assertNotEquals(related, observable.getPropertyValue());
+        observableProperty.setPropertyValue(startObservableValue);
+        assertNotEquals(related, observableProperty.getPropertyValue());
     }
 
 }
