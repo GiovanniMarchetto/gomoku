@@ -33,7 +33,7 @@ public abstract class Player implements Observable {
     }
 
     public void makeMove() throws BoardIsFullException,
-            GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException { // TODO : test
+            GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
         if (currentGame == null) {
             throw new IllegalStateException(new GameNotSetException());
         }
@@ -42,7 +42,7 @@ public abstract class Player implements Observable {
     }
 
     public synchronized void setMoveToBeMade(@NotNull final Coordinates nextMoveToMake)
-            throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException { // TODO: test
+            throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
         if (currentGame == null) {
             throw new IllegalStateException(new GameNotSetException());
         }
@@ -99,16 +99,16 @@ public abstract class Player implements Observable {
         return Objects.requireNonNull(currentGame).isBoardEmpty();
     }
 
-    protected Stream<Coordinates> getStreamOfEmptyCoordinatesOnBoard() {   // TODO: test
+    protected Stream<Coordinates> getStreamOfEmptyCoordinatesOnBoardInCurrentGame() {
         return Objects.requireNonNull(currentGame).getStreamOfEmptyCoordinatesOnBoard();
     }
 
-    protected boolean isHeadOfAChainOfStones(@NotNull final Coordinates coord, @NotNull final PositiveInteger positiveInteger) {   // TODO: test
+    protected boolean isHeadOfAChainOfStonesInCurrentGame(@NotNull final Coordinates coord, @NotNull final PositiveInteger positiveInteger) {
         return Objects.requireNonNull(currentGame)
                 .isHeadOfAChainOfStones(Objects.requireNonNull(coord), Objects.requireNonNull(positiveInteger));
     }
 
-    protected int getBoardSize() {    // TODO: test
+    protected int getBoardSizeInCurrentGame() {
         return Objects.requireNonNull(currentGame).getBoardSize();
     }
 

@@ -96,8 +96,8 @@ public class CPUPlayer extends Player {
 
         List<Coordinates> smartCoordinates = possibleChainLengths
                 .boxed()
-                .flatMap(chainLength -> getStreamOfEmptyCoordinatesOnBoard()
-                        .filter(coord -> isHeadOfAChainOfStones(coord, new PositiveInteger(chainLength))))
+                .flatMap(chainLength -> getStreamOfEmptyCoordinatesOnBoardInCurrentGame()
+                        .filter(coord -> isHeadOfAChainOfStonesInCurrentGame(coord, new PositiveInteger(chainLength))))
                 .toList();
 
         return smartCoordinates.size() > 0 ? smartCoordinates.get(0) : chooseNextEmptyCoordinatesFromCenter();
@@ -109,10 +109,10 @@ public class CPUPlayer extends Player {
 
     @NotNull
     public Coordinates chooseNextEmptyCoordinatesFromCenter() throws BoardIsFullException {
-        int boardSize = getBoardSize();
+        int boardSize = getBoardSizeInCurrentGame();
         double moreCenterValue = boardSize / 2.0 - 0.5;
 
-        return getStreamOfEmptyCoordinatesOnBoard()
+        return getStreamOfEmptyCoordinatesOnBoardInCurrentGame()
                 .min((coord1, coord2) ->
                         (int) (getWeightRespectToCenter(moreCenterValue, coord1) - getWeightRespectToCenter(moreCenterValue, coord2)))
                 .orElseThrow(BoardIsFullException::new);
