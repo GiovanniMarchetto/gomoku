@@ -34,7 +34,7 @@ public class CPUPlayer extends Player {
                      @Range(from = (int) MIN_SKILL_FACTOR, to = (int) MAX_SKILL_FACTOR) double skillFactor)
             throws IllegalArgumentException {
         super(name);
-        if (skillFactor >= MIN_SKILL_FACTOR && skillFactor <= MAX_SKILL_FACTOR) {
+        if (isValidSkillFactor(skillFactor)) {
             this.skillFactor = skillFactor;
         } else {
             throw new IllegalArgumentException();
@@ -53,13 +53,8 @@ public class CPUPlayer extends Player {
         return Math.pow(center - coordinates.getX(), 2) + Math.pow(center - coordinates.getY(), 2);
     }
 
-    public static boolean isValidSkillFactorFromString(@NotNull final String value) {
-        try {
-            double input = Double.parseDouble(value);
-            return input >= CPUPlayer.MIN_SKILL_FACTOR && input <= CPUPlayer.MAX_SKILL_FACTOR;
-        } catch (NumberFormatException e) {
-            return false;
-        }
+    public static boolean isValidSkillFactor(final double value) {
+        return value >= CPUPlayer.MIN_SKILL_FACTOR && value <= CPUPlayer.MAX_SKILL_FACTOR;
     }
 
     @Override

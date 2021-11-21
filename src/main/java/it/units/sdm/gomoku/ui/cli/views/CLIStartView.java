@@ -11,6 +11,7 @@ import it.units.sdm.gomoku.ui.support.MatchTypes;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
+import java.util.function.Predicate;
 
 public class CLIStartView extends View<StartViewmodel> {// TODO : refactor this class and test
 
@@ -19,9 +20,17 @@ public class CLIStartView extends View<StartViewmodel> {// TODO : refactor this 
     }
 
     private static String askAndGetCPUPlayerSkillFactor(int playerNumber) { //TODO: test
+        Predicate<String> isValidSkillFactorFromString = value -> {
+            try {
+                return CPUPlayer.isValidSkillFactor(Double.parseDouble(value));
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        };
+
         System.out.print("Skill factor of player " + playerNumber + " (between 0 and 1): ");
         return IOUtility.checkInputAndGet(
-                CPUPlayer::isValidSkillFactorFromString,
+                isValidSkillFactorFromString,
                 System.out,
                 "Specify a double between " + CPUPlayer.MIN_SKILL_FACTOR
                         + " and " + CPUPlayer.MAX_SKILL_FACTOR + " : "

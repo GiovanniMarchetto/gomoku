@@ -3,15 +3,18 @@ package it.units.sdm.gomoku.model.entities.player;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
 import it.units.sdm.gomoku.model.entities.Game;
+import it.units.sdm.gomoku.model.entities.game.GameTestUtility;
 import it.units.sdm.gomoku.model.exceptions.BoardIsFullException;
 import it.units.sdm.gomoku.model.exceptions.CellAlreadyOccupiedException;
 import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
 import it.units.sdm.gomoku.model.exceptions.GameEndedException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.RepetitionInfo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.stream.IntStream;
 
@@ -37,10 +40,33 @@ public class CPUPlayerTest {
             new Coordinates(0, 0), new Coordinates(0, 3), new Coordinates(3, 0), new Coordinates(3, 3)};
     private static Game game;
 
+    @BeforeEach
+    void setUpBoard() {
+        setUpBoardFromSize(BOARD_SIZE_5);
+    }
+
+    private void setUpBoardFromSize(int boardSize) {
+        game = new Game(boardSize, cpuPlayerSmart, cpuPlayerNaive);
+        game.start();
+        cpuPlayerSmart.setCurrentGame(game);
+        cpuPlayerNaive.setCurrentGame(game);
+    }
+
     @ParameterizedTest
-    @CsvSource({"foo,false", "-1,false", "-0.1,false", "0,true", "0.5,true", "1,true", "1.0,true", "1.05,false", "8,false"})
-    void validateStringIfIsSkillFactor(String input, boolean validSkillFactor) {
-        assertEquals(validSkillFactor, CPUPlayer.isValidSkillFactorFromString(input));
+    @CsvSource({"-1,false", "-0.1,false", "0,true", "0.5,true", "1,true", "1.0,true", "1.05,false", "8,false"})
+    void dontCreateIfSkillFactorNotValid(double skillFactor, boolean validSkillFactor) {
+        try {
+            new CPUPlayer("cpu", skillFactor);
+            assertTrue(validSkillFactor);
+        } catch (IllegalArgumentException ignored) {
+            assertFalse(validSkillFactor);
+        }
+    }
+
+    @ParameterizedTest
+    @CsvSource({"-1,false", "-0.1,false", "0,true", "0.5,true", "1,true", "1.0,true", "1.05,false", "8,false"})
+    void validateSkillFactor(double input, boolean validSkillFactor) {
+        assertEquals(validSkillFactor, CPUPlayer.isValidSkillFactor(input));
     }
 
     @Test
@@ -54,6 +80,7 @@ public class CPUPlayerTest {
 
     @RepeatedTest(BOARD_SIZE_4 * BOARD_SIZE_4)
     void occupyNCellFromCenterInBoard4x4(RepetitionInfo repetitionInfo) throws BoardIsFullException {
+        setUpBoardFromSize(BOARD_SIZE_4);
         int index = repetitionInfo.getCurrentRepetition() - 1;
         occupyNCellsFromCenter(index, BOARD_SIZE_4, coordinatesInOrderFromCenterForBoard4x4);
 
@@ -71,7 +98,6 @@ public class CPUPlayerTest {
     private void occupyNCellsFromCenter(int N, int boardSize,
                                         Coordinates[] coordinatesInOrderFromCenterForBoard) {
         assert N < Math.pow(boardSize, 2);
-        setUpBoardFromSize(boardSize);
 
         IntStream.range(0, N)
                 .forEach(i -> {
@@ -84,11 +110,63 @@ public class CPUPlayerTest {
                 });
     }
 
-    private void setUpBoardFromSize(int boardSize) {
-        game = new Game(boardSize, cpuPlayerSmart, cpuPlayerNaive);
-        game.start();
-        cpuPlayerSmart.setCurrentGame(game);
-        cpuPlayerNaive.setCurrentGame(game);
+    @Test
+    void chooseTheCenterOfTheBoardIfTheBoardIsEmpty() throws BoardIsFullException {
+        Coordinates expected = cpuPlayerSmart.chooseEmptyCoordinatesFromCenter();
+        assertEquals(expected, cpuPlayerSmart.chooseEmptyCoordinatesSmartly());
     }
 
+    @Test
+    void chooseTheCenterOfTheBoardIfThereAreNoChainInTheBoard() throws BoardIsFullException {
+        occupyNCellInARow(BOARD_SIZE_5, 0);
+        Coordinates expected = cpuPlayerSmart.chooseEmptyCoordinatesFromCenter();
+        assertEquals(expected, cpuPlayerSmart.chooseEmptyCoordinatesSmartly());
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {2, 3, 4})
+    void chooseTheCoordinatesConsecutiveToAChainOfMStones(int M) throws BoardIsFullException {
+        createAChainOfMStonesInAColumnStartingFromFirstRow(M);
+        Coordinates expected = new Coordinates(M, 0);
+        assertEquals(expected, cpuPlayerSmart.chooseEmptyCoordinatesSmartly());
+    }
+
+    private void createAChainOfMStonesInAColumnStartingFromFirstRow(int M) {
+        IntStream.range(0, M).forEach(i -> occupyNCellInARow(2, i));
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, 1, 2, 3, BOARD_SIZE_5, BOARD_SIZE_5 * BOARD_SIZE_5 - 1})
+    void chooseStoneFromCenterIfCPUHasMinimumSkill(int numberOfMoves) throws BoardIsFullException {
+        IntStream.range(0, numberOfMoves).forEach(i -> {
+            try {
+                game.placeStoneAndChangeTurn(cpuPlayerSmart.chooseEmptyCoordinatesFromCenter());
+            } catch (BoardIsFullException | CellAlreadyOccupiedException | GameEndedException | CellOutOfBoardException e) {
+                fail(e);
+            }
+        });
+        Coordinates expected = cpuPlayerSmart.chooseEmptyCoordinatesFromCenter();
+        assertEquals(expected, cpuPlayerNaive.chooseEmptyCoordinatesSmartly());
+    }
+
+    @Test
+    void throwExceptionWhenChoosingSmartlyNextCoordinatesIfTheBoardIsFull() {
+        try {
+            GameTestUtility.disputeGameAndDraw(game);
+            Coordinates findCoordinates = cpuPlayerSmart.chooseEmptyCoordinatesSmartly();
+            fail("The board is full! But the smart choose find: " + findCoordinates);
+        } catch (BoardIsFullException ignored) {
+        }
+    }
+
+    private void occupyNCellInARow(int n, int row) {
+        IntStream.range(0, n).forEach(col -> {
+            try {
+                game.placeStoneAndChangeTurn(new Coordinates(row, col));
+            } catch (BoardIsFullException | CellAlreadyOccupiedException
+                    | CellOutOfBoardException | GameEndedException e) {
+                fail(e.getMessage());
+            }
+        });
+    }
 }

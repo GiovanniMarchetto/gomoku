@@ -39,9 +39,11 @@ class GameTest {
     @Test
     void getGameStatus() {
         try {
-            Field gameStatusField = TestUtility.getFieldAlreadyMadeAccessible(Game.class, "gameStatusProperty");
+            Field gameStatusField =
+                    TestUtility.getFieldAlreadyMadeAccessible(Game.class, "gameStatusProperty");
             @SuppressWarnings("unchecked")
-            ObservablePropertySettable<Game.Status> gameStatusProperty = (ObservablePropertySettable<Game.Status>) gameStatusField.get(game);
+            ObservablePropertySettable<Game.Status> gameStatusProperty =
+                    (ObservablePropertySettable<Game.Status>) gameStatusField.get(game);
             assertEquals(gameStatusProperty, game.getGameStatusProperty());
         } catch (NoSuchFieldException | IllegalAccessException e) {
             fail(e);
@@ -62,9 +64,11 @@ class GameTest {
     @Test
     void getCurrentPlayer() {
         try {
-            Field currentPlayerField = TestUtility.getFieldAlreadyMadeAccessible(Game.class, "currentPlayerProperty");
+            Field currentPlayerField =
+                    TestUtility.getFieldAlreadyMadeAccessible(Game.class, "currentPlayerProperty");
             @SuppressWarnings("unchecked")
-            ObservablePropertySettable<Player> currentPlayerProperty = (ObservablePropertySettable<Player>) currentPlayerField.get(game);
+            ObservablePropertySettable<Player> currentPlayerProperty =
+                    (ObservablePropertySettable<Player>) currentPlayerField.get(game);
             assertEquals(currentPlayerProperty, game.getCurrentPlayerProperty());
         } catch (NoSuchFieldException | IllegalAccessException e) {
             fail(e);
