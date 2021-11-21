@@ -63,6 +63,7 @@ class PlayerTest {
         whitePlayer = new FakePlayer(SAMPLE_NAME);
         game = new Game(BOARD_SIZE, blackPlayer, whitePlayer);
         blackPlayer.setCurrentGame(game);
+        whitePlayer.setCurrentGame(game);
         game.start();
     }
 
@@ -100,7 +101,7 @@ class PlayerTest {
     }
 
     @Test
-    void dontRegisterMoveFromUserIfGameNotSet()
+    void dontRegisterMoveIfGameNotSet()
             throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
 
         Player playerWithNoGameSet = new FakePlayer(SAMPLE_NAME);
@@ -114,7 +115,7 @@ class PlayerTest {
     }
 
     @Test
-    void dontRegisterMoveFromUserIfMoveIsNull()
+    void dontRegisterMoveIfMoveIsNull()
             throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
 
         boolean caughtException = false;
@@ -129,7 +130,7 @@ class PlayerTest {
     }
 
     @Test
-    void dontRegisterMoveFromUserIfBoardCellIsAlreadyOccupied()
+    void dontRegisterMoveIfBoardCellIsAlreadyOccupied()
             throws BoardIsFullException, CellOutOfBoardException, CellAlreadyOccupiedException, GameEndedException {
 
         final Color SAMPLE_COLOR = Color.BLACK;
@@ -148,7 +149,7 @@ class PlayerTest {
     }
 
     @Test
-    void registerMoveFromUserIfValidCoordinates()
+    void registerMoveIfValidCoordinates()
             throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException,
             NoSuchFieldException, IllegalAccessException {
 
@@ -195,6 +196,22 @@ class PlayerTest {
     @Test
     void setCoordinatesRequiredToContinuePropertyValueToFalseInTheConstructor() {
         assertEquals(Boolean.FALSE, blackPlayer.getCoordinatesRequiredToContinueProperty().getPropertyValue());
+    }
+
+    @Test
+    void dontRequireMoveToFirstPlayerAfterHasJustDoneTheFirstMove()
+            throws NoSuchFieldException, IllegalAccessException,
+            GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException, BoardIsFullException {
+
+        makeMoveIfValid();
+
+        @SuppressWarnings("unchecked")
+        ObservableProperty<Boolean> coordinatesRequiredToContinueProperty =
+                (ObservableProperty<Boolean>) TestUtility.getFieldValue(
+                        "coordinatesRequiredToContinueProperty", blackPlayer);
+
+        //noinspection ConstantConditions
+        assertEquals(Boolean.FALSE, coordinatesRequiredToContinueProperty.getPropertyValue());
     }
 
     @Test
