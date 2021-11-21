@@ -79,7 +79,7 @@ public class GUISummaryView extends View<GUIMainViewmodel> {
     }
 
     public void continueButtonOnMouseClicked(MouseEvent e) {
-        getViewmodelAssociatedWithView().startNewGame();
+        getViewmodelAssociatedWithView().initializeNewGame();
     }
 
     public void extraGameButtonOnMouseClicked(MouseEvent e) {

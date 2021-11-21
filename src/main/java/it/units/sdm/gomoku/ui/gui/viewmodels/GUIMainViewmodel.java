@@ -13,8 +13,8 @@ public class GUIMainViewmodel extends MainViewmodel {
     }
 
     @Override
-    public void startNewGame() {
-        super.startNewGame();
+    public void initializeNewGame() {
+        super.initializeNewGame();
         SceneController.passToNewSceneIfIsGUIRunningOrDoNothing(MAIN_VIEW);
     }
 

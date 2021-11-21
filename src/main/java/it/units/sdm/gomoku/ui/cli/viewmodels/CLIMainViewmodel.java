@@ -18,8 +18,8 @@ public class CLIMainViewmodel extends MainViewmodel {   // TODO : test
     }
 
     @Override
-    public void startNewGame() {
-        super.startNewGame();
+    public void initializeNewGame() {
+        super.initializeNewGame();
         CLISceneController.passToNewView(CLI_MAIN_VIEW);
     }
 }

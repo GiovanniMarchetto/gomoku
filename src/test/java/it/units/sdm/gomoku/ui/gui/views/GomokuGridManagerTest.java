@@ -32,7 +32,7 @@ class GomokuGridManagerTest {
             matchField.setAccessible(true);
             matchField.set(vm, new Match(boardSize, numberOfGames, p1, p2));
 
-            startNewGame();
+            initializeNewGame();
 
         } catch (NoSuchFieldException | IllegalAccessException |
                 InvocationTargetException | NoSuchMethodException e) {
@@ -41,8 +41,8 @@ class GomokuGridManagerTest {
         }
     }
 
-    private void startNewGame() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        Method startNewGameMethod = MainViewmodel.class.getDeclaredMethod("startNewGame");
+    private void initializeNewGame() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        Method startNewGameMethod = MainViewmodel.class.getDeclaredMethod("initializeNewGame");
         startNewGameMethod.setAccessible(true);
         startNewGameMethod.invoke(vm);
     }

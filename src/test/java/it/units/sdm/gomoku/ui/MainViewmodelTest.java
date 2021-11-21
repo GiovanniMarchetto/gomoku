@@ -79,30 +79,30 @@ class MainViewmodelTest {
 
     @Test
     void startNewGame() {
-        mainViewmodel.createMatchFromSetupAndStartGame(setup);
+        mainViewmodel.createMatchFromSetupAndInitializeNewGame(setup);
         Game first = mainViewmodel.getCurrentGame();
-        mainViewmodel.startNewGame();
+        mainViewmodel.initializeNewGame();
         assertNotEquals(first, mainViewmodel.getCurrentGame());
     }
 
     @Test
-    void startNewGameAfterEndMatch() {
-        //TODO: the startNewGame must pass the exception?
+    void initializeNewGameAfterEndMatch() {
+        //TODO: the initializeNewGame must pass the exception?
 //        mainViewmodel.startNewMatch();
 //        for (int i = 1; i < setup.numberOfGames().intValue(); i++) {
-//            mainViewmodel.startNewGame();
+//            mainViewmodel.initializeNewGame();
 //        }
 //        Game oldGame = mainViewmodel.getCurrentGame();
-//        mainViewmodel.startNewGame();
+//        mainViewmodel.initializeNewGame();
 //        Game  newGame = mainViewmodel.getCurrentGame();
 //        assertEquals(oldGame, newGame);
     }
 
     @Test
-    void startExtraGame() {
+    void initializeExtraGame() {
         mainViewmodel.startNewMatch();
         for (int i = 1; i < setup.numberOfGames().intValue(); i++) {
-            mainViewmodel.startNewGame();
+            mainViewmodel.initializeNewGame();
         }
         Game oldGame = mainViewmodel.getCurrentGame();
         mainViewmodel.startExtraGame();
@@ -129,7 +129,7 @@ class MainViewmodelTest {
         //TODO: this is the only test with sense for getters
         // (the others are already tested in the model)
         //if require match must be call setMatch()
-        //if require currentGame must be call startNewGame
+        //if require currentGame must be call initializeNewGame
     }
 
     @Test
@@ -238,7 +238,7 @@ class MainViewmodelTest {
         HumanPlayer humanPlayer = new HumanPlayer("Human");
         Setup setupWithHuman = new Setup(
                 humanPlayer, cpuPlayer1, numberOfGames, boardSize);
-        mainViewmodel.createMatchFromSetupAndStartGame(setupWithHuman);
+        mainViewmodel.createMatchFromSetupAndInitializeNewGame(setupWithHuman);
         mainViewmodel.getCurrentGame().start();
 
         final int REASONABLE_TIME_AFTER_WHICH_THREAD_WILL_BE_INTERRUPTED_IN_MILLIS = 10;

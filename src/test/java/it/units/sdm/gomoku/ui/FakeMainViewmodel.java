@@ -15,7 +15,7 @@ public class FakeMainViewmodel extends MainViewmodel {
 
     @Override
     public void startNewMatch() {
-        createMatchFromSetupAndStartGame(setup);
+        createMatchFromSetupAndInitializeNewGame(setup);
     }
 
     @Override

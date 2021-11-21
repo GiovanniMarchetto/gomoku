@@ -59,7 +59,7 @@ public class CLISummaryView extends View<CLIMainViewmodel> implements Observer {
                 }
             }
         } else {
-            viewmodel.startNewGame();
+            viewmodel.initializeNewGame();
         }
     }
 

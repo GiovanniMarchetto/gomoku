@@ -122,14 +122,14 @@ public abstract class MainViewmodel extends Viewmodel {
         currentGame.start();
     }
 
-    public void createMatchFromSetupAndStartGame(Setup setup) {
+    public void createMatchFromSetupAndInitializeNewGame(Setup setup) {
         setMatch(new Match(setup));
-        startNewGame();
+        initializeNewGame();
     }
 
     public abstract void startNewMatch();
 
-    public void startNewGame() {
+    public void initializeNewGame() {
         try {
             currentGame = Objects.requireNonNull(match).initializeNewGame();
             currentBoard = currentGame.getBoard();
@@ -145,7 +145,7 @@ public abstract class MainViewmodel extends Viewmodel {
 
     public void startExtraGame() {
         addAnExtraGameToThisMatch();
-        startNewGame();
+        initializeNewGame();
     }
 
     protected void addAnExtraGameToThisMatch() {

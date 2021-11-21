@@ -38,7 +38,7 @@ public class StartViewmodel extends Viewmodel {
     }
 
     public void createAndStartMatch() {
-        mainViewmodel.createMatchFromSetupAndStartGame(createSetup());
+        mainViewmodel.createMatchFromSetupAndInitializeNewGame(createSetup());
     }
 
     private Setup createSetup() {
