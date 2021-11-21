@@ -65,7 +65,8 @@ public class CPUPlayer extends Player {
             nextMoveToMake = chooseEmptyCoordinatesSmartly();
             super.setMoveToBeMade(nextMoveToMake);
             super.makeMove();
-        } catch (BoardIsFullException | GameEndedException | CellOutOfBoardException | CellAlreadyOccupiedException e) {
+        } catch (BoardIsFullException | GameEndedException |
+                CellOutOfBoardException | CellAlreadyOccupiedException e) {
             Utility.getLoggerOfClass(getClass())
                     .log(Level.SEVERE, "Illegal move: impossible to choose coordinate " + nextMoveToMake, e);
             throw new IllegalStateException(e);

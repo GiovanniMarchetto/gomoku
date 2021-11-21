@@ -65,13 +65,12 @@ public class CPUPlayerTest {
 
     @ParameterizedTest
     @CsvSource({"-1,false", "-0.1,false", "0,true", "0.5,true", "1,true", "1.0,true", "1.05,false", "8,false"})
-    void validateSkillFactor(double input, boolean validSkillFactor) {
+    void testSkillFactorValidator(double input, boolean validSkillFactor) {
         assertEquals(validSkillFactor, CPUPlayer.isValidSkillFactor(input));
     }
 
     @Test
-    void makeASmartMove() throws BoardIsFullException, GameEndedException, CellOutOfBoardException {
-        setUpBoardFromSize(BOARD_SIZE_5);
+    void makeFirstMoveSmartly() throws BoardIsFullException, GameEndedException, CellOutOfBoardException {
         Coordinates coordinatesSmartlyChosenFromAlgorithm = cpuPlayerSmart.chooseEmptyCoordinatesSmartly();
         assert game.isBoardEmpty();
         cpuPlayerSmart.makeMove();
@@ -79,7 +78,7 @@ public class CPUPlayerTest {
     }
 
     @RepeatedTest(BOARD_SIZE_4 * BOARD_SIZE_4)
-    void occupyNCellFromCenterInBoard4x4(RepetitionInfo repetitionInfo) throws BoardIsFullException {
+    void occupyNCellsFromCenterInBoard4x4(RepetitionInfo repetitionInfo) throws BoardIsFullException {
         setUpBoardFromSize(BOARD_SIZE_4);
         int index = repetitionInfo.getCurrentRepetition() - 1;
         occupyNCellsFromCenter(index, BOARD_SIZE_4, coordinatesInOrderFromCenterForBoard4x4);
@@ -89,16 +88,16 @@ public class CPUPlayerTest {
     }
 
     @RepeatedTest(BOARD_SIZE_5 * BOARD_SIZE_5)
-    void occupyNCellFromCenterInBoard5x5(RepetitionInfo repetitionInfo) throws BoardIsFullException {
+    void occupyNCellsFromCenterInBoard5x5(RepetitionInfo repetitionInfo) throws BoardIsFullException {
         int index = repetitionInfo.getCurrentRepetition() - 1;
         occupyNCellsFromCenter(index, BOARD_SIZE_5, coordinatesInOrderFromCenterForBoard5x5);
         assertEquals(coordinatesInOrderFromCenterForBoard5x5[index], cpuPlayerSmart.chooseEmptyCoordinatesFromCenter());
     }
 
-    private void occupyNCellsFromCenter(int N, int boardSize,
-                                        Coordinates[] coordinatesInOrderFromCenterForBoard) {
-        assert N < Math.pow(boardSize, 2);
+    private void occupyNCellsFromCenter(
+            int N, int boardSize, Coordinates[] coordinatesInOrderFromCenterForBoard) {
 
+        assert N < Math.pow(boardSize, 2);
         IntStream.range(0, N)
                 .forEach(i -> {
                     try {
@@ -117,7 +116,7 @@ public class CPUPlayerTest {
     }
 
     @Test
-    void chooseTheCenterOfTheBoardIfThereAreNoChainInTheBoard() throws BoardIsFullException {
+    void chooseTheCenterOfTheBoardIfThereAreNoChainsInTheBoard() throws BoardIsFullException {
         occupyNCellInARow(BOARD_SIZE_5, 0);
         Coordinates expected = cpuPlayerSmart.chooseEmptyCoordinatesFromCenter();
         assertEquals(expected, cpuPlayerSmart.chooseEmptyCoordinatesSmartly());
@@ -125,7 +124,7 @@ public class CPUPlayerTest {
 
     @ParameterizedTest
     @ValueSource(ints = {2, 3, 4})
-    void chooseTheCoordinatesConsecutiveToAChainOfMStones(int M) throws BoardIsFullException {
+    void chooseTheCoordinatesNextToAChainOfMStones(int M) throws BoardIsFullException {
         createAChainOfMStonesInAColumnStartingFromFirstRow(M);
         Coordinates expected = new Coordinates(M, 0);
         assertEquals(expected, cpuPlayerSmart.chooseEmptyCoordinatesSmartly());
@@ -141,7 +140,8 @@ public class CPUPlayerTest {
         IntStream.range(0, numberOfMoves).forEach(i -> {
             try {
                 game.placeStoneAndChangeTurn(cpuPlayerSmart.chooseEmptyCoordinatesFromCenter());
-            } catch (BoardIsFullException | CellAlreadyOccupiedException | GameEndedException | CellOutOfBoardException e) {
+            } catch (BoardIsFullException | CellAlreadyOccupiedException |
+                    GameEndedException | CellOutOfBoardException e) {
                 fail(e);
             }
         });
