@@ -18,7 +18,7 @@ import java.util.stream.IntStream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class CPUPlayerSmartChooseEmptyCoordinatesTest {
+public class CPUPlayerSmartAlgorithmTest {
 
     private static final int BOARD_SIZE = 5;
     private static Game game;
