@@ -50,20 +50,6 @@ public abstract class MainViewmodel extends Viewmodel {
         this.modelPropertyObservers = new ArrayList<>();
     }
 
-    protected void initializeNewGame() {//TODO: need? for me inline
-        try {
-            currentGame = Objects.requireNonNull(match).initializeNewGame();
-            currentBoard = currentGame.getBoard();
-            observePropertiesOfModel();
-
-            observe(currentGame);   // TODO : should fade away
-            observe(currentBoard);
-
-        } catch (MatchEndedException | MaxNumberOfGamesException e) {
-            e.printStackTrace();    // TODO : handle this exception
-        }
-    }
-
     private <ObservedPropertyValueType> void addObservedProperty(
             @NotNull final ObservableProperty<ObservedPropertyValueType> observableProperty,
             @NotNull final Consumer<PropertyChangeEvent> actionOnPropertyChange) {
@@ -144,7 +130,17 @@ public abstract class MainViewmodel extends Viewmodel {
     public abstract void startNewMatch();
 
     public void startNewGame() {
-        initializeNewGame();
+        try {
+            currentGame = Objects.requireNonNull(match).initializeNewGame();
+            currentBoard = currentGame.getBoard();
+            observePropertiesOfModel();
+
+            observe(currentGame);   // TODO : should fade away
+            observe(currentBoard);
+
+        } catch (MatchEndedException | MaxNumberOfGamesException e) {
+            e.printStackTrace();    // TODO : handle this exception
+        }
     }
 
     public void startExtraGame() {

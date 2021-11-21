@@ -28,11 +28,6 @@ class MainViewmodelTest {
     }
 
     @Test
-    void initializeNewGame() {
-        //TODO: see if inline
-    }
-
-    @Test
     void tryToTriggerFirstMoveWithoutGameStart() {
         try {
             mainViewmodel.triggerFirstMove();
@@ -134,7 +129,7 @@ class MainViewmodelTest {
         //TODO: this is the only test with sense for getters
         // (the others are already tested in the model)
         //if require match must be call setMatch()
-        //if require currentGame must be call startNewGame/initialize Game
+        //if require currentGame must be call startNewGame
     }
 
     @Test
