@@ -12,7 +12,7 @@ public class Utility {
     }
 
     //    private static int threadCount = 0;
-    public static void runOnSeparateThread(@NotNull final Runnable runnable) {
+    public static Thread runOnSeparateThread(@NotNull final Runnable runnable) {
         var t = new Thread(runnable);
 //        var name = t.getName();
 //        new Thread(() -> {
@@ -28,5 +28,6 @@ public class Utility {
 //            }
 //
 //        }).start();
+        return t;
     }
 }
