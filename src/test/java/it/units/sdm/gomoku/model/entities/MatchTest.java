@@ -15,8 +15,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class MatchTest {
 
     private final int boardSizeTest = 5;
-    private final CPUPlayer cpu1 = new CPUPlayer("First Captain Gomoku");
-    private final CPUPlayer cpu2 = new CPUPlayer("Second Iron Keroro");
+    private final CPUPlayer cpu1 = new CPUPlayer();
+    private final CPUPlayer cpu2 = new CPUPlayer();
     private final int NUMBER_OF_GAMES = 3;
     private Match match;
     private Game currentGame;
@@ -53,23 +53,27 @@ class MatchTest {
     }
 
     @Test
-    void startNewGame() {
-        try {
-            Field fieldGameList = match.getClass().getDeclaredField("gameList");
-            fieldGameList.setAccessible(true);
-            @SuppressWarnings("unchecked")
-            List<Game> gameList = (List<Game>) fieldGameList.get(match);
+    void addFirstGameOfTheMatchToGameList() throws MatchEndedException, MaxNumberOfGamesException, NoSuchFieldException, IllegalAccessException {
+        currentGame = match.startNewGame();
+        Field fieldGameList = match.getClass().getDeclaredField("gameList");
+        fieldGameList.setAccessible(true);
+        @SuppressWarnings("unchecked")
+        List<Game> gameList = (List<Game>) fieldGameList.get(match);
+        assertEquals(currentGame, gameList.get(0));
+    }
 
-            assertTrue(gameList.isEmpty());
+    @Test
+    void setFirstPlayerAsTheBlackOneInTheFirstGame() throws MatchEndedException, MaxNumberOfGamesException {
+        match.startNewGame();
+        assertEquals(cpu1, match.getCurrentBlackPlayer());
+    }
 
-            currentGame = match.startNewGame();
-            assertEquals(gameList.get(0), currentGame);
-
-            assertEquals(cpu1, match.getCurrentBlackPlayer());
-            assertEquals(cpu2, match.getCurrentWhitePlayer());
-        } catch (NoSuchFieldException | IllegalAccessException | MatchEndedException | MaxNumberOfGamesException e) {
-            fail(e);
-        }
+    @Test
+    void setFirstPlayerAsTheWhiteOneInTheSecondGame() throws MatchEndedException, MaxNumberOfGamesException {
+        currentGame = match.startNewGame();
+        GameTestUtility.disputeGameAndDraw(currentGame);
+        match.startNewGame();
+        assertEquals(cpu1, match.getCurrentWhitePlayer());
     }
 
     @Test
