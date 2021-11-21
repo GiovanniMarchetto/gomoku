@@ -52,7 +52,7 @@ public abstract class MainViewmodel extends Viewmodel {
 
     protected void initializeNewGame() {//TODO: need? for me inline
         try {
-            currentGame = Objects.requireNonNull(match).startNewGame();
+            currentGame = Objects.requireNonNull(match).initializeNewGame();
             currentBoard = currentGame.getBoard();
             observePropertiesOfModel();
 

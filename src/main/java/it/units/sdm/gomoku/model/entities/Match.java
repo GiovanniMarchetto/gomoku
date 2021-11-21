@@ -75,13 +75,12 @@ public class Match {
     }
 
     public void addAnExtraGame() {
-        //TODO: need or startExtraGame with exception for lastGame not Ended?
         numberOfGames.incrementAndGet();
     }
 
 
     @NotNull
-    public Game startNewGame() throws MatchEndedException, MaxNumberOfGamesException {
+    public Game initializeNewGame() throws MatchEndedException, MaxNumberOfGamesException {
         if (gameList.size() < getNumberOfGames()) {
 //                if (!isCurrentGameEnded())
             if (!isEnded()) {

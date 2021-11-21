@@ -29,7 +29,7 @@ class MatchTest {
 
     private void startNewGameComplete() {
         try {
-            currentGame = match.startNewGame();
+            currentGame = match.initializeNewGame();
             currentGame.start();
         } catch (MatchEndedException | MaxNumberOfGamesException e) {
             fail(e);
@@ -54,7 +54,7 @@ class MatchTest {
 
     @Test
     void addFirstGameOfTheMatchToGameList() throws MatchEndedException, MaxNumberOfGamesException, NoSuchFieldException, IllegalAccessException {
-        currentGame = match.startNewGame();
+        currentGame = match.initializeNewGame();
         Field fieldGameList = match.getClass().getDeclaredField("gameList");
         fieldGameList.setAccessible(true);
         @SuppressWarnings("unchecked")
@@ -64,15 +64,15 @@ class MatchTest {
 
     @Test
     void setFirstPlayerAsTheBlackOneInTheFirstGame() throws MatchEndedException, MaxNumberOfGamesException {
-        match.startNewGame();
+        match.initializeNewGame();
         assertEquals(cpu1, match.getCurrentBlackPlayer());
     }
 
     @Test
     void setFirstPlayerAsTheWhiteOneInTheSecondGame() throws MatchEndedException, MaxNumberOfGamesException {
-        currentGame = match.startNewGame();
+        currentGame = match.initializeNewGame();
         GameTestUtility.disputeGameAndDraw(currentGame);
-        match.startNewGame();
+        match.initializeNewGame();
         assertEquals(cpu1, match.getCurrentWhitePlayer());
     }
 
@@ -84,7 +84,7 @@ class MatchTest {
         }
 
         try {
-            match.startNewGame();
+            match.initializeNewGame();
             fail("Is over the number of games!");
         } catch (MaxNumberOfGamesException ignored) {
         } catch (MatchEndedException e) {
@@ -100,7 +100,7 @@ class MatchTest {
     @Test
     void getScoreAfterStart() {
         try {
-            match.startNewGame();
+            match.initializeNewGame();
         } catch (MatchEndedException | MaxNumberOfGamesException e) {
             fail(e);
         }
