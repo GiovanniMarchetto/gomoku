@@ -37,7 +37,6 @@ public class GameTestUtility {
     }
 
     public static void disputeGameAndDraw(Game game) {
-        game.start();
         List<Coordinates> remainCoordinates = new ArrayList<>();
         int boardSize = game.getBoardSize();
         for (int x = 0; x < boardSize; x++) {

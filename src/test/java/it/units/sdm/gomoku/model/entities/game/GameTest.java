@@ -25,7 +25,7 @@ import static it.units.sdm.gomoku.model.entities.game.GameTestUtility.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GameTest {
-    private final int BOARD_SIZE = 5;
+    private final PositiveInteger BOARD_SIZE = new PositiveInteger(5);
     private final CPUPlayer cpuBlack = new CPUPlayer();
     private final CPUPlayer cpuWhite = new CPUPlayer();
     private final Coordinates firstCoordinates = new Coordinates(0, 0);
@@ -34,68 +34,46 @@ class GameTest {
 
     @BeforeEach
     void setUp() {
-        game = new Game(new PositiveInteger(BOARD_SIZE), cpuBlack, cpuWhite);
+        game = new Game(BOARD_SIZE, cpuBlack, cpuWhite);
+        assert game.getGameStatusProperty().getPropertyValue() == null;
+        assert game.getCurrentPlayerProperty().getPropertyValue() == null;
+        game.start();
     }
 
     @Test
-    void getGameStatus() {
-        try {
-            Field gameStatusField =
-                    TestUtility.getFieldAlreadyMadeAccessible(Game.class, "gameStatusProperty");
-            @SuppressWarnings("unchecked")
-            ObservablePropertySettable<Game.Status> gameStatusProperty =
-                    (ObservablePropertySettable<Game.Status>) gameStatusField.get(game);
-            assertEquals(gameStatusProperty, game.getGameStatusProperty());
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            fail(e);
-        }
+    void getGameStatus() throws NoSuchFieldException, IllegalAccessException {
+        Field gameStatusField =
+                TestUtility.getFieldAlreadyMadeAccessible(Game.class, "gameStatusProperty");
+        @SuppressWarnings("unchecked")
+        ObservablePropertySettable<Game.Status> gameStatusProperty =
+                (ObservablePropertySettable<Game.Status>) gameStatusField.get(game);
+        assertEquals(gameStatusProperty, game.getGameStatusProperty());
     }
 
     @Test
-    void checkGameStatusBeforeStart() {
-        assertNull(game.getGameStatusProperty().getPropertyValue());
+    void getCurrentPlayer() throws NoSuchFieldException, IllegalAccessException {
+        Field currentPlayerField =
+                TestUtility.getFieldAlreadyMadeAccessible(Game.class, "currentPlayerProperty");
+        @SuppressWarnings("unchecked")
+        ObservablePropertySettable<Player> currentPlayerProperty =
+                (ObservablePropertySettable<Player>) currentPlayerField.get(game);
+        assertEquals(currentPlayerProperty, game.getCurrentPlayerProperty());
     }
 
     @Test
     void checkGameStatusAfterStart() {
-        game.start();
         assertEquals(Game.Status.STARTED, game.getGameStatusProperty().getPropertyValue());
     }
 
     @Test
-    void getCurrentPlayer() {
-        try {
-            Field currentPlayerField =
-                    TestUtility.getFieldAlreadyMadeAccessible(Game.class, "currentPlayerProperty");
-            @SuppressWarnings("unchecked")
-            ObservablePropertySettable<Player> currentPlayerProperty =
-                    (ObservablePropertySettable<Player>) currentPlayerField.get(game);
-            assertEquals(currentPlayerProperty, game.getCurrentPlayerProperty());
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            fail(e);
-        }
-    }
-
-    @Test
-    void checkCurrentPlayerBeforeStart() {
-        assertNull(game.getCurrentPlayerProperty().getPropertyValue());
-    }
-
-    @Test
     void checkCurrentPlayerAfterStart() {
-        game.start();
         assertEquals(cpuBlack, game.getCurrentPlayerProperty().getPropertyValue());
     }
 
     @Test
-    void getBoard() {
-        try {
-            Field boardField = TestUtility.getFieldAlreadyMadeAccessible(Game.class, "board");
-            Board board = (Board) boardField.get(game);
-            assertEquals(board, game.getBoard());
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            fail(e);
-        }
+    void getBoard() throws IllegalAccessException, NoSuchFieldException {
+        Board board = (Board) TestUtility.getFieldAlreadyMadeAccessible(Game.class, "board").get(game);
+        assertEquals(board, game.getBoard());
     }
 
     @Test
@@ -109,8 +87,7 @@ class GameTest {
     }
 
     @Test
-    void getWinnerBeforeEndGame() {
-        game.start();
+    void getWinnerIfGameNotEnded() {
         try {
             game.getWinner();
             fail("Game not ended!");
@@ -119,151 +96,115 @@ class GameTest {
     }
 
     @Test
-    void getWinnerWithBlackPlayerWon() {
-        game.start();
-        try {
-            disputeGameAndPlayerWin(game, cpuBlack);
-            assertEquals(cpuBlack, game.getWinner());
-        } catch (GameNotEndedException e) {
-            fail(e);
-        }
+    void getWinnerIfBlackPlayerWon() throws GameNotEndedException {
+        disputeGameAndPlayerWin(game, cpuBlack);
+        assertEquals(cpuBlack, game.getWinner());
     }
 
     @Test
-    void getWinnerWithWhitePlayerWon() {
-        game.start();
-        try {
-            disputeGameAndPlayerWin(game, cpuWhite);
-            assertEquals(cpuWhite, game.getWinner());
-        } catch (GameNotEndedException e) {
-            fail(e);
-        }
+    void getWinnerIfWhitePlayerWon() throws GameNotEndedException {
+        disputeGameAndPlayerWin(game, cpuWhite);
+        assertEquals(cpuWhite, game.getWinner());
     }
 
     @Test
-    void getWinnerWithDraw() {
-        game.start();
-        try {
-            disputeGameAndDraw(game);
-            assertNull(game.getWinner());
-        } catch (GameNotEndedException e) {
-            fail(e);
-        }
+    void getWinnerIfDraw() throws GameNotEndedException {
+        disputeGameAndDraw(game);
+        assertNull(game.getWinner());
     }
 
     @Test
-    void placeStoneBeforeStart() throws CellOutOfBoardException {
+    void dontPlaceStoneIfGameNotStarted() throws CellOutOfBoardException {
         try {
+            game = new Game(BOARD_SIZE, cpuBlack, cpuWhite);
             tryToPlaceStoneAndChangeTurn(firstCoordinates, game);
-        } catch (NullPointerException ignored) {
+        } catch (NullPointerException e) {
             assertTrue(game.getBoard().getCellAtCoordinates(firstCoordinates).isEmpty());
         }
     }
 
     @Test
     void placeStoneAfterStart() throws CellOutOfBoardException {
-        game.start();
         tryToPlaceStoneAndChangeTurn(firstCoordinates, game);
         assertFalse(game.getBoard().getCellAtCoordinates(firstCoordinates).isEmpty());
     }
 
     @Test
     void changeTurnAfterFirstPlaceStone() {
-        game.start();
         tryToPlaceStoneAndChangeTurn(firstCoordinates, game);
         assertEquals(cpuWhite, game.getCurrentPlayerProperty().getPropertyValue());
     }
 
     @Test
     void changeTurnAfterSecondPlaceStone() {
-        game.start();
         tryToPlaceStoneAndChangeTurn(firstCoordinates, game);
         tryToPlaceStoneAndChangeTurn(secondCoordinates, game);
         assertEquals(cpuBlack, game.getCurrentPlayerProperty().getPropertyValue());
     }
 
     @Test
-    void setWinnerIfIsTheWinMoveBlack() {
-        game.start();
+    void setWinnerIfIsTheWinMoveBlack() throws GameNotEndedException {
         disputeGameAndPlayerWin(game, cpuBlack);
-        try {
-            assertEquals(cpuBlack, game.getWinner());
-        } catch (GameNotEndedException e) {
-            fail(e);
-        }
+        assertEquals(cpuBlack, game.getWinner());
     }
 
     @Test
-    void setWinnerIfIsTheWinMoveWhite() {
-        game.start();
+    void setWinnerIfIsTheWinMoveWhite() throws GameNotEndedException {
         disputeGameAndPlayerWin(game, cpuWhite);
-        try {
-            assertEquals(cpuWhite, game.getWinner());
-        } catch (GameNotEndedException e) {
-            fail(e);
-        }
+        assertEquals(cpuWhite, game.getWinner());
     }
 
     @Test
     void setGameStatusIfGameEndedWhenPlaceStone() {
-        game.start();
         disputeGameAndPlayerWin(game, cpuBlack);
         assertEquals(Game.Status.ENDED, game.getGameStatusProperty().getPropertyValue());
     }
 
     @Test
     void setGameStatusIfGameNotEnded() {
-        game.start();
         placeTwoChainOfFourIn0And1Rows(game);
         assertNotEquals(Game.Status.ENDED, game.getGameStatusProperty().getPropertyValue());
     }
 
     @Test
     void checkIsEndedInNormalExecution() {
-        game.start();
         assertFalse(game.isEnded());
     }
 
     @Test
-    void checkIsEndedWithWinner() {
-        game.start();
+    void checkIsEndedIfBlackWinner() {
         disputeGameAndPlayerWin(game, cpuBlack);
         assertTrue(game.isEnded());
     }
 
     @Test
-    void checkIsEndedWithDraw() { //i.e. board is full
-        game.start();
+    void checkIsEndedIfDraw() { //i.e. board is full but no winner
         disputeGameAndDraw(game);
         assertTrue(game.isEnded());
     }
 
     @Test
-    void getStart() {
-        try {
-            ZonedDateTime expected = ((Instant)
-                    Objects.requireNonNull(TestUtility.getFieldValue("creationTime", game)))
-                    .atZone(ZoneId.systemDefault());
-            assertEquals(expected, game.getCreationTime());
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            fail(e);
-        }
+    void testCreationTimeGetter() throws NoSuchFieldException, IllegalAccessException {
+        ZonedDateTime expected = ((Instant)
+                Objects.requireNonNull(TestUtility.getFieldValue("creationTime", game)))
+                .atZone(ZoneId.systemDefault());
+        assertEquals(expected, game.getCreationTime());
+
     }
 
     @Test
-    void compareTo() {
+    void testCompareTo() {
         try {
             Thread.sleep(0, 1000);//1 microsecond
         } catch (InterruptedException e) {
             fail(e);
         }
-        Game gameNewer = new Game(new PositiveInteger(BOARD_SIZE), cpuBlack, cpuWhite);
+        Game gameNewer = new Game(BOARD_SIZE, cpuBlack, cpuWhite);
         assertTrue(game.compareTo(gameNewer) < 0);
     }
 
     @Test
     void testToString() {
-        game.start();
         disputeGameWithSmartAlgorithm(game);
         String expected = "";
         try {

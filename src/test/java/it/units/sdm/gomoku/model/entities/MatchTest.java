@@ -71,6 +71,7 @@ class MatchTest {
     @Test
     void setFirstPlayerAsTheWhiteOneInTheSecondGame() throws MatchEndedException, GameNotEndedException {
         currentGame = match.initializeNewGame();
+        currentGame.start();
         GameTestUtility.disputeGameAndDraw(currentGame);
         match.initializeNewGame();
         assertEquals(cpu1, match.getCurrentWhitePlayer());

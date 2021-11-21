@@ -153,6 +153,7 @@ public class CPUPlayerTest {
     @Test
     void throwExceptionWhenChoosingSmartlyNextCoordinatesIfTheBoardIsFull() {
         try {
+            game.start();
             GameTestUtility.disputeGameAndDraw(game);
             Coordinates findCoordinates = cpuPlayerSmart.chooseEmptyCoordinatesSmartly();
             fail("The board is full! But the smart choose find: " + findCoordinates);
