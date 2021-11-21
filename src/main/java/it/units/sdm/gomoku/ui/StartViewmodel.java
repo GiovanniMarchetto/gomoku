@@ -24,14 +24,14 @@ public class StartViewmodel extends Viewmodel {
 
     private final MainViewmodel mainViewmodel;
 
-    private volatile String player1Name;    // TODO : volatile fields?
-    private volatile String player2Name;
-    private volatile boolean player1CPU;
-    private volatile double player1CPUSkillFactor;
-    private volatile boolean player2CPU;
-    private volatile double player2CPUSkillFactor;
-    private volatile String selectedBoardSize;
-    private volatile String numberOfGames;
+    private String player1Name;
+    private String player2Name;
+    private boolean player1CPU;
+    private double player1CPUSkillFactor;
+    private boolean player2CPU;
+    private double player2CPUSkillFactor;
+    private String selectedBoardSize;
+    private String numberOfGames;
 
     public StartViewmodel(MainViewmodel mainViewmodel) {
         this.mainViewmodel = mainViewmodel;

@@ -35,7 +35,7 @@ public class Game implements Comparable<Game>, Observable {
     @NotNull
     private final Board board;
     @NotNull
-    private final Instant start;
+    private final Instant creationTime;
     @NotNull
     private final Player blackPlayer;
     @NotNull
@@ -49,7 +49,7 @@ public class Game implements Comparable<Game>, Observable {
         this.whitePlayer = Objects.requireNonNull(whitePlayer);
         this.currentPlayerProperty = new ObservablePropertySettable<>();
         this.gameStatusProperty = new ObservablePropertySettable<>();
-        this.start = Instant.now();
+        this.creationTime = Instant.now();
     }
 
     public void start() {
@@ -73,8 +73,8 @@ public class Game implements Comparable<Game>, Observable {
     }
 
     @NotNull
-    public ZonedDateTime getStart() {
-        return start.atZone(ZoneId.systemDefault());
+    public ZonedDateTime getCreationTime() {
+        return creationTime.atZone(ZoneId.systemDefault());
     }
 
     @NotNull
@@ -145,12 +145,12 @@ public class Game implements Comparable<Game>, Observable {
 
     @Override
     public int compareTo(@NotNull Game other) {
-        return this.start.compareTo(other.start);
+        return this.creationTime.compareTo(other.creationTime);
     }
 
     @Override
     public String toString() {
-        return "Game started at " + start.atZone(ZoneId.systemDefault()) + "\n" +
+        return "Game started at " + creationTime.atZone(ZoneId.systemDefault()) + "\n" +
                 blackPlayer + " -> BLACK, " +
                 whitePlayer + " -> WHITE" + "\n" +
                 "Winner: " + winner + "\n" +

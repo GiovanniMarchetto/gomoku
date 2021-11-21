@@ -242,9 +242,9 @@ class GameTest {
     void getStart() {
         try {
             ZonedDateTime expected = ((Instant)
-                    Objects.requireNonNull(TestUtility.getFieldValue("start", game)))
+                    Objects.requireNonNull(TestUtility.getFieldValue("creationTime", game)))
                     .atZone(ZoneId.systemDefault());
-            assertEquals(expected, game.getStart());
+            assertEquals(expected, game.getCreationTime());
         } catch (NoSuchFieldException | IllegalAccessException e) {
             fail(e);
         }
@@ -267,7 +267,7 @@ class GameTest {
         disputeGameWithSmartAlgorithm(game);
         String expected = "";
         try {
-            expected = "Game started at " + game.getStart() + "\n" +
+            expected = "Game started at " + game.getCreationTime() + "\n" +
                     cpuBlack + " -> BLACK, " +
                     cpuWhite + " -> WHITE" + "\n" +
                     "Winner: " + game.getWinner() + "\n" +

@@ -73,19 +73,19 @@ public abstract class ObservableProperty<PropertyValueType> implements Observabl
 
     private static class PropertyValueContainer<ValueType> {    // TODO : to be tested
         @Nullable
-        private volatile ValueType value;   // TODO : volatile needed? Atomic reference better?
+        private ValueType value;
 
         @Nullable
-        public ValueType getValue() {
+        public synchronized ValueType getValue() {
             return value;
         }
 
-        public void setValue(@Nullable ValueType value) {
+        public synchronized void setValue(@Nullable ValueType value) {
             this.value = value;
         }
 
         @Override
-        public boolean equals(Object o) {
+        public synchronized boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             PropertyValueContainer<?> that = (PropertyValueContainer<?>) o;
@@ -93,13 +93,12 @@ public abstract class ObservableProperty<PropertyValueType> implements Observabl
         }
 
         @Override
-        public int hashCode() {
-            //noinspection ConstantConditions   // just checked to be non-null
+        public synchronized int hashCode() {
             return value != null ? value.hashCode() : 0;
         }
 
         @Override
-        public String toString() {
+        public synchronized String toString() {
             return String.valueOf(value);
         }
     }

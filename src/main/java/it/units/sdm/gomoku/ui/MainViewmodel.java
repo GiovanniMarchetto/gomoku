@@ -280,6 +280,6 @@ public abstract class MainViewmodel extends Viewmodel {
 
     @NotNull
     public ZonedDateTime getGameStartTime() {
-        return Objects.requireNonNull(currentGame).getStart();
+        return Objects.requireNonNull(currentGame).getCreationTime();
     }
 }

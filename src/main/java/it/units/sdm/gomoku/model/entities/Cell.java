@@ -12,7 +12,7 @@ import java.util.stream.IntStream;
 public class Cell implements Cloneable {
 
     @Nullable
-    private volatile Stone stone;
+    private Stone stone;
 
     public Cell() {
     }
@@ -22,12 +22,8 @@ public class Cell implements Cloneable {
     }
 
     @Nullable
-    public Stone getStone() {
+    public synchronized Stone getStone() {
         return stone;
-    }
-
-    public synchronized void removeStone() {
-        this.stone = null;
     }
 
     public synchronized void setStoneFromColor(@NotNull Color color) {
@@ -38,12 +34,12 @@ public class Cell implements Cloneable {
         this.stone = stone;
     }
 
-    public boolean isEmpty() {
+    public synchronized boolean isEmpty() {
         return this.stone == null;
     }
 
-    public boolean isBelongingToChainOfNCellsInList(@NotNull final NonNegativeInteger N,
-                                                    @NotNull final List<@NotNull Cell> cellList) {
+    public synchronized boolean isBelongingToChainOfNCellsInList(@NotNull final NonNegativeInteger N,
+                                                                 @NotNull final List<@NotNull Cell> cellList) {
         int numberOfStonesInChain = Objects.requireNonNull(N).intValue();
         if (cellList.size() < numberOfStonesInChain) {
             return false;
@@ -59,12 +55,12 @@ public class Cell implements Cloneable {
 
     @SuppressWarnings("MethodDoesntCallSuperMethod")
     @Override
-    public Cell clone() {
+    public synchronized Cell clone() {
         return new Cell(this);
     }
 
     @Override
-    public String toString() {
+    public synchronized String toString() {
         if (isEmpty()) {
             return " ";
         } else {
@@ -76,15 +72,14 @@ public class Cell implements Cloneable {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public synchronized boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         return Objects.equals(stone, ((Cell) o).stone);
     }
 
     @Override
-    public int hashCode() {
-        //noinspection ConstantConditions // already check
+    public synchronized int hashCode() {
         return stone != null ? stone.hashCode() : 0;
     }
 }
