@@ -89,11 +89,7 @@ public class Game implements Comparable<Game>, Observable {
 
         placeStone(player, coordinates);
 
-        setWinnerIfPlayerWon(player, coordinates);
-
-        setGameStatusPropertyIfGameEnded();
-
-        changeTurn();
+        setWinnerAndGameStatusPropertyIfEndedOrElseChangeTurn(player, coordinates);
     }
 
     private void placeStone(@NotNull final Player player, @NotNull final Coordinates coordinates)
@@ -105,19 +101,18 @@ public class Game implements Comparable<Game>, Observable {
         }
     }
 
-    private void setWinnerIfPlayerWon(@NotNull Player player, @NotNull Coordinates coordinates) {
+    private void setWinnerAndGameStatusPropertyIfEndedOrElseChangeTurn(@NotNull Player player, @NotNull Coordinates coordinates) {
         if (hasThePlayerWonWithLastMove(coordinates)) {
             setWinner(player);
-        }
-    }
-
-    private void setGameStatusPropertyIfGameEnded() {
-        if (isEnded()) {
             gameStatusProperty.setPropertyValue(Status.ENDED);
+        } else if (!board.isThereAnyEmptyCell()) {
+            gameStatusProperty.setPropertyValue(Status.ENDED);
+        } else {
+            changeTurn();
         }
     }
 
-    private void changeTurn() { // TODO: dovrebbe fare il controllo/throware se il gioco è finito? (secondo me si)
+    private void changeTurn() {
         currentPlayerProperty.setPropertyValue(currentPlayerProperty.getPropertyValue() == blackPlayer ? whitePlayer : blackPlayer);
     }
 
@@ -139,8 +134,7 @@ public class Game implements Comparable<Game>, Observable {
     }
 
     public synchronized boolean isEnded() {
-        return winner != null || !board.isThereAnyEmptyCell();
-        // if there are empty positions on the board it can't be a draw
+        return gameStatusProperty.getPropertyValue() == Status.ENDED;
     }
 
     @Override
@@ -208,10 +202,6 @@ public class Game implements Comparable<Game>, Observable {
 
     public int getBoardSize() { // TODO: test
         return board.getSize();
-    }
-
-    public boolean isThereAnyEmptyCellOnBoard() {   // TODO: test
-        return board.isThereAnyEmptyCell();
     }
 
     public enum Status {STARTED, ENDED}
