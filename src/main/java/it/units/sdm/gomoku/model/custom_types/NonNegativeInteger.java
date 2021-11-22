@@ -20,10 +20,6 @@ public class NonNegativeInteger extends Number implements Comparable<Number> {
         }
     }
 
-    public static boolean isValid(int value) {
-        return value >= 0;
-    }
-
     @SuppressWarnings("CopyConstructorMissesField") // It checks if input param is not null before copying the field
     public NonNegativeInteger(@NotNull final NonNegativeInteger nonNegativeInteger) {
         this(Objects.requireNonNull(nonNegativeInteger).value);
@@ -31,6 +27,10 @@ public class NonNegativeInteger extends Number implements Comparable<Number> {
 
     public NonNegativeInteger() {
         this(0);
+    }
+
+    public static boolean isValid(int value) {
+        return value >= 0;
     }
 
     @NotNull
@@ -89,6 +89,6 @@ public class NonNegativeInteger extends Number implements Comparable<Number> {
      */
     @Documented
     @Target({METHOD, FIELD, PARAMETER, LOCAL_VARIABLE})
-    public @interface NonNegativeIntegerType {  // TODO (if time allows): annotation should be processed and checked at compile time (https://www.baeldung.com/java-annotation-processing-builder)
+    public @interface NonNegativeIntegerType {
     }
 }

@@ -121,12 +121,16 @@ public class BoardAlgorithmTest {
         return list;
     }
 
+    private static Cell getCell(Cell[][] cellMatrix, Coordinates coordinates) {
+        return cellMatrix[coordinates.getX()][coordinates.getY()];
+    }
+
     private Board createBoardFromMatrix(Cell[][] cellMatrix) {
         Board b = new Board(new PositiveInteger(cellMatrix.length));
         //noinspection ConstantConditions //check in the method
         occupyAllPositionsIfValidPredicateWithGivenColor(b,
-                coords -> cellMatrix[coords.getX()][coords.getY()].getStone().getColor(),   // TODO: message chain
-                coords -> !cellMatrix[coords.getX()][coords.getY()].isEmpty());
+                coords -> getCell(cellMatrix, coords).getStone().getColor(),
+                coords -> !getCell(cellMatrix, coords).isEmpty());
 
         return b;
     }
