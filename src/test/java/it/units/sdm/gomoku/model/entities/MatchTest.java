@@ -1,5 +1,6 @@
 package it.units.sdm.gomoku.model.entities;
 
+import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.game.GameTestUtility;
 import it.units.sdm.gomoku.model.exceptions.GameNotEndedException;
 import it.units.sdm.gomoku.model.exceptions.MatchEndedException;
@@ -14,7 +15,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class MatchTest {
 
-    private final int boardSizeTest = 5;
     private final CPUPlayer cpu1 = new CPUPlayer();
     private final CPUPlayer cpu2 = new CPUPlayer();
     private final int NUMBER_OF_GAMES = 3;
@@ -49,7 +49,8 @@ class MatchTest {
 
     @BeforeEach
     void setup() {
-        match = new Match(boardSizeTest, NUMBER_OF_GAMES, cpu1, cpu2);
+        final PositiveInteger boardSizeTest = new PositiveInteger(5);
+        match = new Match(boardSizeTest, new PositiveInteger(NUMBER_OF_GAMES), cpu1, cpu2);
     }
 
     @Test
