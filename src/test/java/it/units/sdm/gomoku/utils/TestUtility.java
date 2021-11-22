@@ -229,11 +229,13 @@ public class TestUtility {
                                                         @NotNull final String methodName,
                                                         @Nullable Class<?>... methodParameterTypes)  // TODO : test
             throws NoSuchFieldException {   // TODO : use this method wherever needed
-        return (Method) getMemberAlreadyMadeAccessible(
-                Objects.requireNonNull(clazz),
-                Objects.requireNonNull(methodName),
-                methodParameterTypes);
-    }
+                // TODO: method not working if parameters are abstract class and derived classes are passed
+
+                return (Method) getMemberAlreadyMadeAccessible(
+                        Objects.requireNonNull(clazz),
+                        Objects.requireNonNull(methodName),
+                        methodParameterTypes);
+            }
 
     @NotNull
     public static AccessibleObject getMemberAlreadyMadeAccessible(@NotNull final Class<?> clazz,
