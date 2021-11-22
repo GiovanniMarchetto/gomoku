@@ -222,7 +222,7 @@ class GameTest {
     }
 
     @Test
-    void placeStoneAfterGameStartedd() throws CellOutOfBoardException {
+    void placeStoneAfterGameStarted() throws CellOutOfBoardException {
         tryToPlaceStoneAndChangeTurn(firstMove, game);
         assertFalse(game.getBoard().getCellAtCoordinates(firstMove).isEmpty());
     }
