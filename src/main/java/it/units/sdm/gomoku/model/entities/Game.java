@@ -86,6 +86,15 @@ public class Game implements Comparable<Game>, Observable {
         return player.equals(blackPlayer) ? Color.BLACK : Color.WHITE;
     }
 
+    @Nullable
+    public Player getWinner() throws GameNotEndedException {
+        if (isEnded()) {
+            return winner;
+        } else {
+            throw new GameNotEndedException();
+        }
+    }
+
     public void placeStoneAndChangeTurn(@NotNull final Coordinates coordinates)
             throws BoardIsFullException, CellAlreadyOccupiedException, GameEndedException, CellOutOfBoardException {
 
@@ -122,15 +131,6 @@ public class Game implements Comparable<Game>, Observable {
 
     private boolean hasThePlayerWonWithLastMove(@NotNull final Coordinates lastMove) {
         return board.isCoordinatesBelongingToChainOfNStones(lastMove, NUMBER_OF_CONSECUTIVE_STONE_FOR_WINNING);
-    }
-
-    @Nullable
-    public Player getWinner() throws GameNotEndedException {
-        if (isEnded()) {
-            return winner;
-        } else {
-            throw new GameNotEndedException();
-        }
     }
 
     private void setWinner(@NotNull final Player winner) {
