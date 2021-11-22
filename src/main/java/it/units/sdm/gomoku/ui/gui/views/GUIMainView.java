@@ -1,6 +1,5 @@
 package it.units.sdm.gomoku.ui.gui.views;
 
-import it.units.sdm.gomoku.mvvm_library.Observer;
 import it.units.sdm.gomoku.mvvm_library.View;
 import it.units.sdm.gomoku.ui.gui.GUIMain;
 import it.units.sdm.gomoku.ui.gui.SceneController;
@@ -13,11 +12,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
-import java.beans.PropertyChangeEvent;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class GUIMainView extends View<GUIMainViewmodel> implements Observer {
+public class GUIMainView extends View<GUIMainViewmodel> {
 
     @FXML
     private Label currentPlayerLabel;
@@ -41,7 +39,6 @@ public class GUIMainView extends View<GUIMainViewmodel> implements Observer {
 
     public GUIMainView() {
         super(GUIMain.guiMainViewmodel);
-        observe(getViewmodelAssociatedWithView());
     }
 
     @FXML
@@ -86,9 +83,5 @@ public class GUIMainView extends View<GUIMainViewmodel> implements Observer {
     public void onViewDisappearing() {
         super.onViewDisappearing();
         stopObservingAllViewModelProperties();
-    }
-
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
     }
 }

@@ -5,7 +5,6 @@ import it.units.sdm.gomoku.model.entities.Cell;
 import it.units.sdm.gomoku.model.exceptions.CellAlreadyOccupiedException;
 import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
 import it.units.sdm.gomoku.model.exceptions.GameEndedException;
-import it.units.sdm.gomoku.mvvm_library.Observer;
 import it.units.sdm.gomoku.property_change_handlers.PropertyObserver;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservableProperty;
 import it.units.sdm.gomoku.ui.gui.viewmodels.GUIMainViewmodel;
@@ -21,11 +20,10 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import org.jetbrains.annotations.NotNull;
 
-import java.beans.PropertyChangeEvent;
 import java.util.Objects;
 import java.util.logging.Level;
 
-public class GomokuCell implements Observer {
+public class GomokuCell {
 
     // TODO : add nullable/notnull annotations and final params in methods
     private final int boardSize;
@@ -49,7 +47,6 @@ public class GomokuCell implements Observer {
         this.boardSize = boardSize;
         this.radius = stoneRadiusProperty.getPropertyValue() == null ? 0 : stoneRadiusProperty.getPropertyValue();
         initializeGroup();
-        observe(guiMainViewmodel);
         new PropertyObserver<>(guiMainViewmodel.getLastMoveCoordinatesProperty(), evt -> {
             Coordinates lastCoords = (Coordinates) Objects.requireNonNull(evt.getNewValue());
             if (lastCoords.equals(coordinates)) {
@@ -247,10 +244,5 @@ public class GomokuCell implements Observer {
 
     private boolean userCanPlace() {
         return Boolean.TRUE.equals(guiMainViewmodel.getUserMustPlaceNewStoneProperty().getPropertyValue());
-    }
-
-
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
     }
 }

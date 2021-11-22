@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public abstract class View<T extends Viewmodel> implements Observable {  // TODO : should be observer? (some views implement Observer)
+public abstract class View<T extends Viewmodel> {
 
     @NotNull
     private final T viewmodelAssociatedWithView;
@@ -19,7 +19,6 @@ public abstract class View<T extends Viewmodel> implements Observable {  // TODO
 
     public View(@NotNull T viewmodelAssociatedWithView) {
         this.viewmodelAssociatedWithView = Objects.requireNonNull(viewmodelAssociatedWithView);
-        this.viewmodelAssociatedWithView.observe(this);     // bind viewModel -> view   // TODO : needed?
         this.propertiesObservedInViewModel = new ArrayList<>();
     }
 

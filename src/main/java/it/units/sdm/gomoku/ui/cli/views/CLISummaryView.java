@@ -3,15 +3,12 @@ package it.units.sdm.gomoku.ui.cli.views;
 import it.units.sdm.gomoku.model.entities.Player;
 import it.units.sdm.gomoku.model.exceptions.GameNotEndedException;
 import it.units.sdm.gomoku.model.exceptions.MatchNotEndedException;
-import it.units.sdm.gomoku.mvvm_library.Observer;
 import it.units.sdm.gomoku.mvvm_library.View;
 import it.units.sdm.gomoku.ui.cli.IOUtility;
 import it.units.sdm.gomoku.ui.cli.viewmodels.CLIMainViewmodel;
 import org.jetbrains.annotations.NotNull;
 
-import java.beans.PropertyChangeEvent;
-
-public class CLISummaryView extends View<CLIMainViewmodel> implements Observer {
+public class CLISummaryView extends View<CLIMainViewmodel> {
 
     public CLISummaryView(@NotNull CLIMainViewmodel cliMainViewmodel) {
         super(cliMainViewmodel);
@@ -24,6 +21,7 @@ public class CLISummaryView extends View<CLIMainViewmodel> implements Observer {
         System.out.println("Game ended\n");
 
         CLIMainViewmodel viewmodel = getViewmodelAssociatedWithView();
+        System.out.println(viewmodel.getCurrentGame());
         try {
             Player winnerOfGame = viewmodel.getWinnerOfTheGame();
             System.out.println("The game is ended with: " +
@@ -61,9 +59,5 @@ public class CLISummaryView extends View<CLIMainViewmodel> implements Observer {
         } else {
             viewmodel.initializeNewGame();
         }
-    }
-
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
     }
 }
