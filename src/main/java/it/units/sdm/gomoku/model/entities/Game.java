@@ -193,18 +193,22 @@ public class Game implements Comparable<Game>, Observable {
                 lineSeparator + board;
     }
 
-    public boolean isCellAtCoordinatesEmpty(@NotNull final Coordinates proposedMove)
-            throws GameEndedException, CellOutOfBoardException {    // TODO : test
+    public boolean isValidMove(@NotNull final Coordinates proposedMove)
+            throws GameEndedException, CellOutOfBoardException {
         if (isEnded()) {
             throw new GameEndedException();
-        } else if (!board.isThereAnyEmptyCell()) {
-            throw new IllegalStateException("No space on board, game should be ended but it is not.");
         }
         return board.isCellEmptyAtCoordinates(Objects.requireNonNull(proposedMove));
     }
 
     public boolean isHeadOfAChainOfStones(@NotNull final Coordinates headCoordinates,
-                                          @NotNull final PositiveInteger numberOfConsecutive) {    // TODO: test
+                                          @NotNull final PositiveInteger numberOfConsecutive) {
+        try {
+            if (!board.isCellEmptyAtCoordinates(headCoordinates))
+                return false;
+        } catch (CellOutOfBoardException e) {
+            return false;
+        }
 
         BiFunction<Integer, Integer, Stream<Coordinates>> getAllCoordinatesInsideBoardFromVersor = (xDirection, yDirection) ->
                 IntStream.rangeClosed(1, numberOfConsecutive.intValue())
@@ -214,7 +218,6 @@ public class Game implements Comparable<Game>, Observable {
                         .filter(pair -> pair.getKey() >= 0 && pair.getValue() >= 0)
                         .map(validPair -> new Coordinates(validPair.getKey(), validPair.getValue()))
                         .filter(board::isCoordinatesInsideBoard);
-
 
         Supplier<Stream<Stream<Coordinates>>> getAllStreamsOfCoordinatesOverAllDirections = () ->
                 IntStream.rangeClosed(-1, 1)
