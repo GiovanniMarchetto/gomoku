@@ -1,7 +1,5 @@
 package it.units.sdm.gomoku;
 
-import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
-
 public class EnvVariables {
     public final static String INTS_PROVIDER_RESOURCE_LOCATION = "/ints.csv";
     public final static String NON_NEGATIVE_INTS_PROVIDER_RESOURCE_LOCATION = "/nonNegativeInts.csv";
@@ -13,6 +11,4 @@ public class EnvVariables {
     public final static String COORDINATES_PROVIDER_RESOURCE_LOCATION = "/coordinatesFor19x19.csv";
 
     public final static int REASONABLE_MILLISECS_TO_PERMIT_THREAD_TO_START = 100;
-
-    public static final PositiveInteger BOARD_SIZE = new PositiveInteger(19);
 }
