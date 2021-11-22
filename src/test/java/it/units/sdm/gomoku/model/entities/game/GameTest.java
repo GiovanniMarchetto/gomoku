@@ -89,6 +89,12 @@ class GameTest {
     }
 
     @Test
+    void setGameStatusToEndedIfGameEndedDueToLastMove() {
+        disputeGameAndDraw(game);
+        assertEquals(Game.Status.ENDED, game.getGameStatusProperty().getPropertyValue());
+    }
+
+    @Test
     void notifyGameStatusOnStart() {
         game = createNewGameWithDefaultParams();
         AtomicReference<Boolean> gameHasNotifiedToBeStarted = new AtomicReference<>();
