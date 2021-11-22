@@ -15,10 +15,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -259,18 +259,22 @@ class MatchTest {
         assertEquals(expectedScore, match.getScore());
     }
 
-    private static void disputeNGameAndEndThemWithDraw(int numberOfGames, @NotNull final Match match) {
+    private static Game initializeAndDisputeNGameAndEndThemWithDrawAndGetLastInitializedGame(
+            int numberOfGames, @NotNull final Match match) {
 
         assert numberOfGames <= SAMPLE_NUMBER_OF_GAMES;
-        IntStream.range(0, SAMPLE_NUMBER_OF_GAMES).sequential().forEach(i -> {
+        AtomicReference<Game> currentGame = new AtomicReference<>();
+        IntStream.range(0, numberOfGames).sequential().forEach(i -> {
             try {
-                Game currentGame = match.initializeNewGame();
-                currentGame.start();
-                GameTestUtility.disputeGameAndDraw(currentGame);
+                currentGame.set(match.initializeNewGame());
+                currentGame.get().start();
+                GameTestUtility.disputeGameAndDraw(currentGame.get());
             } catch (GameAlreadyStartedException | MatchEndedException | GameNotEndedException e) {
                 fail(e);
             }
         });
+
+        return currentGame.get();
     }
 
     private static void makeGivenPlayerToWinNGamesInMatch(
@@ -296,7 +300,7 @@ class MatchTest {
     @ParameterizedTest
     @MethodSource("getIntStreamFrom0IncludedToTotalNumberOfGamesExcluded")
     void testGetScoreWithDrawOfGames(int numberOfGamesWonByFirstPlayer) {
-        disputeNGameAndEndThemWithDraw(numberOfGamesWonByFirstPlayer, match);
+        initializeAndDisputeNGameAndEndThemWithDrawAndGetLastInitializedGame(numberOfGamesWonByFirstPlayer, match);
         final int SCORE_OF_EACH_PLAYER_IF_GAME_ENDS_WITH_A_DRAW = 0;
         Map<Player, NonNegativeInteger> expectedScore;
         {
@@ -341,15 +345,14 @@ class MatchTest {
         assertEquals(initialValue + 1, match.getTotalNumberOfGames());
     }
 
-
-    @Test
-    void addFirstGameOfTheMatchToGameList() throws MatchEndedException, NoSuchFieldException, IllegalAccessException, GameNotEndedException {
-        currentGame = match.initializeNewGame();
-        Field fieldGameList = match.getClass().getDeclaredField("gameList");
-        fieldGameList.setAccessible(true);
+    @ParameterizedTest
+    @MethodSource("getIntStreamFrom0IncludedToTotalNumberOfGamesExcluded")
+    void addGameToGameListWhenNewGameInitialized(int gameNumber) throws NoSuchFieldException, IllegalAccessException {
         @SuppressWarnings("unchecked")
-        List<Game> gameList = (List<Game>) fieldGameList.get(match);
-        assertEquals(currentGame, gameList.get(0));
+        List<Game> gameList = (List<Game>) TestUtility.getFieldValue("gameList", match);
+        currentGame = initializeAndDisputeNGameAndEndThemWithDrawAndGetLastInitializedGame(gameNumber + 1, match);
+        assert gameList != null;
+        assertEquals(currentGame, gameList.get(gameNumber));
     }
 
     @Test
