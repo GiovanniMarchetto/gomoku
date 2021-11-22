@@ -63,6 +63,7 @@ class MatchTest {
         });
     }
 
+    @SuppressWarnings("unchecked")  // casting due to use of reflection
     private static void endMatchWithADraw(@NotNull final Match match) {
         assert match != null;
         int numberOfGamesThatEachPlayerHasToWinToHaveADraw = SAMPLE_NUMBER_OF_GAMES / 2;
@@ -73,7 +74,6 @@ class MatchTest {
             Runnable changeLastGameToEndTheMatchWithADraw = () -> {
                 try {
                     List<Game> gameList = null;
-                    //noinspection unchecked
                     gameList = (List<Game>) TestUtility.getFieldValue("gameList", match);
                     assert SAMPLE_NUMBER_OF_GAMES > 0;
                     assert gameList != null;
