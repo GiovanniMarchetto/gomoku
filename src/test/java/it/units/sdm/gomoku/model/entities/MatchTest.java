@@ -243,6 +243,26 @@ class MatchTest {
         }
         assertEquals(expectedScore, match.getScore());
     }
+
+    private static void makeGivenPlayerToWinNGamesInMatch(
+            @NotNull final Player playerWhoHasToWin, @NotNull final Player playerWhoHasToLose,
+            int numberOfGameWon, @NotNull final Match match) {
+
+        assert numberOfGameWon <= SAMPLE_NUMBER_OF_GAMES;
+        IntStream.range(0, SAMPLE_NUMBER_OF_GAMES).sequential().forEach(i -> {
+            try {
+                Game currentGame = match.initializeNewGame();
+                currentGame.start();
+                if (i < numberOfGameWon) {
+                    GameTestUtility.disputeGameAndMakeThePlayerToWin(currentGame, playerWhoHasToWin);
+                } else {
+                    GameTestUtility.disputeGameAndMakeThePlayerToWin(currentGame, playerWhoHasToLose);
+                }
+            } catch (GameAlreadyStartedException | MatchEndedException | GameNotEndedException e) {
+                fail(e);
+            }
+        });
+    }
     //endregion test scores
 
     private static void disputeNGamesOfMatchAndMakeGivenPlayerToWinAllTheGamesInMatch(
@@ -286,24 +306,31 @@ class MatchTest {
         }
     }
 
-    private static void makeGivenPlayerToWinNGamesInMatch(
-            @NotNull final Player playerWhoHasToWin, @NotNull final Player playerWhoHasToLose,
-            int numberOfGameWon, @NotNull final Match match) {
+    private static void disputeNGameAndEndThemWithDraw(int numberOfGames, @NotNull final Match match) {
 
-        assert numberOfGameWon <= SAMPLE_NUMBER_OF_GAMES;
+        assert numberOfGames <= SAMPLE_NUMBER_OF_GAMES;
         IntStream.range(0, SAMPLE_NUMBER_OF_GAMES).sequential().forEach(i -> {
             try {
                 Game currentGame = match.initializeNewGame();
                 currentGame.start();
-                if (i < numberOfGameWon) {
-                    GameTestUtility.disputeGameAndMakeThePlayerToWin(currentGame, playerWhoHasToWin);
-                } else {
-                    GameTestUtility.disputeGameAndMakeThePlayerToWin(currentGame, playerWhoHasToLose);
-                }
+                GameTestUtility.disputeGameAndDraw(currentGame);
             } catch (GameAlreadyStartedException | MatchEndedException | GameNotEndedException e) {
                 fail(e);
             }
         });
+    }
+
+    @ParameterizedTest
+    @MethodSource("getIntStreamFrom0IncludedToTotalNumberOfGamesExcluded")
+    void testGetScoreWithDrawOfGames(int numberOfGamesWonByFirstPlayer) {
+        disputeNGameAndEndThemWithDraw(numberOfGamesWonByFirstPlayer, match);
+        Map<Player, NonNegativeInteger> expectedScore;
+        {
+            expectedScore = new HashMap<>(2);
+            expectedScore.put(SAMPLE_PLAYER_1, new NonNegativeInteger(0));/*Nobody wins in case of draw*/
+            expectedScore.put(SAMPLE_PLAYER_2, new NonNegativeInteger(0));
+        }
+        assertEquals(expectedScore, match.getScore());
     }
 
     @Test
@@ -332,50 +359,6 @@ class MatchTest {
         match.initializeNewGame();
         assertEquals(SAMPLE_PLAYER_1, match.getCurrentWhitePlayer());
     }
-
-//    @Test
-//    void maxNumberOfGamesException() {//TODO: substute with not game ended exception
-//        for (int i = 0; i < SAMPLE_NUMBER_OF_GAMES; i++) {
-//            startNewGameComplete();
-//            GameTestUtility.disputeGameWithSmartAlgorithm(currentGame);
-//        }
-//
-//        try {
-//            match.initializeNewGame();
-//            fail("Is over the number of games!");
-//        } catch (MatchEndedException | GameNotEndedException e) {
-//            fail(e);
-//        }
-//    }
-//
-//    @Test
-//    void getScoreBeforeStart() {
-//        assertCpusScore(0, 0);
-//    }
-//
-//    @Test
-//    void getScoreAfterStart() throws MatchEndedException, GameNotEndedException {
-//        match.initializeNewGame();
-//        assertCpusScore(0, 0);
-//    }
-//
-//    @Test
-//    void getScoreAfterPlayer1Win() {
-//        startGameAndPlayerWin(SAMPLE_PLAYER_1);
-//        assertCpusScore(1, 0);
-//    }
-//
-//    @Test
-//    void getScoreAfterPlayer2Win() {
-//        startGameAndPlayerWin(SAMPLE_PLAYER_2);
-//        assertCpusScore(0, 1);
-//    }
-//
-//    @Test
-//    void getScoreAfterADrawGame() {
-//        startGameAndDraw();
-//        assertCpusScore(0, 0);
-//    }
 
     @Test
     void getWinnerIfMatchNotEnded() {
