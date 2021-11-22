@@ -334,6 +334,19 @@ class MatchTest {
         }
     }
 
+    @Test
+    void dontInitializeNewGameIfCurrentGameIsOngoing() throws MatchEndedException, GameNotEndedException, NoSuchFieldException, InvocationTargetException, IllegalAccessException {
+        match.initializeNewGame();
+        currentGame = (Game) TestUtility.invokeMethodOnObject(match, "getCurrentGame");
+        assert !currentGame.isEnded();
+        try {
+            match.initializeNewGame();
+            fail("Should not be possible to initialize a new game if the current game is currently ongoing, but happened.");
+        } catch (Exception e) {
+            assertTrue(e instanceof GameNotEndedException);
+        }
+    }
+
     @ParameterizedTest
     @MethodSource("getIntStreamFrom0IncludedToTotalNumberOfGamesExcluded")
     void invertColorsOfPlayersWhenNewGameIsCreated(int numberOfCurrentGame) {
