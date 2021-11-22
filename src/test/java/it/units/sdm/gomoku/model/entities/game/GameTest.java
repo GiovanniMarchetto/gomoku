@@ -228,12 +228,12 @@ class GameTest {
     }
 
     @Test
-    void dontPlaceStoneIfGameEnded() throws CellOutOfBoardException, BoardIsFullException, CellAlreadyOccupiedException {
+    void dontPlaceStoneIfGameEndedOrBoardIsFull() throws CellOutOfBoardException, CellAlreadyOccupiedException {
         disputeGameAndDraw(game);
         try {
             game.placeStoneAndChangeTurn(firstMove);
             fail("Game should be ended, but the move was accepted");
-        } catch (GameEndedException e) {
+        } catch (GameEndedException | BoardIsFullException e) {
             assertTrue(game.isEnded());
         }
     }
