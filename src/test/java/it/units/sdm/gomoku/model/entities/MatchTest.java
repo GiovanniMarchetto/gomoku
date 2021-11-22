@@ -478,7 +478,6 @@ class MatchTest {
         assertFalse(match.isEnded());
     }
 
-
     @Test
     void testIfMatchEndedWithADraw() throws MatchNotEndedException {
         endMatchWithADraw(match);
@@ -486,7 +485,7 @@ class MatchTest {
     }
 
     @Test
-    void isNotADraw() throws MatchNotEndedException {
+    void testIfMatchEndedWithoutADraw() throws MatchNotEndedException {
         makeGivenPlayerToWinNGamesInMatchAndTheOtherPlayerToWinTheRemainingGames(
                 match.getCurrentBlackPlayer(), match.getCurrentWhitePlayer(), match.getTotalNumberOfGames(), match);
         assertFalse(match.isADraw());
