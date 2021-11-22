@@ -142,7 +142,7 @@ public class GameTestUtility {
     class GameTestUtilityTest {
         @ParameterizedTest
         @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfMoveControlRecordFields")
-        void dontCoordinateToControl(Cell[][] cellMatrix, Coordinates coordinatesToControl)
+        void countIfStonesOfDifferentColorsAreTheSameOrBlackHaveOneMoreStoneOnTheBoard(Cell[][] cellMatrix, Coordinates coordinatesToControl)
                 throws CellOutOfBoardException {
             Game game = new Game(new PositiveInteger(cellMatrix.length), new CPUPlayer(), new CPUPlayer());
             game.start();
@@ -161,7 +161,7 @@ public class GameTestUtility {
 
         @ParameterizedTest
         @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfMoveControlRecordFields")
-        void testCreateAndDisputeGameFromCsv(Cell[][] matrix, Coordinates coordinatesToControl)
+        void createAndDisputeGameAndCheckIfTheResultBoardOfGameIsTheSameOfTheOneProvided(Cell[][] matrix, Coordinates coordinatesToControl)
                 throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
 
             Game game = createAndDisputeGameFromCsv(matrix, coordinatesToControl);
