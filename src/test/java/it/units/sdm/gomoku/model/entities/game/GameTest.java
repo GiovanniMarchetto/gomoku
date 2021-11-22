@@ -220,14 +220,14 @@ class GameTest {
             game = createNewGameWithDefaultParams();
             tryToPlaceStoneAndChangeTurn(firstMove, game);
         } catch (NullPointerException e) {
-            assertTrue(game.getBoard().getCellAtCoordinates(firstMove).isEmpty());
+            assertTrue(isEmptyCell(firstMove));
         }
     }
 
     @Test
     void placeStoneAfterGameStarted() throws CellOutOfBoardException {
         tryToPlaceStoneAndChangeTurn(firstMove, game);
-        assertFalse(game.getBoard().getCellAtCoordinates(firstMove).isEmpty());
+        assertFalse(isEmptyCell(firstMove));
     }
 
     @Test
@@ -239,6 +239,25 @@ class GameTest {
         } catch (GameEndedException | BoardIsFullException e) {
             assertTrue(game.isEnded());
         }
+    }
+
+    @Test
+    void dontPlaceStoneIfCellAlreadyOccupied() throws CellOutOfBoardException, BoardIsFullException, GameEndedException, CellAlreadyOccupiedException {
+        assert isEmptyCell(firstMove);
+        game.placeStoneAndChangeTurn(firstMove);
+        assert !isEmptyCell(firstMove);
+        try {
+            game.placeStoneAndChangeTurn(firstMove);    // replace at same position
+            fail("Cell already occupied and placing stone allowed but should not.");
+        } catch (CellAlreadyOccupiedException e) {
+            assertFalse(isEmptyCell(firstMove));
+        }
+    }
+
+    private boolean isEmptyCell(@NotNull final Coordinates coordinateOfCellOnBoard) throws CellOutOfBoardException {
+        return game.getBoard()
+                .getCellAtCoordinates(Objects.requireNonNull(coordinateOfCellOnBoard))
+                .isEmpty();
     }
 
     @Test
