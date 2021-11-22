@@ -113,6 +113,14 @@ public class Game implements Comparable<Game>, Observable {
         return board.isEmpty();
     }
 
+    public synchronized boolean isEnded() {
+        return gameStatusProperty.getPropertyValue() == Status.ENDED;
+    }
+
+    public synchronized boolean isNotStarted() {
+        return gameStatusProperty.getPropertyValue() == Status.NOT_STARTED;
+    }
+
     public void placeStoneAndChangeTurn(@NotNull final Coordinates coordinates)
             throws BoardIsFullException, CellAlreadyOccupiedException, GameEndedException, CellOutOfBoardException, GameNotStartedException {
         final Player player = Objects.requireNonNull(currentPlayerProperty.getPropertyValue());
@@ -154,15 +162,6 @@ public class Game implements Comparable<Game>, Observable {
         } else {
             changeTurn();
         }
-    }
-
-
-    public synchronized boolean isEnded() {
-        return gameStatusProperty.getPropertyValue() == Status.ENDED;
-    }
-
-    public synchronized boolean isNotStarted() {
-        return gameStatusProperty.getPropertyValue() == Status.NOT_STARTED;
     }
 
     private boolean hasThePlayerWonWithLastMove(@NotNull final Coordinates lastMove) {
