@@ -7,6 +7,7 @@ import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
 import it.units.sdm.gomoku.model.entities.Game;
 import it.units.sdm.gomoku.model.entities.Player;
+import it.units.sdm.gomoku.model.entities.player.FakePlayer;
 import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
 import it.units.sdm.gomoku.model.exceptions.GameNotEndedException;
 import it.units.sdm.gomoku.property_change_handlers.PropertyObserver;
@@ -293,17 +294,25 @@ class GameTest {
 
     @Test
     void testToString() {
-        disputeGameWithSmartAlgorithm(game);
-        String expected = "";
-        try {
-            expected = "Game started at " + game.getCreationTime() + "\n" +
-                    blackPlayer + " -> BLACK, " +
-                    whitePlayer + " -> WHITE" + "\n" +
-                    "Winner: " + game.getWinner() + "\n" +
-                    game.getBoard();
-        } catch (GameNotEndedException e) {
-            fail(e);
-        }
+        PositiveInteger boardSizeOfThree = new PositiveInteger(3);
+        Player gianniPlayer = new FakePlayer("Gianni");
+        Player beppePlayer = new FakePlayer("Beppe");
+
+        game = new Game(boardSizeOfThree, gianniPlayer, beppePlayer);
+        game.start();
+
+        tryToPlaceStoneAndChangeTurn(new Coordinates(0, 0), game);
+        tryToPlaceStoneAndChangeTurn(new Coordinates(1, 1), game);
+
+        String lineSeparator = System.lineSeparator();
+        String expected = "Game started at " + game.getCreationTime() +
+                lineSeparator + "Gianni -> BLACK, Beppe -> WHITE" +
+                lineSeparator + "Winner: null" +
+                lineSeparator + "    0  1  2  " +
+                lineSeparator + "0|  X       " +
+                lineSeparator + "1|     O    " +
+                lineSeparator + "2|          " +
+                lineSeparator;
         assertEquals(expected, game.toString());
     }
 }
