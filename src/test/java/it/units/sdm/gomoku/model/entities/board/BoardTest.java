@@ -343,6 +343,15 @@ public class BoardTest {
         }
     }
 
+    @Test
+    void occupySomeCellAndFindTheEmptiesCell() throws NoSuchFieldException, IllegalAccessException {
+        Stream<Coordinates> coordinatesStream = board.getStreamOfEmptyCoordinates();
+        var numberOfFilledPositions = TestUtility.getFieldValue("numberOfFilledPositions", board);
+        assert numberOfFilledPositions != null;
+        int numberOfEmptyPositions = (int) (Math.pow(BOARD_SIZE.intValue(), 2) - (int) numberOfFilledPositions);
+        assertEquals(numberOfEmptyPositions, coordinatesStream.count());
+    }
+
     @ParameterizedTest
     @MethodSource("provideCoupleOfIntegersBetweenMinus5IncludedAndPlus5ToBoardSizeExcluded")
     void occupyPosition(int x, int y) {
@@ -355,7 +364,7 @@ public class BoardTest {
                 //noinspection ConstantConditions //check before
                 assertTrue(boardMatrixFromCsv[x][y].isEmpty()
                         && !cell.isEmpty()
-                        && stoneColor == cell.getStone().getColor());   // TODO: message chain
+                        && stoneColor == cell.getStone().getColor());
             } catch (BoardIsFullException e) {
                 assertFalse(board.isThereAnyEmptyCell());
             } catch (CellAlreadyOccupiedException e) {
