@@ -98,7 +98,7 @@ public abstract class Player {
         return name.hashCode();
     }
 
-    protected boolean isFirstMove() {   // TODO: test
+    protected boolean isFirstMove() {
         return Objects.requireNonNull(currentGame).isBoardEmpty();
     }
 
@@ -115,7 +115,4 @@ public abstract class Player {
         return Objects.requireNonNull(currentGame).getBoardSize();
     }
 
-    protected boolean isCurrentGameSet() {    // TODO: test
-        return getCurrentGame() != null;
-    }
 }
