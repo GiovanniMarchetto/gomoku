@@ -111,7 +111,7 @@ class MatchTest {
         return currentGame.get();
     }
 
-    private static void makeGivenPlayerToWinNGamesInMatch(
+    private static void makeGivenPlayerToWinNGamesInMatchAndTheOtherPlayerToWinTheRemainingGames(
             @NotNull final Player playerWhoHasToWin, @NotNull final Player playerWhoHasToLose,
             int numberOfGameWon, @NotNull final Match match) {
 
@@ -275,7 +275,7 @@ class MatchTest {
             throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
 
         assert numberOfGameWon <= SAMPLE_NUMBER_OF_GAMES;
-        makeGivenPlayerToWinNGamesInMatch(winnerPlayer, loserPlayer, numberOfGameWon, match);
+        makeGivenPlayerToWinNGamesInMatchAndTheOtherPlayerToWinTheRemainingGames(winnerPlayer, loserPlayer, numberOfGameWon, match);
         Method scoreOfPlayerGetter = match.getClass().getDeclaredMethod("getScoreOfPlayer", Player.class);
         scoreOfPlayerGetter.setAccessible(true);
         assertEquals(numberOfGameWon, ((NonNegativeInteger) scoreOfPlayerGetter.invoke(match, winnerPlayer)).intValue());
@@ -296,7 +296,7 @@ class MatchTest {
     @ParameterizedTest
     @MethodSource("getIntStreamFrom0IncludedToTotalNumberOfGamesExcluded")
     void testGetScore(int numberOfGamesWonByFirstPlayer) {
-        makeGivenPlayerToWinNGamesInMatch(SAMPLE_PLAYER_1, SAMPLE_PLAYER_2, numberOfGamesWonByFirstPlayer, match);
+        makeGivenPlayerToWinNGamesInMatchAndTheOtherPlayerToWinTheRemainingGames(SAMPLE_PLAYER_1, SAMPLE_PLAYER_2, numberOfGamesWonByFirstPlayer, match);
         Map<Player, NonNegativeInteger> expectedScore;
         {
             expectedScore = new HashMap<>(2);
@@ -407,7 +407,7 @@ class MatchTest {
         Player loserOfMatch = winnerOfMatch.equals(SAMPLE_PLAYER_1) ? SAMPLE_PLAYER_2 : SAMPLE_PLAYER_1;
 
         int numberOfGamesToWinForAPlayerToBeTheWinnerOfMatch = match.getTotalNumberOfGames() / 2 + 1;
-        makeGivenPlayerToWinNGamesInMatch(winnerOfMatch, loserOfMatch, numberOfGamesToWinForAPlayerToBeTheWinnerOfMatch, match);
+        makeGivenPlayerToWinNGamesInMatchAndTheOtherPlayerToWinTheRemainingGames(winnerOfMatch, loserOfMatch, numberOfGamesToWinForAPlayerToBeTheWinnerOfMatch, match);
         assertEquals(winnerOfMatch, match.getWinner());
     }
 
@@ -435,15 +435,28 @@ class MatchTest {
 
 
     @Test
-    void isADraw() {
-//        for (int i = 0; i < SAMPLE_NUMBER_OF_GAMES; i++) {
-//            startGameAndDraw();
-//        }
-//        try {
-//            assertTrue(match.isADraw());
-//        } catch (MatchNotEndedException e) {
-//            fail(e);
-//        }
+    void testIfMatchEndedWithADraw() throws MatchNotEndedException {
+        int numberOfGamesThatEachPlayerHasToWinToHaveADraw = SAMPLE_NUMBER_OF_GAMES / 2;
+        makeGivenPlayerToWinNGamesInMatchAndTheOtherPlayerToWinTheRemainingGames(
+                match.getCurrentBlackPlayer(), match.getCurrentWhitePlayer(),
+                numberOfGamesThatEachPlayerHasToWinToHaveADraw, match);
+        if (!Utility.isEvenNumber(SAMPLE_NUMBER_OF_GAMES)) {
+            Runnable changeLastGameToEndTheMatchWithADraw = () -> {
+                try {
+                    List<Game> gameList = null;
+                    //noinspection unchecked
+                    gameList = (List<Game>) TestUtility.getFieldValue("gameList", match);
+                    assert SAMPLE_NUMBER_OF_GAMES > 0;
+                    assert gameList != null;
+                    gameList.remove(gameList.size() - 1);
+                    initializeAndDisputeNGameAndEndThemWithDrawAndGetLastInitializedGame(1, match);
+                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    fail(e);
+                }
+            };
+            changeLastGameToEndTheMatchWithADraw.run();
+        }
+        assertTrue(match.isADraw());
     }
 
     @Test
