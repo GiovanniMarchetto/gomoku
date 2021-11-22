@@ -26,7 +26,8 @@ public class Match {
     @NotNull
     private Player currentWhitePlayer;
 
-    public Match(@NotNull final Player player1, @NotNull final Player player2, @NotNull final PositiveInteger numberOfGames, @NotNull final PositiveInteger boardSize) {
+    public Match(@NotNull final Player player1, @NotNull final Player player2,
+                 @NotNull final PositiveInteger numberOfGames, @NotNull final PositiveInteger boardSize) {
         this.currentBlackPlayer = Objects.requireNonNull(player1);
         this.currentWhitePlayer = Objects.requireNonNull(player2);
         this.gameList = new ArrayList<>();
