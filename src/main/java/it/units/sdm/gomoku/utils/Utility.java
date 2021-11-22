@@ -7,12 +7,16 @@ import java.util.logging.Logger;
 
 public class Utility {
 
-    public static Logger getLoggerOfClass(@NotNull final Class<?> targetClass) {
+    public static boolean isEvenNumber(int n) {
+        return n % 2 == 0;
+    }
+
+    public static Logger getLoggerOfClass(@NotNull final Class<?> targetClass) {    // TODO: test?
         return Logger.getLogger(Objects.requireNonNull(targetClass).getCanonicalName());
     }
 
     //    private static int threadCount = 0;
-    public static Thread runOnSeparateThread(@NotNull final Runnable runnable) {
+    public static Thread runOnSeparateThread(@NotNull final Runnable runnable) {    //TODO: test?
         var t = new Thread(runnable);
 //        var name = t.getName();
 //        new Thread(() -> {
