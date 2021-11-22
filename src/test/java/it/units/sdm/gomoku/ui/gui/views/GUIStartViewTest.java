@@ -48,7 +48,6 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static it.units.sdm.gomoku.model.entities.Setup.getSetupFromMatch;
 import static it.units.sdm.gomoku.ui.StartViewmodel.boardSizes;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -56,26 +55,10 @@ class GUIStartViewTest {
 
     // TODO : missing tests + very long class code smell
 
-    private GUIStartView guiStartView;
-    private StartViewmodel guiStartViewmodel;
     private static final AtomicBoolean isJavaFxRunning = new AtomicBoolean(false);
     private static final Logger loggerThisTest = Logger.getLogger(GUIStartView.class.getCanonicalName());
-
-    @BeforeEach
-    void setUp() {
-        try {
-            setUpJavaFXRuntime();
-            Method sceneCreatorMethod = SceneController.class.getDeclaredMethod(
-                    "createScene", FXMLLoader.class, double.class, double.class);
-            sceneCreatorMethod.setAccessible(true);
-            FXMLLoader fxmlLoader = new FXMLLoader(GUIStartView.class.getResource(GUIMain.START_VIEW_FXML_FILE_NAME));
-            sceneCreatorMethod.invoke(null, fxmlLoader, 0, 0);
-            guiStartView = fxmlLoader.getController();
-            guiStartViewmodel = guiStartView.getViewmodelAssociatedWithView();
-        } catch (InterruptedException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            fail(e);
-        }
-    }
+    private GUIStartView guiStartView;
+    private StartViewmodel guiStartViewmodel;
 
     @AfterAll
     static void tearDown() {
@@ -83,6 +66,16 @@ class GUIStartViewTest {
             tearDownJavaFXRuntime();
         } catch (InterruptedException e) {
             fail(e);
+        }
+    }
+
+    private static void setUpJavaFXRuntime() throws InterruptedException {
+        if (!isJavaFxRunning.get()) {
+            isJavaFxRunning.set(true);
+            Platform.startup(() -> {
+                while (isJavaFxRunning.get()) {
+                }
+            });
         }
     }
 
@@ -95,16 +88,6 @@ class GUIStartViewTest {
 //    void initialize() {
 //        // TODO : assert the correct view is shown with correct input field values and same values saved in Viewmodel
 //    }
-
-    private static void setUpJavaFXRuntime() throws InterruptedException {
-        if (!isJavaFxRunning.get()) {
-            isJavaFxRunning.set(true);
-            Platform.startup(() -> {
-                while (isJavaFxRunning.get()) {
-                }
-            });
-        }
-    }
 
     private static void tearDownJavaFXRuntime() throws InterruptedException {
         isJavaFxRunning.set(false);
@@ -146,6 +129,28 @@ class GUIStartViewTest {
         } catch (IOException | URISyntaxException e) {
             loggerThisTest.log(Level.SEVERE, "Exception generated in supplier method: null returned", e);
             return null;
+        }
+    }
+
+    private static Stream<Arguments> boardSizeNewAndOldValuesSupplier() {
+        return Arrays.stream(BoardSizes.values())
+                .flatMap(boardSizeOldValue -> Arrays.stream(BoardSizes.values())
+                        .map(boardSizeNewValue -> Arguments.of(boardSizeOldValue, boardSizeNewValue)));
+    }
+
+    @BeforeEach
+    void setUp() {
+        try {
+            setUpJavaFXRuntime();
+            Method sceneCreatorMethod = SceneController.class.getDeclaredMethod(
+                    "createScene", FXMLLoader.class, double.class, double.class);
+            sceneCreatorMethod.setAccessible(true);
+            FXMLLoader fxmlLoader = new FXMLLoader(GUIStartView.class.getResource(GUIMain.START_VIEW_FXML_FILE_NAME));
+            sceneCreatorMethod.invoke(null, fxmlLoader, 0, 0);
+            guiStartView = fxmlLoader.getController();
+            guiStartViewmodel = guiStartView.getViewmodelAssociatedWithView();
+        } catch (InterruptedException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            fail(e);
         }
     }
 
@@ -250,12 +255,6 @@ class GUIStartViewTest {
         }
     }
 
-    private static Stream<Arguments> boardSizeNewAndOldValuesSupplier() {
-        return Arrays.stream(BoardSizes.values())
-                .flatMap(boardSizeOldValue -> Arrays.stream(BoardSizes.values())
-                        .map(boardSizeNewValue -> Arguments.of(boardSizeOldValue, boardSizeNewValue)));
-    }
-
     private <T> void assertSynchronizationBetweenViewAndViewmodel(
             @Nullable final T oldValue, @Nullable final T newValue,
             @NotNull final String fieldNameInViewmodel, @NotNull final Consumer<T> propertyValueSetterInView)
@@ -338,7 +337,11 @@ class GUIStartViewTest {
             Match matchAfterUserConfirmFieldsInStartView = getCurrentMatchOrNullIfExceptionThrown.apply(mainViewmodel);
             throwIfExceptionWasThrown.run();
             if (validSetup) {
-                assertEquals(setup, getSetupFromMatch(matchAfterUserConfirmFieldsInStartView));
+
+
+                Setup setupFromMatch = getSetupFromMatch(matchAfterUserConfirmFieldsInStartView);
+
+                assertEquals(setup, setupFromMatch);
 
                 // TODO : move in separate test: after starting new game, gamelist has exactly 1 (the first just started) game
                 assertEquals(1, ((List<?>) Objects.requireNonNull(
@@ -350,6 +353,17 @@ class GUIStartViewTest {
             fail(e);
         }
 
+    }
+
+    @NotNull
+    private Setup getSetupFromMatch(Match matchAfterUserConfirmFieldsInStartView) throws IllegalAccessException, NoSuchFieldException {
+        return new Setup(
+                matchAfterUserConfirmFieldsInStartView.getCurrentBlackPlayer(),
+                matchAfterUserConfirmFieldsInStartView.getCurrentWhitePlayer(),
+                new PositiveInteger(matchAfterUserConfirmFieldsInStartView.getTotalNumberOfGames()),
+                (PositiveInteger) TestUtility.getFieldAlreadyMadeAccessible(
+                                matchAfterUserConfirmFieldsInStartView.getClass(), "boardSize")
+                        .get(matchAfterUserConfirmFieldsInStartView));
     }
 
     private void setFieldsInViewFromSetup(Setup setup) throws NoSuchFieldException, IllegalAccessException {
