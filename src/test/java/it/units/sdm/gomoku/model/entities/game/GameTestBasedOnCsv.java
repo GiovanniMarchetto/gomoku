@@ -7,6 +7,7 @@ import it.units.sdm.gomoku.model.entities.*;
 import it.units.sdm.gomoku.model.exceptions.*;
 import it.units.sdm.gomoku.utils.TestUtility;
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -14,18 +15,19 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class GameTestBasedOnCsv {
-    private final CPUPlayer cpuBlack = new CPUPlayer();
-    private final CPUPlayer cpuWhite = new CPUPlayer();
     private Game game;
 
-    private void setUpFromCsv(Cell[][] cellMatrix, Coordinates coordinatesToControl) {
-        game = new Game(new PositiveInteger(cellMatrix.length), cpuBlack, cpuWhite);
+    private static Game createAndDisputeGameFromCsv(Cell[][] cellMatrix, Coordinates coordinatesToControl)
+            throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
+
+        Game game = new Game(new PositiveInteger(cellMatrix.length), new CPUPlayer(), new CPUPlayer());
         game.start();
 
         Board board = TestUtility.createBoardFromCellMatrix(cellMatrix);
@@ -33,80 +35,55 @@ public class GameTestBasedOnCsv {
         List<Coordinates> blackCoordinatesList = getListOfCoordinatesOfAColor(coordinatesToControl, board, Color.BLACK);
         List<Coordinates> whiteCoordinatesList = getListOfCoordinatesOfAColor(coordinatesToControl, board, Color.WHITE);
 
-        try {
-            for (int i = 0; i < blackCoordinatesList.size(); i++) {
-                game.placeStoneAndChangeTurn(blackCoordinatesList.get(i));
-                if (whiteCoordinatesList.size() == i) {
-                    break;
-                }
-                game.placeStoneAndChangeTurn(whiteCoordinatesList.get(i));
+        for (int i = 0; i < blackCoordinatesList.size(); i++) {
+            game.placeStoneAndChangeTurn(blackCoordinatesList.get(i));
+            if (whiteCoordinatesList.size() == i) {
+                break;
             }
-            game.placeStoneAndChangeTurn(coordinatesToControl);
-        } catch (BoardIsFullException | CellAlreadyOccupiedException | GameEndedException | CellOutOfBoardException e) {
-            fail(e);
+            game.placeStoneAndChangeTurn(whiteCoordinatesList.get(i));
         }
+        game.placeStoneAndChangeTurn(coordinatesToControl);
+
+        return game;
     }
 
     @NotNull
-    private List<Coordinates> getListOfCoordinatesOfAColor(Coordinates coordinatesToControl, Board board, Color color) {
-        //the empty cells are filtered before the color request
-        return IntStream.range(0, board.getSize())
+    private static List<Coordinates> getListOfCoordinatesOfAColor(
+            Coordinates coordinatesToControl, Board board, Color color) throws CellOutOfBoardException {
+
+        AtomicReference<CellOutOfBoardException> eventuallyThrownException = new AtomicReference<>();
+
+        List<Coordinates> coordinatesList = IntStream.range(0, board.getSize())
                 .boxed().sequential()
                 .flatMap(x -> IntStream.range(0, board.getSize())
                         .mapToObj(y -> new Coordinates(x, y)))
                 .filter(coords -> {
                     try {
-                        return !board.getCellAtCoordinates(coords).isEmpty();
+                        //noinspection ConstantConditions //the empty cells are filtered before the color request
+                        return !board.getCellAtCoordinates(coords).isEmpty() &&
+                                board.getCellAtCoordinates(coords).getStone().getColor() == color;
                     } catch (CellOutOfBoardException e) {
-                        fail(e);
-                        return false;
-                    }
-                })
-                .filter(coords -> {
-                    try {
-                        return Objects.requireNonNull(board.getCellAtCoordinates(coords).getStone()).getColor() == color;   // TODO: message chain
-                    } catch (CellOutOfBoardException e) {
-                        fail(e);
+                        eventuallyThrownException.set(e);
                         return false;
                     }
                 })
                 .filter(coordinates -> !coordinates.equals(coordinatesToControl))
                 .toList();
-    }
 
-    @ParameterizedTest
-    @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfMoveControlRecordFields")
-    void setUpFromCsvCorrectness(Cell[][] cellMatrix, Coordinates coordinatesToControl) throws CellOutOfBoardException {
-        game = new Game(new PositiveInteger(cellMatrix.length), cpuBlack, cpuWhite);
-        game.start();
-
-        Board board = TestUtility.createBoardFromCellMatrix(cellMatrix);
-
-        List<Coordinates> blackCoordinatesList = getListOfCoordinatesOfAColor(coordinatesToControl, board, Color.BLACK);
-        List<Coordinates> whiteCoordinatesList = getListOfCoordinatesOfAColor(coordinatesToControl, board, Color.WHITE);
-
-        if (blackCoordinatesList.size() != whiteCoordinatesList.size()) {
-            Stone stone = Objects.requireNonNull(board.getCellAtCoordinates(coordinatesToControl).getStone());
-            int lastStone = stone.getColor() == Color.WHITE ? 1 : 0;  // TODO: re-see this to clarify
-            if (blackCoordinatesList.size() != (whiteCoordinatesList.size() + lastStone)) {
-                fail("The construction of the game in the csv is wrong");
-            }
+        if (eventuallyThrownException.get() != null) {
+            throw eventuallyThrownException.get();
         }
-    }
 
-    @ParameterizedTest
-    @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfMoveControlRecordFields")
-    void setUpFromCsvBoardTest(Cell[][] matrix, Coordinates coordinatesToControl) {
-        setUpFromCsv(matrix, coordinatesToControl);
-        Board expectedBoard = TestUtility.createBoardFromCellMatrix(matrix);
-        assertEquals(expectedBoard.toString(), game.getBoard().toString());
+        return coordinatesList;
     }
 
     @ParameterizedTest
     @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfMoveControlRecordFields")
     void hasThePlayerWonWithLastMove(Cell[][] matrix, Coordinates coordinatesToControl,
-                                     boolean expectedResultOfAlgorithm) {
-        setUpFromCsv(matrix, coordinatesToControl);
+                                     boolean expectedResultOfAlgorithm)
+            throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
+
+        game = createAndDisputeGameFromCsv(matrix, coordinatesToControl);
         try {
             Method method = Game.class.getDeclaredMethod("hasThePlayerWonWithLastMove", Coordinates.class);
             method.setAccessible(true);
@@ -120,8 +97,10 @@ public class GameTestBasedOnCsv {
     @ParameterizedTest
     @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfMoveControlRecordFields")
     void getWinnerIfGameFinished(Cell[][] matrix, Coordinates coordinatesToControl,
-                                 boolean ignored, boolean finishedGame) {
-        setUpFromCsv(matrix, coordinatesToControl);
+                                 boolean ignored, boolean finishedGame)
+            throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
+
+        game = createAndDisputeGameFromCsv(matrix, coordinatesToControl);
         try {
             if (!finishedGame) {
                 game.getWinner();
@@ -134,8 +113,11 @@ public class GameTestBasedOnCsv {
     @ParameterizedTest
     @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfMoveControlRecordFields")
     void getWinnerIfGameNotFinished(Cell[][] matrix, Coordinates coordinatesToControl,
-                                    boolean isThereAWinner, boolean finishedGame) throws GameNotEndedException {
-        setUpFromCsv(matrix, coordinatesToControl);
+                                    boolean isThereAWinner, boolean finishedGame)
+            throws GameNotEndedException, BoardIsFullException, GameEndedException,
+            CellOutOfBoardException, CellAlreadyOccupiedException {
+
+        game = createAndDisputeGameFromCsv(matrix, coordinatesToControl);
         if (finishedGame) {
             Player winner = game.getWinner();
             assertEquals(isThereAWinner, winner != null);
@@ -145,8 +127,43 @@ public class GameTestBasedOnCsv {
     @ParameterizedTest
     @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfMoveControlRecordFields")
     void isEnded(Cell[][] matrix, Coordinates coordinatesToControl,
-                 boolean ignored, boolean finishedGame) {
-        setUpFromCsv(matrix, coordinatesToControl);
+                 boolean ignored, boolean finishedGame)
+            throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
+
+        game = createAndDisputeGameFromCsv(matrix, coordinatesToControl);
         assertEquals(finishedGame, game.isEnded());
+    }
+
+    @Nested
+    class GameTestUtilityTest {
+        @ParameterizedTest
+        @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfMoveControlRecordFields")
+        void dontPlaceCoordinateToControl(Cell[][] cellMatrix, Coordinates coordinatesToControl) throws CellOutOfBoardException {
+            Game game = new Game(new PositiveInteger(cellMatrix.length), new CPUPlayer(), new CPUPlayer());
+            game.start();
+
+            Board board = TestUtility.createBoardFromCellMatrix(cellMatrix);
+
+            List<Coordinates> blackCoordinatesList = getListOfCoordinatesOfAColor(coordinatesToControl, board, Color.BLACK);
+            List<Coordinates> whiteCoordinatesList = getListOfCoordinatesOfAColor(coordinatesToControl, board, Color.WHITE);
+
+            if (blackCoordinatesList.size() != whiteCoordinatesList.size()) {
+                Stone stone = Objects.requireNonNull(board.getCellAtCoordinates(coordinatesToControl).getStone());
+                int lastStone = stone.getColor() == Color.WHITE ? 1 : 0;  // TODO: re-see this to clarify
+                if (blackCoordinatesList.size() != (whiteCoordinatesList.size() + lastStone)) {
+                    fail("The construction of the game in the csv is wrong");
+                }
+            }
+        }
+
+        @ParameterizedTest
+        @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfMoveControlRecordFields")
+        void testCreateAndDisputeGameFromCsv(Cell[][] matrix, Coordinates coordinatesToControl)
+                throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
+
+            Game game = createAndDisputeGameFromCsv(matrix, coordinatesToControl);
+            Board expectedBoard = TestUtility.createBoardFromCellMatrix(matrix);
+            assertEquals(expectedBoard.toString(), game.getBoard().toString());
+        }
     }
 }
