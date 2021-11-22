@@ -92,34 +92,29 @@ class GameTest {
         assertEquals(gameStatusToTest, game.getGameStatusProperty().getPropertyValue());
     }
 
-    @Test
-    void notifyGameStatusOnStart() {
-        game = createNewGameWithDefaultParams();
-        AtomicReference<Boolean> gameHasNotifiedToBeStarted = new AtomicReference<>();
-        new PropertyObserver<>(
-                game.getGameStatusProperty(),
-                evt -> gameHasNotifiedToBeStarted.set(Game.Status.STARTED.equals(evt.getNewValue())));
-
-        game.start();
-        //noinspection StatementWithEmptyBody   // wait property change notification
-        while (!gameHasNotifiedToBeStarted.get()) {
+    @ParameterizedTest
+    @EnumSource(Game.Status.class)
+    void notifyGameStatus(Game.Status gameStatusToTest) {
+        if (gameStatusToTest == Game.Status.STARTED) {
+            game = createNewGameWithDefaultParams();
         }
 
-        assertTrue(gameHasNotifiedToBeStarted.get());
-    }
-
-    @Test
-    void notifyGameStatusOnEnd() {
-        AtomicReference<Boolean> gameHasNotifiedToBeEnded = new AtomicReference<>();
+        AtomicReference<Boolean> gameHasNotified = new AtomicReference<>();
         new PropertyObserver<>(
                 game.getGameStatusProperty(),
-                evt -> gameHasNotifiedToBeEnded.set(Game.Status.ENDED.equals(evt.getNewValue())));
-        disputeGameAndDraw(game);
-        //noinspection StatementWithEmptyBody   // wait property change notification
-        while (!gameHasNotifiedToBeEnded.get()) {
+                evt -> gameHasNotified.set(gameStatusToTest.equals(evt.getNewValue())));
+
+        switch (gameStatusToTest) {
+            case STARTED -> game.start();
+            case ENDED -> disputeGameAndDraw(game);
+            default -> throw new IllegalArgumentException("Unexpected value for game status");
         }
 
-        assertTrue(gameHasNotifiedToBeEnded.get());
+        //noinspection StatementWithEmptyBody   // wait property change notification
+        while (!gameHasNotified.get()) {
+        }
+
+        assertTrue(gameHasNotified.get());
     }
 
     //region Test Getters / Setters
