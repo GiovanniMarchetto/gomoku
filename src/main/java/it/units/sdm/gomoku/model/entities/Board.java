@@ -39,23 +39,26 @@ public class Board implements Observable, Serializable {
     private final ObservablePropertySettable<Coordinates> lastMoveCoordinatesProperty;
 
     @NotNull
-    public static final Function<Stream<Stream<Cell>>, IntStream> groupCellStreamStreamByStoneToIntStreamOfMaxNumberSameColorStones =
-            streamStream -> streamStream    //  TODO: re-see this
-                    .map(cellStream -> cellStream
-                            .filter(cell -> !cell.isEmpty())
-                            .collect(Collectors.groupingBy(Cell::getStone, Collectors.counting())))
-                    .filter(map -> map.size() > 0)
-                    .map(map -> map.values().stream()
-                            .mapToInt(Math::toIntExact)
-                            .max()
-                            .orElseThrow(IllegalStateException::new))
-                    .mapToInt(i -> i);  // TODO: test + may be a method instead of a Function?
-    @NotNull
     public final Function<Stream<Stream<Coordinates>>, Stream<Stream<Cell>>> mapCoordStreamStreamToCellStreamStream =
             streamStream -> streamStream
                     .map(coordStream -> coordStream
                             .map(this::getCellAtCoordinatesOrNullIfInvalid)
-                            .filter(Objects::nonNull));  // TODO: test + refactor + may be a method instead of a Function?
+                            .filter(Objects::nonNull));
+
+    @NotNull
+    public static IntStream groupCellStreamStreamByStoneToIntStreamOfMaxNumberOfSameColorStones(
+            @NotNull final Stream<Stream<Cell>> streamStream) {
+        return streamStream
+                .map(cellStream -> cellStream
+                        .filter(cell -> !cell.isEmpty())
+                        .collect(Collectors.groupingBy(Cell::getStone, Collectors.counting())))
+                .filter(map -> map.size() > 0)
+                .map(map -> map.values().stream()
+                        .mapToInt(Math::toIntExact)
+                        .max()
+                        .orElseThrow(IllegalStateException::new))
+                .mapToInt(i -> i);
+    }
 
     public Board(@NotNull PositiveInteger size) {
         this.size = size;

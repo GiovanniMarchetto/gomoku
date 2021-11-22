@@ -35,7 +35,7 @@ public class GameTestUtility {
         while (!game.isEnded()) {
             try {
                 game.placeStoneAndChangeTurn(cpuPlayer.chooseEmptyCoordinatesSmartly());
-            } catch (BoardIsFullException | CellAlreadyOccupiedException | GameEndedException | CellOutOfBoardException e) {
+            } catch (CellAlreadyOccupiedException | GameEndedException | CellOutOfBoardException e) {
                 Assertions.fail("During disputeGameWithSmartAlgorithm throw: " + e);
             }
         }

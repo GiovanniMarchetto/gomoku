@@ -24,8 +24,6 @@ import java.util.logging.Level;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static it.units.sdm.gomoku.model.entities.Board.groupCellStreamStreamByStoneToIntStreamOfMaxNumberSameColorStones;
-
 public class Game implements Comparable<Game>, Observable {
 
     @NotNull
@@ -237,7 +235,7 @@ public class Game implements Comparable<Game>, Observable {
 
         return board
                 .mapCoordStreamStreamToCellStreamStream
-                .andThen(groupCellStreamStreamByStoneToIntStreamOfMaxNumberSameColorStones)
+                .andThen(Board::groupCellStreamStreamByStoneToIntStreamOfMaxNumberOfSameColorStones)
                 .andThen(checkIfOneElementIsEqualToNumberOfConsecutive)
                 .apply(getAllStreamsOfCoordinatesOverAllDirections.get());
     }
