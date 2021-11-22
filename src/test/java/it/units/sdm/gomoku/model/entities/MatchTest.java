@@ -4,7 +4,10 @@ import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.game.GameTestUtility;
 import it.units.sdm.gomoku.model.entities.player.FakePlayer;
-import it.units.sdm.gomoku.model.exceptions.*;
+import it.units.sdm.gomoku.model.exceptions.GameAlreadyStartedException;
+import it.units.sdm.gomoku.model.exceptions.GameNotEndedException;
+import it.units.sdm.gomoku.model.exceptions.MatchEndedException;
+import it.units.sdm.gomoku.model.exceptions.MatchNotEndedException;
 import it.units.sdm.gomoku.ui.support.BoardSizes;
 import it.units.sdm.gomoku.utils.TestUtility;
 import it.units.sdm.gomoku.utils.Utility;
@@ -422,12 +425,12 @@ class MatchTest {
         assertEquals(numberOfGamesToDispute == SAMPLE_NUMBER_OF_GAMES, match.isEnded());
     }
 
-
     @Test
-    void isEndedAfterAddExtraGame() throws GameNotStartedException {
-//        isEndedNormalFlow();
-//        match.incrementTotalNumberOfGames();
-//        assertFalse(match.isEnded());
+    void testIfMatchIsEndedAfterAddExtraGame() {
+        initializeAndDisputeNGameAndEndThemWithDrawAndGetLastInitializedGame(SAMPLE_NUMBER_OF_GAMES, match);
+        assert match.isEnded();
+        match.incrementTotalNumberOfGames();
+        assertFalse(match.isEnded());
     }
 
 
