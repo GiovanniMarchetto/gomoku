@@ -6,27 +6,32 @@ import it.units.sdm.gomoku.model.entities.player.FakePlayer;
 import it.units.sdm.gomoku.model.exceptions.*;
 import it.units.sdm.gomoku.ui.support.BoardSizes;
 import it.units.sdm.gomoku.utils.TestUtility;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class MatchTest {
 
-    private final CPUPlayer cpu1 = new CPUPlayer();
-    private final CPUPlayer cpu2 = new CPUPlayer();
-    private final int NUMBER_OF_GAMES = 3;
+    private static final Player SAMPLE_PLAYER_1 = new FakePlayer("A");
+    private static final Player SAMPLE_PLAYER_2 = new FakePlayer("B");
+    private static final int SAMPLE_NUMBER_OF_GAMES = 5;
+    private static final PositiveInteger SAMPLE_BOARD_SIZE = new PositiveInteger(BoardSizes.NORMAL.getBoardSize());
+
     private Match match;
     private Game currentGame;
 
     //region Support Methods    // todo : TRY NOT TO USE THIS REGION
     private void assertCpusScore(int n1, int n2) {
-        assertEquals(n1, match.getScore().get(cpu1).intValue());
-        assertEquals(n2, match.getScore().get(cpu2).intValue());
+        assertEquals(n1, match.getScore().get(SAMPLE_PLAYER_1).intValue());
+        assertEquals(n2, match.getScore().get(SAMPLE_PLAYER_2).intValue());
     }
 
     private void startNewGameComplete() {
@@ -51,8 +56,12 @@ class MatchTest {
 
     @BeforeEach
     void setup() {
-        final PositiveInteger boardSizeTest = new PositiveInteger(5);
-        match = new Match(cpu1, cpu2, new PositiveInteger(NUMBER_OF_GAMES), boardSizeTest);
+        match = createNewMatchWithDefaultParameterAndGet();
+    }
+
+    @NotNull
+    private Match createNewMatchWithDefaultParameterAndGet() {
+        return new Match(SAMPLE_PLAYER_1, SAMPLE_PLAYER_2, new PositiveInteger(SAMPLE_NUMBER_OF_GAMES), SAMPLE_BOARD_SIZE);
     }
 
     //region test constructors
@@ -66,13 +75,127 @@ class MatchTest {
     }
 
     @Test
-    void createNewInstanceFromSetup() throws NoSuchFieldException, IllegalAccessException {
-        Setup setup = new Setup(new FakePlayer("A"), new FakePlayer("B"), new PositiveInteger(1), new PositiveInteger(3));
+    void createNewInstanceFromSetup() {
+        Setup setup = new Setup(SAMPLE_PLAYER_1, SAMPLE_PLAYER_2, new PositiveInteger(SAMPLE_NUMBER_OF_GAMES), SAMPLE_BOARD_SIZE);
+        Match match = new Match(SAMPLE_PLAYER_1, SAMPLE_PLAYER_2, new PositiveInteger(SAMPLE_NUMBER_OF_GAMES), SAMPLE_BOARD_SIZE);
         Match matchFromSetup = new Match(setup);
-        Setup setupFromMatch = Setup.getSetupFromMatch(matchFromSetup);
-        assertEquals(setup, setupFromMatch);
+
+        assertEquals(match, matchFromSetup);
     }
     //endregion
+
+    //region test equals
+    @Test
+    void equalIfSameObject() {
+        assertEquals(match, match);
+    }
+
+    @Test
+    void notEqualIfDifferentClasses() {
+        //noinspection RedundantCast    // used to test equals
+        assertNotEquals((Object) match, "");
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    void notEqualIfDifferentGameList() throws NoSuchFieldException, IllegalAccessException {
+        match = createNewMatchWithDefaultParameterAndGet();
+        Match matchWithDifferentGameList;
+        {
+            matchWithDifferentGameList = createNewMatchWithDefaultParameterAndGet();
+            ((List<Game>) Objects.requireNonNull(TestUtility.getFieldValue("gameList", matchWithDifferentGameList)))
+                    .add(GameTestUtility.createNewGameWithDefaultParams());
+        }
+        assertNotEquals(match, matchWithDifferentGameList);
+    }
+
+    @Test
+    void notEqualIfDifferentNumberOfGames() {
+        match = createNewMatchWithDefaultParameterAndGet();
+        Match matchWithDifferentDifferentNumberOfGames;
+        {
+            matchWithDifferentDifferentNumberOfGames = createNewMatchWithDefaultParameterAndGet();
+            matchWithDifferentDifferentNumberOfGames.incrementTotalNumberOfGames();
+        }
+        assertNotEquals(match, matchWithDifferentDifferentNumberOfGames);
+    }
+
+    @Test
+    void notEqualIfDifferentCurrentBlackPlayer() throws NoSuchFieldException, IllegalAccessException {
+        match = createNewMatchWithDefaultParameterAndGet();
+        Match matchWithDifferentDifferentCurrentBlackPlayer;
+        {
+            matchWithDifferentDifferentCurrentBlackPlayer = createNewMatchWithDefaultParameterAndGet();
+            TestUtility.setFieldValue(
+                    "currentBlackPlayer", new FakePlayer("Different black player"),
+                    matchWithDifferentDifferentCurrentBlackPlayer);
+        }
+        assertNotEquals(match, matchWithDifferentDifferentCurrentBlackPlayer);
+    }
+
+    @Test
+    void notEqualIfDifferentCurrentWhitePlayer() throws NoSuchFieldException, IllegalAccessException {
+        match = createNewMatchWithDefaultParameterAndGet();
+        Match matchWithDifferentDifferentCurrentWhitePlayer;
+        {
+            matchWithDifferentDifferentCurrentWhitePlayer = createNewMatchWithDefaultParameterAndGet();
+            TestUtility.setFieldValue(
+                    "currentWhitePlayer", new FakePlayer("Different white player"),
+                    matchWithDifferentDifferentCurrentWhitePlayer);
+        }
+        assertNotEquals(match, matchWithDifferentDifferentCurrentWhitePlayer);
+    }
+
+    @Test
+    void equalIfNotSameButWithEqualFieldValues() {
+        Match match = createNewMatchWithDefaultParameterAndGet();
+        Match anotherMatch = createNewMatchWithDefaultParameterAndGet();
+        assertEquals(match, anotherMatch);
+    }
+
+    @Test
+    void sameHashCodeIfEqual() {
+        Match match = createNewMatchWithDefaultParameterAndGet();
+        Match anotherMatch = createNewMatchWithDefaultParameterAndGet();
+        assert match.equals(anotherMatch);
+        assertEquals(match.hashCode(), anotherMatch.hashCode());
+    }
+
+    @Test
+    void notEqualIfDifferentHashCode() {
+        Match match = createNewMatchWithDefaultParameterAndGet();
+        Match anotherMatchWithDifferentHashCode;
+        {
+            anotherMatchWithDifferentHashCode = createNewMatchWithDefaultParameterAndGet();
+            anotherMatchWithDifferentHashCode.incrementTotalNumberOfGames();
+        }
+        assert match.hashCode() != anotherMatchWithDifferentHashCode.hashCode();
+        assertNotEquals(match, anotherMatchWithDifferentHashCode);
+    }
+    //endregion test equals
+
+    //region test getters
+    @Test
+    void testGetNumberOfGames() {
+        assertEquals(SAMPLE_NUMBER_OF_GAMES, match.getNumberOfGames());
+    }
+
+    @Test
+    void testGetCurrentBlackPlayer() {
+        assertEquals(SAMPLE_PLAYER_1, match.getCurrentBlackPlayer());
+    }
+
+    @Test
+    void testGetCurrentWhitePlayer() {
+        assertEquals(SAMPLE_PLAYER_2, match.getCurrentWhitePlayer());
+    }
+
+    @Test
+    void testGetCurrentGame() throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, MatchEndedException, GameNotEndedException {
+        currentGame = match.initializeNewGame();
+        assertEquals(currentGame, TestUtility.invokeMethodOnObject(match, "getCurrentGame"));
+    }
+    //endregion test getters
 
     @Test
     void addFirstGameOfTheMatchToGameList() throws MatchEndedException, NoSuchFieldException, IllegalAccessException, GameNotEndedException {
@@ -87,7 +210,7 @@ class MatchTest {
     @Test
     void setFirstPlayerAsTheBlackOneInTheFirstGame() throws MatchEndedException, GameNotEndedException {
         match.initializeNewGame();
-        assertEquals(cpu1, match.getCurrentBlackPlayer());
+        assertEquals(SAMPLE_PLAYER_1, match.getCurrentBlackPlayer());
     }
 
     @Test
@@ -98,12 +221,12 @@ class MatchTest {
         currentGame.start();
         GameTestUtility.disputeGameAndDraw(currentGame);
         match.initializeNewGame();
-        assertEquals(cpu1, match.getCurrentWhitePlayer());
+        assertEquals(SAMPLE_PLAYER_1, match.getCurrentWhitePlayer());
     }
 
 //    @Test
 //    void maxNumberOfGamesException() {//TODO: substute with not game ended exception
-//        for (int i = 0; i < NUMBER_OF_GAMES; i++) {
+//        for (int i = 0; i < SAMPLE_NUMBER_OF_GAMES; i++) {
 //            startNewGameComplete();
 //            GameTestUtility.disputeGameWithSmartAlgorithm(currentGame);
 //        }
@@ -115,35 +238,35 @@ class MatchTest {
 //            fail(e);
 //        }
 //    }
-
-    @Test
-    void getScoreBeforeStart() {
-        assertCpusScore(0, 0);
-    }
-
-    @Test
-    void getScoreAfterStart() throws MatchEndedException, GameNotEndedException {
-        match.initializeNewGame();
-        assertCpusScore(0, 0);
-    }
-
-    @Test
-    void getScoreAfterPlayer1Win() {
-        startGameAndPlayerWin(cpu1);
-        assertCpusScore(1, 0);
-    }
-
-    @Test
-    void getScoreAfterPlayer2Win() {
-        startGameAndPlayerWin(cpu2);
-        assertCpusScore(0, 1);
-    }
-
-    @Test
-    void getScoreAfterADrawGame() {
-        startGameAndDraw();
-        assertCpusScore(0, 0);
-    }
+//
+//    @Test
+//    void getScoreBeforeStart() {
+//        assertCpusScore(0, 0);
+//    }
+//
+//    @Test
+//    void getScoreAfterStart() throws MatchEndedException, GameNotEndedException {
+//        match.initializeNewGame();
+//        assertCpusScore(0, 0);
+//    }
+//
+//    @Test
+//    void getScoreAfterPlayer1Win() {
+//        startGameAndPlayerWin(SAMPLE_PLAYER_1);
+//        assertCpusScore(1, 0);
+//    }
+//
+//    @Test
+//    void getScoreAfterPlayer2Win() {
+//        startGameAndPlayerWin(SAMPLE_PLAYER_2);
+//        assertCpusScore(0, 1);
+//    }
+//
+//    @Test
+//    void getScoreAfterADrawGame() {
+//        startGameAndDraw();
+//        assertCpusScore(0, 0);
+//    }
 
     @Test
     void getWinnerIfMatchNotEnded() {
@@ -156,42 +279,28 @@ class MatchTest {
 
     @Test
     void getWinnerWithADraw() throws MatchNotEndedException {
-        for (int i = 0; i < NUMBER_OF_GAMES; i++) {
+        for (int i = 0; i < SAMPLE_NUMBER_OF_GAMES; i++) {
             startGameAndDraw();
         }
         assertNull(match.getWinner());
     }
 
     @Test
-    void getWinnerWithCPU1Win() throws MatchNotEndedException {
-        for (int i = 0; i < NUMBER_OF_GAMES; i++) {
-            startGameAndPlayerWin(cpu1);
+    void getWinnerWithPlayer1Win() throws MatchNotEndedException {
+        for (int i = 0; i < SAMPLE_NUMBER_OF_GAMES; i++) {
+            startGameAndPlayerWin(SAMPLE_PLAYER_1);
         }
-        assertEquals(cpu1, match.getWinner());
+        assertEquals(SAMPLE_PLAYER_1, match.getWinner());
     }
 
     @Test
-    void getWinnerWithCPU2Win() throws MatchNotEndedException {
-        for (int i = 0; i < NUMBER_OF_GAMES; i++) {
-            startGameAndPlayerWin(cpu2);
+    void getWinnerWithPlayer2Win() throws MatchNotEndedException {
+        for (int i = 0; i < SAMPLE_NUMBER_OF_GAMES; i++) {
+            startGameAndPlayerWin(SAMPLE_PLAYER_2);
         }
-        assertEquals(cpu2, match.getWinner());
+        assertEquals(SAMPLE_PLAYER_2, match.getWinner());
     }
 
-    @Test
-    void getNumberOfGames() {
-        assertEquals(NUMBER_OF_GAMES, match.getNumberOfGames());
-    }
-
-    @Test
-    void getCurrentBlackPlayer() {
-        assertEquals(cpu1, match.getCurrentBlackPlayer());
-    }
-
-    @Test
-    void getCurrentWhitePlayer() {
-        assertEquals(cpu2, match.getCurrentWhitePlayer());
-    }
 
     @Test
     void isEndedAtStartMatch() {
@@ -200,8 +309,7 @@ class MatchTest {
 
     @Test
     void isEndedAfterAGame() {
-        //noinspection ConstantConditions
-        if (NUMBER_OF_GAMES != 1) {
+        if (SAMPLE_NUMBER_OF_GAMES != 1) {
             startGameAndDraw();
             assertFalse(match.isEnded());
         }
@@ -209,7 +317,7 @@ class MatchTest {
 
     @Test
     void isEndedAfterStartLastGame() {
-        for (int i = 0; i < NUMBER_OF_GAMES - 1; i++) {
+        for (int i = 0; i < SAMPLE_NUMBER_OF_GAMES - 1; i++) {
             startGameAndDraw();
         }
         startNewGameComplete();
@@ -248,7 +356,7 @@ class MatchTest {
 
     @Test
     void isADraw() {
-        for (int i = 0; i < NUMBER_OF_GAMES; i++) {
+        for (int i = 0; i < SAMPLE_NUMBER_OF_GAMES; i++) {
             startGameAndDraw();
         }
         try {
@@ -260,8 +368,8 @@ class MatchTest {
 
     @Test
     void isNotADraw() throws MatchNotEndedException {
-        startGameAndPlayerWin(cpu1);
-        for (int i = 1; i < NUMBER_OF_GAMES; i++) {
+        startGameAndPlayerWin(SAMPLE_PLAYER_1);
+        for (int i = 1; i < SAMPLE_NUMBER_OF_GAMES; i++) {
             startGameAndDraw();
         }
         assertFalse(match.isADraw());

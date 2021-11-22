@@ -143,4 +143,20 @@ public class Match {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Match match = (Match) o;
+        if (!gameList.equals(match.gameList)) return false;
+        if (!boardSize.equals(match.boardSize)) return false;
+        if (!numberOfGames.equals(match.numberOfGames)) return false;
+        if (!currentBlackPlayer.equals(match.currentBlackPlayer)) return false;
+        return currentWhitePlayer.equals(match.currentWhitePlayer);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(gameList, boardSize, numberOfGames, currentBlackPlayer, currentWhitePlayer);
+    }
 }
