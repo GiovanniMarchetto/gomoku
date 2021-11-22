@@ -18,10 +18,16 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static it.units.sdm.gomoku.model.entities.game.GameTest.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class GameTestUtility {
+
+    @NotNull
+    public static Game createNewGameWithDefaultParams() {
+        return new Game(BOARD_SIZE, blackPlayer, whitePlayer);
+    }
 
     public static void disputeGameWithSmartAlgorithm(Game game) throws GameNotStartedException {
         final CPUPlayer cpuPlayer = new CPUPlayer();
