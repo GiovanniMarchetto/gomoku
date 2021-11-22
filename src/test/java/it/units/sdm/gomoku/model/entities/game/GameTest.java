@@ -82,6 +82,11 @@ class GameTest {
     }
 
     @Test
+    void setGameStatusIsStartedAfterGameStarted() {
+        assertEquals(Game.Status.STARTED, game.getGameStatusProperty().getPropertyValue());
+    }
+
+    @Test
     void notifyGameStatusOnStart() {
         game = createNewGameWithDefaultParams();
         AtomicReference<Boolean> gameHasNotifiedToBeStarted = new AtomicReference<>();
@@ -177,11 +182,6 @@ class GameTest {
         assertNull(game.getWinner());
     }
     //endregion Test Getters
-
-    @Test
-    void checkGameStatusAfterStart() {
-        assertEquals(Game.Status.STARTED, game.getGameStatusProperty().getPropertyValue());
-    }
 
     @Test
     void checkCurrentPlayerAfterStart() {
