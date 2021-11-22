@@ -248,13 +248,22 @@ class GameTest {
     @SuppressWarnings("unchecked")  // checked casting
     @ParameterizedTest
     @EnumSource(Game.Status.class)
+    void testIsNotStarted(Game.Status gameStatusToSet) throws NoSuchFieldException, IllegalAccessException {
+        ((ObservablePropertySettable<Game.Status>)
+                Objects.requireNonNull(TestUtility.getFieldValue("gameStatusProperty", game)))
+                .setPropertyValue(gameStatusToSet);
+        assertEquals(gameStatusToSet == Game.Status.NOT_STARTED, game.isNotStarted());
+    }
+
+    @SuppressWarnings("unchecked")  // checked casting
+    @ParameterizedTest
+    @EnumSource(Game.Status.class)
     void testIsEnded(Game.Status gameStatusToSet) throws NoSuchFieldException, IllegalAccessException {
         ((ObservablePropertySettable<Game.Status>)
                 Objects.requireNonNull(TestUtility.getFieldValue("gameStatusProperty", game)))
                 .setPropertyValue(gameStatusToSet);
         assertEquals(gameStatusToSet == Game.Status.ENDED, game.isEnded());
     }
-
     //endregion Test Getters / Setters
 
     @Test
