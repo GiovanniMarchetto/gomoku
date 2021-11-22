@@ -7,6 +7,7 @@ import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
 import it.units.sdm.gomoku.model.entities.Game;
 import it.units.sdm.gomoku.model.entities.Player;
+import it.units.sdm.gomoku.model.exceptions.*;
 import it.units.sdm.gomoku.model.entities.player.FakePlayer;
 import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
 import it.units.sdm.gomoku.model.exceptions.GameNotEndedException;
@@ -25,6 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Stream;
 
 import static it.units.sdm.gomoku.model.entities.game.GameTestUtility.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -48,6 +50,8 @@ class GameTest {
         assert game.getGameStatusProperty().getPropertyValue() == null;
         assert game.getCurrentPlayerProperty().getPropertyValue() == null;
         game.start();
+        Stream.of(blackPlayer, whitePlayer)
+                .forEach(player -> player.setCurrentGame(game));
     }
 
     @Test
@@ -206,7 +210,7 @@ class GameTest {
     //endregion Test Getters / Setters
 
     @Test
-    void checkCurrentPlayerAfterStart() {
+    void setBlackPlayerAsFirstPlayerWhenGameStarts() {
         assertEquals(blackPlayer, game.getCurrentPlayerProperty().getPropertyValue());
     }
 
@@ -221,9 +225,20 @@ class GameTest {
     }
 
     @Test
-    void placeStoneAfterStart() throws CellOutOfBoardException {
+    void placeStoneAfterGameStarted() throws CellOutOfBoardException {
         tryToPlaceStoneAndChangeTurn(firstMove, game);
         assertFalse(game.getBoard().getCellAtCoordinates(firstMove).isEmpty());
+    }
+
+    @Test
+    void dontPlaceStoneIfGameEndedOrBoardIsFull() throws CellOutOfBoardException, CellAlreadyOccupiedException {
+        disputeGameAndDraw(game);
+        try {
+            game.placeStoneAndChangeTurn(firstMove);
+            fail("Game should be ended, but the move was accepted");
+        } catch (GameEndedException | BoardIsFullException e) {
+            assertTrue(game.isEnded());
+        }
     }
 
     @Test
@@ -240,46 +255,28 @@ class GameTest {
     }
 
     @Test
-    void setWinnerIfIsTheWinMoveBlack() throws GameNotEndedException {
-        disputeGameAndMakeThePlayerToWin(game, blackPlayer);
-        assertEquals(blackPlayer, game.getWinner());
+    void testIsEndedToReturnFalseIfGameNotEnded() {
+        assertFalse(game.isEnded());    // game is just started
     }
 
-    @Test
-    void setWinnerIfIsTheWinMoveWhite() throws GameNotEndedException {
-        disputeGameAndMakeThePlayerToWin(game, whitePlayer);
-        assertEquals(whitePlayer, game.getWinner());
-    }
-
-    @Test
-    void setGameStatusIfGameEndedWhenPlaceStone() {
-        disputeGameAndMakeThePlayerToWin(game, blackPlayer);
-        assertEquals(Game.Status.ENDED, game.getGameStatusProperty().getPropertyValue());
-    }
-
-    @Test
-    void setGameStatusIfGameNotEnded() {
-        placeTwoChainOfFourIn0And1Rows(game);
-        assertNotEquals(Game.Status.ENDED, game.getGameStatusProperty().getPropertyValue());
-    }
-
-    @Test
-    void checkIsEndedInNormalExecution() {
-        assertFalse(game.isEnded());
-    }
-
-    @Test
-    void checkIsEndedIfBlackWinner() {
-        disputeGameAndMakeThePlayerToWin(game, blackPlayer);
+    @ParameterizedTest
+    @EnumSource(Color.class)
+    void testIsEndedToReturnTrueIfAPlayerWon(Color playerColor) {
+        Player winnerPlayerToSet = null;
+        switch (playerColor) {
+            case BLACK -> winnerPlayerToSet = blackPlayer;
+            case WHITE -> winnerPlayerToSet = whitePlayer;
+            default -> fail(new IllegalArgumentException("Not a valid color"));
+        }
+        disputeGameAndMakeThePlayerToWin(game, winnerPlayerToSet);
         assertTrue(game.isEnded());
     }
 
     @Test
-    void checkIsEndedIfDraw() { //i.e. board is full but no winner
+    void testIsEndedToReturnTrueIfGameEndedWithADraw() { //i.e. board is full but no winner
         disputeGameAndDraw(game);
         assertTrue(game.isEnded());
     }
-
 
     @Test
     void testCompareTo() {
