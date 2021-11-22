@@ -14,7 +14,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class CellTest { // TODO: rethink this
+class CellTest {
 
     private static final Stone blackStone = new Stone(Color.BLACK);
     private static final Stone whiteStone = new Stone(Color.WHITE);
@@ -38,111 +38,95 @@ class CellTest { // TODO: rethink this
     }
 
     @Test
-    void voidConstructorTest() {
+    void createEmptyInstance() {
         assertTrue(cell.isEmpty());
     }
 
     @Test
-    void copyConstructorTest() {
+    void createCopyInstance() {
         cell.setStoneFromColor(blackStone.getColor());
         Cell cell2 = new Cell(cell);
         assertEquals(cell, cell2);
     }
 
     @Test
-    void getStoneEmpty() {
-        assertNull(cell.getStone());
+    void testStoneGetter() throws NoSuchFieldException, IllegalAccessException {
+        assert cell.getStone() == null;
+        TestUtility.setFieldValue("stone", blackCell.getStone(), cell);
+        assert cell.getStone() != null;
+        assertEquals(blackCell.getStone(), cell.getStone());
     }
 
     @Test
-    void getStoneBlack() {
-        try {
-            TestUtility.setFieldValue("stone", blackStone, cell);
-            assertEquals(blackStone, cell.getStone());
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            fail(e);
-        }
-    }
-
-    @Test
-    void setStone() throws NoSuchFieldException, IllegalAccessException {
+    void testStoneSetter() throws NoSuchFieldException, IllegalAccessException {
         TestUtility.setFieldValue("stone", blackStone, cell);
         assertEquals(blackStone, cell.getStone());
     }
 
     @Test
-    void isEmptyTrue() {
-        assertTrue(cell.isEmpty());
+    void testIsEmpty() {
+        assertEquals(cell.getStone() == null, cell.isEmpty());
     }
 
     @Test
-    void isEmptyFalse() throws NoSuchFieldException, IllegalAccessException {
+    void testIsNotEmpty() throws NoSuchFieldException, IllegalAccessException {
         TestUtility.setFieldValue("stone", blackStone, cell);
         assertFalse(cell.isEmpty());
     }
 
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 3, 4, 5})
-    void isBelongingToChainOfTwoCellsInListWithChainOfTwo(int value) throws NoSuchFieldException, IllegalAccessException {
-        NonNegativeInteger n = new NonNegativeInteger(value);
+        // TODO:re see this (don't simply delete todo please!)
+    void testIfCellBelongsToChainOfTwo(int N) throws NoSuchFieldException, IllegalAccessException {
+        final int SIZE_OF_DESIRED_CHAIN = 2;
+        NonNegativeInteger n = new NonNegativeInteger(N);
         TestUtility.setFieldValue("stone", blackStone, cell);
-        assertEquals(value < 3,
-                cell.isBelongingToChainOfNCellsInList(n, cellList));
+        assertEquals(N <= SIZE_OF_DESIRED_CHAIN, cell.isBelongingToChainOfNCellsInList(n, cellList));
     }
 
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 3, 4, 5, 6, 7, 8})
-    void isBelongingToChainOfTwoCellsInListWithChainOfFive(int value) throws NoSuchFieldException, IllegalAccessException {
-        NonNegativeInteger n = new NonNegativeInteger(value);
+        // TODO:re see this (don't simply delete todo please!)
+    void testIfCellBelongsToChainOfFive(int N) throws NoSuchFieldException, IllegalAccessException {
+        final int SIZE_OF_DESIRED_CHAIN = 5;
+        NonNegativeInteger n = new NonNegativeInteger(N);
         TestUtility.setFieldValue("stone", whiteStone, cell);
-        assertEquals(value < 6,
-                cell.isBelongingToChainOfNCellsInList(n, cellList));
+        assertEquals(N <= SIZE_OF_DESIRED_CHAIN, cell.isBelongingToChainOfNCellsInList(n, cellList));
     }
 
+    //region toString
     @Test
-    void testClone() {
-        assertEquals(cell, cell.clone());
-    }
-
-    @Test
-    void testToStringEmpty() {
+    void testToStringForEmpty() {
         assertEquals(" ", cell.toString());
     }
 
     @Test
-    void testToStringBlack() throws NoSuchFieldException, IllegalAccessException {
+    void testToStringForBlack() throws NoSuchFieldException, IllegalAccessException {
         TestUtility.setFieldValue("stone", blackStone, cell);
         assertEquals("X", cell.toString());
     }
 
     @Test
-    void testToStringWhite() throws NoSuchFieldException, IllegalAccessException {
+    void testToStringForWhite() throws NoSuchFieldException, IllegalAccessException {
         TestUtility.setFieldValue("stone", whiteStone, cell);
         assertEquals("O", cell.toString());
     }
+    //endregion
+
+    //region equals and hashCode
+    @Test
+    void equalsToItsClone() {
+        assertEquals(cell, cell.clone());
+    }
 
     @Test
-    void testEqualsItself() {
+    void equalsToItself() {
         assertEquals(cell, cell);
     }
 
     @Test
-    void testEqualsNull() {
+    void notEqualsToNull() {
         assertNotEquals(cell, null);
-    }
-
-    @Test
-    void testEqualsEmptyCells() {
-        Cell cell1 = new Cell();
-        assertEquals(cell, cell1);
-    }
-
-    @Test
-    void testEqualsBlackStone() throws NoSuchFieldException, IllegalAccessException {
-        Cell cell1 = new Cell();
-        TestUtility.setFieldValue("stone", blackStone, cell);
-        TestUtility.setFieldValue("stone", blackStone, cell1);
-        assertEquals(cell, cell1);
     }
 
     @Test
@@ -155,4 +139,5 @@ class CellTest { // TODO: rethink this
         TestUtility.setFieldValue("stone", blackStone, cell);
         assertEquals(blackStone.hashCode(), cell.hashCode());
     }
+    //endregion
 }
