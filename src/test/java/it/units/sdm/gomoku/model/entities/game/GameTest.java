@@ -12,18 +12,23 @@ import it.units.sdm.gomoku.model.exceptions.*;
 import it.units.sdm.gomoku.property_change_handlers.PropertyObserver;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertySettable;
 import it.units.sdm.gomoku.utils.TestUtility;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static it.units.sdm.gomoku.model.entities.game.GameTestUtility.disputeGameAndDraw;
@@ -37,7 +42,18 @@ class GameTest {
     private static final Coordinates coordinatesForFirstMove = new Coordinates(0, 0);
     private static final Coordinates coordinatesForSecondMove = new Coordinates(0, 1);
     private static final Coordinates coordinatesOutsideBoard = new Coordinates(BOARD_SIZE.incrementAndGet(), BOARD_SIZE.incrementAndGet());
+    private final Coordinates[] coordinatesForCheckHeadChains = {
+            new Coordinates(0, 0), new Coordinates(0, 3),
+            new Coordinates(0, 1), new Coordinates(2, 3),
+            new Coordinates(1, 1)};
+    private final Coordinates[] coordinatesThatAreAHeadChainsOfThree = {
+            new Coordinates(0, 2), new Coordinates(2, 1)};
     private Game game;
+
+    @NotNull
+    private static Stream<Arguments> provideCoupleOfNonNegativeIntegersInsideBoard() {
+        return TestUtility.provideCoupleOfNonNegativeIntegersTillNExcluded(BOARD_SIZE.intValue());
+    }
 
     private boolean isEmptyCellAtCoordinatesForFirstMove() throws CellOutOfBoardException {
         return game.getBoard()
@@ -225,6 +241,7 @@ class GameTest {
             assertTrue(e.getTargetException() instanceof GameNotEndedException);
         }
     }
+    //endregion Test Getters / Setters
 
     @SuppressWarnings("unchecked")  // checked casting
     @ParameterizedTest
@@ -245,7 +262,6 @@ class GameTest {
                 .setPropertyValue(gameStatusToSet);
         assertEquals(gameStatusToSet == Game.Status.ENDED, game.isEnded());
     }
-    //endregion Test Getters / Setters
 
     @Test
     void setBlackPlayerAsFirstPlayerWhenGameStarts() {
@@ -417,5 +433,50 @@ class GameTest {
                 lineSeparator + "2|          " +
                 lineSeparator;
         assertEquals(expected, game.toString());
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideCoupleOfNonNegativeIntegersInsideBoard")
+    void occupyFourPositionAndCheckIfIsValidMove(int x, int y)
+            throws GameEndedException, CellOutOfBoardException {
+        final int endOfIndexToOccupyExclusive = 2;
+        IntStream.range(0, endOfIndexToOccupyExclusive).forEach(row ->
+                IntStream.range(0, endOfIndexToOccupyExclusive).forEach(col -> {
+                    try {
+                        game.placeStoneAndChangeTurn(new Coordinates(row, col));
+                    } catch (BoardIsFullException | CellAlreadyOccupiedException
+                            | GameEndedException | CellOutOfBoardException | GameNotStartedException e) {
+                        fail(e);
+                    }
+                }));
+
+        boolean expected = !(x < endOfIndexToOccupyExclusive && y < endOfIndexToOccupyExclusive);
+        assertEquals(expected, game.isValidMove(new Coordinates(x, y)));
+    }
+
+    @Test
+    void disputeGameAndValidateAnotherMoveAfterTheEnd() throws CellOutOfBoardException {
+        disputeGameAndDraw(game);
+        try {
+            game.isValidMove(new Coordinates(BOARD_SIZE, BOARD_SIZE));
+            fail("Game already ended!");
+        } catch (GameEndedException ignored) {
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideCoupleOfNonNegativeIntegersInsideBoard")
+    void placeSomeStonesAndCheckIfIsHeadOfAChainOfThree(int x, int y) {
+        IntStream.range(0, coordinatesForCheckHeadChains.length).forEach(i -> {
+            try {
+                game.placeStoneAndChangeTurn(coordinatesForCheckHeadChains[i]);
+            } catch (BoardIsFullException | CellAlreadyOccupiedException
+                    | GameEndedException | CellOutOfBoardException | GameNotStartedException e) {
+                fail(e);
+            }
+        });
+        Coordinates coordinates = new Coordinates(x, y);
+        boolean isAHeadOfAChainOfThree = Arrays.stream(coordinatesThatAreAHeadChainsOfThree).anyMatch(c -> c == coordinates);
+        assertEquals(isAHeadOfAChainOfThree, game.isHeadOfAChainOfStones(coordinates, new PositiveInteger(3)));
     }
 }

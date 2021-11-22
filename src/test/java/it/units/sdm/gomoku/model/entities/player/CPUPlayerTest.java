@@ -72,7 +72,7 @@ public class CPUPlayerTest {
         Coordinates coordinatesSmartlyChosenFromAlgorithm = cpuPlayerSmart.chooseEmptyCoordinatesSmartly();
         assert game.isBoardEmpty();
         cpuPlayerSmart.makeMove();
-        assertFalse(game.isCellAtCoordinatesEmpty(coordinatesSmartlyChosenFromAlgorithm));
+        assertFalse(game.isValidMove(coordinatesSmartlyChosenFromAlgorithm));
     }
 
     @RepeatedTest(BOARD_SIZE_4 * BOARD_SIZE_4)
@@ -148,8 +148,7 @@ public class CPUPlayerTest {
     }
 
     @Test
-    void throwExceptionWhenChoosingSmartlyNextCoordinatesIfTheBoardIsFull()
-            throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
+    void throwExceptionWhenChoosingSmartlyNextCoordinatesIfTheBoardIsFull() {
         try {
             GameTestUtility.disputeGameAndDraw(game);
             Coordinates findCoordinates = cpuPlayerSmart.chooseEmptyCoordinatesSmartly();
