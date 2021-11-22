@@ -1,8 +1,8 @@
 package it.units.sdm.gomoku.model.custom_types;
 
 import it.units.sdm.gomoku.EnvVariables;
-import it.units.sdm.gomoku.Utility;
 import it.units.sdm.gomoku.utils.TestUtility;
+import it.units.sdm.gomoku.utils.Utility;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Assertions;

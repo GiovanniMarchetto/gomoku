@@ -1,6 +1,5 @@
 package it.units.sdm.gomoku.ui.gui.views;
 
-import it.units.sdm.gomoku.Utility;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.Cell;
 import it.units.sdm.gomoku.model.exceptions.BoardIsFullException;
@@ -11,6 +10,7 @@ import it.units.sdm.gomoku.mvvm_library.Observer;
 import it.units.sdm.gomoku.property_change_handlers.PropertyObserver;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservableProperty;
 import it.units.sdm.gomoku.ui.gui.viewmodels.GUIMainViewmodel;
+import it.units.sdm.gomoku.utils.Utility;
 import javafx.application.Platform;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;

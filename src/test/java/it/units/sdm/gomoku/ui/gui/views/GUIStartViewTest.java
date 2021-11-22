@@ -1,7 +1,6 @@
 package it.units.sdm.gomoku.ui.gui.views;
 
 import it.units.sdm.gomoku.EnvVariables;
-import it.units.sdm.gomoku.ThrowingRunnable;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
@@ -14,6 +13,7 @@ import it.units.sdm.gomoku.ui.gui.GUIMain;
 import it.units.sdm.gomoku.ui.gui.SceneController;
 import it.units.sdm.gomoku.ui.support.BoardSizes;
 import it.units.sdm.gomoku.utils.TestUtility;
+import it.units.sdm.gomoku.utils.ThrowingRunnable;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.CheckBox;
