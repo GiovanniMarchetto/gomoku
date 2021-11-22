@@ -1,5 +1,6 @@
 package it.units.sdm.gomoku.model.entities;
 
+import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.game.GameTestUtility;
 import it.units.sdm.gomoku.model.entities.player.FakePlayer;
@@ -9,12 +10,18 @@ import it.units.sdm.gomoku.utils.TestUtility;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -27,6 +34,10 @@ class MatchTest {
 
     private Match match;
     private Game currentGame;
+
+    public static Stream<Arguments> getIntStreamFrom0IncludedToTotalNumberOfGamesExcluded() {
+        return IntStream.range(0, SAMPLE_NUMBER_OF_GAMES).mapToObj(Arguments::of);
+    }
 
     //region Support Methods    // todo : TRY NOT TO USE THIS REGION
     private void assertCpusScore(int n1, int n2) {
@@ -196,6 +207,51 @@ class MatchTest {
         assertEquals(currentGame, TestUtility.invokeMethodOnObject(match, "getCurrentGame"));
     }
     //endregion test getters
+
+    private static void testGetScoreOfPlayer(
+            int numberOfGameWon, @NotNull final Player winnerPlayer, @NotNull final Player loserPlayer, @NotNull final Match match)
+            throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+
+        assert numberOfGameWon <= SAMPLE_NUMBER_OF_GAMES;
+        makeGivenPlayerToWinNGamesInMatch(winnerPlayer, loserPlayer, numberOfGameWon, match);
+        Method scoreOfPlayerGetter = match.getClass().getDeclaredMethod("getScoreOfPlayer", Player.class);
+        scoreOfPlayerGetter.setAccessible(true);
+        assertEquals(numberOfGameWon, ((NonNegativeInteger) scoreOfPlayerGetter.invoke(match, winnerPlayer)).intValue());
+    }
+
+    private static void makeGivenPlayerToWinNGamesInMatch(
+            @NotNull final Player playerWhoHasToWin, @NotNull final Player playerWhoHasToLose,
+            int numberOfGameWon, @NotNull final Match match) {
+
+        assert numberOfGameWon <= SAMPLE_NUMBER_OF_GAMES;
+        IntStream.range(0, SAMPLE_NUMBER_OF_GAMES).sequential().forEach(i -> {
+            try {
+                Game currentGame = match.initializeNewGame();
+                currentGame.start();
+                if (i < numberOfGameWon) {
+                    GameTestUtility.disputeGameAndMakeThePlayerToWin(currentGame, playerWhoHasToWin);
+                } else {
+                    GameTestUtility.disputeGameAndMakeThePlayerToWin(currentGame, playerWhoHasToLose);
+                }
+            } catch (GameAlreadyStartedException | MatchEndedException | GameNotEndedException e) {
+                fail(e);
+            }
+        });
+    }
+
+    //region test scores
+    @ParameterizedTest
+    @MethodSource("getIntStreamFrom0IncludedToTotalNumberOfGamesExcluded")
+    void testGetSCoreOfFirstPlayer(int numberOfGameWon) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        testGetScoreOfPlayer(numberOfGameWon, SAMPLE_PLAYER_1, SAMPLE_PLAYER_2, match);
+    }
+
+    @ParameterizedTest
+    @MethodSource("getIntStreamFrom0IncludedToTotalNumberOfGamesExcluded")
+    void testGetSCoreOfSecondPlayer(int numberOfGameWon) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        testGetScoreOfPlayer(numberOfGameWon, SAMPLE_PLAYER_2, SAMPLE_PLAYER_1, match);
+    }
+    //endregion test scores
 
     @Test
     void addFirstGameOfTheMatchToGameList() throws MatchEndedException, NoSuchFieldException, IllegalAccessException, GameNotEndedException {
