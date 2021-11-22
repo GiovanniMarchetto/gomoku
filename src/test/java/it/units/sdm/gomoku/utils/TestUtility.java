@@ -23,7 +23,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -33,8 +35,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static it.units.sdm.gomoku.utils.IOUtility.CSV_NEW_LINE;
-import static it.units.sdm.gomoku.utils.IOUtility.CSV_SEPARATOR;
 import static it.units.sdm.gomoku.utils.Predicates.isNonEmptyString;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -43,6 +43,9 @@ public class TestUtility {
     // TODO : re-see tests of this class
 
     public final static String END_GAMES = "/endGames.json";
+    public final static String CSV_SEPARATOR = ",";
+    public final static String CSV_NEW_LINE = "\n";
+    private final static char CSV_COMMENTED_LINE_INDICATOR = '#';
 
     // TODO : BoardTestUtility class may needed to contain all the method to support BoardTest
 
@@ -75,7 +78,7 @@ public class TestUtility {
                         .toArray(Cell[][]::new);
 
         try {
-            String[][] boardAsMatrixOfStrings = IOUtility.readFromCsvToStringMatrix(Objects.requireNonNull(filePath));
+            String[][] boardAsMatrixOfStrings = readFromCsvToStringMatrix(Objects.requireNonNull(filePath));
             return convertStringMatrixToCellMatrix.apply(boardAsMatrixOfStrings);
         } catch (IOException | URISyntaxException e) {
             fail(e);
@@ -323,5 +326,35 @@ public class TestUtility {
             @NotNull final Thread threadToBeEventuallyInterrupted, int delayInMillisecs) {
         Executors.newScheduledThreadPool(1)
                 .schedule(threadToBeEventuallyInterrupted::stop, delayInMillisecs, TimeUnit.MILLISECONDS);
+    }
+
+    public static String[][] readFromCsvToStringMatrix(@NotNull final String resourceFilePath)
+            throws IOException, URISyntaxException {
+        URL resource = TestUtility.class.getResource(Objects.requireNonNull(resourceFilePath));
+        Path resourcePath = Paths.get(Objects.requireNonNull(resource).toURI());
+        List<String> lines = Files.readAllLines(resourcePath)
+                .stream().sequential()
+                .filter(aLine -> {
+                    String trimmedLine = aLine.trim();
+                    return isNonEmptyString.test(trimmedLine)
+                            && trimmedLine.charAt(0) != CSV_COMMENTED_LINE_INDICATOR;    // avoid commented lines in CSV file
+                })
+                .collect(Collectors.toList());
+
+        return lines.stream().sequential()
+                .map(aLine -> Arrays.stream(aLine.split(CSV_SEPARATOR))
+                        .map(String::trim)
+                        .map(trimmedCell -> {
+                            if (trimmedCell.length() >= 2) {
+                                char firstCharacter = trimmedCell.charAt(0);
+                                char lastCharacter = trimmedCell.charAt(trimmedCell.length() - 1);
+                                if (firstCharacter == '"' && lastCharacter == firstCharacter) {
+                                    trimmedCell = trimmedCell.substring(1, trimmedCell.length() - 1);
+                                }
+                            }
+                            return trimmedCell;
+                        })
+                        .toArray(String[]::new))
+                .toArray(String[][]::new);
     }
 }

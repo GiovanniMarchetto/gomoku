@@ -1,29 +1,28 @@
-package it.units.sdm.gomoku.utils.test;
+package it.units.sdm.gomoku.utils;
 
 import it.units.sdm.gomoku.EnvVariables;
 import it.units.sdm.gomoku.model.entities.Cell;
-import it.units.sdm.gomoku.utils.IOUtility;
-import it.units.sdm.gomoku.utils.Predicates;
-import it.units.sdm.gomoku.utils.TestUtility;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static it.units.sdm.gomoku.utils.TestUtility.createNxNRandomBoardToStringInCSVFormat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public
-class TestIOUtilityTest {
+class TestUtilityTest {
 
     private final static int LIMIT_VALUE_FOR_N = 200; // avoid creating too big boards
 
@@ -38,8 +37,8 @@ class TestIOUtilityTest {
     void readBoardStoneFromCSVFile_testIfMatrixContainsOnlyStones() {
         final int SIZE = 19;
         String board = Arrays.stream(TestUtility.readBoardOfCellsFromCSVFile(EnvVariables.BOARD_19X19_PROVIDER_RESOURCE_LOCATION))
-                .map(aRow -> Arrays.stream(aRow).map(String::valueOf).collect(Collectors.joining(IOUtility.CSV_SEPARATOR)))
-                .collect(Collectors.joining(IOUtility.CSV_NEW_LINE));
+                .map(aRow -> Arrays.stream(aRow).map(String::valueOf).collect(Collectors.joining(TestUtility.CSV_SEPARATOR)))
+                .collect(Collectors.joining(TestUtility.CSV_NEW_LINE));
         int totalNumberOfValidStonesFound = TestUtility.getTotalNumberOfValidStoneInTheGivenBoardAsStringInCSVFormat(board);
         int expectedTotalNumberOfValidStones = SIZE * SIZE;
         assertEquals(expectedTotalNumberOfValidStones, totalNumberOfValidStonesFound);
@@ -77,5 +76,33 @@ class TestIOUtilityTest {
         String boardAsCSVString = TestUtility.createNxNRandomBoardToStringInCSVFormat(N, randomSeed);
         int totalNumberOfValidStones = TestUtility.getTotalNumberOfValidStoneInTheGivenBoardAsStringInCSVFormat(boardAsCSVString);
         assertEquals(expectedNumberOfStonesToBePresent, totalNumberOfValidStones);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = "1,2_3,4_5,6,7")
+    void readIntegersFromCsvToStringMatrix(String values) {
+        try {
+            String[][] read = TestUtility.readFromCsvToStringMatrix(EnvVariables.CSV_SAMPLE_FILE_2X2_INT_MATRIX_PROVIDER_RESOURCE_LOCATION);
+            String[][] expected = Arrays.stream(values.split("_"))
+                    .map(aRow -> aRow.split(","))
+                    .toArray(String[][]::new);
+            assertTrue(Arrays.deepEquals(expected, read));
+        } catch (IOException | URISyntaxException e) {
+            fail(e);
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = "A,B_C,\"D_EF G,H,'I")
+    void readStringsFromCsvToStringMatrix(String values) {
+        try {
+            String[][] read = TestUtility.readFromCsvToStringMatrix(EnvVariables.CSV_SAMPLE_FILE_2X2_STRING_MATRIX_PROVIDER_RESOURCE_LOCATION);
+            String[][] expected = Arrays.stream(values.split("_"))
+                    .map(aRow -> aRow.split(","))
+                    .toArray(String[][]::new);
+            assertTrue(Arrays.deepEquals(expected, read));
+        } catch (IOException | URISyntaxException e) {
+            fail(e);
+        }
     }
 }
