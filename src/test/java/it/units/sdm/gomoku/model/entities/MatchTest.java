@@ -17,9 +17,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -208,6 +206,7 @@ class MatchTest {
     }
     //endregion test getters
 
+    //region test scores
     private static void testGetScoreOfPlayer(
             int numberOfGameWon, @NotNull final Player winnerPlayer, @NotNull final Player loserPlayer, @NotNull final Match match)
             throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
@@ -218,6 +217,32 @@ class MatchTest {
         scoreOfPlayerGetter.setAccessible(true);
         assertEquals(numberOfGameWon, ((NonNegativeInteger) scoreOfPlayerGetter.invoke(match, winnerPlayer)).intValue());
     }
+
+    @ParameterizedTest
+    @MethodSource("getIntStreamFrom0IncludedToTotalNumberOfGamesExcluded")
+    void testGetSCoreOfFirstPlayer(int numberOfGameWon) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        testGetScoreOfPlayer(numberOfGameWon, SAMPLE_PLAYER_1, SAMPLE_PLAYER_2, match);
+    }
+
+    @ParameterizedTest
+    @MethodSource("getIntStreamFrom0IncludedToTotalNumberOfGamesExcluded")
+    void testGetSCoreOfSecondPlayer(int numberOfGameWon) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        testGetScoreOfPlayer(numberOfGameWon, SAMPLE_PLAYER_2, SAMPLE_PLAYER_1, match);
+    }
+
+    @ParameterizedTest
+    @MethodSource("getIntStreamFrom0IncludedToTotalNumberOfGamesExcluded")
+    void testGetScore(int numberOfGamesWonByFirstPlayer) {
+        makeGivenPlayerToWinNGamesInMatch(SAMPLE_PLAYER_1, SAMPLE_PLAYER_2, numberOfGamesWonByFirstPlayer, match);
+        Map<Player, NonNegativeInteger> expectedScore;
+        {
+            expectedScore = new HashMap<>(2);
+            expectedScore.put(SAMPLE_PLAYER_1, new NonNegativeInteger(numberOfGamesWonByFirstPlayer));
+            expectedScore.put(SAMPLE_PLAYER_2, new NonNegativeInteger(match.getNumberOfGames() - numberOfGamesWonByFirstPlayer));
+        }
+        assertEquals(expectedScore, match.getScore());
+    }
+    //endregion test scores
 
     private static void makeGivenPlayerToWinNGamesInMatch(
             @NotNull final Player playerWhoHasToWin, @NotNull final Player playerWhoHasToLose,
@@ -238,20 +263,6 @@ class MatchTest {
             }
         });
     }
-
-    //region test scores
-    @ParameterizedTest
-    @MethodSource("getIntStreamFrom0IncludedToTotalNumberOfGamesExcluded")
-    void testGetSCoreOfFirstPlayer(int numberOfGameWon) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        testGetScoreOfPlayer(numberOfGameWon, SAMPLE_PLAYER_1, SAMPLE_PLAYER_2, match);
-    }
-
-    @ParameterizedTest
-    @MethodSource("getIntStreamFrom0IncludedToTotalNumberOfGamesExcluded")
-    void testGetSCoreOfSecondPlayer(int numberOfGameWon) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        testGetScoreOfPlayer(numberOfGameWon, SAMPLE_PLAYER_2, SAMPLE_PLAYER_1, match);
-    }
-    //endregion test scores
 
     @Test
     void addFirstGameOfTheMatchToGameList() throws MatchEndedException, NoSuchFieldException, IllegalAccessException, GameNotEndedException {
