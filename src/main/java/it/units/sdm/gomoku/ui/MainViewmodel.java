@@ -119,7 +119,11 @@ public abstract class MainViewmodel extends Viewmodel {
         if (currentGame == null) {
             throw new NullPointerException("Cannot invoke this method before starting the game (current game is null)");
         }
-        currentGame.start();
+        try {
+            currentGame.start();
+        } catch (GameAlreadyStartedException e) {
+            throw new IllegalStateException(e); // TODO: correctly handled?
+        }
     }
 
     public void createMatchFromSetupAndInitializeNewGame(Setup setup) {

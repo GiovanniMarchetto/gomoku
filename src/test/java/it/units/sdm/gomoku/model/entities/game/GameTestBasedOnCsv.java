@@ -26,7 +26,11 @@ public class GameTestBasedOnCsv {
 
     private void setUpFromCsv(Cell[][] cellMatrix, Coordinates coordinatesToControl) {
         game = new Game(new PositiveInteger(cellMatrix.length), cpuBlack, cpuWhite);
-        game.start();
+        try {
+            game.start();
+        } catch (GameAlreadyStartedException e) {
+            fail(e);
+        }
 
         Board board = TestUtility.createBoardFromCellMatrix(cellMatrix);
 
@@ -42,7 +46,8 @@ public class GameTestBasedOnCsv {
                 game.placeStoneAndChangeTurn(whiteCoordinatesList.get(i));
             }
             game.placeStoneAndChangeTurn(coordinatesToControl);
-        } catch (BoardIsFullException | CellAlreadyOccupiedException | GameEndedException | CellOutOfBoardException e) {
+        } catch (BoardIsFullException | CellAlreadyOccupiedException | GameEndedException |
+                CellOutOfBoardException | GameNotStartedException e) {
             fail(e);
         }
     }
@@ -76,7 +81,9 @@ public class GameTestBasedOnCsv {
 
     @ParameterizedTest
     @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfMoveControlRecordFields")
-    void setUpFromCsvCorrectness(Cell[][] cellMatrix, Coordinates coordinatesToControl) throws CellOutOfBoardException {
+    void setUpFromCsvCorrectness(Cell[][] cellMatrix, Coordinates coordinatesToControl)
+            throws CellOutOfBoardException, GameAlreadyStartedException {
+
         game = new Game(new PositiveInteger(cellMatrix.length), cpuBlack, cpuWhite);
         game.start();
 

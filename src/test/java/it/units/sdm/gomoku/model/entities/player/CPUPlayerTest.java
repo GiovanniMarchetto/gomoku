@@ -5,10 +5,7 @@ import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
 import it.units.sdm.gomoku.model.entities.Game;
 import it.units.sdm.gomoku.model.entities.game.GameTestUtility;
-import it.units.sdm.gomoku.model.exceptions.BoardIsFullException;
-import it.units.sdm.gomoku.model.exceptions.CellAlreadyOccupiedException;
-import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
-import it.units.sdm.gomoku.model.exceptions.GameEndedException;
+import it.units.sdm.gomoku.model.exceptions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.RepetitionInfo;
@@ -42,11 +39,11 @@ public class CPUPlayerTest {
     private static Game game;
 
     @BeforeEach
-    void setUpBoard() {
+    void setUpBoard() throws GameAlreadyStartedException {
         setUpBoardFromSize(BOARD_SIZE_5);
     }
 
-    private void setUpBoardFromSize(int boardSize) {
+    private void setUpBoardFromSize(int boardSize) throws GameAlreadyStartedException {
         game = new Game(new PositiveInteger(boardSize), cpuPlayerSmart, cpuPlayerNaive);
         game.start();
         cpuPlayerSmart.setCurrentGame(game);
@@ -79,7 +76,7 @@ public class CPUPlayerTest {
     }
 
     @RepeatedTest(BOARD_SIZE_4 * BOARD_SIZE_4)
-    void occupyNCellsFromCenterInBoard4x4(RepetitionInfo repetitionInfo) throws BoardIsFullException {
+    void occupyNCellsFromCenterInBoard4x4(RepetitionInfo repetitionInfo) throws BoardIsFullException, GameAlreadyStartedException {
         setUpBoardFromSize(BOARD_SIZE_4);
         int index = repetitionInfo.getCurrentRepetition() - 1;
         occupyNCellsFromCenter(index, BOARD_SIZE_4, coordinatesInOrderFromCenterForBoard4x4);
@@ -103,8 +100,8 @@ public class CPUPlayerTest {
                 .forEach(i -> {
                     try {
                         game.placeStoneAndChangeTurn(coordinatesInOrderFromCenterForBoard[i]);
-                    } catch (BoardIsFullException | CellAlreadyOccupiedException
-                            | GameEndedException | CellOutOfBoardException e) {
+                    } catch (BoardIsFullException | CellAlreadyOccupiedException | GameEndedException |
+                            CellOutOfBoardException | GameNotStartedException e) {
                         fail(e);
                     }
                 });
@@ -141,8 +138,8 @@ public class CPUPlayerTest {
         IntStream.range(0, numberOfMoves).forEach(i -> {
             try {
                 game.placeStoneAndChangeTurn(cpuPlayerSmart.chooseEmptyCoordinatesFromCenter());
-            } catch (BoardIsFullException | CellAlreadyOccupiedException |
-                    GameEndedException | CellOutOfBoardException e) {
+            } catch (BoardIsFullException | CellAlreadyOccupiedException | GameEndedException |
+                    CellOutOfBoardException | GameNotStartedException e) {
                 fail(e);
             }
         });
@@ -153,7 +150,6 @@ public class CPUPlayerTest {
     @Test
     void throwExceptionWhenChoosingSmartlyNextCoordinatesIfTheBoardIsFull() {
         try {
-            game.start();
             GameTestUtility.disputeGameAndDraw(game);
             Coordinates findCoordinates = cpuPlayerSmart.chooseEmptyCoordinatesSmartly();
             fail("The board is full! But the smart choose find: " + findCoordinates);
@@ -165,8 +161,8 @@ public class CPUPlayerTest {
         IntStream.range(0, n).forEach(col -> {
             try {
                 game.placeStoneAndChangeTurn(new Coordinates(row, col));
-            } catch (BoardIsFullException | CellAlreadyOccupiedException
-                    | CellOutOfBoardException | GameEndedException e) {
+            } catch (BoardIsFullException | CellAlreadyOccupiedException | CellOutOfBoardException |
+                    GameEndedException | GameNotStartedException e) {
                 fail(e.getMessage());
             }
         });

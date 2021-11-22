@@ -38,7 +38,11 @@ public abstract class Player implements Observable {
             throw new IllegalStateException(new NullGameException());
         }
         Coordinates nextMove = Objects.requireNonNull(nextMoveBuffer.getAndRemoveLastElement());
-        currentGame.placeStoneAndChangeTurn(nextMove);
+        try {
+            currentGame.placeStoneAndChangeTurn(nextMove);
+        } catch (GameNotStartedException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     public synchronized void setMoveToBeMade(@NotNull final Coordinates nextMoveToMake)

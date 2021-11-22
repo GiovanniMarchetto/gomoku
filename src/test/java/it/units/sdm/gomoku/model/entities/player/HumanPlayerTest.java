@@ -4,10 +4,7 @@ import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.Game;
 import it.units.sdm.gomoku.model.entities.HumanPlayer;
-import it.units.sdm.gomoku.model.exceptions.BoardIsFullException;
-import it.units.sdm.gomoku.model.exceptions.CellAlreadyOccupiedException;
-import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
-import it.units.sdm.gomoku.model.exceptions.GameEndedException;
+import it.units.sdm.gomoku.model.exceptions.*;
 import it.units.sdm.gomoku.property_change_handlers.PropertyObserver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +18,7 @@ class HumanPlayerTest {
     private final HumanPlayer humanPlayer = new HumanPlayer("human");
 
     @BeforeEach
-    void setup() {
+    void setup() throws GameAlreadyStartedException {
         final int BOARD_SIZE = 5;
         Game game = new Game(new PositiveInteger(BOARD_SIZE), humanPlayer, humanWhite);
         humanPlayer.setCurrentGame(game);

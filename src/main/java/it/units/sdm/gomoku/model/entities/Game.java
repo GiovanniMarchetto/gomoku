@@ -54,9 +54,13 @@ public class Game implements Comparable<Game>, Observable {
         this.creationTime = Instant.now();
     }
 
-    public void start() {
-        gameStatusProperty.setPropertyValue(Status.STARTED);
-        currentPlayerProperty.setPropertyValue(blackPlayer);
+    public void start() throws GameAlreadyStartedException {
+        if (isNotStarted()) {
+            gameStatusProperty.setPropertyValue(Status.STARTED);
+            currentPlayerProperty.setPropertyValue(blackPlayer);
+        } else {
+            throw new GameAlreadyStartedException();
+        }
     }
 
     @NotNull
@@ -109,29 +113,33 @@ public class Game implements Comparable<Game>, Observable {
         return board.isEmpty();
     }
 
-    public synchronized boolean isEnded() {
-        return gameStatusProperty.getPropertyValue() == Status.ENDED;
-    }
-
     public void placeStoneAndChangeTurn(@NotNull final Coordinates coordinates)
-            throws BoardIsFullException, CellAlreadyOccupiedException, GameEndedException, CellOutOfBoardException {
-
+            throws BoardIsFullException, CellAlreadyOccupiedException, GameEndedException, CellOutOfBoardException, GameNotStartedException {
         final Player player = Objects.requireNonNull(currentPlayerProperty.getPropertyValue());
         placeStone(player, coordinates);
         setGameStatusPropertyAndWinnerIfEndedOrElseChangeTurn(player, coordinates);
     }
 
     private void placeStone(@NotNull final Player player, @NotNull final Coordinates coordinates)
-            throws BoardIsFullException, CellAlreadyOccupiedException, GameEndedException, CellOutOfBoardException {
-        if (!isEnded()) {
-            board.occupyPosition(getColorOfPlayer(Objects.requireNonNull(player)), Objects.requireNonNull(coordinates));
-        } else {
+            throws BoardIsFullException, CellAlreadyOccupiedException, GameEndedException, CellOutOfBoardException, GameNotStartedException {
+
+        if (isNotStarted()) {
+            throw new GameNotStartedException();
+        }
+        if (isEnded()) {
             throw new GameEndedException();
         }
+
+        board.occupyPosition(getColorOfPlayer(Objects.requireNonNull(player)), Objects.requireNonNull(coordinates));
+
     }
 
     private void setGameStatusPropertyAndWinnerIfEndedOrElseChangeTurn(
-            @NotNull Player player, @NotNull Coordinates coordinates) {
+            @NotNull Player player, @NotNull Coordinates coordinates) throws GameNotStartedException {
+
+        if (isNotStarted()) {
+            throw new GameNotStartedException();
+        }
 
         if (hasThePlayerWonWithLastMove(coordinates)) {
             gameStatusProperty.setPropertyValue(Status.ENDED);
@@ -146,6 +154,15 @@ public class Game implements Comparable<Game>, Observable {
         } else {
             changeTurn();
         }
+    }
+
+
+    public synchronized boolean isEnded() {
+        return gameStatusProperty.getPropertyValue() == Status.ENDED;
+    }
+
+    public synchronized boolean isNotStarted() {
+        return gameStatusProperty.getPropertyValue() == Status.NOT_STARTED;
     }
 
     private boolean hasThePlayerWonWithLastMove(@NotNull final Coordinates lastMove) {
@@ -214,6 +231,8 @@ public class Game implements Comparable<Game>, Observable {
     public Stream<Coordinates> getStreamOfEmptyCoordinatesOnBoard() {    // TODO: test
         return board.getStreamOfEmptyCoordinates();
     }
+
+    // TODO: equals and hashcode?
 
     public enum Status {NOT_STARTED, STARTED, ENDED}
 

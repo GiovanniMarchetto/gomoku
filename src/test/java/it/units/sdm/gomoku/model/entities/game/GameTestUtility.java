@@ -4,10 +4,7 @@ import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
 import it.units.sdm.gomoku.model.entities.Game;
 import it.units.sdm.gomoku.model.entities.Player;
-import it.units.sdm.gomoku.model.exceptions.BoardIsFullException;
-import it.units.sdm.gomoku.model.exceptions.CellAlreadyOccupiedException;
-import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
-import it.units.sdm.gomoku.model.exceptions.GameEndedException;
+import it.units.sdm.gomoku.model.exceptions.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +16,8 @@ public class GameTestUtility {
     static void tryToPlaceStoneAndChangeTurn(Coordinates coordinates, Game game) {
         try {
             game.placeStoneAndChangeTurn(coordinates);
-        } catch (BoardIsFullException | GameEndedException | CellAlreadyOccupiedException | CellOutOfBoardException e) {
+        } catch (BoardIsFullException | GameEndedException | CellAlreadyOccupiedException
+                | CellOutOfBoardException | GameNotStartedException e) {
             fail(e);
         }
     }
@@ -71,7 +69,8 @@ public class GameTestUtility {
                 game.placeStoneAndChangeTurn(new Coordinates(0, i));
                 game.placeStoneAndChangeTurn(new Coordinates(1, i));
             }
-        } catch (BoardIsFullException | CellAlreadyOccupiedException | GameEndedException | CellOutOfBoardException e) {
+        } catch (BoardIsFullException | CellAlreadyOccupiedException | GameEndedException |
+                CellOutOfBoardException | GameNotStartedException e) {
             fail(e);
         }
     }

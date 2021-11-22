@@ -1,6 +1,7 @@
 package it.units.sdm.gomoku.model.entities;
 
 import it.units.sdm.gomoku.model.entities.game.GameTestUtility;
+import it.units.sdm.gomoku.model.exceptions.GameAlreadyStartedException;
 import it.units.sdm.gomoku.model.exceptions.GameNotEndedException;
 import it.units.sdm.gomoku.model.exceptions.MatchEndedException;
 import it.units.sdm.gomoku.model.exceptions.MatchNotEndedException;
@@ -31,7 +32,7 @@ class MatchTest {
         try {
             currentGame = match.initializeNewGame();
             currentGame.start();
-        } catch (MatchEndedException | GameNotEndedException e) {
+        } catch (MatchEndedException | GameNotEndedException | GameAlreadyStartedException e) {
             fail(e);
         }
     }
@@ -69,7 +70,9 @@ class MatchTest {
     }
 
     @Test
-    void setFirstPlayerAsTheWhiteOneInTheSecondGame() throws MatchEndedException, GameNotEndedException {
+    void setFirstPlayerAsTheWhiteOneInTheSecondGame()
+            throws MatchEndedException, GameNotEndedException, GameAlreadyStartedException {
+
         currentGame = match.initializeNewGame();
         currentGame.start();
         GameTestUtility.disputeGameAndDraw(currentGame);

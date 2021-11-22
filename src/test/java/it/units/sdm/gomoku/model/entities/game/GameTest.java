@@ -47,7 +47,7 @@ class GameTest {
     }
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws GameAlreadyStartedException {
         game = createNewGameWithDefaultParams();
         assert game.getCurrentPlayerProperty().getPropertyValue() == null;
         game.start();
@@ -87,12 +87,17 @@ class GameTest {
 
     @Test
     void assertGameNotStartedWhenJustCreated() {
+        game = createNewGameWithDefaultParams();
         assertEquals(NOT_STARTED, game.getGameStatusProperty().getPropertyValue());
     }
 
     @ParameterizedTest
     @EnumSource(Game.Status.class)
-    void setGameStatus(Game.Status gameStatusToTest) {
+    void setGameStatus(Game.Status gameStatusToTest) throws GameAlreadyStartedException {
+        game = createNewGameWithDefaultParams();
+        if (gameStatusToTest != NOT_STARTED) {
+            game.start();
+        }
         if (gameStatusToTest == Game.Status.ENDED) {
             disputeGameAndDraw(game);
         }
@@ -101,10 +106,9 @@ class GameTest {
 
     @ParameterizedTest
     @EnumSource(Game.Status.class)
-    void notifyGameStatus(Game.Status gameStatusToTest) {
-        if (gameStatusToTest == Game.Status.STARTED) {
-            game = createNewGameWithDefaultParams();
-        }
+    void notifyGameStatus(Game.Status gameStatusToTest) throws GameAlreadyStartedException {
+
+        game = createNewGameWithDefaultParams();
 
         AtomicReference<Boolean> gameHasNotified = new AtomicReference<>();
         new PropertyObserver<>(
@@ -112,8 +116,14 @@ class GameTest {
                 evt -> gameHasNotified.set(gameStatusToTest.equals(evt.getNewValue())));
 
         switch (gameStatusToTest) {
+            case NOT_STARTED -> {
+                return;/*nothing to notify, this is the initial state*/
+            }
             case STARTED -> game.start();
-            case ENDED -> disputeGameAndDraw(game);
+            case ENDED -> {
+                game.start();
+                disputeGameAndDraw(game);
+            }
             default -> throw new IllegalArgumentException("Unexpected value for game status");
         }
 
@@ -261,7 +271,7 @@ class GameTest {
     }
 
     @Test
-    void changeTurnAfterAMoveIsMadeIfGameNotEnded() throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
+    void changeTurnAfterAMoveIsMadeIfGameNotEnded() throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException, GameNotStartedException {
         final Player currentPlayerForTheMove = game.getCurrentPlayerProperty().getPropertyValue();
         game.placeStoneAndChangeTurn(firstMove);
         final Player currentPlayerAfterTheMoveIsDone = game.getCurrentPlayerProperty().getPropertyValue();
@@ -269,7 +279,7 @@ class GameTest {
     }
 
     @Test
-    void dontPlaceStoneIfGameEndedOrBoardIsFull() throws CellOutOfBoardException, CellAlreadyOccupiedException {
+    void dontPlaceStoneIfGameEndedOrBoardIsFull() throws CellOutOfBoardException, CellAlreadyOccupiedException, GameNotStartedException {
         disputeGameAndDraw(game);
         try {
             game.placeStoneAndChangeTurn(firstMove);
@@ -280,7 +290,7 @@ class GameTest {
     }
 
     @Test
-    void dontPlaceStoneIfCellAlreadyOccupied() throws CellOutOfBoardException, BoardIsFullException, GameEndedException, CellAlreadyOccupiedException {
+    void dontPlaceStoneIfCellAlreadyOccupied() throws CellOutOfBoardException, BoardIsFullException, GameEndedException, CellAlreadyOccupiedException, GameNotStartedException {
         assert isEmptyCell(firstMove);
         game.placeStoneAndChangeTurn(firstMove);
         assert !isEmptyCell(firstMove);
@@ -367,7 +377,7 @@ class GameTest {
     }
 
     @Test
-    void testToString() {
+    void testToString() throws GameAlreadyStartedException {
         PositiveInteger boardSizeOfThree = new PositiveInteger(3);
         Player gianniPlayer = new FakePlayer("Gianni");
         Player beppePlayer = new FakePlayer("Beppe");

@@ -8,10 +8,7 @@ import it.units.sdm.gomoku.model.entities.Cell;
 import it.units.sdm.gomoku.model.entities.Game;
 import it.units.sdm.gomoku.model.entities.Player;
 import it.units.sdm.gomoku.model.entities.Stone;
-import it.units.sdm.gomoku.model.exceptions.BoardIsFullException;
-import it.units.sdm.gomoku.model.exceptions.CellAlreadyOccupiedException;
-import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
-import it.units.sdm.gomoku.model.exceptions.GameEndedException;
+import it.units.sdm.gomoku.model.exceptions.*;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservableProperty;
 import it.units.sdm.gomoku.utils.TestUtility;
 import org.jetbrains.annotations.NotNull;
@@ -59,7 +56,7 @@ class PlayerTest {
     }
 
     @BeforeEach
-    void setup() {
+    void setup() throws GameAlreadyStartedException {
         blackPlayer = new FakePlayer(SAMPLE_NAME);
         whitePlayer = new FakePlayer(SAMPLE_NAME);
         game = new Game(new PositiveInteger(BOARD_SIZE), blackPlayer, whitePlayer);
