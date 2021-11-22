@@ -7,10 +7,8 @@ import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
 import it.units.sdm.gomoku.model.entities.Game;
 import it.units.sdm.gomoku.model.entities.Player;
-import it.units.sdm.gomoku.model.exceptions.*;
 import it.units.sdm.gomoku.model.entities.player.FakePlayer;
-import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
-import it.units.sdm.gomoku.model.exceptions.GameNotEndedException;
+import it.units.sdm.gomoku.model.exceptions.*;
 import it.units.sdm.gomoku.property_change_handlers.PropertyObserver;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertySettable;
 import it.units.sdm.gomoku.utils.TestUtility;
@@ -37,6 +35,7 @@ class GameTest {
     private static final CPUPlayer whitePlayer = new CPUPlayer();
     private static final Coordinates firstMove = new Coordinates(0, 0);
     private static final Coordinates secondMove = new Coordinates(0, 1);
+    private static final Coordinates coordinatesOutsideBoard = new Coordinates(BOARD_SIZE.incrementAndGet(), BOARD_SIZE.incrementAndGet());
     private Game game;
 
     @NotNull
@@ -256,7 +255,6 @@ class GameTest {
 
     @Test
     void dontPlaceStoneIfCellOutsideTheBoard() {
-        Coordinates coordinatesOutsideBoard = new Coordinates(BOARD_SIZE.incrementAndGet(), BOARD_SIZE.incrementAndGet());
         try {
             game.placeStoneAndChangeTurn(coordinatesOutsideBoard);
             fail("Cell outside the board and placing stone has been allowed but should not be.");
@@ -282,6 +280,16 @@ class GameTest {
         tryToPlaceStoneAndChangeTurn(firstMove, game);
         tryToPlaceStoneAndChangeTurn(secondMove, game);
         assertEquals(blackPlayer, game.getCurrentPlayerProperty().getPropertyValue());
+    }
+
+    @Test
+    void dontChangeTurnIfInvalidMove() {
+        final Player currentPlayer = game.getCurrentPlayerProperty().getPropertyValue();
+        try {
+            game.placeStoneAndChangeTurn(coordinatesOutsideBoard);
+        } catch (Exception e) {
+            assertEquals(game.getCurrentPlayerProperty().getPropertyValue(), currentPlayer);
+        }
     }
 
     @Test
