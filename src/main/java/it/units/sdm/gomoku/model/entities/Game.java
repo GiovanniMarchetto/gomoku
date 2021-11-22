@@ -245,8 +245,6 @@ public class Game implements Comparable<Game>, Observable {
         return board.getStreamOfEmptyCoordinates();
     }
 
-    // TODO: equals and hashcode?
-
     public enum Status {NOT_STARTED, STARTED, ENDED}
 
 }
