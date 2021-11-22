@@ -244,6 +244,20 @@ class MatchTest {
         assertEquals(expectedScore, match.getScore());
     }
 
+    private static void disputeNGameAndEndThemWithDraw(int numberOfGames, @NotNull final Match match) {
+
+        assert numberOfGames <= SAMPLE_NUMBER_OF_GAMES;
+        IntStream.range(0, SAMPLE_NUMBER_OF_GAMES).sequential().forEach(i -> {
+            try {
+                Game currentGame = match.initializeNewGame();
+                currentGame.start();
+                GameTestUtility.disputeGameAndDraw(currentGame);
+            } catch (GameAlreadyStartedException | MatchEndedException | GameNotEndedException e) {
+                fail(e);
+            }
+        });
+    }
+
     private static void makeGivenPlayerToWinNGamesInMatch(
             @NotNull final Player playerWhoHasToWin, @NotNull final Player playerWhoHasToLose,
             int numberOfGameWon, @NotNull final Match match) {
@@ -262,6 +276,20 @@ class MatchTest {
                 fail(e);
             }
         });
+    }
+
+    @ParameterizedTest
+    @MethodSource("getIntStreamFrom0IncludedToTotalNumberOfGamesExcluded")
+    void testGetScoreWithDrawOfGames(int numberOfGamesWonByFirstPlayer) {
+        disputeNGameAndEndThemWithDraw(numberOfGamesWonByFirstPlayer, match);
+        final int SCORE_OF_EACH_PLAYER_IF_GAME_ENDS_WITH_A_DRAW = 0;
+        Map<Player, NonNegativeInteger> expectedScore;
+        {
+            expectedScore = new HashMap<>(2);
+            expectedScore.put(SAMPLE_PLAYER_1, new NonNegativeInteger(SCORE_OF_EACH_PLAYER_IF_GAME_ENDS_WITH_A_DRAW));
+            expectedScore.put(SAMPLE_PLAYER_2, new NonNegativeInteger(SCORE_OF_EACH_PLAYER_IF_GAME_ENDS_WITH_A_DRAW));
+        }
+        assertEquals(expectedScore, match.getScore());
     }
     //endregion test scores
 
@@ -304,34 +332,6 @@ class MatchTest {
         } else {
             fail("Unknown player");
         }
-    }
-
-    private static void disputeNGameAndEndThemWithDraw(int numberOfGames, @NotNull final Match match) {
-
-        assert numberOfGames <= SAMPLE_NUMBER_OF_GAMES;
-        IntStream.range(0, SAMPLE_NUMBER_OF_GAMES).sequential().forEach(i -> {
-            try {
-                Game currentGame = match.initializeNewGame();
-                currentGame.start();
-                GameTestUtility.disputeGameAndDraw(currentGame);
-            } catch (GameAlreadyStartedException | MatchEndedException | GameNotEndedException e) {
-                fail(e);
-            }
-        });
-    }
-
-    @ParameterizedTest
-    @MethodSource("getIntStreamFrom0IncludedToTotalNumberOfGamesExcluded")
-    void testGetScoreWithDrawOfGames(int numberOfGamesWonByFirstPlayer) {
-        disputeNGameAndEndThemWithDraw(numberOfGamesWonByFirstPlayer, match);
-        final int SCORE_OF_EACH_PLAYER_IF_GAME_ENDS_WITH_A_DRAW = 0;
-        Map<Player, NonNegativeInteger> expectedScore;
-        {
-            expectedScore = new HashMap<>(2);
-            expectedScore.put(SAMPLE_PLAYER_1, new NonNegativeInteger(SCORE_OF_EACH_PLAYER_IF_GAME_ENDS_WITH_A_DRAW));
-            expectedScore.put(SAMPLE_PLAYER_2, new NonNegativeInteger(SCORE_OF_EACH_PLAYER_IF_GAME_ENDS_WITH_A_DRAW));
-        }
-        assertEquals(expectedScore, match.getScore());
     }
 
     @Test
