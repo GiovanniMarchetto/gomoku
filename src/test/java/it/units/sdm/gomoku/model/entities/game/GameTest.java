@@ -22,7 +22,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
@@ -66,19 +65,7 @@ class GameTest {
         List<String> namesOfNullableFieldsOfClass = List.of("winner");
         game = createNewGameWithDefaultParams();
         long numberOfNullFieldsAfterConstructionWhichShouldNotBeNull =
-                Arrays.stream(game.getClass().getDeclaredFields())
-                        .filter(field -> !namesOfNullableFieldsOfClass.contains(field.getName()))
-                        .peek(field -> field.setAccessible(true))
-                        .map(field -> {
-                            try {
-                                return field.get(game);
-                            } catch (IllegalAccessException e) {
-                                fail(e);
-                                return null;
-                            }
-                        })
-                        .filter(Objects::isNull)
-                        .count();
+                TestUtility.getNumberOfNullFieldsOfObjectWhichNameIsNotInList(namesOfNullableFieldsOfClass, game);
         assertEquals(0, numberOfNullFieldsAfterConstructionWhichShouldNotBeNull);
     }
 

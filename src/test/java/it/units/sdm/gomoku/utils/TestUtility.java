@@ -301,6 +301,25 @@ public class TestUtility {
                 .invoke(targetObject, paramsToMethod);
     }
 
+    public static <T> long getNumberOfNullFieldsOfObjectWhichNameIsNotInList(
+            @NotNull final List<String> listOfNamesOfNullableFields, @NotNull final T targetObject) {   // TODO: test
+        Objects.requireNonNull(listOfNamesOfNullableFields);
+        Objects.requireNonNull(targetObject);
+        return Arrays.stream(targetObject.getClass().getDeclaredFields())
+                .filter(field -> !listOfNamesOfNullableFields.contains(field.getName()))
+                .peek(field -> field.setAccessible(true))
+                .map(field -> {
+                    try {
+                        return field.get(targetObject);
+                    } catch (IllegalAccessException e) {
+                        fail(e);
+                        return null;
+                    }
+                })
+                .filter(Objects::isNull)
+                .count();
+    }
+
     @NotNull
     public static String trimAndCapitalizeFirstLetterAndGetOrDoNothingIfEmpty(@NotNull final String inputString) {
         // TODO : test
