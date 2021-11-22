@@ -2,6 +2,7 @@ package it.units.sdm.gomoku.model.entities;
 
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.game.GameTestUtility;
+import it.units.sdm.gomoku.model.entities.player.FakePlayer;
 import it.units.sdm.gomoku.model.exceptions.*;
 import it.units.sdm.gomoku.utils.TestUtility;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,7 +54,7 @@ class MatchTest {
         match = new Match(boardSizeTest, new PositiveInteger(NUMBER_OF_GAMES), cpu1, cpu2);
     }
 
-    // region test constructors
+    //region test constructors
     @Test
     void createNewInstanceWithAllFieldsNotNull() {
         List<String> namesOfFieldsWhichMayBeNull = new ArrayList<>();
@@ -62,7 +63,15 @@ class MatchTest {
         int numberOfFieldsExpectedToBeNullAfterCreation = 0;
         assertEquals(numberOfFieldsExpectedToBeNullAfterCreation, numberOfNullFieldsAfterConstructionNotInExclusionList);
     }
-    // end-region
+
+    @Test
+    void createNewInstanceFromSetup() throws NoSuchFieldException, IllegalAccessException {
+        Setup setup = new Setup(new FakePlayer("A"), new FakePlayer("B"), new PositiveInteger(1), new PositiveInteger(3));
+        Match matchFromSetup = new Match(setup);
+        Setup setupFromMatch = Setup.getSetupFromMatch(matchFromSetup);
+        assertEquals(setup, setupFromMatch);
+    }
+    //endregion
 
     @Test
     void addFirstGameOfTheMatchToGameList() throws MatchEndedException, NoSuchFieldException, IllegalAccessException, GameNotEndedException {
