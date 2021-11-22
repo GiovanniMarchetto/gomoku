@@ -3,10 +3,12 @@ package it.units.sdm.gomoku.model.entities;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.game.GameTestUtility;
 import it.units.sdm.gomoku.model.exceptions.*;
+import it.units.sdm.gomoku.utils.TestUtility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,7 +21,7 @@ class MatchTest {
     private Match match;
     private Game currentGame;
 
-    //region Support Methods
+    //region Support Methods    // todo : TRY NOT TO USE THIS REGION
     private void assertCpusScore(int n1, int n2) {
         assertEquals(n1, match.getScore().get(cpu1).intValue());
         assertEquals(n2, match.getScore().get(cpu2).intValue());
@@ -43,13 +45,24 @@ class MatchTest {
         startNewGameComplete();
         GameTestUtility.disputeGameAndDraw(currentGame);
     }
-    //endregion Support Methods
+    //endregion Support Methods //
 
     @BeforeEach
     void setup() {
         final PositiveInteger boardSizeTest = new PositiveInteger(5);
         match = new Match(boardSizeTest, new PositiveInteger(NUMBER_OF_GAMES), cpu1, cpu2);
     }
+
+    // region test constructors
+    @Test
+    void createNewInstanceWithAllFieldsNotNull() {
+        List<String> namesOfFieldsWhichMayBeNull = new ArrayList<>();
+        int numberOfNullFieldsAfterConstructionNotInExclusionList = (int)
+                TestUtility.getNumberOfNullFieldsOfObjectWhichNameIsNotInList(namesOfFieldsWhichMayBeNull, match);
+        int numberOfFieldsExpectedToBeNullAfterCreation = 0;
+        assertEquals(numberOfFieldsExpectedToBeNullAfterCreation, numberOfNullFieldsAfterConstructionNotInExclusionList);
+    }
+    // end-region
 
     @Test
     void addFirstGameOfTheMatchToGameList() throws MatchEndedException, NoSuchFieldException, IllegalAccessException, GameNotEndedException {
