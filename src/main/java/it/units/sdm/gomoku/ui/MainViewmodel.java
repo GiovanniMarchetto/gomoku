@@ -91,9 +91,6 @@ public abstract class MainViewmodel extends Viewmodel {
                     currentGameStatusProperty.setPropertyValue((Game.Status) evt.getNewValue());
                     if (evt.getNewValue().equals(Game.Status.ENDED)) {
                         endGame();
-                        stopObserving(currentGame);   // TODO : should fade away
-                        assert currentBoard != null;
-                        stopObserving(currentBoard);
                     }
                 });
 
@@ -139,9 +136,6 @@ public abstract class MainViewmodel extends Viewmodel {
             currentBoard = currentGame.getBoard();
             observePropertiesOfModel();
 
-            observe(currentGame);   // TODO : should fade away
-            observe(currentBoard);
-
         } catch (MatchEndedException | GameNotEndedException e) {
             e.printStackTrace();    // TODO : handle this exception
         }
@@ -174,11 +168,6 @@ public abstract class MainViewmodel extends Viewmodel {
     }
 
     public abstract void endGame();
-
-    public void forceReFireAllCells() {
-        // TODO: Rethink this
-        //TODO: to test if implemented
-    }
 
     public void placeStoneFromUser(@NotNull final Coordinates coordinates)
             throws BoardIsFullException, CellAlreadyOccupiedException, GameEndedException, CellOutOfBoardException {
