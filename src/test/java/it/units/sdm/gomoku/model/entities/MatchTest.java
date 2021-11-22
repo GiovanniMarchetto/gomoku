@@ -89,6 +89,44 @@ class MatchTest {
         return new Match(SAMPLE_PLAYER_1, SAMPLE_PLAYER_2, new PositiveInteger(SAMPLE_NUMBER_OF_GAMES), SAMPLE_BOARD_SIZE);
     }
 
+    private static Game initializeAndDisputeNGameAndEndThemWithDrawAndGetLastInitializedGame(
+            int numberOfGames, @NotNull final Match match) {
+
+        assert numberOfGames <= SAMPLE_NUMBER_OF_GAMES;
+        AtomicReference<Game> currentGame = new AtomicReference<>();
+        IntStream.range(0, numberOfGames).sequential().forEach(i -> {
+            try {
+                currentGame.set(match.initializeNewGame());
+                currentGame.get().start();
+                GameTestUtility.disputeGameAndDraw(currentGame.get());
+            } catch (GameAlreadyStartedException | MatchEndedException | GameNotEndedException e) {
+                fail(e);
+            }
+        });
+
+        return currentGame.get();
+    }
+
+    private static void makeGivenPlayerToWinNGamesInMatch(
+            @NotNull final Player playerWhoHasToWin, @NotNull final Player playerWhoHasToLose,
+            int numberOfGameWon, @NotNull final Match match) {
+
+        assert numberOfGameWon <= SAMPLE_NUMBER_OF_GAMES;
+        IntStream.range(0, SAMPLE_NUMBER_OF_GAMES).sequential().forEach(i -> {
+            try {
+                Game currentGame = match.initializeNewGame();
+                currentGame.start();
+                if (i < numberOfGameWon) {
+                    GameTestUtility.disputeGameAndMakeThePlayerToWin(currentGame, playerWhoHasToWin);
+                } else {
+                    GameTestUtility.disputeGameAndMakeThePlayerToWin(currentGame, playerWhoHasToLose);
+                }
+            } catch (GameAlreadyStartedException | MatchEndedException | GameNotEndedException e) {
+                fail(e);
+            }
+        });
+    }
+
     //region test constructors
     @Test
     void createNewInstanceWithAllFieldsNotNull() {
@@ -257,44 +295,6 @@ class MatchTest {
             expectedScore.put(SAMPLE_PLAYER_2, new NonNegativeInteger(match.getTotalNumberOfGames() - numberOfGamesWonByFirstPlayer));
         }
         assertEquals(expectedScore, match.getScore());
-    }
-
-    private static Game initializeAndDisputeNGameAndEndThemWithDrawAndGetLastInitializedGame(
-            int numberOfGames, @NotNull final Match match) {
-
-        assert numberOfGames <= SAMPLE_NUMBER_OF_GAMES;
-        AtomicReference<Game> currentGame = new AtomicReference<>();
-        IntStream.range(0, numberOfGames).sequential().forEach(i -> {
-            try {
-                currentGame.set(match.initializeNewGame());
-                currentGame.get().start();
-                GameTestUtility.disputeGameAndDraw(currentGame.get());
-            } catch (GameAlreadyStartedException | MatchEndedException | GameNotEndedException e) {
-                fail(e);
-            }
-        });
-
-        return currentGame.get();
-    }
-
-    private static void makeGivenPlayerToWinNGamesInMatch(
-            @NotNull final Player playerWhoHasToWin, @NotNull final Player playerWhoHasToLose,
-            int numberOfGameWon, @NotNull final Match match) {
-
-        assert numberOfGameWon <= SAMPLE_NUMBER_OF_GAMES;
-        IntStream.range(0, SAMPLE_NUMBER_OF_GAMES).sequential().forEach(i -> {
-            try {
-                Game currentGame = match.initializeNewGame();
-                currentGame.start();
-                if (i < numberOfGameWon) {
-                    GameTestUtility.disputeGameAndMakeThePlayerToWin(currentGame, playerWhoHasToWin);
-                } else {
-                    GameTestUtility.disputeGameAndMakeThePlayerToWin(currentGame, playerWhoHasToLose);
-                }
-            } catch (GameAlreadyStartedException | MatchEndedException | GameNotEndedException e) {
-                fail(e);
-            }
-        });
     }
 
     @ParameterizedTest
