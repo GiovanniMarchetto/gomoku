@@ -54,7 +54,7 @@ public class Match {
         }
 
         if (gameList.size() > 0) {
-            invertCurrentPlayersColors();
+            invertPlayersColors();
         }
 
         Game newGame = new Game(boardSize, currentBlackPlayer, currentWhitePlayer);
@@ -64,7 +64,7 @@ public class Match {
         return newGame;
     }
 
-    private void invertCurrentPlayersColors() {
+    private void invertPlayersColors() {
         Player oldWhitePlayer = currentWhitePlayer;
         currentWhitePlayer = currentBlackPlayer;
         currentBlackPlayer = oldWhitePlayer;
@@ -119,6 +119,22 @@ public class Match {
         return currentWhitePlayer;
     }
 
+    @Nullable
+    private Game getCurrentGame() {
+        int numberOfGames = gameList.size();
+        if (numberOfGames == 0) return null;
+        return gameList.get(numberOfGames - 1);
+    }
+
+    private boolean isCurrentGameOngoing() {
+        Game currentGame = getCurrentGame();
+        return currentGame != null && !currentGame.isEnded();
+    }
+
+    public boolean isEnded() {
+        return !isCurrentGameOngoing() && gameList.size() >= getNumberOfGames();
+    }
+
     public boolean isADraw() throws MatchNotEndedException {
         if (isEnded()) {
             return getScoreOfPlayer(getCurrentBlackPlayer())
@@ -126,22 +142,6 @@ public class Match {
         } else {
             throw new MatchNotEndedException();
         }
-    }
-
-    public boolean isEnded() {
-        return !isCurrentGameOngoing() && gameList.size() >= getNumberOfGames();
-    }
-
-    private boolean isCurrentGameOngoing() {
-        final Game currentGame = getCurrentGame();
-        return currentGame != null && !currentGame.isEnded();
-    }
-
-    @Nullable
-    private Game getCurrentGame() {
-        int numberOfGamesPlayed = gameList.size();
-        if (numberOfGamesPlayed == 0) return null;
-        return gameList.get(numberOfGamesPlayed - 1);
     }
 
 }
