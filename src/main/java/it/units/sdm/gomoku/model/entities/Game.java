@@ -123,9 +123,16 @@ public class Game implements Comparable<Game>, Observable {
 
     public void placeStoneAndChangeTurn(@NotNull final Coordinates coordinates)
             throws BoardIsFullException, CellAlreadyOccupiedException, GameEndedException, CellOutOfBoardException, GameNotStartedException {
-        final Player player = Objects.requireNonNull(currentPlayerProperty.getPropertyValue());
-        placeStone(player, coordinates);
-        setGameStatusPropertyAndWinnerIfEndedOrElseChangeTurn(player, coordinates);
+
+        if (isNotStarted()) {
+            throw new GameNotStartedException();
+        } else if (isEnded()) {
+            throw new GameEndedException();
+        } else {
+            final Player player = Objects.requireNonNull(currentPlayerProperty.getPropertyValue());
+            placeStone(player, coordinates);
+            setGameStatusPropertyAndWinnerIfEndedOrElseChangeTurn(player, coordinates);
+        }
     }
 
     private void placeStone(@NotNull final Player player, @NotNull final Coordinates coordinates)

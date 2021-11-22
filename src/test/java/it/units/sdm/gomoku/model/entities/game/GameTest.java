@@ -248,30 +248,27 @@ class GameTest {
     @SuppressWarnings("unchecked")  // checked casting
     @ParameterizedTest
     @EnumSource(Game.Status.class)
+    void testIsNotStarted(Game.Status gameStatusToSet) throws NoSuchFieldException, IllegalAccessException {
+        ((ObservablePropertySettable<Game.Status>)
+                Objects.requireNonNull(TestUtility.getFieldValue("gameStatusProperty", game)))
+                .setPropertyValue(gameStatusToSet);
+        assertEquals(gameStatusToSet == Game.Status.NOT_STARTED, game.isNotStarted());
+    }
+
+    @SuppressWarnings("unchecked")  // checked casting
+    @ParameterizedTest
+    @EnumSource(Game.Status.class)
     void testIsEnded(Game.Status gameStatusToSet) throws NoSuchFieldException, IllegalAccessException {
         ((ObservablePropertySettable<Game.Status>)
                 Objects.requireNonNull(TestUtility.getFieldValue("gameStatusProperty", game)))
                 .setPropertyValue(gameStatusToSet);
         assertEquals(gameStatusToSet == Game.Status.ENDED, game.isEnded());
     }
-
     //endregion Test Getters / Setters
 
     @Test
     void setBlackPlayerAsFirstPlayerWhenGameStarts() {
         assertEquals(blackPlayer, game.getCurrentPlayerProperty().getPropertyValue());
-    }
-
-    @Test
-    void dontPlaceStoneIfGameNotStarted()
-            throws CellOutOfBoardException, BoardIsFullException, GameEndedException, CellAlreadyOccupiedException, GameNotStartedException {
-
-        try {
-            game = createNewGameWithDefaultParams();
-            game.placeStoneAndChangeTurn(coordinatesForFirstMove);
-        } catch (NullPointerException e) {
-            assertTrue(isEmptyCellAtCoordinatesForFirstMove());
-        }
     }
 
     @Test
@@ -288,6 +285,33 @@ class GameTest {
         game.placeStoneAndChangeTurn(coordinatesForFirstMove);
         final Player currentPlayerAfterTheMoveIsDone = game.getCurrentPlayerProperty().getPropertyValue();
         assertNotEquals(currentPlayerForTheMove, currentPlayerAfterTheMoveIsDone);
+    }
+
+    @Test
+    void dontStartGameIfAlreadyStarted() {
+        game = createNewGameWithDefaultParams();
+        try {
+            game.start();
+        } catch (Exception e) {
+            fail("Unexpected exception: a new game must be started");
+        }
+        try {
+            game.start();
+        } catch (Exception e) {
+            assertTrue(e instanceof GameAlreadyStartedException);/*game can be started only once*/
+        }
+    }
+
+    @Test
+    void dontPlaceStoneIfGameNotStarted()
+            throws CellOutOfBoardException, BoardIsFullException, GameEndedException, CellAlreadyOccupiedException {
+
+        try {
+            game = createNewGameWithDefaultParams();
+            game.placeStoneAndChangeTurn(coordinatesForFirstMove);
+        } catch (GameNotStartedException e) {
+            assertTrue(isEmptyCellAtCoordinatesForFirstMove());
+        }
     }
 
     @Test
