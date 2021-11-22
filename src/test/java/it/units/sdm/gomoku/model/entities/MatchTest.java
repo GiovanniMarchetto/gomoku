@@ -322,6 +322,18 @@ class MatchTest {
     }
     //endregion test scores
 
+    @Test
+    void dontInitializeNewGameIfMatchEnded() {
+        endMatchWithADraw(match);
+        assert match.isEnded();
+        try {
+            match.initializeNewGame();
+            fail("Should not be possible to initialize a new game if the match is ended, but happened.");
+        } catch (Exception e) {
+            assertTrue(e instanceof MatchEndedException);
+        }
+    }
+
     @ParameterizedTest
     @MethodSource("getIntStreamFrom0IncludedToTotalNumberOfGamesExcluded")
     void invertColorsOfPlayersWhenNewGameIsCreated(int numberOfCurrentGame) {
