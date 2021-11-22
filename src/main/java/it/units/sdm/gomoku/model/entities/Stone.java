@@ -3,13 +3,15 @@ package it.units.sdm.gomoku.model.entities;
 import it.units.sdm.gomoku.model.custom_types.Color;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 public class Stone {
 
     @NotNull
     public final Color color;
 
     public Stone(@NotNull final Color stoneColor) {
-        this.color = stoneColor;
+        this.color = Objects.requireNonNull(stoneColor);
     }
 
     @NotNull
