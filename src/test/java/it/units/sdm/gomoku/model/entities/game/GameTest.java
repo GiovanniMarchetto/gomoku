@@ -110,6 +110,20 @@ class GameTest {
         assertTrue(gameHasNotifiedToBeStarted.get());
     }
 
+    @Test
+    void notifyGameStatusOnEnd() {
+        AtomicReference<Boolean> gameHasNotifiedToBeEnded = new AtomicReference<>();
+        new PropertyObserver<>(
+                game.getGameStatusProperty(),
+                evt -> gameHasNotifiedToBeEnded.set(Game.Status.ENDED.equals(evt.getNewValue())));
+        disputeGameAndDraw(game);
+        //noinspection StatementWithEmptyBody   // wait property change notification
+        while (!gameHasNotifiedToBeEnded.get()) {
+        }
+
+        assertTrue(gameHasNotifiedToBeEnded.get());
+    }
+
     //region Test Getters / Setters
     @Test
     void testCurrentPlayerPropertyGetter() throws NoSuchFieldException, IllegalAccessException {
