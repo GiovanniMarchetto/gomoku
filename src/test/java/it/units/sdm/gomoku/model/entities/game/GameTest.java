@@ -230,6 +230,14 @@ class GameTest {
     }
 
     @Test
+    void changeTurnAfterAMoveIsMadeIfGameNotEnded() throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
+        final Player currentPlayerForTheMove = game.getCurrentPlayerProperty().getPropertyValue();
+        game.placeStoneAndChangeTurn(firstMove);
+        final Player currentPlayerAfterTheMoveIsDone = game.getCurrentPlayerProperty().getPropertyValue();
+        assertNotEquals(currentPlayerForTheMove, currentPlayerAfterTheMoveIsDone);
+    }
+
+    @Test
     void dontPlaceStoneIfGameEndedOrBoardIsFull() throws CellOutOfBoardException, CellAlreadyOccupiedException {
         disputeGameAndDraw(game);
         try {
