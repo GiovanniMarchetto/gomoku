@@ -200,10 +200,7 @@ class GameTest {
 
     @ParameterizedTest
     @EnumSource(Color.class)
-    void setPlayerAsWinnerIfWon(Color playerColor)
-            throws GameNotEndedException, BoardIsFullException, GameEndedException,
-            CellOutOfBoardException, CellAlreadyOccupiedException {
-
+    void setPlayerAsWinnerIfWon(Color playerColor) throws GameNotEndedException {
         Player winnerPlayerToSet = null;
         switch (playerColor) {
             case BLACK -> winnerPlayerToSet = blackPlayer;
@@ -215,10 +212,7 @@ class GameTest {
     }
 
     @Test
-    void dontSetWinnerIfGameEndedWithDraw()
-            throws GameNotEndedException, BoardIsFullException, GameEndedException,
-            CellOutOfBoardException, CellAlreadyOccupiedException {
-
+    void dontSetWinnerIfGameEndedWithDraw() throws GameNotEndedException {
         disputeGameAndDraw(game);
         assertNull(game.getWinner());
     }
@@ -270,7 +264,7 @@ class GameTest {
 
     @Test
     void dontPlaceStoneIfGameEndedOrBoardIsFull()
-            throws CellOutOfBoardException, CellAlreadyOccupiedException, BoardIsFullException, GameEndedException {
+            throws CellOutOfBoardException, CellAlreadyOccupiedException {
 
         disputeGameAndDraw(game);
         try {
@@ -346,9 +340,7 @@ class GameTest {
 
     @ParameterizedTest
     @EnumSource(Color.class)
-    void testIsEndedToReturnTrueIfAPlayerWon(Color playerColor)
-            throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
-
+    void testIsEndedToReturnTrueIfAPlayerWon(Color playerColor) {
         Player winnerPlayerToSet = null;
         switch (playerColor) {
             case BLACK -> winnerPlayerToSet = blackPlayer;
@@ -360,9 +352,7 @@ class GameTest {
     }
 
     @Test
-    void testIsEndedToReturnTrueIfGameEndedWithADraw() //i.e. board is full but no winner
-            throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
-
+    void testIsEndedToReturnTrueIfGameEndedWithADraw() {
         disputeGameAndDraw(game);
         assertTrue(game.isEnded());
     }
