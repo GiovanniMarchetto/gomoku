@@ -273,6 +273,19 @@ class MatchTest {
         }
     }
 
+    @ParameterizedTest
+    @MethodSource("getIntStreamFrom0IncludedToTotalNumberOfGamesExcluded")
+    void testThereAreExactlyTheSameTwoPlayersForTheEntireMatch(int numberOfCurrentGame) {
+        disputeNGamesOfMatchAndMakeGivenPlayerToWinAllTheGamesInMatch(numberOfCurrentGame + 1, SAMPLE_PLAYER_1, match);
+        if (match.getCurrentBlackPlayer().equals(SAMPLE_PLAYER_1)) {
+            assertEquals(SAMPLE_PLAYER_2, match.getCurrentWhitePlayer());
+        } else if (match.getCurrentWhitePlayer().equals(SAMPLE_PLAYER_1)) {
+            assertEquals(SAMPLE_PLAYER_2, match.getCurrentBlackPlayer());
+        } else {
+            fail("Unknown player");
+        }
+    }
+
     private static void makeGivenPlayerToWinNGamesInMatch(
             @NotNull final Player playerWhoHasToWin, @NotNull final Player playerWhoHasToLose,
             int numberOfGameWon, @NotNull final Match match) {
