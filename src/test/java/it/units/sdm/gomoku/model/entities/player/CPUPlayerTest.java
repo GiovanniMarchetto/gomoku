@@ -151,7 +151,8 @@ public class CPUPlayerTest {
     }
 
     @Test
-    void throwExceptionWhenChoosingSmartlyNextCoordinatesIfTheBoardIsFull() {
+    void throwExceptionWhenChoosingSmartlyNextCoordinatesIfTheBoardIsFull()
+            throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
         try {
             game.start();
             GameTestUtility.disputeGameAndDraw(game);

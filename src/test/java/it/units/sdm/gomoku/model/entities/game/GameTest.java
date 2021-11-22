@@ -26,7 +26,8 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
-import static it.units.sdm.gomoku.model.entities.game.GameTestUtility.*;
+import static it.units.sdm.gomoku.model.entities.game.GameTestUtility.disputeGameAndDraw;
+import static it.units.sdm.gomoku.model.entities.game.GameTestUtility.disputeGameAndMakeThePlayerToWin;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GameTest {
@@ -130,7 +131,9 @@ class GameTest {
     @SuppressWarnings("unchecked")  // checked casting
     @ParameterizedTest
     @EnumSource(Game.Status.class)
-    void testGameStatusPropertyValueGetter(Game.Status gameStatusToSet) throws NoSuchFieldException, IllegalAccessException {
+    void testGameStatusPropertyValueGetter(Game.Status gameStatusToSet)
+            throws NoSuchFieldException, IllegalAccessException {
+
         ((ObservablePropertySettable<Game.Status>)
                 Objects.requireNonNull(TestUtility.getFieldValue("gameStatusProperty", game)))
                 .setPropertyValue(gameStatusToSet);
@@ -179,7 +182,10 @@ class GameTest {
 
     @ParameterizedTest
     @EnumSource(Color.class)
-    void setPlayerAsWinnerIfWon(Color playerColor) throws GameNotEndedException {
+    void setPlayerAsWinnerIfWon(Color playerColor)
+            throws GameNotEndedException, BoardIsFullException, GameEndedException,
+            CellOutOfBoardException, CellAlreadyOccupiedException {
+
         Player winnerPlayerToSet = null;
         switch (playerColor) {
             case BLACK -> winnerPlayerToSet = blackPlayer;
@@ -191,7 +197,10 @@ class GameTest {
     }
 
     @Test
-    void dontSetWinnerIfGameEndedWithDraw() throws GameNotEndedException {
+    void dontSetWinnerIfGameEndedWithDraw()
+            throws GameNotEndedException, BoardIsFullException, GameEndedException,
+            CellOutOfBoardException, CellAlreadyOccupiedException {
+
         disputeGameAndDraw(game);
         assertNull(game.getWinner());
     }
@@ -214,23 +223,29 @@ class GameTest {
     }
 
     @Test
-    void dontPlaceStoneIfGameNotStarted() throws CellOutOfBoardException {
+    void dontPlaceStoneIfGameNotStarted()
+            throws CellOutOfBoardException, BoardIsFullException, GameEndedException, CellAlreadyOccupiedException {
+
         try {
             game = createNewGameWithDefaultParams();
-            tryToPlaceStoneAndChangeTurn(firstMove, game);
+            game.placeStoneAndChangeTurn(firstMove);
         } catch (NullPointerException e) {
             assertTrue(isEmptyCell(firstMove));
         }
     }
 
     @Test
-    void placeStoneAfterGameStarted() throws CellOutOfBoardException {
-        tryToPlaceStoneAndChangeTurn(firstMove, game);
+    void placeStoneAfterGameStarted()
+            throws CellOutOfBoardException, BoardIsFullException, GameEndedException, CellAlreadyOccupiedException {
+
+        game.placeStoneAndChangeTurn(firstMove);
         assertFalse(isEmptyCell(firstMove));
     }
 
     @Test
-    void dontPlaceStoneIfGameEndedOrBoardIsFull() throws CellOutOfBoardException, CellAlreadyOccupiedException {
+    void dontPlaceStoneIfGameEndedOrBoardIsFull()
+            throws CellOutOfBoardException, CellAlreadyOccupiedException, BoardIsFullException, GameEndedException {
+
         disputeGameAndDraw(game);
         try {
             game.placeStoneAndChangeTurn(firstMove);
@@ -241,7 +256,9 @@ class GameTest {
     }
 
     @Test
-    void dontPlaceStoneIfCellAlreadyOccupied() throws CellOutOfBoardException, BoardIsFullException, GameEndedException, CellAlreadyOccupiedException {
+    void dontPlaceStoneIfCellAlreadyOccupied()
+            throws CellOutOfBoardException, BoardIsFullException, GameEndedException, CellAlreadyOccupiedException {
+
         assert isEmptyCell(firstMove);
         game.placeStoneAndChangeTurn(firstMove);
         assert !isEmptyCell(firstMove);
@@ -270,15 +287,19 @@ class GameTest {
     }
 
     @Test
-    void changeTurnAfterFirstPlaceStone() {
-        tryToPlaceStoneAndChangeTurn(firstMove, game);
+    void changeTurnAfterFirstPlaceStone()
+            throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
+
+        game.placeStoneAndChangeTurn(firstMove);
         assertEquals(whitePlayer, game.getCurrentPlayerProperty().getPropertyValue());
     }
 
     @Test
-    void changeTurnAfterSecondPlaceStone() {
-        tryToPlaceStoneAndChangeTurn(firstMove, game);
-        tryToPlaceStoneAndChangeTurn(secondMove, game);
+    void changeTurnAfterSecondPlaceStone()
+            throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
+
+        game.placeStoneAndChangeTurn(firstMove);
+        game.placeStoneAndChangeTurn(secondMove);
         assertEquals(blackPlayer, game.getCurrentPlayerProperty().getPropertyValue());
     }
 
@@ -299,7 +320,9 @@ class GameTest {
 
     @ParameterizedTest
     @EnumSource(Color.class)
-    void testIsEndedToReturnTrueIfAPlayerWon(Color playerColor) {
+    void testIsEndedToReturnTrueIfAPlayerWon(Color playerColor)
+            throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
+
         Player winnerPlayerToSet = null;
         switch (playerColor) {
             case BLACK -> winnerPlayerToSet = blackPlayer;
@@ -311,7 +334,9 @@ class GameTest {
     }
 
     @Test
-    void testIsEndedToReturnTrueIfGameEndedWithADraw() { //i.e. board is full but no winner
+    void testIsEndedToReturnTrueIfGameEndedWithADraw() //i.e. board is full but no winner
+            throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
+
         disputeGameAndDraw(game);
         assertTrue(game.isEnded());
     }
@@ -328,7 +353,9 @@ class GameTest {
     }
 
     @Test
-    void testToString() {
+    void testToString()
+            throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
+
         PositiveInteger boardSizeOfThree = new PositiveInteger(3);
         Player gianniPlayer = new FakePlayer("Gianni");
         Player beppePlayer = new FakePlayer("Beppe");
@@ -336,8 +363,8 @@ class GameTest {
         game = new Game(boardSizeOfThree, gianniPlayer, beppePlayer);
         game.start();
 
-        tryToPlaceStoneAndChangeTurn(new Coordinates(0, 0), game);
-        tryToPlaceStoneAndChangeTurn(new Coordinates(1, 1), game);
+        game.placeStoneAndChangeTurn(new Coordinates(0, 0));
+        game.placeStoneAndChangeTurn(new Coordinates(1, 1));
 
         String lineSeparator = System.lineSeparator();
         String expected = "Game started at " + game.getCreationTime() +

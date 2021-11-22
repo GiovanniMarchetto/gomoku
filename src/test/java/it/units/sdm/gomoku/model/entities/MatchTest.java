@@ -1,9 +1,7 @@
 package it.units.sdm.gomoku.model.entities;
 
 import it.units.sdm.gomoku.model.entities.game.GameTestUtility;
-import it.units.sdm.gomoku.model.exceptions.GameNotEndedException;
-import it.units.sdm.gomoku.model.exceptions.MatchEndedException;
-import it.units.sdm.gomoku.model.exceptions.MatchNotEndedException;
+import it.units.sdm.gomoku.model.exceptions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -36,12 +34,12 @@ class MatchTest {
         }
     }
 
-    private void startGameAndPlayerWin(Player player) {
+    private void startGameAndPlayerWin(Player player) throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
         startNewGameComplete();
         GameTestUtility.disputeGameAndMakeThePlayerToWin(currentGame, player);
     }
 
-    private void startGameAndDraw() {
+    private void startGameAndDraw() throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
         startNewGameComplete();
         GameTestUtility.disputeGameAndDraw(currentGame);
     }
@@ -69,7 +67,7 @@ class MatchTest {
     }
 
     @Test
-    void setFirstPlayerAsTheWhiteOneInTheSecondGame() throws MatchEndedException, GameNotEndedException {
+    void setFirstPlayerAsTheWhiteOneInTheSecondGame() throws MatchEndedException, GameNotEndedException, BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
         currentGame = match.initializeNewGame();
         currentGame.start();
         GameTestUtility.disputeGameAndDraw(currentGame);
@@ -104,19 +102,19 @@ class MatchTest {
     }
 
     @Test
-    void getScoreAfterPlayer1Win() {
+    void getScoreAfterPlayer1Win() throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
         startGameAndPlayerWin(cpu1);
         assertCpusScore(1, 0);
     }
 
     @Test
-    void getScoreAfterPlayer2Win() {
+    void getScoreAfterPlayer2Win() throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
         startGameAndPlayerWin(cpu2);
         assertCpusScore(0, 1);
     }
 
     @Test
-    void getScoreAfterADrawGame() {
+    void getScoreAfterADrawGame() throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
         startGameAndDraw();
         assertCpusScore(0, 0);
     }
@@ -131,39 +129,27 @@ class MatchTest {
     }
 
     @Test
-    void getWinnerWithADraw() {
-        try {
-            for (int i = 0; i < NUMBER_OF_GAMES; i++) {
-                startGameAndDraw();
-            }
-            assertNull(match.getWinner());
-        } catch (MatchNotEndedException e) {
-            fail(e);
+    void getWinnerWithADraw() throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException, MatchNotEndedException {
+        for (int i = 0; i < NUMBER_OF_GAMES; i++) {
+            startGameAndDraw();
         }
+        assertNull(match.getWinner());
     }
 
     @Test
-    void getWinnerWithCPU1Win() {
-        try {
-            for (int i = 0; i < NUMBER_OF_GAMES; i++) {
-                startGameAndPlayerWin(cpu1);
-            }
-            assertEquals(cpu1, match.getWinner());
-        } catch (MatchNotEndedException e) {
-            fail(e);
+    void getWinnerWithCPU1Win() throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException, MatchNotEndedException {
+        for (int i = 0; i < NUMBER_OF_GAMES; i++) {
+            startGameAndPlayerWin(cpu1);
         }
+        assertEquals(cpu1, match.getWinner());
     }
 
     @Test
-    void getWinnerWithCPU2Win() {
-        try {
-            for (int i = 0; i < NUMBER_OF_GAMES; i++) {
-                startGameAndPlayerWin(cpu2);
-            }
-            assertEquals(cpu2, match.getWinner());
-        } catch (MatchNotEndedException e) {
-            fail(e);
+    void getWinnerWithCPU2Win() throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException, MatchNotEndedException {
+        for (int i = 0; i < NUMBER_OF_GAMES; i++) {
+            startGameAndPlayerWin(cpu2);
         }
+        assertEquals(cpu2, match.getWinner());
     }
 
     @Test
@@ -187,7 +173,7 @@ class MatchTest {
     }
 
     @Test
-    void isEndedAfterAGame() {
+    void isEndedAfterAGame() throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
         //noinspection ConstantConditions
         if (NUMBER_OF_GAMES != 1) {
             startGameAndDraw();
@@ -196,7 +182,7 @@ class MatchTest {
     }
 
     @Test
-    void isEndedAfterStartLastGame() {
+    void isEndedAfterStartLastGame() throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
         for (int i = 0; i < NUMBER_OF_GAMES - 1; i++) {
             startGameAndDraw();
         }
@@ -205,21 +191,21 @@ class MatchTest {
     }
 
     @Test
-    void isEndedNormalFlow() {
+    void isEndedNormalFlow() throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
         isEndedAfterStartLastGame();
         GameTestUtility.disputeGameWithSmartAlgorithm(currentGame);
         assertTrue(match.isEnded());
     }
 
     @Test
-    void isEndedAfterAddExtraGame() {
+    void isEndedAfterAddExtraGame() throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
         isEndedNormalFlow();
         match.addAnExtraGame();
         assertFalse(match.isEnded());
     }
 
     @Test
-    void isEndedAfterEndExtraGame() {
+    void isEndedAfterEndExtraGame() throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
         isEndedAfterAddExtraGame();
         startGameAndDraw();
         assertTrue(match.isEnded());
@@ -235,7 +221,7 @@ class MatchTest {
     }
 
     @Test
-    void isADraw() {
+    void isADraw() throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
         for (int i = 0; i < NUMBER_OF_GAMES; i++) {
             startGameAndDraw();
         }
@@ -247,16 +233,12 @@ class MatchTest {
     }
 
     @Test
-    void isNotADraw() {
+    void isNotADraw() throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException, MatchNotEndedException {
         startGameAndPlayerWin(cpu1);
         for (int i = 1; i < NUMBER_OF_GAMES; i++) {
             startGameAndDraw();
         }
-        try {
-            assertFalse(match.isADraw());
-        } catch (MatchNotEndedException e) {
-            fail(e);
-        }
+        assertFalse(match.isADraw());
     }
 
 }
