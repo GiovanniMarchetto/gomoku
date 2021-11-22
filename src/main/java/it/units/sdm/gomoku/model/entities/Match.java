@@ -26,8 +26,7 @@ public class Match {
     @NotNull
     private Player currentWhitePlayer;
 
-    public Match(@NotNull final PositiveInteger boardSize, @NotNull final PositiveInteger numberOfGames,
-                 @NotNull final Player player1, @NotNull final Player player2) {
+    public Match(@NotNull final Player player1, @NotNull final Player player2, @NotNull final PositiveInteger numberOfGames, @NotNull final PositiveInteger boardSize) {
         this.currentBlackPlayer = Objects.requireNonNull(player1);
         this.currentWhitePlayer = Objects.requireNonNull(player2);
         this.gameList = new ArrayList<>();
@@ -36,7 +35,7 @@ public class Match {
     }
 
     public Match(@NotNull final Setup setup) {  // TODO: test
-        this(Objects.requireNonNull(setup).boardSize(), setup.numberOfGames(), setup.player1(), setup.player2());
+        this(setup.player1(), setup.player2(), setup.numberOfGames(), Objects.requireNonNull(setup).boardSize());
     }
 
     public void incrementTotalNumberOfGames() {

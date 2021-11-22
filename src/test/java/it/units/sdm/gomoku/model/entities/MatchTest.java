@@ -4,6 +4,7 @@ import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.game.GameTestUtility;
 import it.units.sdm.gomoku.model.entities.player.FakePlayer;
 import it.units.sdm.gomoku.model.exceptions.*;
+import it.units.sdm.gomoku.ui.support.BoardSizes;
 import it.units.sdm.gomoku.utils.TestUtility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,7 +52,7 @@ class MatchTest {
     @BeforeEach
     void setup() {
         final PositiveInteger boardSizeTest = new PositiveInteger(5);
-        match = new Match(boardSizeTest, new PositiveInteger(NUMBER_OF_GAMES), cpu1, cpu2);
+        match = new Match(cpu1, cpu2, new PositiveInteger(NUMBER_OF_GAMES), boardSizeTest);
     }
 
     //region test constructors
