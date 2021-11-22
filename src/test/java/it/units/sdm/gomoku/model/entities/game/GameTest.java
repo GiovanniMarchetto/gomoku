@@ -80,7 +80,7 @@ class GameTest {
     }
 
     @Test
-    void setGameStatusIsStartedAfterGameStarted() {
+    void setGameStatusToStartedAfterGameStarted() {
         assertEquals(Game.Status.STARTED, game.getGameStatusProperty().getPropertyValue());
     }
 
@@ -121,6 +121,16 @@ class GameTest {
         ObservablePropertySettable<Game.Status> gameStatusProperty =
                 (ObservablePropertySettable<Game.Status>) gameStatusField.get(game);
         assertEquals(gameStatusProperty, game.getGameStatusProperty());
+    }
+
+    @SuppressWarnings("unchecked")  // checked casting
+    @ParameterizedTest
+    @EnumSource(Game.Status.class)
+    void testGameStatusPropertyValueGetter(Game.Status gameStatusToSet) throws NoSuchFieldException, IllegalAccessException {
+        ((ObservablePropertySettable<Game.Status>)
+                Objects.requireNonNull(TestUtility.getFieldValue("gameStatusProperty", game)))
+                .setPropertyValue(gameStatusToSet);
+        assertEquals(gameStatusToSet, game.getGameStatusProperty().getPropertyValue());
     }
 
     @Test
@@ -181,6 +191,7 @@ class GameTest {
         disputeGameAndDraw(game);
         assertNull(game.getWinner());
     }
+
     //endregion Test Getters / Setters
 
     @Test
