@@ -83,15 +83,13 @@ class GameTest {
         assertTrue(Math.abs(currentTime - creationTimeSetInGame) < EPSILON_NANOS);
     }
 
-    @Test
-    void setGameStatusToStartedAfterGameStarted() {
-        assertEquals(Game.Status.STARTED, game.getGameStatusProperty().getPropertyValue());
-    }
-
-    @Test
-    void setGameStatusToEndedIfGameEndedDueToLastMove() {
-        disputeGameAndDraw(game);
-        assertEquals(Game.Status.ENDED, game.getGameStatusProperty().getPropertyValue());
+    @ParameterizedTest
+    @EnumSource(Game.Status.class)
+    void setGameStatus(Game.Status gameStatusToTest) {
+        if (gameStatusToTest == Game.Status.ENDED) {
+            disputeGameAndDraw(game);
+        }
+        assertEquals(gameStatusToTest, game.getGameStatusProperty().getPropertyValue());
     }
 
     @Test
