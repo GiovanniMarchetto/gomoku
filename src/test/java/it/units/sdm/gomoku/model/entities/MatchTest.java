@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -390,12 +391,16 @@ class MatchTest {
         assertNull(match.getWinner());
     }
 
-    @Test
-    void getWinnerWithPlayer1Win() throws MatchNotEndedException {
-        for (int i = 0; i < SAMPLE_NUMBER_OF_GAMES; i++) {
-            startGameAndPlayerWin(SAMPLE_PLAYER_1);
-        }
-        assertEquals(SAMPLE_PLAYER_1, match.getWinner());
+    @ParameterizedTest
+    @ValueSource(ints = {1, 2})
+    void setWinnerOfMatchThePlayerWhoWonMoreGames(int samplePlayerIndex) throws MatchNotEndedException {
+
+        Player winnerOfMatch = samplePlayerIndex == 1 ? SAMPLE_PLAYER_1 : SAMPLE_PLAYER_2;
+        Player loserOfMatch = winnerOfMatch.equals(SAMPLE_PLAYER_1) ? SAMPLE_PLAYER_2 : SAMPLE_PLAYER_1;
+
+        int numberOfGamesToWinForAPlayerToBeTheWinnerOfMatch = match.getTotalNumberOfGames() / 2 + 1;
+        makeGivenPlayerToWinNGamesInMatch(winnerOfMatch, loserOfMatch, numberOfGamesToWinForAPlayerToBeTheWinnerOfMatch, match);
+        assertEquals(winnerOfMatch, match.getWinner());
     }
 
     @Test
