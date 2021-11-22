@@ -1,6 +1,5 @@
 package it.units.sdm.gomoku.utils;
 
-import it.units.sdm.gomoku.EnvVariables;
 import it.units.sdm.gomoku.model.custom_types.Color;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
@@ -97,34 +96,6 @@ public class TestUtility {
     }
 
     @NotNull
-    public static String createNxNRandomBoardToStringInCSVFormat(int N, int randomSeed) {
-        Random random = new Random(randomSeed);
-        StringBuilder s = new StringBuilder();
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                switch (random.nextInt(3)) {
-                    case 0 -> s.append(Color.BLACK);
-                    case 1 -> s.append(Color.WHITE);
-                    default -> s.append("null");
-                }
-                if (j < N - 1) {
-                    s.append(CSV_SEPARATOR);
-                } else if (i < N - 1) {
-                    s.append(CSV_NEW_LINE);
-                }
-            }
-        }
-
-        return s.toString();
-    }
-
-    @NotNull
-    public static String createNxNRandomBoardToStringInCSVFormat(int N) {
-        final int RANDOM_SEED = 0;
-        return createNxNRandomBoardToStringInCSVFormat(N, RANDOM_SEED);
-    }
-
-    @NotNull
     public static Stream<Arguments> provideCoupleOfIntegersInRange(int startIncluded, int endExcluded) {
         return IntStream.range(startIncluded, endExcluded)
                 .unordered().parallel()
@@ -135,11 +106,6 @@ public class TestUtility {
     @NotNull
     public static Stream<Arguments> provideCoupleOfNonNegativeIntegersTillNExcluded(int N) {
         return provideCoupleOfIntegersInRange(0, N);
-    }
-
-    @NotNull
-    public static Stream<Arguments> provideCoupleOfNonNegativeIntegersTillBoardSize() {
-        return provideCoupleOfNonNegativeIntegersTillNExcluded(EnvVariables.BOARD_SIZE.intValue());
     }
 
     @NotNull
@@ -288,7 +254,7 @@ public class TestUtility {
                 .set(objectInstance, newValue);
     }
 
-    public static <T> void invokeMethodOnObject(
+    public static <T> Object invokeMethodOnObject(
             @NotNull final T targetObject, @NotNull final String methodName, @Nullable Object... paramsToMethod)
             throws NoSuchFieldException, InvocationTargetException, IllegalAccessException {  // TODO : test
         Class<?>[] paramTypes =
@@ -296,31 +262,34 @@ public class TestUtility {
                         .filter(Objects::nonNull)
                         .map(Object::getClass)
                         .toArray(Class<?>[]::new);
-        getMethodAlreadyMadeAccessible(
+        return getMethodAlreadyMadeAccessible(
                 targetObject.getClass(), methodName, paramTypes)
                 .invoke(targetObject, paramsToMethod);
     }
 
-    @NotNull
-    public static String trimAndCapitalizeFirstLetterAndGetOrDoNothingIfEmpty(@NotNull final String inputString) {
-        // TODO : test
-        String outputString = inputString.trim();
-        if (outputString.isBlank()) {
-            return inputString;
-        }
-        return outputString.substring(0, 1).toUpperCase() +
-                (outputString.length() > 1 ? inputString.substring(1) : "");
-    }
-
-    @NotNull
-    public static String getStringDifferentFromGivenOne(String inputString) {   // TODO : test
-        return inputString + "_whateverTrailingStringJustToMakeTheGivenStringDifferent";
+    public static <T> long getNumberOfNullFieldsOfObjectWhichNameIsNotInList(
+            @NotNull final List<String> listOfNamesOfNullableFields, @NotNull final T targetObject) {   // TODO: test
+        Objects.requireNonNull(listOfNamesOfNullableFields);
+        Objects.requireNonNull(targetObject);
+        return Arrays.stream(targetObject.getClass().getDeclaredFields())
+                .filter(field -> !listOfNamesOfNullableFields.contains(field.getName()))
+                .peek(field -> field.setAccessible(true))
+                .map(field -> {
+                    try {
+                        return field.get(targetObject);
+                    } catch (IllegalAccessException e) {
+                        fail(e);
+                        return null;
+                    }
+                })
+                .filter(Objects::isNull)
+                .count();
     }
 
     public static void interruptThreadAfterDelayIfNotAlreadyJoined(
-            @NotNull final Thread threadToBeEventuallyInterrupted, int delayInMillisecs) {
+            @NotNull final Thread threadToBeEventuallyInterrupted, int delayInMilliseconds) {
         Executors.newScheduledThreadPool(1)
-                .schedule(threadToBeEventuallyInterrupted::stop, delayInMillisecs, TimeUnit.MILLISECONDS);
+                .schedule(threadToBeEventuallyInterrupted::stop, delayInMilliseconds, TimeUnit.MILLISECONDS);
     }
 
     public static String[][] readFromCsvToStringMatrix(@NotNull final String resourceFilePath)

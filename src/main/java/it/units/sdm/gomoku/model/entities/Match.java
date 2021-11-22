@@ -20,27 +20,26 @@ public class Match {
     @NotNull
     private final PositiveInteger boardSize;
     @NotNull
-    private final PositiveInteger numberOfGames;
+    private final PositiveInteger totalNumberOfGames;
     @NotNull
     private Player currentBlackPlayer;
     @NotNull
     private Player currentWhitePlayer;
 
-    public Match(@NotNull final PositiveInteger boardSize, @NotNull final PositiveInteger numberOfGames,
-                 @NotNull final Player player1, @NotNull final Player player2) {
+    public Match(@NotNull final Player player1, @NotNull final Player player2, @NotNull final PositiveInteger numberOfGames, @NotNull final PositiveInteger boardSize) {
         this.currentBlackPlayer = Objects.requireNonNull(player1);
         this.currentWhitePlayer = Objects.requireNonNull(player2);
         this.gameList = new ArrayList<>();
         this.boardSize = Objects.requireNonNull(boardSize);
-        this.numberOfGames = Objects.requireNonNull(numberOfGames);
+        this.totalNumberOfGames = Objects.requireNonNull(numberOfGames);
     }
 
     public Match(@NotNull final Setup setup) {  // TODO: test
-        this(Objects.requireNonNull(setup).boardSize(), setup.numberOfGames(), setup.player1(), setup.player2());
+        this(setup.player1(), setup.player2(), setup.numberOfGames(), Objects.requireNonNull(setup).boardSize());
     }
 
     public void incrementTotalNumberOfGames() {
-        numberOfGames.incrementAndGet();
+        totalNumberOfGames.incrementAndGet();
     }
 
     @NotNull
@@ -105,8 +104,8 @@ public class Match {
     }
 
     @PositiveIntegerType
-    public int getNumberOfGames() {
-        return numberOfGames.intValue();
+    public int getTotalNumberOfGames() {
+        return totalNumberOfGames.intValue();
     }
 
     @NotNull
@@ -132,7 +131,7 @@ public class Match {
     }
 
     public boolean isEnded() {
-        return !isCurrentGameOngoing() && gameList.size() >= getNumberOfGames();
+        return !isCurrentGameOngoing() && gameList.size() >= getTotalNumberOfGames();
     }
 
     public boolean isADraw() throws MatchNotEndedException {
@@ -144,4 +143,20 @@ public class Match {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Match match = (Match) o;
+        if (!gameList.equals(match.gameList)) return false;
+        if (!boardSize.equals(match.boardSize)) return false;
+        if (!totalNumberOfGames.equals(match.totalNumberOfGames)) return false;
+        if (!currentBlackPlayer.equals(match.currentBlackPlayer)) return false;
+        return currentWhitePlayer.equals(match.currentWhitePlayer);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(gameList, boardSize, totalNumberOfGames, currentBlackPlayer, currentWhitePlayer);
+    }
 }
