@@ -5,21 +5,17 @@ import it.units.sdm.gomoku.model.entities.Game;
 import it.units.sdm.gomoku.model.exceptions.CellAlreadyOccupiedException;
 import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
 import it.units.sdm.gomoku.model.exceptions.GameEndedException;
-import it.units.sdm.gomoku.mvvm_library.Observer;
 import it.units.sdm.gomoku.mvvm_library.View;
 import it.units.sdm.gomoku.ui.cli.IOUtility;
 import it.units.sdm.gomoku.ui.cli.viewmodels.CLIMainViewmodel;
 import org.jetbrains.annotations.NotNull;
 
-import java.beans.PropertyChangeEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class CLIMainView extends View<CLIMainViewmodel> implements Observer {    // TODO : all events clutter the memory stack
-    // TODO : refactor: a lot in common with view of GUI (e.g. property events), may refactor?
-    // TODO : test
+public class CLIMainView extends View<CLIMainViewmodel> {
 
-    public CLIMainView(@NotNull final CLIMainViewmodel cliMainViewmodel) {  // TODO : event-based flux of program to be tested
+    public CLIMainView(@NotNull final CLIMainViewmodel cliMainViewmodel) {
         super(cliMainViewmodel);
         addObservedPropertyOfViewmodel(cliMainViewmodel.getCurrentGameStatusProperty(), evt -> {
             if (evt.getNewValue() == Game.Status.STARTED) {
@@ -56,10 +52,6 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
     public void onViewDisappearing() {
         super.onViewDisappearing();
         stopObservingAllViewModelProperties();
-    }
-
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
     }
 
     private void waitForAMoveOfAPlayer() throws GameEndedException {  // TODO : not tested

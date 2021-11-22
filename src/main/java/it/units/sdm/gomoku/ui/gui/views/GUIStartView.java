@@ -57,10 +57,10 @@ public class GUIStartView extends View<StartViewmodel> {
         setDefaultValuesInViewmodel();
         allowOnlyNumberInNumberOfGamesTextField();
         disableStartMatchButtonIfInvalidInputFieldValues();
-        addListenerForFirePropertyChange();
+        addControlsPropertiesListeners();
     }
 
-    private void addListenerForFirePropertyChange() {
+    private void addControlsPropertiesListeners() {
         // TODO : maybe refactor needed
         addTextPropertyListener(player1NameTextField, getViewmodelAssociatedWithView()::setPlayer1Name);
         addTextPropertyListener(player2NameTextField, getViewmodelAssociatedWithView()::setPlayer2Name);

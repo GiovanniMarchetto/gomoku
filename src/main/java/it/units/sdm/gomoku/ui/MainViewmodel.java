@@ -26,15 +26,15 @@ import java.util.stream.Stream;
 public abstract class MainViewmodel extends Viewmodel {
 
     @NotNull
-    private final ObservablePropertySettable<Player> currentPlayerProperty;
+    private ObservablePropertySettable<Player> currentPlayerProperty;
     @NotNull
-    private final ObservablePropertySettable<Game.Status> currentGameStatusProperty;
+    private ObservablePropertySettable<Game.Status> currentGameStatusProperty;
     @NotNull
-    private final ObservablePropertySettable<Boolean> userMustPlaceNewStoneProperty;
+    private ObservablePropertySettable<Boolean> userMustPlaceNewStoneProperty;
     @NotNull
-    private final ObservablePropertySettable<Coordinates> lastMoveCoordinatesProperty;
+    private ObservablePropertySettable<Coordinates> lastMoveCoordinatesProperty;
     @NotNull
-    private final List<PropertyObserver<?>> modelPropertyObservers;
+    private List<PropertyObserver<?>> modelPropertyObservers;
     @Nullable
     private Match match;
     @Nullable
@@ -125,6 +125,11 @@ public abstract class MainViewmodel extends Viewmodel {
 
     public void createMatchFromSetupAndInitializeNewGame(Setup setup) {
         setMatch(new Match(setup));
+        this.currentPlayerProperty = new ObservablePropertySettable<>();
+        this.currentGameStatusProperty = new ObservablePropertySettable<>();
+        this.userMustPlaceNewStoneProperty = new ObservablePropertySettable<>();
+        this.lastMoveCoordinatesProperty = new ObservablePropertySettable<>();
+        this.modelPropertyObservers = new ArrayList<>();
         initializeNewGame();
     }
 
@@ -183,7 +188,7 @@ public abstract class MainViewmodel extends Viewmodel {
     }
 
     @NotNull
-    protected Game getCurrentGame() {
+    public Game getCurrentGame() {
         return Objects.requireNonNull(currentGame);
     }
 

@@ -1,7 +1,6 @@
 package it.units.sdm.gomoku.ui.gui.views;
 
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
-import it.units.sdm.gomoku.mvvm_library.Observable;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyProxy;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertySettable;
 import it.units.sdm.gomoku.ui.gui.viewmodels.GUIMainViewmodel;
@@ -16,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.stream.IntStream;
 
-public class GomokuGridManager implements Observable {
+public class GomokuGridManager {
 
 
     @NotNull
@@ -80,7 +79,6 @@ public class GomokuGridManager implements Observable {
 
     private void addCell(int row, int col) {
         GomokuCell gc = new GomokuCell(vm, new Coordinates(row, col), new ObservablePropertyProxy<>(gomokuStoneRadiusProperty), boardSize);
-        gc.observe(this);
         ObservableList<Node> children = gc.getGroup().getChildren();
 
         IntStream.range(0, children.size())
