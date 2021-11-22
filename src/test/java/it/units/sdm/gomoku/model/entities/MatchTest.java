@@ -310,7 +310,7 @@ class MatchTest {
 
     @ParameterizedTest
     @MethodSource("getIntStreamFrom0IncludedToTotalNumberOfGamesExcluded")
-    void invertColorsOfPlayersWhenGameChanges(int numberOfCurrentGame) {
+    void invertColorsOfPlayersWhenNewGameIsCreated(int numberOfCurrentGame) {
 
         disputeNGamesOfMatchAndMakeGivenPlayerToWinAllTheGamesInMatch(numberOfCurrentGame + 1, SAMPLE_PLAYER_1, match);
 
