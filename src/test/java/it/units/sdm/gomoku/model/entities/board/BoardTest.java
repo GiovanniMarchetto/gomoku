@@ -14,6 +14,7 @@ import it.units.sdm.gomoku.property_change_handlers.observable_properties.Observ
 import it.units.sdm.gomoku.utils.TestUtility;
 import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,13 +44,27 @@ public class BoardTest {
     public static PositiveInteger BOARD_SIZE;
     private static Board board;
 
-    @BeforeAll
-    static void beforeAll() {
-        board = TestUtility.createBoardFromCellMatrix(boardMatrixFromCsv);
-        BOARD_SIZE = new PositiveInteger(board.getSize());
+    private static void assertEqualityOfFieldsButDifferenceReference(
+            @NotNull final Class<?> fieldType, final Object fieldValueInInitial, final Object fieldValueInCopied)
+            throws NoSuchFieldException {
+        if (fieldType.isArray()) {
+            int length = Array.getLength(fieldValueInInitial);
+            for (int i = 0; i < length; i++) {
+                Object initialArrayElement = Array.get(fieldValueInInitial, i);
+                Object copiedArrayElement = Array.get(fieldValueInCopied, i);
+                for (Field f : initialArrayElement.getClass().getDeclaredFields()) {
+                    Class<?> innerFieldType = TestUtility.getFieldAlreadyMadeAccessible(f.getClass(), f.getName()).getType();
+                    assertEqualityOfFieldsButDifferenceReference(innerFieldType, initialArrayElement, copiedArrayElement);
+                }
+            }
+        } else if (!(fieldValueInInitial instanceof Function)) {
+            assert Objects.requireNonNull(fieldValueInInitial).equals(fieldValueInCopied);
+            if (!Objects.requireNonNull(fieldType).isPrimitive()) {
+                assertNotSame(fieldValueInInitial, fieldValueInCopied);
+            }
+        }
     }
 
-    //region Support Methods
     @NotNull
     private static Stream<Arguments> provideCoupleOfIntegersBetweenMinus5IncludedAndPlus5ToBoardSizeExcluded() {
         return TestUtility.provideCoupleOfIntegersInRange(-5, BOARD_SIZE.intValue() + 5);
@@ -101,85 +116,21 @@ public class BoardTest {
         }
     }
 
-    private static void assertEqualityOfFieldsButDifferenceReference(
-            @NotNull final Class<?> fieldType, final Object fieldValueInInitial, final Object fieldValueInCopied)
-            throws NoSuchFieldException {
-        if (fieldType.isArray()) {
-            int length = Array.getLength(fieldValueInInitial);
-            for (int i = 0; i < length; i++) {
-                Object initialArrayElement = Array.get(fieldValueInInitial, i);
-                Object copiedArrayElement = Array.get(fieldValueInCopied, i);
-                for (Field f : initialArrayElement.getClass().getDeclaredFields()) {
-                    Class<?> innerFieldType = TestUtility.getFieldAlreadyMadeAccessible(f.getClass(), f.getName()).getType();
-                    assertEqualityOfFieldsButDifferenceReference(innerFieldType, initialArrayElement, copiedArrayElement);
-                }
-            }
-        } else if (!(fieldValueInInitial instanceof Function)) {  // TODO: resee this, needed?
-            assert Objects.requireNonNull(fieldValueInInitial).equals(fieldValueInCopied);
-            if (!Objects.requireNonNull(fieldType).isPrimitive()) {
-                assertNotSame(fieldValueInInitial, fieldValueInCopied);
-            }
-        }
-    }
-
-    public static void occupyNEmptyCellsOnTheGivenBoardBoardWithGivenColor(
-            @NotNull final Board board, int numberOfEmptyCellsToOccupy, @NotNull final Color stoneColor)
-            throws NoSuchFieldException, IllegalAccessException {// TODO: test
-        synchronized (Objects.requireNonNull(board)) {
-            assert isThereEnoughEmptySpaceOnBoard(board, numberOfEmptyCellsToOccupy);
-            getNEmptyPositionsRandomlyTakenFromGivenBoard(numberOfEmptyCellsToOccupy, board) // TODO: message chain code smell
-                    .forEach(coord -> {
-                        try {
-                            board.occupyPosition(Objects.requireNonNull(stoneColor), coord);
-                        } catch (BoardIsFullException | CellAlreadyOccupiedException | CellOutOfBoardException ignored) {
-                        }
-                    });
-        }
-    }
-
     @NotNull
     public static Stream<Coordinates> getNEmptyPositionsRandomlyTakenFromGivenBoard(
-            int numberOfEmptyCellsToOccupy, @NotNull final Board board) {   // TODO: test
+            int numberOfEmptyCellsToOccupy, @NotNull final Board board) {
         List<Coordinates> coordinatesList = Objects.requireNonNull(board).getStreamOfEmptyCoordinates().collect(Collectors.toList());
         Collections.shuffle(coordinatesList);
         return coordinatesList.stream().limit(numberOfEmptyCellsToOccupy);
     }
 
-    private static boolean isThereEnoughEmptySpaceOnBoard(@NotNull Board board, int numberOfEmptyCellsRequired) throws NoSuchFieldException, IllegalAccessException {   // TODO: test
-        //noinspection ConstantConditions
-        return (int) TestUtility.getFieldValue("numberOfFilledPositions", board) + numberOfEmptyCellsRequired < Math.pow(board.getSize(), 2);
+    @BeforeAll
+    static void beforeAll() {
+        board = TestUtility.createBoardFromCellMatrix(boardMatrixFromCsv);
+        BOARD_SIZE = new PositiveInteger(board.getSize());
     }
 
-
-    @NotNull
-    private Coordinates tryToOccupyEmptyCell() {
-        synchronized (board) {
-            try {
-                Coordinates coordinatesToOccupy =
-                        getNEmptyPositionsRandomlyTakenFromGivenBoard(1, board)
-                                .findAny()
-                                .orElseThrow(BoardIsFullException::new);
-                tryToOccupyCoordinatesWithColor(board, Color.BLACK,
-                        coordinatesToOccupy.getX(), coordinatesToOccupy.getY());
-                return coordinatesToOccupy;
-            } catch (BoardIsFullException e) {
-                fail(e);
-                return null;
-            }
-        }
-    }
-
-    @NotNull
-    private Pair<Cell[][], Cell[][]> getInitialAndCopiedBoardMatrixWithMethodProvidedByTheClass()
-            throws NoSuchFieldException, IllegalAccessException, InvocationTargetException {
-        Method getBoardMatrixCopyMethod = TestUtility.getMethodAlreadyMadeAccessible(board.getClass(), "getBoardMatrixCopy");
-        Cell[][] toBeCopiedMatrix = (Cell[][]) TestUtility.getFieldValue("matrix", board);
-        Cell[][] copiedMatrix = (Cell[][]) getBoardMatrixCopyMethod.invoke(board);
-        assert toBeCopiedMatrix != null;
-        return new Pair<>(toBeCopiedMatrix, copiedMatrix);
-    }
-    //endregion Support Methods
-
+    //region Support Methods
     @NotNull
     private Board setupForTestEquals() {
         board = new Board(BOARD_SIZE);
@@ -189,11 +140,44 @@ public class BoardTest {
         return board2;
     }
 
+    @Nullable
+    private Object getNumberOfFilledPositions() throws NoSuchFieldException, IllegalAccessException {
+        return TestUtility.getFieldValue("numberOfFilledPositions", board);
+    }
+
+    @NotNull
+    private Coordinates tryToOccupyEmptyCell() {
+        try {
+            Coordinates coordinatesToOccupy =
+                    getNEmptyPositionsRandomlyTakenFromGivenBoard(1, board)
+                            .findAny()
+                            .orElseThrow(BoardIsFullException::new);
+            tryToOccupyCoordinatesWithColor(board, Color.BLACK,
+                    coordinatesToOccupy.getX(), coordinatesToOccupy.getY());
+            return coordinatesToOccupy;
+        } catch (BoardIsFullException e) {
+            fail(e);
+            return null;
+        }
+    }
+    //endregion Support Methods
+
+    @NotNull
+    private Pair<Cell[][], Cell[][]> getBoardMatrixAndItsCopyInAPair()
+            throws NoSuchFieldException, IllegalAccessException, InvocationTargetException {
+        Method getBoardMatrixCopyMethod = TestUtility.getMethodAlreadyMadeAccessible(board.getClass(), "getBoardMatrixCopy");
+        Cell[][] toBeCopiedMatrix = (Cell[][]) TestUtility.getFieldValue("matrix", board);
+        Cell[][] copiedMatrix = (Cell[][]) getBoardMatrixCopyMethod.invoke(board);
+        assert toBeCopiedMatrix != null;
+        return new Pair<>(toBeCopiedMatrix, copiedMatrix);
+    }
+
     @BeforeEach
     void setUp() {
         beforeAll();
     }
 
+    //region copy-constructor
     @ParameterizedTest
     @MethodSource("boardSupplier")
     void copyConstructorCreatesNewObject(Board boardToCopy) {
@@ -202,7 +186,6 @@ public class BoardTest {
 
     @ParameterizedTest
     @MethodSource("boardSupplier")
-        // TODO: use jqwik in parametrized tests?
     void copyConstructorCreatesObjectOfSameClass(Board boardToCopy) {
         //noinspection InstantiatingObjectToGetClassObject
         assertSame(boardToCopy.getClass(), new Board((boardToCopy)).getClass());
@@ -226,45 +209,34 @@ public class BoardTest {
                     boardToCopy, f.getName(), !Arrays.asList(nameOfFieldsToExcludeFromDeepEquality).contains(f.getName()));
         }
     }
+    //endregion
 
     @Test
-    void getSize() {
+    void testGetSize() {
         assertEquals(BOARD_SIZE.intValue(), board.getSize());
     }
 
     @Test
-    void checkNumberOfFilledPositionAtCreation() {
-        try {
-            board = new Board(BOARD_SIZE);
-            assertEquals(0, TestUtility.getFieldValue("numberOfFilledPositions", board));
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            fail(e);
-        }
+    void checkNumberOfFilledPositionAtCreation() throws NoSuchFieldException, IllegalAccessException {
+        board = new Board(BOARD_SIZE);
+        assertEquals(0, getNumberOfFilledPositions());
     }
 
     @SuppressWarnings("ConstantConditions")// field declared int in the class
     @Test
-    void checkNumberOfFilledPositionsAfterAddAStone() {
-        try {
-            int expected = ((int) TestUtility.getFieldValue("numberOfFilledPositions", board)) + 1;
-            tryToOccupyEmptyCell();
-            int actual = ((int) TestUtility.getFieldValue("numberOfFilledPositions", board));
-            assertEquals(expected, actual);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            fail(e);
-        }
+    void checkNumberOfFilledPositionsAfterAddAStone() throws NoSuchFieldException, IllegalAccessException {
+        int expected = ((int) getNumberOfFilledPositions()) + 1;
+        tryToOccupyEmptyCell();
+        int actual = ((int) getNumberOfFilledPositions());
+        assertEquals(expected, actual);
     }
 
     @Test
-    void getLastMoveCoordinatesProperty() {
-        try {
-            @SuppressWarnings("unchecked")
-            ObservablePropertySettable<Coordinates> expected = (ObservablePropertySettable<Coordinates>)
-                    TestUtility.getFieldValue("lastMoveCoordinatesProperty", board);
-            assertEquals(expected, board.getLastMoveCoordinatesProperty());
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            fail(e);
-        }
+    void testLastMoveCoordinatesPropertyGetter() throws NoSuchFieldException, IllegalAccessException {
+        @SuppressWarnings("unchecked")
+        ObservablePropertySettable<Coordinates> expected = (ObservablePropertySettable<Coordinates>)
+                TestUtility.getFieldValue("lastMoveCoordinatesProperty", board);
+        assertEquals(expected, board.getLastMoveCoordinatesProperty());
     }
 
     @Test
@@ -274,13 +246,13 @@ public class BoardTest {
     }
 
     @Test
-    void isEmpty() {
+    void testBoardIsEmpty() {
         board = new Board(BOARD_SIZE);
         assertTrue(board.isEmpty());
     }
 
     @Test
-    void checkIfThereIsAnyEmptyCellForEveryOccupyUntilBoardHasOnePositionFree() {
+    void occupyCellsUntilAnyPositionIsAvailableOnBoard() {
         board = new Board(BOARD_SIZE);
         int totalCell = (int) Math.pow(BOARD_SIZE.intValue(), 2);
         IntStream.range(0, totalCell - 1)
@@ -291,7 +263,7 @@ public class BoardTest {
     }
 
     @Test
-    void noMoreEmptyCell() {
+    void occupyAllCellsOnBoard() {
         board = new Board(BOARD_SIZE);
         int totalCell = (int) Math.pow(BOARD_SIZE.intValue(), 2);
         IntStream.range(0, totalCell)
@@ -301,15 +273,15 @@ public class BoardTest {
 
     @ParameterizedTest
     @MethodSource("provideCoupleOfNonNegativeIntegersInsideBoard")
-    void isCoordinatesInsideBoard(int value) {
-        Coordinates coordinates = new Coordinates(value, value);
+    void testIfCoordinatesIsInsideBoard(int x, int y) {
+        Coordinates coordinates = new Coordinates(x, y);
         assertTrue(board.isCoordinatesInsideBoard(coordinates));
     }
 
     @ParameterizedTest
     @MethodSource("provideCoupleOfNonNegativeIntegersOutsideBoard")
-    void isNotCoordinatesInsideBoard(int value) {
-        Coordinates coordinates = new Coordinates(value, value);
+    void testIfCoordinatesIsNotInsideBoard(int x, int y) {
+        Coordinates coordinates = new Coordinates(x, y);
         assertFalse(board.isCoordinatesInsideBoard(coordinates));
     }
 
@@ -321,32 +293,22 @@ public class BoardTest {
 
     @ParameterizedTest
     @MethodSource("provideCoupleOfNonNegativeIntegersInsideBoard")
-    void getBoardMatrixCopyTestACellToBeEqual(int x, int y) {
-        try {
-            Pair<Cell[][], Cell[][]> initialAndCopiedBoardMatrix =
-                    getInitialAndCopiedBoardMatrixWithMethodProvidedByTheClass();
-            assertEquals(initialAndCopiedBoardMatrix.getKey()[x][y], initialAndCopiedBoardMatrix.getValue()[x][y]);
-        } catch (InvocationTargetException | IllegalAccessException | NoSuchFieldException e) {
-            fail(e);
-        }
+    void copyBoardAndCheckEquality(int x, int y) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException {
+        Pair<Cell[][], Cell[][]> initialAndCopiedBoardMatrix = getBoardMatrixAndItsCopyInAPair();
+        assertEquals(initialAndCopiedBoardMatrix.getKey()[x][y], initialAndCopiedBoardMatrix.getValue()[x][y]);
     }
 
     @ParameterizedTest
     @MethodSource("provideCoupleOfNonNegativeIntegersInsideBoard")
-    void getBoardMatrixCopyTestToBeDeepCopy(int x, int y) {
-        try {
-            Pair<Cell[][], Cell[][]> initialAndCopiedBoardMatrix =
-                    getInitialAndCopiedBoardMatrixWithMethodProvidedByTheClass();
-            assertNotSame(initialAndCopiedBoardMatrix.getKey()[x][y], initialAndCopiedBoardMatrix.getValue()[x][y]);
-        } catch (InvocationTargetException | IllegalAccessException | NoSuchFieldException e) {
-            fail(e);
-        }
+    void copyBoardAndCheckDeepEquality(int x, int y) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException {
+        Pair<Cell[][], Cell[][]> initialAndCopiedBoardMatrix = getBoardMatrixAndItsCopyInAPair();
+        assertNotSame(initialAndCopiedBoardMatrix.getKey()[x][y], initialAndCopiedBoardMatrix.getValue()[x][y]);
     }
 
     @Test
     void occupySomeCellAndFindTheEmptiesCell() throws NoSuchFieldException, IllegalAccessException {
         Stream<Coordinates> coordinatesStream = board.getStreamOfEmptyCoordinates();
-        var numberOfFilledPositions = TestUtility.getFieldValue("numberOfFilledPositions", board);
+        var numberOfFilledPositions = getNumberOfFilledPositions();
         assert numberOfFilledPositions != null;
         int numberOfEmptyPositions = (int) (Math.pow(BOARD_SIZE.intValue(), 2) - (int) numberOfFilledPositions);
         assertEquals(numberOfEmptyPositions, coordinatesStream.count());
@@ -377,40 +339,41 @@ public class BoardTest {
         }
     }
 
+    //region test equals and hashCode
     @Test
-    void testEqualsItself() {
+    void equalsToItself() {
         assertEquals(board, board);
     }
 
     @Test
-    void testEqualsNewObject() {
+    void notEqualsToANewObject() {
         assertNotEquals(board, new Object());
     }
 
     @Test
-    void testEqualsEmptyBoard() {
+    void notEqualsToANewInstanceOfSameClass() {
         assertNotEquals(board, new Board(BOARD_SIZE));
     }
 
     @Test
-    void testEqualsNewBoard() {
+    void equalsIfEquality() {
         assertEquals(board, new Board(board));
     }
 
     @Test
-    void testEqualsDifferentSize() {
+    void notEqualsIfNotEquality() {
         assertNotEquals(board, new Board((PositiveInteger) BOARD_SIZE.incrementAndGet()));
     }
 
     @Test
-    void testEqualsWithDifferentNumberOfFilledPosition() {
+    void notEqualsIfDifferentNumberOfFilledPosition() {
         Board board2 = setupForTestEquals();
         tryToOccupyCoordinatesWithColor(board, Color.BLACK, 0, 1);
         assertNotEquals(board2, board);
     }
 
     @Test
-    void testEqualsWithDifferentLastMoveCoordinatesProperty() {
+    void notEqualsIfDifferentLastMoveCoordinatesProperty() {
         Board board2 = setupForTestEquals();
         tryToOccupyCoordinatesWithColor(board, Color.BLACK, 0, 1);
         tryToOccupyCoordinatesWithColor(board2, Color.WHITE, 0, 2);
@@ -418,24 +381,24 @@ public class BoardTest {
     }
 
     @Test
-    void testEqualsWithDifferentMatrix() {
+    void notEqualsIfDifferentMatrix() {
         Board board2 = setupForTestEquals();
         assertNotEquals(board2, board);
     }
 
     @Test
-    void testHashCodeItself() {
+    void sameHashCodeWithItself() {
         assertEquals(board.hashCode(), board.hashCode());
     }
 
     @Test
-    void testHashCodeNewBoard() {
+    void notSameHashCodeWithNotEqualsNewInstanceOfClass() {
         assertNotEquals(board.hashCode(), (new Board(BOARD_SIZE)).hashCode());
     }
 
     @Test
-    void testHashCodeClone() {
+    void sameHashCodeWithClone() {
         Board copy = new Board(board);
         assertEquals(board.hashCode(), copy.hashCode());
-    }   // TODO : add test for hashCode - equals contract in other classes which use hashcode
+    }
 }
