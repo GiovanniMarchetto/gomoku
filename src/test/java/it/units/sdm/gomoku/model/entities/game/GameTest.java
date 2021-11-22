@@ -7,8 +7,7 @@ import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
 import it.units.sdm.gomoku.model.entities.Game;
 import it.units.sdm.gomoku.model.entities.Player;
-import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
-import it.units.sdm.gomoku.model.exceptions.GameNotEndedException;
+import it.units.sdm.gomoku.model.exceptions.*;
 import it.units.sdm.gomoku.property_change_handlers.PropertyObserver;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertySettable;
 import it.units.sdm.gomoku.utils.TestUtility;
@@ -223,9 +222,20 @@ class GameTest {
     }
 
     @Test
-    void placeStoneAfterGameStartedButNotEnded() throws CellOutOfBoardException {
+    void placeStoneAfterGameStartedd() throws CellOutOfBoardException {
         tryToPlaceStoneAndChangeTurn(firstMove, game);
         assertFalse(game.getBoard().getCellAtCoordinates(firstMove).isEmpty());
+    }
+
+    @Test
+    void dontPlaceStoneIfGameEnded() throws CellOutOfBoardException, BoardIsFullException, CellAlreadyOccupiedException {
+        disputeGameAndDraw(game);
+        try {
+            game.placeStoneAndChangeTurn(firstMove);
+            fail("Game should be ended, but the move was accepted");
+        } catch (GameEndedException e) {
+            assertTrue(game.isEnded());
+        }
     }
 
     @Test
