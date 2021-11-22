@@ -19,6 +19,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
@@ -26,6 +28,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
+import static it.units.sdm.gomoku.model.entities.Game.Status.NOT_STARTED;
 import static it.units.sdm.gomoku.model.entities.game.GameTestUtility.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -46,7 +49,6 @@ class GameTest {
     @BeforeEach
     void setUp() {
         game = createNewGameWithDefaultParams();
-        assert game.getGameStatusProperty().getPropertyValue() == null;
         assert game.getCurrentPlayerProperty().getPropertyValue() == null;
         game.start();
         Stream.of(blackPlayer, whitePlayer)
@@ -81,6 +83,11 @@ class GameTest {
         game = createNewGameWithDefaultParams();
         long creationTimeSetInGame = game.getCreationTime().getNano();
         assertTrue(Math.abs(currentTime - creationTimeSetInGame) < EPSILON_NANOS);
+    }
+
+    @Test
+    void assertGameNotStartedWhenJustCreated() {
+        assertEquals(NOT_STARTED, game.getGameStatusProperty().getPropertyValue());
     }
 
     @ParameterizedTest
@@ -205,6 +212,19 @@ class GameTest {
     void dontSetWinnerIfGameEndedWithDraw() throws GameNotEndedException {
         disputeGameAndDraw(game);
         assertNull(game.getWinner());
+    }
+
+    @Test
+    void dontSetWinnerIfGameNotEnded() throws NoSuchMethodException, IllegalAccessException {
+        assert !game.isEnded();
+        try {
+            Method winnerSetter = game.getClass().getDeclaredMethod("setWinner", Player.class);
+            winnerSetter.setAccessible(true);
+            winnerSetter.invoke(game, blackPlayer);
+            fail("Setting the winner should not be allowed if game not ended, but was.");
+        } catch (InvocationTargetException e) {
+            assertTrue(e.getTargetException() instanceof GameNotEndedException);
+        }
     }
 
     @SuppressWarnings("unchecked")  // checked casting

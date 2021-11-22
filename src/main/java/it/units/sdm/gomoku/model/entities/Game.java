@@ -8,6 +8,7 @@ import it.units.sdm.gomoku.mvvm_library.Observable;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservableProperty;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyProxy;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertySettable;
+import it.units.sdm.gomoku.utils.Utility;
 import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,6 +20,7 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.logging.Level;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -48,7 +50,7 @@ public class Game implements Comparable<Game>, Observable {
         this.blackPlayer = Objects.requireNonNull(blackPlayer);
         this.whitePlayer = Objects.requireNonNull(whitePlayer);
         this.currentPlayerProperty = new ObservablePropertySettable<>();
-        this.gameStatusProperty = new ObservablePropertySettable<>();
+        this.gameStatusProperty = new ObservablePropertySettable<>(Status.NOT_STARTED);
         this.creationTime = Instant.now();
     }
 
@@ -95,8 +97,12 @@ public class Game implements Comparable<Game>, Observable {
         }
     }
 
-    private void setWinner(@NotNull final Player winner) {
-        this.winner = Objects.requireNonNull(winner);
+    private void setWinner(@NotNull final Player winner) throws GameNotEndedException {
+        if (isEnded()) {
+            this.winner = Objects.requireNonNull(winner);
+        } else {
+            throw new GameNotEndedException();
+        }
     }
 
     public boolean isBoardEmpty() {
@@ -112,7 +118,7 @@ public class Game implements Comparable<Game>, Observable {
 
         final Player player = Objects.requireNonNull(currentPlayerProperty.getPropertyValue());
         placeStone(player, coordinates);
-        setWinnerAndGameStatusPropertyIfEndedOrElseChangeTurn(player, coordinates);
+        setGameStatusPropertyAndWinnerIfEndedOrElseChangeTurn(player, coordinates);
     }
 
     private void placeStone(@NotNull final Player player, @NotNull final Coordinates coordinates)
@@ -124,10 +130,17 @@ public class Game implements Comparable<Game>, Observable {
         }
     }
 
-    private void setWinnerAndGameStatusPropertyIfEndedOrElseChangeTurn(@NotNull Player player, @NotNull Coordinates coordinates) {
+    private void setGameStatusPropertyAndWinnerIfEndedOrElseChangeTurn(
+            @NotNull Player player, @NotNull Coordinates coordinates) {
+
         if (hasThePlayerWonWithLastMove(coordinates)) {
-            setWinner(player);
             gameStatusProperty.setPropertyValue(Status.ENDED);
+            try {
+                setWinner(player);
+            } catch (GameNotEndedException e) {
+                Utility.getLoggerOfClass(getClass()).log(Level.SEVERE, "Trying to set winner but game not ended", e);
+                throw new IllegalStateException(e);
+            }
         } else if (!board.isThereAnyEmptyCell()) {
             gameStatusProperty.setPropertyValue(Status.ENDED);
         } else {
@@ -202,6 +215,6 @@ public class Game implements Comparable<Game>, Observable {
         return board.getStreamOfEmptyCoordinates();
     }
 
-    public enum Status {STARTED, ENDED}
+    public enum Status {NOT_STARTED, STARTED, ENDED}
 
 }
