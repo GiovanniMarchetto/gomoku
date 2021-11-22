@@ -19,25 +19,48 @@ import java.lang.reflect.Field;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 import static it.units.sdm.gomoku.model.entities.game.GameTestUtility.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GameTest {
-    private final PositiveInteger BOARD_SIZE = new PositiveInteger(5);
-    private final CPUPlayer cpuBlack = new CPUPlayer();
-    private final CPUPlayer cpuWhite = new CPUPlayer();
-    private final Coordinates firstCoordinates = new Coordinates(0, 0);
-    private final Coordinates secondCoordinates = new Coordinates(0, 1);
+    private static final PositiveInteger BOARD_SIZE = new PositiveInteger(5);
+    private static final CPUPlayer blackPlayer = new CPUPlayer();
+    private static final CPUPlayer whitePlayer = new CPUPlayer();
+    private static final Coordinates firstMove = new Coordinates(0, 0);
+    private static final Coordinates secondMove = new Coordinates(0, 1);
     private Game game;
 
     @BeforeEach
     void setUp() {
-        game = new Game(BOARD_SIZE, cpuBlack, cpuWhite);
+        game = new Game(BOARD_SIZE, blackPlayer, whitePlayer);
         assert game.getGameStatusProperty().getPropertyValue() == null;
         assert game.getCurrentPlayerProperty().getPropertyValue() == null;
         game.start();
+    }
+
+    @Test
+    void initializeAllNotNullFieldsWhenCreatingNewInstance() {
+        List<String> namesOfNullableFieldsOfClass = List.of("winner");
+        game = new Game(BOARD_SIZE, blackPlayer, whitePlayer);
+        long numberOfNullFieldsAfterConstructionWhichShouldNotBeNull =
+                Arrays.stream(game.getClass().getDeclaredFields())
+                        .filter(field -> !namesOfNullableFieldsOfClass.contains(field.getName()))
+                        .peek(field -> field.setAccessible(true))
+                        .map(field -> {
+                            try {
+                                return field.get(game);
+                            } catch (IllegalAccessException e) {
+                                fail(e);
+                                return null;
+                            }
+                        })
+                        .filter(Objects::isNull)
+                        .count();
+        assertEquals(0, numberOfNullFieldsAfterConstructionWhichShouldNotBeNull);
     }
 
     @Test
@@ -67,7 +90,7 @@ class GameTest {
 
     @Test
     void checkCurrentPlayerAfterStart() {
-        assertEquals(cpuBlack, game.getCurrentPlayerProperty().getPropertyValue());
+        assertEquals(blackPlayer, game.getCurrentPlayerProperty().getPropertyValue());
     }
 
     @Test
@@ -78,12 +101,12 @@ class GameTest {
 
     @Test
     void getColorOfPlayerBlack() {
-        Assertions.assertEquals(Color.BLACK, game.getColorOfPlayer(cpuBlack));
+        Assertions.assertEquals(Color.BLACK, game.getColorOfPlayer(blackPlayer));
     }
 
     @Test
     void getColorOfPlayerWhite() {
-        assertEquals(Color.WHITE, game.getColorOfPlayer(cpuWhite));
+        assertEquals(Color.WHITE, game.getColorOfPlayer(whitePlayer));
     }
 
     @Test
@@ -97,14 +120,14 @@ class GameTest {
 
     @Test
     void getWinnerIfBlackPlayerWon() throws GameNotEndedException {
-        disputeGameAndPlayerWin(game, cpuBlack);
-        assertEquals(cpuBlack, game.getWinner());
+        disputeGameAndPlayerWin(game, blackPlayer);
+        assertEquals(blackPlayer, game.getWinner());
     }
 
     @Test
     void getWinnerIfWhitePlayerWon() throws GameNotEndedException {
-        disputeGameAndPlayerWin(game, cpuWhite);
-        assertEquals(cpuWhite, game.getWinner());
+        disputeGameAndPlayerWin(game, whitePlayer);
+        assertEquals(whitePlayer, game.getWinner());
     }
 
     @Test
@@ -116,47 +139,47 @@ class GameTest {
     @Test
     void dontPlaceStoneIfGameNotStarted() throws CellOutOfBoardException {
         try {
-            game = new Game(BOARD_SIZE, cpuBlack, cpuWhite);
-            tryToPlaceStoneAndChangeTurn(firstCoordinates, game);
+            game = new Game(BOARD_SIZE, blackPlayer, whitePlayer);
+            tryToPlaceStoneAndChangeTurn(firstMove, game);
         } catch (NullPointerException e) {
-            assertTrue(game.getBoard().getCellAtCoordinates(firstCoordinates).isEmpty());
+            assertTrue(game.getBoard().getCellAtCoordinates(firstMove).isEmpty());
         }
     }
 
     @Test
     void placeStoneAfterStart() throws CellOutOfBoardException {
-        tryToPlaceStoneAndChangeTurn(firstCoordinates, game);
-        assertFalse(game.getBoard().getCellAtCoordinates(firstCoordinates).isEmpty());
+        tryToPlaceStoneAndChangeTurn(firstMove, game);
+        assertFalse(game.getBoard().getCellAtCoordinates(firstMove).isEmpty());
     }
 
     @Test
     void changeTurnAfterFirstPlaceStone() {
-        tryToPlaceStoneAndChangeTurn(firstCoordinates, game);
-        assertEquals(cpuWhite, game.getCurrentPlayerProperty().getPropertyValue());
+        tryToPlaceStoneAndChangeTurn(firstMove, game);
+        assertEquals(whitePlayer, game.getCurrentPlayerProperty().getPropertyValue());
     }
 
     @Test
     void changeTurnAfterSecondPlaceStone() {
-        tryToPlaceStoneAndChangeTurn(firstCoordinates, game);
-        tryToPlaceStoneAndChangeTurn(secondCoordinates, game);
-        assertEquals(cpuBlack, game.getCurrentPlayerProperty().getPropertyValue());
+        tryToPlaceStoneAndChangeTurn(firstMove, game);
+        tryToPlaceStoneAndChangeTurn(secondMove, game);
+        assertEquals(blackPlayer, game.getCurrentPlayerProperty().getPropertyValue());
     }
 
     @Test
     void setWinnerIfIsTheWinMoveBlack() throws GameNotEndedException {
-        disputeGameAndPlayerWin(game, cpuBlack);
-        assertEquals(cpuBlack, game.getWinner());
+        disputeGameAndPlayerWin(game, blackPlayer);
+        assertEquals(blackPlayer, game.getWinner());
     }
 
     @Test
     void setWinnerIfIsTheWinMoveWhite() throws GameNotEndedException {
-        disputeGameAndPlayerWin(game, cpuWhite);
-        assertEquals(cpuWhite, game.getWinner());
+        disputeGameAndPlayerWin(game, whitePlayer);
+        assertEquals(whitePlayer, game.getWinner());
     }
 
     @Test
     void setGameStatusIfGameEndedWhenPlaceStone() {
-        disputeGameAndPlayerWin(game, cpuBlack);
+        disputeGameAndPlayerWin(game, blackPlayer);
         assertEquals(Game.Status.ENDED, game.getGameStatusProperty().getPropertyValue());
     }
 
@@ -173,7 +196,7 @@ class GameTest {
 
     @Test
     void checkIsEndedIfBlackWinner() {
-        disputeGameAndPlayerWin(game, cpuBlack);
+        disputeGameAndPlayerWin(game, blackPlayer);
         assertTrue(game.isEnded());
     }
 
@@ -199,7 +222,7 @@ class GameTest {
         } catch (InterruptedException e) {
             fail(e);
         }
-        Game gameNewer = new Game(BOARD_SIZE, cpuBlack, cpuWhite);
+        Game gameNewer = new Game(BOARD_SIZE, blackPlayer, whitePlayer);
         assertTrue(game.compareTo(gameNewer) < 0);
     }
 
@@ -209,8 +232,8 @@ class GameTest {
         String expected = "";
         try {
             expected = "Game started at " + game.getCreationTime() + "\n" +
-                    cpuBlack + " -> BLACK, " +
-                    cpuWhite + " -> WHITE" + "\n" +
+                    blackPlayer + " -> BLACK, " +
+                    whitePlayer + " -> WHITE" + "\n" +
                     "Winner: " + game.getWinner() + "\n" +
                     game.getBoard();
         } catch (GameNotEndedException e) {

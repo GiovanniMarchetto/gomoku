@@ -4,7 +4,11 @@ import it.units.sdm.gomoku.model.entities.Player;
 import org.jetbrains.annotations.NotNull;
 
 public class FakePlayer extends Player {
-    protected FakePlayer(@NotNull String playerName) {
+    public FakePlayer(@NotNull String playerName) {
         super(playerName);
+    }
+
+    public FakePlayer() {
+        super("fakePlayer");
     }
 }
