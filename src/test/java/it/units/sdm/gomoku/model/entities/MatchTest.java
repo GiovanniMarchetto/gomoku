@@ -38,6 +38,7 @@ class MatchTest {
     private Match match;
     private Game currentGame;
 
+    //region Support Methods
     public static Stream<Arguments> getIntStreamFrom0IncludedToTotalNumberOfGamesExcluded() {
         return IntStream.range(0, SAMPLE_NUMBER_OF_GAMES).mapToObj(Arguments::of);
     }
@@ -57,42 +58,31 @@ class MatchTest {
         });
     }
 
-    //region Support Methods    // todo : TRY NOT TO USE THIS REGION
-    private void assertCpusScore(int n1, int n2) {
-        assertEquals(n1, match.getScore().get(SAMPLE_PLAYER_1).intValue());
-        assertEquals(n2, match.getScore().get(SAMPLE_PLAYER_2).intValue());
-    }
-
-    private void startNewGameComplete() {
-        try {
-            currentGame = match.initializeNewGame();
-            currentGame.start();
-        } catch (MatchEndedException | GameNotEndedException | GameAlreadyStartedException e) {
-            fail(e);
+    private static void endMatchWithADraw(@NotNull final Match match) {
+        assert match != null;
+        int numberOfGamesThatEachPlayerHasToWinToHaveADraw = SAMPLE_NUMBER_OF_GAMES / 2;
+        makeGivenPlayerToWinNGamesInMatchAndTheOtherPlayerToWinTheRemainingGames(
+                match.getCurrentBlackPlayer(), match.getCurrentWhitePlayer(),
+                numberOfGamesThatEachPlayerHasToWinToHaveADraw, match);
+        if (!Utility.isEvenNumber(SAMPLE_NUMBER_OF_GAMES)) {
+            Runnable changeLastGameToEndTheMatchWithADraw = () -> {
+                try {
+                    List<Game> gameList = null;
+                    //noinspection unchecked
+                    gameList = (List<Game>) TestUtility.getFieldValue("gameList", match);
+                    assert SAMPLE_NUMBER_OF_GAMES > 0;
+                    assert gameList != null;
+                    gameList.remove(gameList.size() - 1);
+                    initializeAndDisputeNGameAndEndThemWithDrawAndGetLastInitializedGame(1, match);
+                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    fail(e);
+                }
+            };
+            changeLastGameToEndTheMatchWithADraw.run();
         }
     }
 
-    private void startGameAndPlayerWin(Player player) {
-        startNewGameComplete();
-        GameTestUtility.disputeGameAndMakeThePlayerToWin(currentGame, player);
-    }
-
-    private void startGameAndDraw() {
-        startNewGameComplete();
-        GameTestUtility.disputeGameAndDraw(currentGame);
-    }
-    //endregion Support Methods //
-
-    @BeforeEach
-    void setup() {
-        match = createNewMatchWithDefaultParameterAndGet();
-    }
-
     @NotNull
-    private Match createNewMatchWithDefaultParameterAndGet() {
-        return new Match(SAMPLE_PLAYER_1, SAMPLE_PLAYER_2, new PositiveInteger(SAMPLE_NUMBER_OF_GAMES), SAMPLE_BOARD_SIZE);
-    }
-
     private static Game initializeAndDisputeNGameAndEndThemWithDrawAndGetLastInitializedGame(
             int numberOfGames, @NotNull final Match match) {
 
@@ -129,6 +119,17 @@ class MatchTest {
                 fail(e);
             }
         });
+    }
+
+    @NotNull
+    private Match createNewMatchWithDefaultParameterAndGet() {
+        return new Match(SAMPLE_PLAYER_1, SAMPLE_PLAYER_2, new PositiveInteger(SAMPLE_NUMBER_OF_GAMES), SAMPLE_BOARD_SIZE);
+    }
+    //endregion Support Methods
+
+    @BeforeEach
+    void setup() {
+        match = createNewMatchWithDefaultParameterAndGet();
     }
 
     //region test constructors
@@ -393,9 +394,7 @@ class MatchTest {
 
     @Test
     void dontSetWinnerOfMatchIfMatchEndedWithADraw() throws MatchNotEndedException {
-        for (int i = 0; i < SAMPLE_NUMBER_OF_GAMES; i++) {
-            startGameAndDraw();
-        }
+        endMatchWithADraw(match);
         assertNull(match.getWinner());
     }
 
@@ -436,26 +435,7 @@ class MatchTest {
 
     @Test
     void testIfMatchEndedWithADraw() throws MatchNotEndedException {
-        int numberOfGamesThatEachPlayerHasToWinToHaveADraw = SAMPLE_NUMBER_OF_GAMES / 2;
-        makeGivenPlayerToWinNGamesInMatchAndTheOtherPlayerToWinTheRemainingGames(
-                match.getCurrentBlackPlayer(), match.getCurrentWhitePlayer(),
-                numberOfGamesThatEachPlayerHasToWinToHaveADraw, match);
-        if (!Utility.isEvenNumber(SAMPLE_NUMBER_OF_GAMES)) {
-            Runnable changeLastGameToEndTheMatchWithADraw = () -> {
-                try {
-                    List<Game> gameList = null;
-                    //noinspection unchecked
-                    gameList = (List<Game>) TestUtility.getFieldValue("gameList", match);
-                    assert SAMPLE_NUMBER_OF_GAMES > 0;
-                    assert gameList != null;
-                    gameList.remove(gameList.size() - 1);
-                    initializeAndDisputeNGameAndEndThemWithDrawAndGetLastInitializedGame(1, match);
-                } catch (NoSuchFieldException | IllegalAccessException e) {
-                    fail(e);
-                }
-            };
-            changeLastGameToEndTheMatchWithADraw.run();
-        }
+        endMatchWithADraw(match);
         assertTrue(match.isADraw());
     }
 
