@@ -383,7 +383,7 @@ class MatchTest {
     }
 
     @Test
-    void getWinnerWithADraw() throws MatchNotEndedException {
+    void dontSetWinnerOfMatchIfMatchEndedWithADraw() throws MatchNotEndedException {
         for (int i = 0; i < SAMPLE_NUMBER_OF_GAMES; i++) {
             startGameAndDraw();
         }
