@@ -461,11 +461,9 @@ class MatchTest {
 
     @Test
     void isNotADraw() throws MatchNotEndedException {
-//        startGameAndPlayerWin(SAMPLE_PLAYER_1);
-//        for (int i = 1; i < SAMPLE_NUMBER_OF_GAMES; i++) {
-//            startGameAndDraw();
-//        }
-//        assertFalse(match.isADraw());
+        makeGivenPlayerToWinNGamesInMatchAndTheOtherPlayerToWinTheRemainingGames(
+                match.getCurrentBlackPlayer(), match.getCurrentWhitePlayer(), match.getTotalNumberOfGames(), match);
+        assertFalse(match.isADraw());
     }
 
 }
