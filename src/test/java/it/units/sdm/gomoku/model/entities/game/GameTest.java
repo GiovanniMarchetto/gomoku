@@ -251,6 +251,17 @@ class GameTest {
         }
     }
 
+    @Test
+    void dontPlaceStoneIfCellOutsideTheBoard() {
+        Coordinates coordinatesOutsideBoard = new Coordinates(BOARD_SIZE.incrementAndGet(), BOARD_SIZE.incrementAndGet());
+        try {
+            game.placeStoneAndChangeTurn(coordinatesOutsideBoard);
+            fail("Cell outside the board and placing stone has been allowed but should not be.");
+        } catch (Exception e) {
+            assertTrue(e instanceof CellOutOfBoardException);
+        }
+    }
+
     private boolean isEmptyCell(@NotNull final Coordinates coordinateOfCellOnBoard) throws CellOutOfBoardException {
         return game.getBoard()
                 .getCellAtCoordinates(Objects.requireNonNull(coordinateOfCellOnBoard))
