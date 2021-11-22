@@ -3,7 +3,10 @@ package it.units.sdm.gomoku.ui;
 import it.units.sdm.gomoku.model.custom_types.Color;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.*;
-import it.units.sdm.gomoku.model.exceptions.*;
+import it.units.sdm.gomoku.model.exceptions.CellAlreadyOccupiedException;
+import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
+import it.units.sdm.gomoku.model.exceptions.GameAlreadyStartedException;
+import it.units.sdm.gomoku.model.exceptions.GameEndedException;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservableProperty;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertySettable;
 import it.units.sdm.gomoku.utils.TestUtility;
@@ -230,7 +233,7 @@ class MainViewmodelTest {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             System.err.println("setFieldValue Exception");
             fail(e);
-        } catch (BoardIsFullException | GameEndedException | CellAlreadyOccupiedException e) {
+        } catch (GameEndedException | CellAlreadyOccupiedException e) {
             System.err.println("placeStoneFromUser Exception");
             fail(e);
         } catch (CellOutOfBoardException e) {
@@ -240,7 +243,7 @@ class MainViewmodelTest {
 
     @Test
     void placeStoneFromUser()
-            throws InterruptedException, BoardIsFullException, GameEndedException,
+            throws InterruptedException, GameEndedException,
             CellOutOfBoardException, CellAlreadyOccupiedException, NoSuchFieldException, IllegalAccessException, GameAlreadyStartedException {
 
         HumanPlayer humanPlayer = new HumanPlayer("Human");
