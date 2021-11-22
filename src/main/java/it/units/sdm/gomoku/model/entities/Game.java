@@ -200,7 +200,7 @@ public class Game implements Comparable<Game>, Observable {
         } else if (!board.isThereAnyEmptyCell()) {
             throw new IllegalStateException("No space on board, game should be ended but it is not.");
         }
-        return board.isEmptyCellAtCoordinates(Objects.requireNonNull(proposedMove));
+        return board.isCellEmptyAtCoordinates(Objects.requireNonNull(proposedMove));
     }
 
     public boolean isHeadOfAChainOfStones(@NotNull final Coordinates headCoordinates,
@@ -234,7 +234,7 @@ public class Game implements Comparable<Game>, Observable {
     }
 
     @NotNull
-    public Stream<Coordinates> getStreamOfEmptyCoordinatesOnBoard() {    // TODO: test
+    public Stream<Coordinates> getStreamOfEmptyCoordinatesOnBoard() {
         return board.getStreamOfEmptyCoordinates();
     }
 

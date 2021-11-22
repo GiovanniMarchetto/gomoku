@@ -324,11 +324,12 @@ class MatchTest {
     @MethodSource("getIntStreamFrom0IncludedToTotalNumberOfGamesExcluded")
     void testGetScoreWithDrawOfGames(int numberOfGamesWonByFirstPlayer) {
         disputeNGameAndEndThemWithDraw(numberOfGamesWonByFirstPlayer, match);
+        final int SCORE_OF_EACH_PLAYER_IF_GAME_ENDS_WITH_A_DRAW = 0;
         Map<Player, NonNegativeInteger> expectedScore;
         {
             expectedScore = new HashMap<>(2);
-            expectedScore.put(SAMPLE_PLAYER_1, new NonNegativeInteger(0));/*Nobody wins in case of draw*/
-            expectedScore.put(SAMPLE_PLAYER_2, new NonNegativeInteger(0));
+            expectedScore.put(SAMPLE_PLAYER_1, new NonNegativeInteger(SCORE_OF_EACH_PLAYER_IF_GAME_ENDS_WITH_A_DRAW));
+            expectedScore.put(SAMPLE_PLAYER_2, new NonNegativeInteger(SCORE_OF_EACH_PLAYER_IF_GAME_ENDS_WITH_A_DRAW));
         }
         assertEquals(expectedScore, match.getScore());
     }
