@@ -26,6 +26,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.IntStream;
@@ -137,8 +139,9 @@ public class BoardTest {
     @NotNull
     public static Stream<Coordinates> getNEmptyPositionsRandomlyTakenFromGivenBoard(
             int numberOfEmptyCellsToOccupy, @NotNull final Board board) {   // TODO: test
-        return TestUtility.sortStreamRandomlyAndGet(Objects.requireNonNull(board).getStreamOfEmptyCoordinates())
-                .limit(numberOfEmptyCellsToOccupy);
+        List<Coordinates> coordinatesList = Objects.requireNonNull(board).getStreamOfEmptyCoordinates().toList();
+        Collections.shuffle(coordinatesList);
+        return coordinatesList.stream().limit(numberOfEmptyCellsToOccupy);
     }
 
     private static boolean isThereEnoughEmptySpaceOnBoard(@NotNull Board board, int numberOfEmptyCellsRequired) throws NoSuchFieldException, IllegalAccessException {   // TODO: test

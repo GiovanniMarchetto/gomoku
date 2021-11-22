@@ -254,13 +254,6 @@ public class TestUtility {
         return accessibleObject;
     }
 
-
-    @NotNull
-    public static <T> Stream<T> sortStreamRandomlyAndGet(@NotNull final Stream<T> stream) { // TODO: test
-        return stream.sorted((o1, o2) -> new Random().nextInt(2) - 1);
-    }
-
-
     @NotNull
     private static List<AccessibleObject> getInheritedFieldsOrMethods(@Nullable Class<?> clazz,
                                                                       boolean trueIfFieldsDesiredOrFalseForMethods) {
@@ -293,7 +286,7 @@ public class TestUtility {
                 .set(objectInstance, newValue);
     }
 
-    public static <T> Object invokeMethodOnObject(
+    public static <T> void invokeMethodOnObject(
             @NotNull final T targetObject, @NotNull final String methodName, @Nullable Object... paramsToMethod)
             throws NoSuchFieldException, InvocationTargetException, IllegalAccessException {  // TODO : test
         Class<?>[] paramTypes =
@@ -301,7 +294,7 @@ public class TestUtility {
                         .filter(Objects::nonNull)
                         .map(Object::getClass)
                         .toArray(Class<?>[]::new);
-        return getMethodAlreadyMadeAccessible(
+        getMethodAlreadyMadeAccessible(
                 targetObject.getClass(), methodName, paramTypes)
                 .invoke(targetObject, paramsToMethod);
     }
