@@ -64,6 +64,15 @@ class GameTest {
     }
 
     @Test
+    void createNewInstanceWithCorrectCreationTime() {
+        final long EPSILON_NANOS = 1000;
+        long currentTime = Instant.now().getNano();
+        game = new Game(BOARD_SIZE, blackPlayer, whitePlayer);
+        long creationTimeSetInGame = game.getCreationTime().getNano();
+        assertTrue(Math.abs(currentTime - creationTimeSetInGame) < EPSILON_NANOS);
+    }
+
+    @Test
     void getGameStatus() throws NoSuchFieldException, IllegalAccessException {
         Field gameStatusField =
                 TestUtility.getFieldAlreadyMadeAccessible(Game.class, "gameStatusProperty");
