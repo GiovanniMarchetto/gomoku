@@ -13,9 +13,10 @@ import it.units.sdm.gomoku.property_change_handlers.PropertyObserver;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertySettable;
 import it.units.sdm.gomoku.utils.TestUtility;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import java.lang.reflect.Field;
 import java.time.Instant;
@@ -98,8 +99,9 @@ class GameTest {
         assertTrue(gameHasNotifiedToBeStarted.get());
     }
 
+    //region Test Getters
     @Test
-    void getGameStatus() throws NoSuchFieldException, IllegalAccessException {
+    void testGameStatusGetter() throws NoSuchFieldException, IllegalAccessException {
         Field gameStatusField =
                 TestUtility.getFieldAlreadyMadeAccessible(Game.class, "gameStatusProperty");
         @SuppressWarnings("unchecked")
@@ -109,7 +111,7 @@ class GameTest {
     }
 
     @Test
-    void getCurrentPlayer() throws NoSuchFieldException, IllegalAccessException {
+    void testCurrentPlayerPropertyGetter() throws NoSuchFieldException, IllegalAccessException {
         Field currentPlayerField =
                 TestUtility.getFieldAlreadyMadeAccessible(Game.class, "currentPlayerProperty");
         @SuppressWarnings("unchecked")
@@ -119,33 +121,37 @@ class GameTest {
     }
 
     @Test
-    void checkGameStatusAfterStart() {
-        assertEquals(Game.Status.STARTED, game.getGameStatusProperty().getPropertyValue());
-    }
-
-    @Test
-    void checkCurrentPlayerAfterStart() {
-        assertEquals(blackPlayer, game.getCurrentPlayerProperty().getPropertyValue());
-    }
-
-    @Test
-    void getBoard() throws IllegalAccessException, NoSuchFieldException {
+    void testBoardGetter() throws IllegalAccessException, NoSuchFieldException {
         Board board = (Board) TestUtility.getFieldAlreadyMadeAccessible(Game.class, "board").get(game);
         assertEquals(board, game.getBoard());
     }
 
     @Test
-    void getColorOfPlayerBlack() {
-        Assertions.assertEquals(Color.BLACK, game.getColorOfPlayer(blackPlayer));
+    void testBoardSizeGetter() {
+        assertEquals(game.getBoard().getSize(), game.getBoardSize());
     }
 
     @Test
-    void getColorOfPlayerWhite() {
-        assertEquals(Color.WHITE, game.getColorOfPlayer(whitePlayer));
+    void testCreationTimeGetter() throws NoSuchFieldException, IllegalAccessException {
+        ZonedDateTime expected = ((Instant)
+                Objects.requireNonNull(TestUtility.getFieldValue("creationTime", game)))
+                .atZone(ZoneId.systemDefault());
+        assertEquals(expected, game.getCreationTime());
+
+    }
+
+    @ParameterizedTest
+    @EnumSource(Color.class)
+    void testColorOfPlayerGetter(Color color) {
+        switch (color) {
+            case BLACK -> assertEquals(color, game.getColorOfPlayer(blackPlayer));
+            case WHITE -> assertEquals(color, game.getColorOfPlayer(whitePlayer));
+            default -> fail("No color test");
+        }
     }
 
     @Test
-    void getWinnerIfGameNotEnded() {
+    void testWinnerGetterIfGameNotEnded() {
         try {
             game.getWinner();
             fail("Game not ended!");
@@ -154,21 +160,32 @@ class GameTest {
     }
 
     @Test
-    void getWinnerIfBlackPlayerWon() throws GameNotEndedException {
+    void testWinnerGetterIfBlackPlayerWon() throws GameNotEndedException {
         disputeGameAndPlayerWin(game, blackPlayer);
         assertEquals(blackPlayer, game.getWinner());
     }
 
     @Test
-    void getWinnerIfWhitePlayerWon() throws GameNotEndedException {
+    void testWinnerGetterIfWhitePlayerWon() throws GameNotEndedException {
         disputeGameAndPlayerWin(game, whitePlayer);
         assertEquals(whitePlayer, game.getWinner());
     }
 
     @Test
-    void getWinnerIfDraw() throws GameNotEndedException {
+    void testWinnerGetterIfGameEndedWithDraw() throws GameNotEndedException {
         disputeGameAndDraw(game);
         assertNull(game.getWinner());
+    }
+    //endregion Test Getters
+
+    @Test
+    void checkGameStatusAfterStart() {
+        assertEquals(Game.Status.STARTED, game.getGameStatusProperty().getPropertyValue());
+    }
+
+    @Test
+    void checkCurrentPlayerAfterStart() {
+        assertEquals(blackPlayer, game.getCurrentPlayerProperty().getPropertyValue());
     }
 
     @Test
@@ -241,14 +258,7 @@ class GameTest {
         assertTrue(game.isEnded());
     }
 
-    @Test
-    void testCreationTimeGetter() throws NoSuchFieldException, IllegalAccessException {
-        ZonedDateTime expected = ((Instant)
-                Objects.requireNonNull(TestUtility.getFieldValue("creationTime", game)))
-                .atZone(ZoneId.systemDefault());
-        assertEquals(expected, game.getCreationTime());
 
-    }
 
     @Test
     void testCompareTo() {

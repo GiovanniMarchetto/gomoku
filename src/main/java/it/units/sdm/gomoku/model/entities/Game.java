@@ -72,6 +72,10 @@ public class Game implements Comparable<Game>, Observable {
         return board;
     }
 
+    public int getBoardSize() {
+        return board.getSize();
+    }
+
     @NotNull
     public ZonedDateTime getCreationTime() {
         return creationTime.atZone(ZoneId.systemDefault());
@@ -198,10 +202,6 @@ public class Game implements Comparable<Game>, Observable {
     @NotNull
     public Stream<Coordinates> getStreamOfEmptyCoordinatesOnBoard() {    // TODO: test
         return board.getStreamOfEmptyCoordinates();
-    }
-
-    public int getBoardSize() { // TODO: test
-        return board.getSize();
     }
 
     public enum Status {STARTED, ENDED}
