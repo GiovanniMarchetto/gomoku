@@ -2,7 +2,6 @@ package it.units.sdm.gomoku.ui.cli.views;
 
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.Game;
-import it.units.sdm.gomoku.model.exceptions.BoardIsFullException;
 import it.units.sdm.gomoku.model.exceptions.CellAlreadyOccupiedException;
 import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
 import it.units.sdm.gomoku.model.exceptions.GameEndedException;
@@ -31,7 +30,7 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
             if ((boolean) evt.getNewValue()) {
                 try {
                     waitForAMoveOfAPlayer();
-                } catch (BoardIsFullException | GameEndedException e) {
+                } catch (GameEndedException e) {
                     // TODO : handle exception
                     System.err.println("Game terminated due to an unexpected exception: ");
                     e.printStackTrace();    // TODO : use logger
@@ -63,7 +62,7 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
     public void propertyChange(PropertyChangeEvent evt) {
     }
 
-    private void waitForAMoveOfAPlayer() throws BoardIsFullException, GameEndedException {  // TODO : not tested
+    private void waitForAMoveOfAPlayer() throws GameEndedException {  // TODO : not tested
         CLIMainViewmodel viewmodel = getViewmodelAssociatedWithView();
 
         System.out.println(viewmodel.getCurrentBoardAsString());
