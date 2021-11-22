@@ -74,7 +74,7 @@ public abstract class MainViewmodel extends Viewmodel {
                         Utility.runOnSeparateThread(() -> {
                             try {
                                 Objects.requireNonNull(currentPlayerProperty.getPropertyValue()).makeMove();
-                            } catch (BoardIsFullException | GameEndedException e) {
+                            } catch (GameEndedException e) {
                                 Utility.getLoggerOfClass(getClass())
                                         .log(Level.SEVERE, "Error with current player property: " + e.getMessage(), e);
                                 throw new IllegalStateException(e);
@@ -170,7 +170,7 @@ public abstract class MainViewmodel extends Viewmodel {
     public abstract void endGame();
 
     public void placeStoneFromUser(@NotNull final Coordinates coordinates)
-            throws BoardIsFullException, CellAlreadyOccupiedException, GameEndedException, CellOutOfBoardException {
+            throws CellAlreadyOccupiedException, GameEndedException, CellOutOfBoardException {
         if (Boolean.TRUE.equals(userMustPlaceNewStoneProperty.getPropertyValue())) {
             Objects.requireNonNull(getCurrentPlayer())
                     .setMoveToBeMade(Objects.requireNonNull(coordinates));

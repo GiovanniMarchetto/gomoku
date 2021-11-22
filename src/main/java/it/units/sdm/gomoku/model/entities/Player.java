@@ -32,7 +32,7 @@ public abstract class Player implements Observable {
         this.coordinatesRequiredToContinueProperty = new ObservablePropertySettable<>(false);
     }
 
-    public void makeMove() throws BoardIsFullException,
+    public void makeMove() throws
             GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
         if (currentGame == null) {
             throw new IllegalStateException(new NullGameException());

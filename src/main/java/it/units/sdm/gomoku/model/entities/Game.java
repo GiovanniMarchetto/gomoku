@@ -122,7 +122,7 @@ public class Game implements Comparable<Game>, Observable {
     }
 
     public void placeStoneAndChangeTurn(@NotNull final Coordinates coordinates)
-            throws BoardIsFullException, CellAlreadyOccupiedException, GameEndedException, CellOutOfBoardException, GameNotStartedException {
+            throws CellAlreadyOccupiedException, GameEndedException, CellOutOfBoardException, GameNotStartedException {
 
         if (isNotStarted()) {
             throw new GameNotStartedException();
@@ -136,7 +136,7 @@ public class Game implements Comparable<Game>, Observable {
     }
 
     private void placeStone(@NotNull final Player player, @NotNull final Coordinates coordinates)
-            throws BoardIsFullException, CellAlreadyOccupiedException, GameEndedException, CellOutOfBoardException, GameNotStartedException {
+            throws CellAlreadyOccupiedException, GameEndedException, CellOutOfBoardException, GameNotStartedException {
 
         if (isNotStarted()) {
             throw new GameNotStartedException();
@@ -145,7 +145,13 @@ public class Game implements Comparable<Game>, Observable {
             throw new GameEndedException();
         }
 
-        board.occupyPosition(getColorOfPlayer(Objects.requireNonNull(player)), Objects.requireNonNull(coordinates));
+        try {
+            board.occupyPosition(getColorOfPlayer(Objects.requireNonNull(player)), Objects.requireNonNull(coordinates));
+        } catch (BoardIsFullException e) {
+            Utility.getLoggerOfClass(getClass())
+                    .log(Level.SEVERE, "At this point game should have already been ended", e);
+            throw new IllegalStateException(e);
+        }
 
     }
 

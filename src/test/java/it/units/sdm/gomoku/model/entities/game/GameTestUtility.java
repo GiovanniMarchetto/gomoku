@@ -52,7 +52,7 @@ public class GameTestUtility {
             for (Coordinates c : remainCoordinates) {
                 game.placeStoneAndChangeTurn(c);
             }
-        } catch (BoardIsFullException | GameEndedException | CellOutOfBoardException | CellAlreadyOccupiedException | GameNotStartedException e) {
+        } catch (GameEndedException | CellOutOfBoardException | CellAlreadyOccupiedException | GameNotStartedException e) {
             Assertions.fail("During disputeGameAndDraw throw: " + e);
         }
     }
@@ -83,7 +83,7 @@ public class GameTestUtility {
 
 
     public static Game createAndDisputeGameFromCsv(Cell[][] cellMatrix, Coordinates coordinatesToControl)
-            throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException, GameNotStartedException, GameAlreadyStartedException {
+            throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException, GameNotStartedException, GameAlreadyStartedException {
 
         Game game = new Game(new PositiveInteger(cellMatrix.length), new CPUPlayer(), new CPUPlayer());
         game.start();
@@ -140,7 +140,7 @@ public class GameTestUtility {
         @ParameterizedTest
         @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfMoveControlRecordFields")
         void countIfStonesOfDifferentColorsAreTheSameOrBlackHaveOneMoreStoneOnTheBoard(Cell[][] cellMatrix, Coordinates coordinatesToControl)
-                throws GameNotStartedException, GameAlreadyStartedException, CellOutOfBoardException {
+                throws GameAlreadyStartedException, CellOutOfBoardException {
             Game game = new Game(new PositiveInteger(cellMatrix.length), new CPUPlayer(), new CPUPlayer());
             game.start();
 
@@ -159,7 +159,7 @@ public class GameTestUtility {
         @ParameterizedTest
         @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfMoveControlRecordFields")
         void createAndDisputeGameAndCheckIfTheResultBoardOfGameIsTheSameOfTheOneProvided(Cell[][] matrix, Coordinates coordinatesToControl)
-                throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException, GameNotStartedException, GameAlreadyStartedException {
+                throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException, GameNotStartedException, GameAlreadyStartedException {
 
             Game game = createAndDisputeGameFromCsv(matrix, coordinatesToControl);
             Board expectedBoard = TestUtility.createBoardFromCellMatrix(matrix);

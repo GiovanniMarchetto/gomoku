@@ -100,7 +100,7 @@ public class CPUPlayerTest {
                 .forEach(i -> {
                     try {
                         game.placeStoneAndChangeTurn(coordinatesInOrderFromCenterForBoard[i]);
-                    } catch (BoardIsFullException | CellAlreadyOccupiedException | GameEndedException |
+                    } catch (CellAlreadyOccupiedException | GameEndedException |
                             CellOutOfBoardException | GameNotStartedException e) {
                         fail(e);
                     }
@@ -148,8 +148,7 @@ public class CPUPlayerTest {
     }
 
     @Test
-    void throwExceptionWhenChoosingSmartlyNextCoordinatesIfTheBoardIsFull()
-            throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
+    void throwExceptionWhenChoosingSmartlyNextCoordinatesIfTheBoardIsFull() {
         try {
             GameTestUtility.disputeGameAndDraw(game);
             Coordinates findCoordinates = cpuPlayerSmart.chooseEmptyCoordinatesSmartly();
@@ -162,7 +161,7 @@ public class CPUPlayerTest {
         IntStream.range(0, n).forEach(col -> {
             try {
                 game.placeStoneAndChangeTurn(new Coordinates(row, col));
-            } catch (BoardIsFullException | CellAlreadyOccupiedException | CellOutOfBoardException |
+            } catch (CellAlreadyOccupiedException | CellOutOfBoardException |
                     GameEndedException | GameNotStartedException e) {
                 fail(e.getMessage());
             }

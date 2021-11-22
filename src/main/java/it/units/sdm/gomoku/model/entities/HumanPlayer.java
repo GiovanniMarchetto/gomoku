@@ -1,6 +1,5 @@
 package it.units.sdm.gomoku.model.entities;
 
-import it.units.sdm.gomoku.model.exceptions.BoardIsFullException;
 import it.units.sdm.gomoku.model.exceptions.CellAlreadyOccupiedException;
 import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
 import it.units.sdm.gomoku.model.exceptions.GameEndedException;
@@ -13,7 +12,7 @@ public class HumanPlayer extends Player {
     }
 
     @Override
-    public void makeMove() throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {  // TODO: test + refactor
+    public void makeMove() throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
         setCoordinatesRequired(true);
         try {
             super.makeMove();

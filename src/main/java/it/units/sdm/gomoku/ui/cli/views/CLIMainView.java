@@ -89,11 +89,6 @@ public class CLIMainView extends View<CLIMainViewmodel> implements Observer {   
                         " and " + (viewmodel.getBoardSize() - 1) + " included.");
             } catch (IllegalArgumentException e) {
                 System.out.println("Invalid coordinates value.");
-            } catch (BoardIsFullException e) {
-                Logger.getLogger(getClass().getCanonicalName())
-                        .log(Level.SEVERE, "Should never happen: no more empty position" +
-                                " available on the board but game should be already ended", e);
-                throw e;
             } catch (CellAlreadyOccupiedException e) {
                 System.out.println("The position " + coordInsertedByTheUser + " is already occupied.");
             } catch (GameEndedException e) {

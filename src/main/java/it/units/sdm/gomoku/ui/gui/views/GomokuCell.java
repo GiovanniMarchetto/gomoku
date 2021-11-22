@@ -2,7 +2,6 @@ package it.units.sdm.gomoku.ui.gui.views;
 
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.Cell;
-import it.units.sdm.gomoku.model.exceptions.BoardIsFullException;
 import it.units.sdm.gomoku.model.exceptions.CellAlreadyOccupiedException;
 import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
 import it.units.sdm.gomoku.model.exceptions.GameEndedException;
@@ -238,7 +237,7 @@ public class GomokuCell implements Observer {
             if (cell.isEmpty() && event.isPrimaryButtonDown() && userCanPlace()) {
                 try {
                     guiMainViewmodel.placeStoneFromUser(coordinates);
-                } catch (BoardIsFullException | CellAlreadyOccupiedException | GameEndedException | CellOutOfBoardException e) {
+                } catch (CellAlreadyOccupiedException | GameEndedException | CellOutOfBoardException e) {
                     Utility.getLoggerOfClass(getClass()).log(Level.SEVERE, "Invalid coordinates. This should never happen.", e);
                     throw new IllegalStateException(e);
                 }
