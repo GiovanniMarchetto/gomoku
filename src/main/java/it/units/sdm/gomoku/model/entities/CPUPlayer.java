@@ -3,7 +3,6 @@ package it.units.sdm.gomoku.model.entities;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
-import it.units.sdm.gomoku.model.exceptions.BoardIsFullException;
 import it.units.sdm.gomoku.model.exceptions.CellAlreadyOccupiedException;
 import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
 import it.units.sdm.gomoku.model.exceptions.GameEndedException;
@@ -12,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.stream.IntStream;
@@ -65,7 +65,7 @@ public class CPUPlayer extends Player {
             nextMoveToMake = chooseEmptyCoordinatesSmartly();
             super.setMoveToBeMade(nextMoveToMake);
             super.makeMove();
-        } catch (BoardIsFullException | GameEndedException |
+        } catch (GameEndedException |
                 CellOutOfBoardException | CellAlreadyOccupiedException e) {
             Utility.getLoggerOfClass(getClass())
                     .log(Level.SEVERE, "Illegal move: impossible to choose coordinate " + nextMoveToMake, e);
@@ -76,19 +76,24 @@ public class CPUPlayer extends Player {
     }
 
     @NotNull
-    public Coordinates chooseEmptyCoordinatesFromCenter() throws BoardIsFullException {
+    public Coordinates chooseEmptyCoordinatesFromCenter() {
         int boardSize = getBoardSizeInCurrentGame();
         double moreCenterValue = boardSize / 2.0 - 0.5;
 
-        return getStreamOfEmptyCoordinatesOnBoardInCurrentGame()
+        Optional<Coordinates> coords = getStreamOfEmptyCoordinatesOnBoardInCurrentGame()
                 .min((coord1, coord2) ->
                         (int) (getWeightRespectToCenter(moreCenterValue, coord1)
-                                - getWeightRespectToCenter(moreCenterValue, coord2)))
-                .orElseThrow(BoardIsFullException::new);
+                                - getWeightRespectToCenter(moreCenterValue, coord2)));
+        if (coords.isEmpty()) {
+            Utility.getLoggerOfClass(getClass())
+                    .log(Level.SEVERE, "At this point game should have already been ended");
+            throw new IllegalStateException();
+        }
+        return coords.get();
     }
 
     @NotNull
-    public Coordinates chooseEmptyCoordinatesSmartly() throws BoardIsFullException {
+    public Coordinates chooseEmptyCoordinatesSmartly() {
 
         final int MAX_CHAIN_LENGTH_TO_FIND_EXCLUDED = 5;
         final int MIN_CHAIN_LENGTH_TO_FIND_INCLUDED = 2;
