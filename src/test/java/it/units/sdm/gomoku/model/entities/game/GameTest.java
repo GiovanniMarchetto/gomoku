@@ -98,8 +98,6 @@ class GameTest {
     void notifyGameStatusOnStart() {
         game = createNewGameWithDefaultParams();
         AtomicReference<Boolean> gameHasNotifiedToBeStarted = new AtomicReference<>();
-        boolean notificationSent = false;
-
         new PropertyObserver<>(
                 game.getGameStatusProperty(),
                 evt -> gameHasNotifiedToBeStarted.set(Game.Status.STARTED.equals(evt.getNewValue())));
