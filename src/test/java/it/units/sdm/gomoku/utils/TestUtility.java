@@ -262,8 +262,7 @@ public class TestUtility {
                         .filter(Objects::nonNull)
                         .map(Object::getClass)
                         .toArray(Class<?>[]::new);
-        return getMethodAlreadyMadeAccessible(
-                targetObject.getClass(), methodName, paramTypes)
+        return getMethodAlreadyMadeAccessible(targetObject.getClass(), methodName, paramTypes)
                 .invoke(targetObject, paramsToMethod);
     }
 

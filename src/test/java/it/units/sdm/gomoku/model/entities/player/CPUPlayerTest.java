@@ -72,7 +72,7 @@ public class CPUPlayerTest {
         Coordinates coordinatesSmartlyChosenFromAlgorithm = cpuPlayerSmart.chooseEmptyCoordinatesSmartly();
         assert game.isBoardEmpty();
         cpuPlayerSmart.makeMove();
-        assertFalse(game.isCellAtCoordinatesEmpty(coordinatesSmartlyChosenFromAlgorithm));
+        assertFalse(game.isValidMove(coordinatesSmartlyChosenFromAlgorithm));
     }
 
     @RepeatedTest(BOARD_SIZE_4 * BOARD_SIZE_4)

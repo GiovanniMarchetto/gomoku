@@ -12,6 +12,7 @@ import it.units.sdm.gomoku.ui.support.BoardSizes;
 import it.units.sdm.gomoku.utils.TestUtility;
 import it.units.sdm.gomoku.utils.Utility;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -61,6 +62,12 @@ class MatchTest {
                 fail(e);
             }
         });
+    }
+
+    @Nullable
+    private static Game getCurrentGameOfMatch(@NotNull final Match match)
+            throws NoSuchFieldException, InvocationTargetException, IllegalAccessException {
+        return (Game) TestUtility.invokeMethodOnObject(match, "getCurrentGame");
     }
 
     @SuppressWarnings("unchecked")  // casting due to use of reflection
@@ -266,7 +273,7 @@ class MatchTest {
     @Test
     void testGetCurrentGame() throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, MatchEndedException, GameNotEndedException {
         currentGame = match.initializeNewGame();
-        assertEquals(currentGame, TestUtility.invokeMethodOnObject(match, "getCurrentGame"));
+        assertEquals(currentGame, getCurrentGameOfMatch(match));
     }
     //endregion test getters
 
@@ -332,6 +339,33 @@ class MatchTest {
         } catch (Exception e) {
             assertTrue(e instanceof MatchEndedException);
         }
+    }
+
+    @Test
+    void dontInitializeNewGameIfCurrentGameIsOngoing() throws MatchEndedException, GameNotEndedException, NoSuchFieldException, InvocationTargetException, IllegalAccessException {
+        match.initializeNewGame();
+        currentGame = getCurrentGameOfMatch(match);
+        assert !currentGame.isEnded();
+        try {
+            match.initializeNewGame();
+            fail("Should not be possible to initialize a new game if the current game is currently ongoing, but happened.");
+        } catch (Exception e) {
+            assertTrue(e instanceof GameNotEndedException);
+        }
+    }
+
+    @Test
+    void setCurrentGameInCurrentBlackPlayerWhenNewGameIsInitialized()
+            throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, MatchEndedException, GameNotEndedException {
+        match.initializeNewGame();
+        assertEquals(getCurrentGameOfMatch(match), match.getCurrentBlackPlayer().getCurrentGame());
+    }
+
+    @Test
+    void setCurrentGameInCurrentWhitePlayerWhenNewGameIsInitialized()
+            throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, MatchEndedException, GameNotEndedException {
+        match.initializeNewGame();
+        assertEquals(getCurrentGameOfMatch(match), match.getCurrentWhitePlayer().getCurrentGame());
     }
 
     @ParameterizedTest
