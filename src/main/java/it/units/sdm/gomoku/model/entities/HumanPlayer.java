@@ -20,5 +20,4 @@ public class HumanPlayer extends Player {
             setCoordinatesRequired(false);
         }
     }
-
 }

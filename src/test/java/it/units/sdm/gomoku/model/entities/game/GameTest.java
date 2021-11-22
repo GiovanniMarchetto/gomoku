@@ -444,7 +444,7 @@ class GameTest {
                 IntStream.range(0, endOfIndexToOccupyExclusive).forEach(col -> {
                     try {
                         game.placeStoneAndChangeTurn(new Coordinates(row, col));
-                    } catch (BoardIsFullException | CellAlreadyOccupiedException
+                    } catch (CellAlreadyOccupiedException
                             | GameEndedException | CellOutOfBoardException | GameNotStartedException e) {
                         fail(e);
                     }
@@ -470,7 +470,7 @@ class GameTest {
         IntStream.range(0, coordinatesForCheckHeadChains.length).forEach(i -> {
             try {
                 game.placeStoneAndChangeTurn(coordinatesForCheckHeadChains[i]);
-            } catch (BoardIsFullException | CellAlreadyOccupiedException
+            } catch (CellAlreadyOccupiedException
                     | GameEndedException | CellOutOfBoardException | GameNotStartedException e) {
                 fail(e);
             }
