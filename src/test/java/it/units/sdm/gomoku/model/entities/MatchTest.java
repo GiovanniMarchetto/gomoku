@@ -342,7 +342,8 @@ class MatchTest {
     }
 
     @Test
-    void dontInitializeNewGameIfCurrentGameIsOngoing() throws MatchEndedException, GameNotEndedException, NoSuchFieldException, InvocationTargetException, IllegalAccessException {
+    void dontInitializeNewGameIfCurrentGameIsOngoing()
+            throws MatchEndedException, GameNotEndedException, NoSuchFieldException, InvocationTargetException, IllegalAccessException {
         match.initializeNewGame();
         currentGame = getCurrentGameOfMatch(match);
         assert !currentGame.isEnded();
@@ -489,6 +490,39 @@ class MatchTest {
         makeGivenPlayerToWinNGamesInMatchAndTheOtherPlayerToWinTheRemainingGames(
                 match.getCurrentBlackPlayer(), match.getCurrentWhitePlayer(), match.getTotalNumberOfGames(), match);
         assertFalse(match.isADraw());
+    }
+
+    @Test
+    void considerMatchNotEndedIfThereIsAnOngoingGame() throws MatchEndedException, GameNotEndedException, NoSuchFieldException, InvocationTargetException, IllegalAccessException {
+        match.initializeNewGame();
+        currentGame = getCurrentGameOfMatch(match);
+        assert currentGame != null;
+        assert !currentGame.isEnded();
+        assertFalse(match.isEnded());
+    }
+
+    @Test
+    void considerMatchNotEndedIfNumberOfAlreadyDisputedGamesIsLowerThanTotalNumberOfGamesOfTheMatch() {
+        initializeAndDisputeNGameAndEndThemWithDrawAndGetLastInitializedGame(SAMPLE_NUMBER_OF_GAMES - 1, match);
+        assertFalse(match.isEnded());
+    }
+
+    @Test
+    void dontConsiderCurrentGameIsOngoingIfCurrentGameIsNull() throws NoSuchFieldException, InvocationTargetException, IllegalAccessException {
+        match = createNewMatchWithDefaultParameterAndGet();
+        assert getCurrentGameOfMatch(match) == null;
+        assertFalse((boolean) TestUtility.invokeMethodOnObject(match, "isCurrentGameOngoing"));
+    }
+
+    @Test
+    void dontConsiderCurrentGameIsOngoingIfCurrentGameIsEnded() throws NoSuchFieldException, InvocationTargetException, IllegalAccessException {
+        match = createNewMatchWithDefaultParameterAndGet();
+        assert SAMPLE_NUMBER_OF_GAMES >= 1;
+        initializeAndDisputeNGameAndEndThemWithDrawAndGetLastInitializedGame(1, match);
+        currentGame = getCurrentGameOfMatch(match);
+        assert currentGame != null;
+        assert currentGame.isEnded();
+        assertFalse((boolean) TestUtility.invokeMethodOnObject(match, "isCurrentGameOngoing"));
     }
 
 }
