@@ -7,6 +7,7 @@ import it.units.sdm.gomoku.model.entities.player.FakePlayer;
 import it.units.sdm.gomoku.model.exceptions.*;
 import it.units.sdm.gomoku.ui.support.BoardSizes;
 import it.units.sdm.gomoku.utils.TestUtility;
+import it.units.sdm.gomoku.utils.Utility;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -243,6 +244,34 @@ class MatchTest {
         assertEquals(expectedScore, match.getScore());
     }
     //endregion test scores
+
+    private static void disputeNGamesOfMatchAndMakeGivenPlayerToWinAllTheGamesInMatch(
+            int nGamesToDispute, @NotNull final Player winner, @NotNull final Match match) {
+
+        assert nGamesToDispute <= SAMPLE_NUMBER_OF_GAMES;
+        IntStream.range(0, nGamesToDispute).sequential().forEach(i -> {
+            try {
+                Game currentGame = match.initializeNewGame();
+                currentGame.start();
+                GameTestUtility.disputeGameAndMakeThePlayerToWin(currentGame, winner);
+            } catch (GameAlreadyStartedException | MatchEndedException | GameNotEndedException e) {
+                fail(e);
+            }
+        });
+    }
+
+    @ParameterizedTest
+    @MethodSource("getIntStreamFrom0IncludedToTotalNumberOfGamesExcluded")
+    void invertColorsOfPlayersWhenGameChanges(int numberOfCurrentGame) {
+
+        disputeNGamesOfMatchAndMakeGivenPlayerToWinAllTheGamesInMatch(numberOfCurrentGame + 1, SAMPLE_PLAYER_1, match);
+
+        if (Utility.isEvenNumber(numberOfCurrentGame)) {
+            assertEquals(match.getCurrentBlackPlayer(), SAMPLE_PLAYER_1);
+        } else {
+            assertEquals(match.getCurrentBlackPlayer(), SAMPLE_PLAYER_2);
+        }
+    }
 
     private static void makeGivenPlayerToWinNGamesInMatch(
             @NotNull final Player playerWhoHasToWin, @NotNull final Player playerWhoHasToLose,
