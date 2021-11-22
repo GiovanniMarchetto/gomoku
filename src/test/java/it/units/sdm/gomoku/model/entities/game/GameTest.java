@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Stream;
 
 import static it.units.sdm.gomoku.model.entities.game.GameTestUtility.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -47,6 +48,8 @@ class GameTest {
         assert game.getGameStatusProperty().getPropertyValue() == null;
         assert game.getCurrentPlayerProperty().getPropertyValue() == null;
         game.start();
+        Stream.of(blackPlayer, whitePlayer)
+                .forEach(player -> player.setCurrentGame(game));
     }
 
     @Test
@@ -205,7 +208,7 @@ class GameTest {
     //endregion Test Getters / Setters
 
     @Test
-    void checkCurrentPlayerAfterStart() {
+    void setBlackPlayerAsFirstPlayerWhenGameStarts() {
         assertEquals(blackPlayer, game.getCurrentPlayerProperty().getPropertyValue());
     }
 
@@ -220,7 +223,7 @@ class GameTest {
     }
 
     @Test
-    void placeStoneAfterStart() throws CellOutOfBoardException {
+    void placeStoneAfterGameStartedButNotEnded() throws CellOutOfBoardException {
         tryToPlaceStoneAndChangeTurn(firstMove, game);
         assertFalse(game.getBoard().getCellAtCoordinates(firstMove).isEmpty());
     }
@@ -245,7 +248,7 @@ class GameTest {
 
     @ParameterizedTest
     @EnumSource(Color.class)
-    void testIsEndedToReturnTrueIfAPlayerWon(Color playerColor) throws GameNotEndedException {
+    void testIsEndedToReturnTrueIfAPlayerWon(Color playerColor) {
         Player winnerPlayerToSet = null;
         switch (playerColor) {
             case BLACK -> winnerPlayerToSet = blackPlayer;
@@ -257,7 +260,7 @@ class GameTest {
     }
 
     @Test
-    void tesdtIsEndedToReturnTrueIfGameEndedWithADraw() { //i.e. board is full but no winner
+    void testIsEndedToReturnTrueIfGameEndedWithADraw() { //i.e. board is full but no winner
         disputeGameAndDraw(game);
         assertTrue(game.isEnded());
     }
