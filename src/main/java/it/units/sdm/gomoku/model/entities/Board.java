@@ -66,10 +66,6 @@ public class Board implements Observable, Serializable {
         this.lastMoveCoordinatesProperty = new ObservablePropertySettable<>();
     }
 
-    public Board(@PositiveIntegerType int size) {
-        this(new PositiveInteger(size));
-    }
-
     public Board(@NotNull final Board board) {
         this.size = new PositiveInteger(board.size);
         this.numberOfFilledPositions = board.numberOfFilledPositions;

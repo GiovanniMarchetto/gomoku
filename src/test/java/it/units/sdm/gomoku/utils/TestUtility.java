@@ -44,8 +44,11 @@ public class TestUtility {
 
     public final static String END_GAMES = "/endGames.json";
 
-    @NotNull    // TODO : BoardTestUtility class may needed to contain all the method to support BoardTest
-    public static Board createBoardFromCellMatrix(Cell[][] cellMatrix, PositiveInteger boardSize) {
+    // TODO : BoardTestUtility class may needed to contain all the method to support BoardTest
+
+    @NotNull
+    public static Board createBoardFromCellMatrix(Cell[][] cellMatrix) {
+        PositiveInteger boardSize = new PositiveInteger(cellMatrix.length);
         Board board = new Board(boardSize);
         IntStream.range(0, boardSize.intValue())
                 .forEach(x -> IntStream.range(0, boardSize.intValue())
@@ -59,11 +62,6 @@ public class TestUtility {
                             }
                         }));
         return board;
-    }
-
-    @NotNull
-    public static Board createBoardFromCellMatrix(Cell[][] cellMatrix) {
-        return createBoardFromCellMatrix(cellMatrix, new PositiveInteger(cellMatrix.length));
     }
 
     @NotNull

@@ -3,6 +3,7 @@ package it.units.sdm.gomoku.model.entities.board;
 import it.units.sdm.gomoku.model.custom_types.Color;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
+import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.Board;
 import it.units.sdm.gomoku.model.entities.Cell;
 import it.units.sdm.gomoku.model.exceptions.BoardIsFullException;
@@ -121,7 +122,7 @@ public class BoardAlgorithmTest {
     }
 
     private Board createBoardFromMatrix(Cell[][] cellMatrix) {
-        Board b = new Board(cellMatrix.length);
+        Board b = new Board(new PositiveInteger(cellMatrix.length));
         //noinspection ConstantConditions //check in the method
         occupyAllPositionsIfValidPredicateWithGivenColor(b,
                 coords -> cellMatrix[coords.getX()][coords.getY()].getStone().getColor(),   // TODO: message chain

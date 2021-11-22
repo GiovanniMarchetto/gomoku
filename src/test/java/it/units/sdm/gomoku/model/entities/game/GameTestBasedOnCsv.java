@@ -104,7 +104,8 @@ public class GameTestBasedOnCsv {
 
     @ParameterizedTest
     @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfMoveControlRecordFields")
-    void hasThePlayerWonWithLastMove(Cell[][] matrix, Coordinates coordinatesToControl, boolean expectedResultOfAlgorithm) {
+    void hasThePlayerWonWithLastMove(Cell[][] matrix, Coordinates coordinatesToControl,
+                                     boolean expectedResultOfAlgorithm) {
         setUpFromCsv(matrix, coordinatesToControl);
         try {
             Method method = Game.class.getDeclaredMethod("hasThePlayerWonWithLastMove", Coordinates.class);
@@ -118,7 +119,8 @@ public class GameTestBasedOnCsv {
 
     @ParameterizedTest
     @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfMoveControlRecordFields")
-    void getWinnerIfGameFinished(Cell[][] matrix, Coordinates coordinatesToControl, boolean ignored, boolean finishedGame) {
+    void getWinnerIfGameFinished(Cell[][] matrix, Coordinates coordinatesToControl,
+                                 boolean ignored, boolean finishedGame) {
         setUpFromCsv(matrix, coordinatesToControl);
         try {
             if (!finishedGame) {
@@ -131,21 +133,19 @@ public class GameTestBasedOnCsv {
 
     @ParameterizedTest
     @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfMoveControlRecordFields")
-    void getWinnerIfGameNotFinished(Cell[][] matrix, Coordinates coordinatesToControl, boolean isThereAWinner, boolean finishedGame) {
+    void getWinnerIfGameNotFinished(Cell[][] matrix, Coordinates coordinatesToControl,
+                                    boolean isThereAWinner, boolean finishedGame) throws GameNotEndedException {
         setUpFromCsv(matrix, coordinatesToControl);
-        try {
-            if (finishedGame) {
-                Player winner = game.getWinner();
-                assertEquals(isThereAWinner, winner != null);
-            }
-        } catch (GameNotEndedException e) {
-            fail(e);
+        if (finishedGame) {
+            Player winner = game.getWinner();
+            assertEquals(isThereAWinner, winner != null);
         }
     }
 
     @ParameterizedTest
     @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfMoveControlRecordFields")
-    void isEnded(Cell[][] matrix, Coordinates coordinatesToControl, boolean ignored, boolean finishedGame) {
+    void isEnded(Cell[][] matrix, Coordinates coordinatesToControl,
+                 boolean ignored, boolean finishedGame) {
         setUpFromCsv(matrix, coordinatesToControl);
         assertEquals(finishedGame, game.isEnded());
     }

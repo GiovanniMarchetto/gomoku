@@ -14,6 +14,7 @@ import it.units.sdm.gomoku.property_change_handlers.observable_properties.Observ
 import it.units.sdm.gomoku.utils.TestUtility;
 import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -36,8 +37,14 @@ public class BoardTest {
 
     public static final Cell[][] boardMatrixFromCsv =
             TestUtility.readBoardOfCellsFromCSVFile(EnvVariables.BOARD_19X19_PROVIDER_RESOURCE_LOCATION);
-    public static final PositiveInteger BOARD_SIZE = new PositiveInteger(19);
+    public static PositiveInteger BOARD_SIZE;
     private static Board board;
+
+    @BeforeAll
+    static void beforeAll() {
+        board = TestUtility.createBoardFromCellMatrix(boardMatrixFromCsv);
+        BOARD_SIZE = new PositiveInteger(board.getSize());
+    }
 
     //region Support Methods
     @NotNull
@@ -139,6 +146,7 @@ public class BoardTest {
         return (int) TestUtility.getFieldValue("numberOfFilledPositions", board) + numberOfEmptyCellsRequired < Math.pow(board.getSize(), 2);
     }
 
+
     @NotNull
     private Coordinates tryToOccupyEmptyCell() {
         synchronized (board) {
@@ -166,6 +174,7 @@ public class BoardTest {
         assert toBeCopiedMatrix != null;
         return new Pair<>(toBeCopiedMatrix, copiedMatrix);
     }
+    //endregion Support Methods
 
     @NotNull
     private Board setupForTestEquals() {
@@ -175,11 +184,10 @@ public class BoardTest {
         tryToOccupyCoordinatesWithColor(board2, Color.WHITE, 0, 0);
         return board2;
     }
-    //endregion Support Methods
 
     @BeforeEach
     void setUp() {
-        board = TestUtility.createBoardFromCellMatrix(boardMatrixFromCsv, BOARD_SIZE);
+        beforeAll();
     }
 
     @ParameterizedTest
@@ -368,7 +376,7 @@ public class BoardTest {
 
     @Test
     void testEqualsEmptyBoard() {
-        assertNotEquals(board, new Board(board.getSize()));
+        assertNotEquals(board, new Board(BOARD_SIZE));
     }
 
     @Test
@@ -378,7 +386,7 @@ public class BoardTest {
 
     @Test
     void testEqualsDifferentSize() {
-        assertNotEquals(board, new Board(board.getSize() + 1));
+        assertNotEquals(board, new Board((PositiveInteger) BOARD_SIZE.incrementAndGet()));
     }
 
     @Test
@@ -409,7 +417,7 @@ public class BoardTest {
 
     @Test
     void testHashCodeNewBoard() {
-        assertNotEquals(board.hashCode(), (new Board(board.getSize())).hashCode());
+        assertNotEquals(board.hashCode(), (new Board(BOARD_SIZE)).hashCode());
     }
 
     @Test
