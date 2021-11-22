@@ -40,7 +40,7 @@ public class Match {
         this(Objects.requireNonNull(setup).boardSize(), setup.numberOfGames(), setup.player1(), setup.player2());
     }
 
-    public void addAnExtraGame() {
+    public void incrementTotalNumberOfGames() {
         numberOfGames.incrementAndGet();
     }
 

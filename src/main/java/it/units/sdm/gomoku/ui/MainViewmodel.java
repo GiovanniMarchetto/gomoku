@@ -153,7 +153,7 @@ public abstract class MainViewmodel extends Viewmodel {
     }
 
     protected void addAnExtraGameToThisMatch() {
-        Objects.requireNonNull(match).addAnExtraGame();
+        Objects.requireNonNull(match).incrementTotalNumberOfGames();
     }
 
     public synchronized boolean isMatchEnded() {

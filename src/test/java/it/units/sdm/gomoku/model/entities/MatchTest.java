@@ -203,7 +203,7 @@ class MatchTest {
     @Test
     void isEndedAfterAddExtraGame() throws GameNotStartedException {
         isEndedNormalFlow();
-        match.addAnExtraGame();
+        match.incrementTotalNumberOfGames();
         assertFalse(match.isEnded());
     }
 
