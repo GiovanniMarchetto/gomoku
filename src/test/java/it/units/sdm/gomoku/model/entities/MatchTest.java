@@ -342,7 +342,8 @@ class MatchTest {
     }
 
     @Test
-    void dontInitializeNewGameIfCurrentGameIsOngoing() throws MatchEndedException, GameNotEndedException, NoSuchFieldException, InvocationTargetException, IllegalAccessException {
+    void dontInitializeNewGameIfCurrentGameIsOngoing()
+            throws MatchEndedException, GameNotEndedException, NoSuchFieldException, InvocationTargetException, IllegalAccessException {
         match.initializeNewGame();
         currentGame = getCurrentGameOfMatch(match);
         assert !currentGame.isEnded();
@@ -489,6 +490,15 @@ class MatchTest {
         makeGivenPlayerToWinNGamesInMatchAndTheOtherPlayerToWinTheRemainingGames(
                 match.getCurrentBlackPlayer(), match.getCurrentWhitePlayer(), match.getTotalNumberOfGames(), match);
         assertFalse(match.isADraw());
+    }
+
+    @Test
+    void considerMatchNotEndedIfThereIsAnOngoingGame() throws MatchEndedException, GameNotEndedException, NoSuchFieldException, InvocationTargetException, IllegalAccessException {
+        match.initializeNewGame();
+        currentGame = getCurrentGameOfMatch(match);
+        assert currentGame != null;
+        assert !currentGame.isEnded();
+        assertFalse(match.isEnded());
     }
 
 }
