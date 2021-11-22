@@ -146,6 +146,11 @@ class MatchTest {
 
         assertEquals(match, matchFromSetup);
     }
+
+    @Test
+    void dontConsiderMatchEndedImmediatelyAfterItsCreation() {
+        assertFalse(match.isEnded());
+    }
     //endregion
 
     //region test equals
@@ -401,20 +406,6 @@ class MatchTest {
         int numberOfGamesToWinForAPlayerToBeTheWinnerOfMatch = match.getTotalNumberOfGames() / 2 + 1;
         makeGivenPlayerToWinNGamesInMatch(winnerOfMatch, loserOfMatch, numberOfGamesToWinForAPlayerToBeTheWinnerOfMatch, match);
         assertEquals(winnerOfMatch, match.getWinner());
-    }
-
-    @Test
-    void getWinnerWithPlayer2Win() throws MatchNotEndedException {
-        for (int i = 0; i < SAMPLE_NUMBER_OF_GAMES; i++) {
-            startGameAndPlayerWin(SAMPLE_PLAYER_2);
-        }
-        assertEquals(SAMPLE_PLAYER_2, match.getWinner());
-    }
-
-
-    @Test
-    void isEndedAtStartMatch() {
-        assertFalse(match.isEnded());
     }
 
     @Test
