@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -173,6 +174,29 @@ class MatchTest {
     }
     //endregion test equals
 
+    //region test getters
+    @Test
+    void testGetNumberOfGames() {
+        assertEquals(SAMPLE_NUMBER_OF_GAMES, match.getNumberOfGames());
+    }
+
+    @Test
+    void testGetCurrentBlackPlayer() {
+        assertEquals(SAMPLE_PLAYER_1, match.getCurrentBlackPlayer());
+    }
+
+    @Test
+    void testGetCurrentWhitePlayer() {
+        assertEquals(SAMPLE_PLAYER_2, match.getCurrentWhitePlayer());
+    }
+
+    @Test
+    void testGetCurrentGame() throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, MatchEndedException, GameNotEndedException {
+        currentGame = match.initializeNewGame();
+        assertEquals(currentGame, TestUtility.invokeMethodOnObject(match, "getCurrentGame"));
+    }
+    //endregion test getters
+
     @Test
     void addFirstGameOfTheMatchToGameList() throws MatchEndedException, NoSuchFieldException, IllegalAccessException, GameNotEndedException {
         currentGame = match.initializeNewGame();
@@ -277,20 +301,6 @@ class MatchTest {
         assertEquals(SAMPLE_PLAYER_2, match.getWinner());
     }
 
-    @Test
-    void getNumberOfGames() {
-        assertEquals(SAMPLE_NUMBER_OF_GAMES, match.getNumberOfGames());
-    }
-
-    @Test
-    void getCurrentBlackPlayer() {
-        assertEquals(SAMPLE_PLAYER_1, match.getCurrentBlackPlayer());
-    }
-
-    @Test
-    void getCurrentWhitePlayer() {
-        assertEquals(SAMPLE_PLAYER_2, match.getCurrentWhitePlayer());
-    }
 
     @Test
     void isEndedAtStartMatch() {
