@@ -4,7 +4,10 @@ import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.game.GameTestUtility;
 import it.units.sdm.gomoku.model.entities.player.FakePlayer;
-import it.units.sdm.gomoku.model.exceptions.*;
+import it.units.sdm.gomoku.model.exceptions.GameAlreadyStartedException;
+import it.units.sdm.gomoku.model.exceptions.GameNotEndedException;
+import it.units.sdm.gomoku.model.exceptions.MatchEndedException;
+import it.units.sdm.gomoku.model.exceptions.MatchNotEndedException;
 import it.units.sdm.gomoku.ui.support.BoardSizes;
 import it.units.sdm.gomoku.utils.TestUtility;
 import it.units.sdm.gomoku.utils.Utility;
@@ -14,11 +17,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -34,45 +38,99 @@ class MatchTest {
     private Match match;
     private Game currentGame;
 
+    @BeforeEach
+    void setup() {
+        match = createNewMatchWithDefaultParameterAndGet();
+    }
+
+    //region Support Methods
     public static Stream<Arguments> getIntStreamFrom0IncludedToTotalNumberOfGamesExcluded() {
         return IntStream.range(0, SAMPLE_NUMBER_OF_GAMES).mapToObj(Arguments::of);
     }
 
-    //region Support Methods    // todo : TRY NOT TO USE THIS REGION
-    private void assertCpusScore(int n1, int n2) {
-        assertEquals(n1, match.getScore().get(SAMPLE_PLAYER_1).intValue());
-        assertEquals(n2, match.getScore().get(SAMPLE_PLAYER_2).intValue());
+    private static void disputeNGamesOfMatchAndMakeGivenPlayerToWinAllTheGamesInMatch(
+            int nGamesToDispute, @NotNull final Player winner, @NotNull final Match match) {
+
+        assert nGamesToDispute <= SAMPLE_NUMBER_OF_GAMES;
+        IntStream.range(0, nGamesToDispute).sequential().forEach(i -> {
+            try {
+                Game currentGame = match.initializeNewGame();
+                currentGame.start();
+                GameTestUtility.disputeGameAndMakeThePlayerToWin(currentGame, winner);
+            } catch (GameAlreadyStartedException | MatchEndedException | GameNotEndedException e) {
+                fail(e);
+            }
+        });
     }
 
-    private void startNewGameComplete() {
-        try {
-            currentGame = match.initializeNewGame();
-            currentGame.start();
-        } catch (MatchEndedException | GameNotEndedException | GameAlreadyStartedException e) {
-            fail(e);
+    @SuppressWarnings("unchecked")  // casting due to use of reflection
+    private static void endMatchWithADraw(@NotNull final Match match) {
+        assert match != null;
+        int numberOfGamesThatEachPlayerHasToWinToHaveADraw = SAMPLE_NUMBER_OF_GAMES / 2;
+        makeGivenPlayerToWinNGamesInMatchAndTheOtherPlayerToWinTheRemainingGames(
+                match.getCurrentBlackPlayer(), match.getCurrentWhitePlayer(),
+                numberOfGamesThatEachPlayerHasToWinToHaveADraw, match);
+        if (!Utility.isEvenNumber(SAMPLE_NUMBER_OF_GAMES)) {
+            Runnable changeLastGameToEndTheMatchWithADraw = () -> {
+                try {
+                    List<Game> gameList = null;
+                    gameList = (List<Game>) TestUtility.getFieldValue("gameList", match);
+                    assert SAMPLE_NUMBER_OF_GAMES > 0;
+                    assert gameList != null;
+                    gameList.remove(gameList.size() - 1);
+                    initializeAndDisputeNGameAndEndThemWithDrawAndGetLastInitializedGame(1, match);
+                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    fail(e);
+                }
+            };
+            changeLastGameToEndTheMatchWithADraw.run();
         }
     }
 
-    private void startGameAndPlayerWin(Player player) {
-        startNewGameComplete();
-        GameTestUtility.disputeGameAndMakeThePlayerToWin(currentGame, player);
+    @NotNull
+    private static Game initializeAndDisputeNGameAndEndThemWithDrawAndGetLastInitializedGame(
+            int numberOfGames, @NotNull final Match match) {
+
+        assert numberOfGames <= SAMPLE_NUMBER_OF_GAMES;
+        AtomicReference<Game> currentGame = new AtomicReference<>();
+        IntStream.range(0, numberOfGames).sequential().forEach(i -> {
+            try {
+                currentGame.set(match.initializeNewGame());
+                currentGame.get().start();
+                GameTestUtility.disputeGameAndDraw(currentGame.get());
+            } catch (GameAlreadyStartedException | MatchEndedException | GameNotEndedException e) {
+                fail(e);
+            }
+        });
+
+        return currentGame.get();
     }
 
-    private void startGameAndDraw() {
-        startNewGameComplete();
-        GameTestUtility.disputeGameAndDraw(currentGame);
-    }
-    //endregion Support Methods //
+    private static void makeGivenPlayerToWinNGamesInMatchAndTheOtherPlayerToWinTheRemainingGames(
+            @NotNull final Player playerWhoHasToWin, @NotNull final Player playerWhoHasToLose,
+            int numberOfGameWon, @NotNull final Match match) {
 
-    @BeforeEach
-    void setup() {
-        match = createNewMatchWithDefaultParameterAndGet();
+        assert numberOfGameWon <= SAMPLE_NUMBER_OF_GAMES;
+        IntStream.range(0, SAMPLE_NUMBER_OF_GAMES).sequential().forEach(i -> {
+            try {
+                Game currentGame = match.initializeNewGame();
+                currentGame.start();
+                if (i < numberOfGameWon) {
+                    GameTestUtility.disputeGameAndMakeThePlayerToWin(currentGame, playerWhoHasToWin);
+                } else {
+                    GameTestUtility.disputeGameAndMakeThePlayerToWin(currentGame, playerWhoHasToLose);
+                }
+            } catch (GameAlreadyStartedException | MatchEndedException | GameNotEndedException e) {
+                fail(e);
+            }
+        });
     }
 
     @NotNull
     private Match createNewMatchWithDefaultParameterAndGet() {
         return new Match(SAMPLE_PLAYER_1, SAMPLE_PLAYER_2, new PositiveInteger(SAMPLE_NUMBER_OF_GAMES), SAMPLE_BOARD_SIZE);
     }
+    //endregion Support Methods
 
     //region test constructors
     @Test
@@ -91,6 +149,11 @@ class MatchTest {
         Match matchFromSetup = new Match(setup);
 
         assertEquals(match, matchFromSetup);
+    }
+
+    @Test
+    void dontConsiderMatchEndedImmediatelyAfterItsCreation() {
+        assertFalse(match.isEnded());
     }
     //endregion
 
@@ -187,7 +250,7 @@ class MatchTest {
     //region test getters
     @Test
     void testGetNumberOfGames() {
-        assertEquals(SAMPLE_NUMBER_OF_GAMES, match.getNumberOfGames());
+        assertEquals(SAMPLE_NUMBER_OF_GAMES, match.getTotalNumberOfGames());
     }
 
     @Test
@@ -213,7 +276,7 @@ class MatchTest {
             throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
 
         assert numberOfGameWon <= SAMPLE_NUMBER_OF_GAMES;
-        makeGivenPlayerToWinNGamesInMatch(winnerPlayer, loserPlayer, numberOfGameWon, match);
+        makeGivenPlayerToWinNGamesInMatchAndTheOtherPlayerToWinTheRemainingGames(winnerPlayer, loserPlayer, numberOfGameWon, match);
         Method scoreOfPlayerGetter = match.getClass().getDeclaredMethod("getScoreOfPlayer", Player.class);
         scoreOfPlayerGetter.setAccessible(true);
         assertEquals(numberOfGameWon, ((NonNegativeInteger) scoreOfPlayerGetter.invoke(match, winnerPlayer)).intValue());
@@ -234,35 +297,46 @@ class MatchTest {
     @ParameterizedTest
     @MethodSource("getIntStreamFrom0IncludedToTotalNumberOfGamesExcluded")
     void testGetScore(int numberOfGamesWonByFirstPlayer) {
-        makeGivenPlayerToWinNGamesInMatch(SAMPLE_PLAYER_1, SAMPLE_PLAYER_2, numberOfGamesWonByFirstPlayer, match);
+        makeGivenPlayerToWinNGamesInMatchAndTheOtherPlayerToWinTheRemainingGames(SAMPLE_PLAYER_1, SAMPLE_PLAYER_2, numberOfGamesWonByFirstPlayer, match);
         Map<Player, NonNegativeInteger> expectedScore;
         {
             expectedScore = new HashMap<>(2);
             expectedScore.put(SAMPLE_PLAYER_1, new NonNegativeInteger(numberOfGamesWonByFirstPlayer));
-            expectedScore.put(SAMPLE_PLAYER_2, new NonNegativeInteger(match.getNumberOfGames() - numberOfGamesWonByFirstPlayer));
+            expectedScore.put(SAMPLE_PLAYER_2, new NonNegativeInteger(match.getTotalNumberOfGames() - numberOfGamesWonByFirstPlayer));
+        }
+        assertEquals(expectedScore, match.getScore());
+    }
+
+    @ParameterizedTest
+    @MethodSource("getIntStreamFrom0IncludedToTotalNumberOfGamesExcluded")
+    void testGetScoreWithDrawOfGames(int numberOfGamesWonByFirstPlayer) {
+        initializeAndDisputeNGameAndEndThemWithDrawAndGetLastInitializedGame(numberOfGamesWonByFirstPlayer, match);
+        final int SCORE_OF_EACH_PLAYER_IF_GAME_ENDS_WITH_A_DRAW = 0;
+        Map<Player, NonNegativeInteger> expectedScore;
+        {
+            expectedScore = new HashMap<>(2);
+            expectedScore.put(SAMPLE_PLAYER_1, new NonNegativeInteger(SCORE_OF_EACH_PLAYER_IF_GAME_ENDS_WITH_A_DRAW));
+            expectedScore.put(SAMPLE_PLAYER_2, new NonNegativeInteger(SCORE_OF_EACH_PLAYER_IF_GAME_ENDS_WITH_A_DRAW));
         }
         assertEquals(expectedScore, match.getScore());
     }
     //endregion test scores
 
-    private static void disputeNGamesOfMatchAndMakeGivenPlayerToWinAllTheGamesInMatch(
-            int nGamesToDispute, @NotNull final Player winner, @NotNull final Match match) {
-
-        assert nGamesToDispute <= SAMPLE_NUMBER_OF_GAMES;
-        IntStream.range(0, nGamesToDispute).sequential().forEach(i -> {
-            try {
-                Game currentGame = match.initializeNewGame();
-                currentGame.start();
-                GameTestUtility.disputeGameAndMakeThePlayerToWin(currentGame, winner);
-            } catch (GameAlreadyStartedException | MatchEndedException | GameNotEndedException e) {
-                fail(e);
-            }
-        });
+    @Test
+    void dontInitializeNewGameIfMatchEnded() {
+        endMatchWithADraw(match);
+        assert match.isEnded();
+        try {
+            match.initializeNewGame();
+            fail("Should not be possible to initialize a new game if the match is ended, but happened.");
+        } catch (Exception e) {
+            assertTrue(e instanceof MatchEndedException);
+        }
     }
 
     @ParameterizedTest
     @MethodSource("getIntStreamFrom0IncludedToTotalNumberOfGamesExcluded")
-    void invertColorsOfPlayersWhenGameChanges(int numberOfCurrentGame) {
+    void invertColorsOfPlayersWhenNewGameIsCreated(int numberOfCurrentGame) {
 
         disputeNGamesOfMatchAndMakeGivenPlayerToWinAllTheGamesInMatch(numberOfCurrentGame + 1, SAMPLE_PLAYER_1, match);
 
@@ -286,34 +360,21 @@ class MatchTest {
         }
     }
 
-    private static void makeGivenPlayerToWinNGamesInMatch(
-            @NotNull final Player playerWhoHasToWin, @NotNull final Player playerWhoHasToLose,
-            int numberOfGameWon, @NotNull final Match match) {
-
-        assert numberOfGameWon <= SAMPLE_NUMBER_OF_GAMES;
-        IntStream.range(0, SAMPLE_NUMBER_OF_GAMES).sequential().forEach(i -> {
-            try {
-                Game currentGame = match.initializeNewGame();
-                currentGame.start();
-                if (i < numberOfGameWon) {
-                    GameTestUtility.disputeGameAndMakeThePlayerToWin(currentGame, playerWhoHasToWin);
-                } else {
-                    GameTestUtility.disputeGameAndMakeThePlayerToWin(currentGame, playerWhoHasToLose);
-                }
-            } catch (GameAlreadyStartedException | MatchEndedException | GameNotEndedException e) {
-                fail(e);
-            }
-        });
+    @Test
+    void testIncrementTotalNumberOfGames() {
+        int initialValue = match.getTotalNumberOfGames();
+        match.incrementTotalNumberOfGames();
+        assertEquals(initialValue + 1, match.getTotalNumberOfGames());
     }
 
-    @Test
-    void addFirstGameOfTheMatchToGameList() throws MatchEndedException, NoSuchFieldException, IllegalAccessException, GameNotEndedException {
-        currentGame = match.initializeNewGame();
-        Field fieldGameList = match.getClass().getDeclaredField("gameList");
-        fieldGameList.setAccessible(true);
+    @ParameterizedTest
+    @MethodSource("getIntStreamFrom0IncludedToTotalNumberOfGamesExcluded")
+    void addGameToGameListWhenNewGameInitialized(int gameNumber) throws NoSuchFieldException, IllegalAccessException {
         @SuppressWarnings("unchecked")
-        List<Game> gameList = (List<Game>) fieldGameList.get(match);
-        assertEquals(currentGame, gameList.get(0));
+        List<Game> gameList = (List<Game>) TestUtility.getFieldValue("gameList", match);
+        currentGame = initializeAndDisputeNGameAndEndThemWithDrawAndGetLastInitializedGame(gameNumber + 1, match);
+        assert gameList != null;
+        assertEquals(currentGame, gameList.get(gameNumber));
     }
 
     @Test
@@ -333,154 +394,67 @@ class MatchTest {
         assertEquals(SAMPLE_PLAYER_1, match.getCurrentWhitePlayer());
     }
 
-//    @Test
-//    void maxNumberOfGamesException() {//TODO: substute with not game ended exception
-//        for (int i = 0; i < SAMPLE_NUMBER_OF_GAMES; i++) {
-//            startNewGameComplete();
-//            GameTestUtility.disputeGameWithSmartAlgorithm(currentGame);
-//        }
-//
-//        try {
-//            match.initializeNewGame();
-//            fail("Is over the number of games!");
-//        } catch (MatchEndedException | GameNotEndedException e) {
-//            fail(e);
-//        }
-//    }
-//
-//    @Test
-//    void getScoreBeforeStart() {
-//        assertCpusScore(0, 0);
-//    }
-//
-//    @Test
-//    void getScoreAfterStart() throws MatchEndedException, GameNotEndedException {
-//        match.initializeNewGame();
-//        assertCpusScore(0, 0);
-//    }
-//
-//    @Test
-//    void getScoreAfterPlayer1Win() {
-//        startGameAndPlayerWin(SAMPLE_PLAYER_1);
-//        assertCpusScore(1, 0);
-//    }
-//
-//    @Test
-//    void getScoreAfterPlayer2Win() {
-//        startGameAndPlayerWin(SAMPLE_PLAYER_2);
-//        assertCpusScore(0, 1);
-//    }
-//
-//    @Test
-//    void getScoreAfterADrawGame() {
-//        startGameAndDraw();
-//        assertCpusScore(0, 0);
-//    }
-
     @Test
-    void getWinnerIfMatchNotEnded() {
+    void dontSetWinnerOfMatchIfMatchNotEnded() {
         try {
             match.getWinner();
             fail("Match not ended");
-        } catch (MatchNotEndedException ignored) {
+        } catch (Exception e) {
+            assertTrue(e instanceof MatchNotEndedException);
         }
     }
 
     @Test
-    void getWinnerWithADraw() throws MatchNotEndedException {
-        for (int i = 0; i < SAMPLE_NUMBER_OF_GAMES; i++) {
-            startGameAndDraw();
-        }
+    void dontSetWinnerOfMatchIfMatchEndedWithADraw() throws MatchNotEndedException {
+        endMatchWithADraw(match);
         assertNull(match.getWinner());
     }
 
-    @Test
-    void getWinnerWithPlayer1Win() throws MatchNotEndedException {
-        for (int i = 0; i < SAMPLE_NUMBER_OF_GAMES; i++) {
-            startGameAndPlayerWin(SAMPLE_PLAYER_1);
-        }
-        assertEquals(SAMPLE_PLAYER_1, match.getWinner());
+    @ParameterizedTest
+    @ValueSource(ints = {1, 2})
+    void setWinnerOfMatchThePlayerWhoWonMoreGames(int samplePlayerIndex) throws MatchNotEndedException {
+
+        Player winnerOfMatch = samplePlayerIndex == 1 ? SAMPLE_PLAYER_1 : SAMPLE_PLAYER_2;
+        Player loserOfMatch = winnerOfMatch.equals(SAMPLE_PLAYER_1) ? SAMPLE_PLAYER_2 : SAMPLE_PLAYER_1;
+
+        int numberOfGamesToWinForAPlayerToBeTheWinnerOfMatch = match.getTotalNumberOfGames() / 2 + 1;
+        makeGivenPlayerToWinNGamesInMatchAndTheOtherPlayerToWinTheRemainingGames(winnerOfMatch, loserOfMatch, numberOfGamesToWinForAPlayerToBeTheWinnerOfMatch, match);
+        assertEquals(winnerOfMatch, match.getWinner());
     }
 
     @Test
-    void getWinnerWithPlayer2Win() throws MatchNotEndedException {
-        for (int i = 0; i < SAMPLE_NUMBER_OF_GAMES; i++) {
-            startGameAndPlayerWin(SAMPLE_PLAYER_2);
-        }
-        assertEquals(SAMPLE_PLAYER_2, match.getWinner());
-    }
-
-
-    @Test
-    void isEndedAtStartMatch() {
-        assertFalse(match.isEnded());
-    }
-
-    @Test
-    void isEndedAfterAGame() {
-        if (SAMPLE_NUMBER_OF_GAMES != 1) {
-            startGameAndDraw();
-            assertFalse(match.isEnded());
-        }
-    }
-
-    @Test
-    void isEndedAfterStartLastGame() {
-        for (int i = 0; i < SAMPLE_NUMBER_OF_GAMES - 1; i++) {
-            startGameAndDraw();
-        }
-        startNewGameComplete();
-        assertFalse(match.isEnded());
-    }
-
-    @Test
-    void isEndedNormalFlow() throws GameNotStartedException {
-        isEndedAfterStartLastGame();
-        GameTestUtility.disputeGameWithSmartAlgorithm(currentGame);
+    void endMatchAfterLastGame() {
+        initializeAndDisputeNGameAndEndThemWithDrawAndGetLastInitializedGame(SAMPLE_NUMBER_OF_GAMES, match);
         assertTrue(match.isEnded());
     }
 
+    @ParameterizedTest
+    @MethodSource("getIntStreamFrom0IncludedToTotalNumberOfGamesExcluded")
+    void testIfMatchIsEnded(int gameIndex) {
+        int numberOfGamesToDispute = gameIndex + 1;
+        initializeAndDisputeNGameAndEndThemWithDrawAndGetLastInitializedGame(numberOfGamesToDispute, match);
+        assertEquals(numberOfGamesToDispute == SAMPLE_NUMBER_OF_GAMES, match.isEnded());
+    }
+
     @Test
-    void isEndedAfterAddExtraGame() throws GameNotStartedException {
-        isEndedNormalFlow();
+    void testIfMatchIsEndedAfterAddExtraGame() {
+        initializeAndDisputeNGameAndEndThemWithDrawAndGetLastInitializedGame(SAMPLE_NUMBER_OF_GAMES, match);
+        assert match.isEnded();
         match.incrementTotalNumberOfGames();
         assertFalse(match.isEnded());
     }
 
-    @Test
-    void isEndedAfterEndExtraGame() throws GameNotStartedException {
-        isEndedAfterAddExtraGame();
-        startGameAndDraw();
-        assertTrue(match.isEnded());
-    }
 
     @Test
-    void isADrawMatchNotEnded() {
-        try {
-            match.isADraw();
-            fail("Not throw MatchNotEndedException");
-        } catch (MatchNotEndedException ignored) {
-        }
-    }
-
-    @Test
-    void isADraw() {
-        for (int i = 0; i < SAMPLE_NUMBER_OF_GAMES; i++) {
-            startGameAndDraw();
-        }
-        try {
-            assertTrue(match.isADraw());
-        } catch (MatchNotEndedException e) {
-            fail(e);
-        }
+    void testIfMatchEndedWithADraw() throws MatchNotEndedException {
+        endMatchWithADraw(match);
+        assertTrue(match.isADraw());
     }
 
     @Test
     void isNotADraw() throws MatchNotEndedException {
-        startGameAndPlayerWin(SAMPLE_PLAYER_1);
-        for (int i = 1; i < SAMPLE_NUMBER_OF_GAMES; i++) {
-            startGameAndDraw();
-        }
+        makeGivenPlayerToWinNGamesInMatchAndTheOtherPlayerToWinTheRemainingGames(
+                match.getCurrentBlackPlayer(), match.getCurrentWhitePlayer(), match.getTotalNumberOfGames(), match);
         assertFalse(match.isADraw());
     }
 

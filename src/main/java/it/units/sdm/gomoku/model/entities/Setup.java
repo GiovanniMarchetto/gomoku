@@ -28,7 +28,7 @@ public record Setup(Player player1,
         Objects.requireNonNull(match);
         return new Setup(
                 match.getCurrentBlackPlayer(), match.getCurrentWhitePlayer(),
-                new PositiveInteger(match.getNumberOfGames()),
+                new PositiveInteger(match.getTotalNumberOfGames()),
                 (PositiveInteger) Objects.requireNonNull(getFieldValue("boardSize", match)));
     }
 

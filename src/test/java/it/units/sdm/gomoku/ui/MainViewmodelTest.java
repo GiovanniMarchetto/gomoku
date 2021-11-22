@@ -123,9 +123,9 @@ class MainViewmodelTest {
         mainViewmodel.startNewMatch();
         try {
             Match match = (Match) Objects.requireNonNull(TestUtility.getFieldValue("match", mainViewmodel));
-            int expected = match.getNumberOfGames() + 1;
+            int expected = match.getTotalNumberOfGames() + 1;
             mainViewmodel.addAnExtraGameToThisMatch();
-            int actual = match.getNumberOfGames();
+            int actual = match.getTotalNumberOfGames();
             assertEquals(expected, actual);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             fail(e);
