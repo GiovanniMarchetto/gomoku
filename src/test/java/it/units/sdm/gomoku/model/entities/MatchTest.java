@@ -2,6 +2,7 @@ package it.units.sdm.gomoku.model.entities;
 
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.game.GameTestUtility;
+import it.units.sdm.gomoku.model.entities.player.FakePlayer;
 import it.units.sdm.gomoku.model.exceptions.*;
 import it.units.sdm.gomoku.utils.TestUtility;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,6 +62,14 @@ class MatchTest {
                 TestUtility.getNumberOfNullFieldsOfObjectWhichNameIsNotInList(namesOfFieldsWhichMayBeNull, match);
         int numberOfFieldsExpectedToBeNullAfterCreation = 0;
         assertEquals(numberOfFieldsExpectedToBeNullAfterCreation, numberOfNullFieldsAfterConstructionNotInExclusionList);
+    }
+
+    @Test
+    void createNewInstanceFromSetup() throws NoSuchFieldException, IllegalAccessException {
+        Setup setup = new Setup(new FakePlayer("A"), new FakePlayer("B"), new PositiveInteger(1), new PositiveInteger(3));
+        Match matchFromSetup = new Match(setup);
+        Setup setupFromMatch = Setup.getSetupFromMatch(matchFromSetup);
+        assertEquals(setup, setupFromMatch);
     }
     // end-region
 
