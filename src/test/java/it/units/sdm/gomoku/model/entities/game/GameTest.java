@@ -9,8 +9,10 @@ import it.units.sdm.gomoku.model.entities.Game;
 import it.units.sdm.gomoku.model.entities.Player;
 import it.units.sdm.gomoku.model.exceptions.CellOutOfBoardException;
 import it.units.sdm.gomoku.model.exceptions.GameNotEndedException;
+import it.units.sdm.gomoku.property_change_handlers.PropertyObserver;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertySettable;
 import it.units.sdm.gomoku.utils.TestUtility;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,6 +24,7 @@ import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static it.units.sdm.gomoku.model.entities.game.GameTestUtility.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,9 +37,14 @@ class GameTest {
     private static final Coordinates secondMove = new Coordinates(0, 1);
     private Game game;
 
+    @NotNull
+    private static Game createNewGameWithDefaultParams() {
+        return new Game(BOARD_SIZE, blackPlayer, whitePlayer);
+    }
+
     @BeforeEach
     void setUp() {
-        game = new Game(BOARD_SIZE, blackPlayer, whitePlayer);
+        game = createNewGameWithDefaultParams();
         assert game.getGameStatusProperty().getPropertyValue() == null;
         assert game.getCurrentPlayerProperty().getPropertyValue() == null;
         game.start();
@@ -45,7 +53,7 @@ class GameTest {
     @Test
     void initializeAllNotNullFieldsWhenCreatingNewInstance() {
         List<String> namesOfNullableFieldsOfClass = List.of("winner");
-        game = new Game(BOARD_SIZE, blackPlayer, whitePlayer);
+        game = createNewGameWithDefaultParams();
         long numberOfNullFieldsAfterConstructionWhichShouldNotBeNull =
                 Arrays.stream(game.getClass().getDeclaredFields())
                         .filter(field -> !namesOfNullableFieldsOfClass.contains(field.getName()))
@@ -67,9 +75,27 @@ class GameTest {
     void createNewInstanceWithCorrectCreationTime() {
         final long EPSILON_NANOS = 1000;
         long currentTime = Instant.now().getNano();
-        game = new Game(BOARD_SIZE, blackPlayer, whitePlayer);
+        game = createNewGameWithDefaultParams();
         long creationTimeSetInGame = game.getCreationTime().getNano();
         assertTrue(Math.abs(currentTime - creationTimeSetInGame) < EPSILON_NANOS);
+    }
+
+    @Test
+    void notifyGameStatusOnStart() {
+        game = createNewGameWithDefaultParams();
+        AtomicReference<Boolean> gameHasNotifiedToBeStarted = new AtomicReference<>();
+        boolean notificationSent = false;
+
+        new PropertyObserver<>(
+                game.getGameStatusProperty(),
+                evt -> gameHasNotifiedToBeStarted.set(Game.Status.STARTED.equals(evt.getNewValue())));
+
+        game.start();
+        //noinspection StatementWithEmptyBody   // wait property change notification
+        while (!gameHasNotifiedToBeStarted.get()) {
+        }
+
+        assertTrue(gameHasNotifiedToBeStarted.get());
     }
 
     @Test
@@ -148,7 +174,7 @@ class GameTest {
     @Test
     void dontPlaceStoneIfGameNotStarted() throws CellOutOfBoardException {
         try {
-            game = new Game(BOARD_SIZE, blackPlayer, whitePlayer);
+            game = createNewGameWithDefaultParams();
             tryToPlaceStoneAndChangeTurn(firstMove, game);
         } catch (NullPointerException e) {
             assertTrue(game.getBoard().getCellAtCoordinates(firstMove).isEmpty());
@@ -231,7 +257,7 @@ class GameTest {
         } catch (InterruptedException e) {
             fail(e);
         }
-        Game gameNewer = new Game(BOARD_SIZE, blackPlayer, whitePlayer);
+        Game gameNewer = createNewGameWithDefaultParams();
         assertTrue(game.compareTo(gameNewer) < 0);
     }
 
