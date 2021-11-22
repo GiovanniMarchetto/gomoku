@@ -254,7 +254,7 @@ public class TestUtility {
                 .set(objectInstance, newValue);
     }
 
-    public static <T> void invokeMethodOnObject(
+    public static <T> Object invokeMethodOnObject(
             @NotNull final T targetObject, @NotNull final String methodName, @Nullable Object... paramsToMethod)
             throws NoSuchFieldException, InvocationTargetException, IllegalAccessException {  // TODO : test
         Class<?>[] paramTypes =
@@ -262,7 +262,7 @@ public class TestUtility {
                         .filter(Objects::nonNull)
                         .map(Object::getClass)
                         .toArray(Class<?>[]::new);
-        getMethodAlreadyMadeAccessible(
+        return getMethodAlreadyMadeAccessible(
                 targetObject.getClass(), methodName, paramTypes)
                 .invoke(targetObject, paramsToMethod);
     }
