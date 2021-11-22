@@ -501,4 +501,10 @@ class MatchTest {
         assertFalse(match.isEnded());
     }
 
+    @Test
+    void considerMatchNotEndedIfNumberOfAlreadyDisputedGamesIsLowerThanTotalNumberOfGamesOfTheMatch() {
+        initializeAndDisputeNGameAndEndThemWithDrawAndGetLastInitializedGame(SAMPLE_NUMBER_OF_GAMES - 1, match);
+        assertFalse(match.isEnded());
+    }
+
 }
