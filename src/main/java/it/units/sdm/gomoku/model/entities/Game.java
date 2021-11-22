@@ -95,13 +95,19 @@ public class Game implements Comparable<Game>, Observable {
         }
     }
 
+    public boolean isBoardEmpty() {
+        return board.isEmpty();
+    }
+
+    public synchronized boolean isEnded() {
+        return gameStatusProperty.getPropertyValue() == Status.ENDED;
+    }
+
     public void placeStoneAndChangeTurn(@NotNull final Coordinates coordinates)
             throws BoardIsFullException, CellAlreadyOccupiedException, GameEndedException, CellOutOfBoardException {
 
         final Player player = Objects.requireNonNull(currentPlayerProperty.getPropertyValue());
-
         placeStone(player, coordinates);
-
         setWinnerAndGameStatusPropertyIfEndedOrElseChangeTurn(player, coordinates);
     }
 
@@ -125,10 +131,6 @@ public class Game implements Comparable<Game>, Observable {
         }
     }
 
-    private void changeTurn() {
-        currentPlayerProperty.setPropertyValue(currentPlayerProperty.getPropertyValue() == blackPlayer ? whitePlayer : blackPlayer);
-    }
-
     private boolean hasThePlayerWonWithLastMove(@NotNull final Coordinates lastMove) {
         return board.isCoordinatesBelongingToChainOfNStones(lastMove, NUMBER_OF_CONSECUTIVE_STONE_FOR_WINNING);
     }
@@ -137,8 +139,8 @@ public class Game implements Comparable<Game>, Observable {
         this.winner = Objects.requireNonNull(winner);
     }
 
-    public synchronized boolean isEnded() {
-        return gameStatusProperty.getPropertyValue() == Status.ENDED;
+    private void changeTurn() {
+        currentPlayerProperty.setPropertyValue(currentPlayerProperty.getPropertyValue() == blackPlayer ? whitePlayer : blackPlayer);
     }
 
     @Override
@@ -193,10 +195,6 @@ public class Game implements Comparable<Game>, Observable {
                 .andThen(groupCellStreamStreamByStoneToIntStreamOfMaxNumberSameColorStones)
                 .andThen(checkIfOneElementIsEqualToNumberOfConsecutive)
                 .apply(getAllStreamsOfCoordinatesOverAllDirections.get());
-    }
-
-    public boolean isBoardEmpty() {    // TODO: test
-        return board.isEmpty();
     }
 
     @NotNull
