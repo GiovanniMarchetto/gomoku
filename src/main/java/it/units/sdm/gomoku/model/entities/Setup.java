@@ -10,7 +10,7 @@ import java.util.Objects;
 public record Setup(Player player1,
                     Player player2,
                     PositiveInteger numberOfGames,
-                    PositiveInteger boardSize) {
+                    PositiveInteger boardSize) {    // TODO: test
 
     public Setup(@NotNull final Player player1,
                  @NotNull final Player player2,
