@@ -90,11 +90,15 @@ class GameTest {
     }
 
     @Test
+    void setGameStatusToEndedIfGameEndedDueToLastMove() {
+        disputeGameAndDraw(game);
+        assertEquals(Game.Status.ENDED, game.getGameStatusProperty().getPropertyValue());
+    }
+
+    @Test
     void notifyGameStatusOnStart() {
         game = createNewGameWithDefaultParams();
         AtomicReference<Boolean> gameHasNotifiedToBeStarted = new AtomicReference<>();
-        boolean notificationSent = false;
-
         new PropertyObserver<>(
                 game.getGameStatusProperty(),
                 evt -> gameHasNotifiedToBeStarted.set(Game.Status.STARTED.equals(evt.getNewValue())));
@@ -105,6 +109,20 @@ class GameTest {
         }
 
         assertTrue(gameHasNotifiedToBeStarted.get());
+    }
+
+    @Test
+    void notifyGameStatusOnEnd() {
+        AtomicReference<Boolean> gameHasNotifiedToBeEnded = new AtomicReference<>();
+        new PropertyObserver<>(
+                game.getGameStatusProperty(),
+                evt -> gameHasNotifiedToBeEnded.set(Game.Status.ENDED.equals(evt.getNewValue())));
+        disputeGameAndDraw(game);
+        //noinspection StatementWithEmptyBody   // wait property change notification
+        while (!gameHasNotifiedToBeEnded.get()) {
+        }
+
+        assertTrue(gameHasNotifiedToBeEnded.get());
     }
 
     //region Test Getters / Setters
@@ -240,6 +258,14 @@ class GameTest {
 
         game.placeStoneAndChangeTurn(firstMove);
         assertFalse(isEmptyCell(firstMove));
+    }
+
+    @Test
+    void changeTurnAfterAMoveIsMadeIfGameNotEnded() throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
+        final Player currentPlayerForTheMove = game.getCurrentPlayerProperty().getPropertyValue();
+        game.placeStoneAndChangeTurn(firstMove);
+        final Player currentPlayerAfterTheMoveIsDone = game.getCurrentPlayerProperty().getPropertyValue();
+        assertNotEquals(currentPlayerForTheMove, currentPlayerAfterTheMoveIsDone);
     }
 
     @Test
