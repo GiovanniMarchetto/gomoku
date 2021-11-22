@@ -1,4 +1,4 @@
-package it.units.sdm.gomoku;
+package it.units.sdm.gomoku.utils;
 
 import org.jetbrains.annotations.NotNull;
 

@@ -30,4 +30,6 @@ module it.units.sdm.gomoku {
     exports it.units.sdm.gomoku.ui.cli.views;
     exports it.units.sdm.gomoku.property_change_handlers;
     exports it.units.sdm.gomoku.property_change_handlers.observable_properties;
+    exports it.units.sdm.gomoku.utils;
+    opens it.units.sdm.gomoku.utils to javafx.fxml;
 }

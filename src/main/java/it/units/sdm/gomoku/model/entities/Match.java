@@ -1,11 +1,11 @@
 package it.units.sdm.gomoku.model.entities;
 
-import it.units.sdm.gomoku.Length;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.exceptions.GameNotEndedException;
 import it.units.sdm.gomoku.model.exceptions.MatchEndedException;
 import it.units.sdm.gomoku.model.exceptions.MatchNotEndedException;
+import it.units.sdm.gomoku.utils.Length;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

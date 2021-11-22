@@ -1,6 +1,5 @@
 package it.units.sdm.gomoku.model.entities;
 
-import it.units.sdm.gomoku.Utility;
 import it.units.sdm.gomoku.model.custom_types.Color;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
@@ -12,6 +11,7 @@ import it.units.sdm.gomoku.mvvm_library.Observable;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservableProperty;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyProxy;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertySettable;
+import it.units.sdm.gomoku.utils.Utility;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

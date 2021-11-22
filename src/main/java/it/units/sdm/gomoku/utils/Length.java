@@ -1,4 +1,4 @@
-package it.units.sdm.gomoku;
+package it.units.sdm.gomoku.utils;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Target;
