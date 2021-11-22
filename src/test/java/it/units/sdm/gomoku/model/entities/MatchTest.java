@@ -507,4 +507,11 @@ class MatchTest {
         assertFalse(match.isEnded());
     }
 
+    @Test
+    void dontConsiderCurrentGameIsOngoingIfCurrentGameIsNull() throws NoSuchFieldException, InvocationTargetException, IllegalAccessException {
+        match = createNewMatchWithDefaultParameterAndGet();
+        assert getCurrentGameOfMatch(match) == null;
+        assertFalse((boolean) TestUtility.invokeMethodOnObject(match, "isCurrentGameOngoing"));
+    }
+
 }
