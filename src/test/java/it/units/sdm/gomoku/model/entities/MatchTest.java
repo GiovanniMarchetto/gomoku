@@ -38,7 +38,7 @@ class MatchTest {
 
     private void startGameAndPlayerWin(Player player) {
         startNewGameComplete();
-        GameTestUtility.disputeGameAndPlayerWin(currentGame, player);
+        GameTestUtility.disputeGameAndMakeThePlayerToWin(currentGame, player);
     }
 
     private void startGameAndDraw() {

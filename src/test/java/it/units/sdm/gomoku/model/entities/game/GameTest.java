@@ -20,8 +20,6 @@ import org.junit.jupiter.params.provider.EnumSource;
 
 import java.lang.reflect.Field;
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -104,21 +102,11 @@ class GameTest {
         assertTrue(gameHasNotifiedToBeStarted.get());
     }
 
-    //region Test Getters
-    @Test
-    void testGameStatusGetter() throws NoSuchFieldException, IllegalAccessException {
-        Field gameStatusField =
-                TestUtility.getFieldAlreadyMadeAccessible(Game.class, "gameStatusProperty");
-        @SuppressWarnings("unchecked")
-        ObservablePropertySettable<Game.Status> gameStatusProperty =
-                (ObservablePropertySettable<Game.Status>) gameStatusField.get(game);
-        assertEquals(gameStatusProperty, game.getGameStatusProperty());
-    }
-
+    //region Test Getters / Setters
     @Test
     void testCurrentPlayerPropertyGetter() throws NoSuchFieldException, IllegalAccessException {
         Field currentPlayerField =
-                TestUtility.getFieldAlreadyMadeAccessible(Game.class, "currentPlayerProperty");
+                TestUtility.getFieldAlreadyMadeAccessible(game.getClass(), "currentPlayerProperty");
         @SuppressWarnings("unchecked")
         ObservablePropertySettable<Player> currentPlayerProperty =
                 (ObservablePropertySettable<Player>) currentPlayerField.get(game);
@@ -126,8 +114,18 @@ class GameTest {
     }
 
     @Test
+    void testGameStatusPropertyGetter() throws NoSuchFieldException, IllegalAccessException {
+        Field gameStatusField =
+                TestUtility.getFieldAlreadyMadeAccessible(game.getClass(), "gameStatusProperty");
+        @SuppressWarnings("unchecked")
+        ObservablePropertySettable<Game.Status> gameStatusProperty =
+                (ObservablePropertySettable<Game.Status>) gameStatusField.get(game);
+        assertEquals(gameStatusProperty, game.getGameStatusProperty());
+    }
+
+    @Test
     void testBoardGetter() throws IllegalAccessException, NoSuchFieldException {
-        Board board = (Board) TestUtility.getFieldAlreadyMadeAccessible(Game.class, "board").get(game);
+        Board board = (Board) TestUtility.getFieldAlreadyMadeAccessible(game.getClass(), "board").get(game);
         assertEquals(board, game.getBoard());
     }
 
@@ -138,10 +136,10 @@ class GameTest {
 
     @Test
     void testCreationTimeGetter() throws NoSuchFieldException, IllegalAccessException {
-        ZonedDateTime expected = ((Instant)
+        long expectedNanos = ((Instant)
                 Objects.requireNonNull(TestUtility.getFieldValue("creationTime", game)))
-                .atZone(ZoneId.systemDefault());
-        assertEquals(expected, game.getCreationTime());
+                .getNano();
+        assertEquals(expectedNanos, game.getCreationTime().getNano());
 
     }
 
@@ -151,37 +149,39 @@ class GameTest {
         switch (color) {
             case BLACK -> assertEquals(color, game.getColorOfPlayer(blackPlayer));
             case WHITE -> assertEquals(color, game.getColorOfPlayer(whitePlayer));
-            default -> fail("No color test");
+            default -> fail(new IllegalArgumentException("Not a valid color"));
         }
     }
 
     @Test
-    void testWinnerGetterIfGameNotEnded() {
+    void throwExceptionIfGameNotEndedWhenGetWinnerInvoked() {
+        assert !game.isEnded();
         try {
             game.getWinner();
-            fail("Game not ended!");
+            fail("Should have thrown an exception, but did not");
         } catch (GameNotEndedException ignored) {
         }
     }
 
-    @Test
-    void testWinnerGetterIfBlackPlayerWon() throws GameNotEndedException {
-        disputeGameAndPlayerWin(game, blackPlayer);
-        assertEquals(blackPlayer, game.getWinner());
+    @ParameterizedTest
+    @EnumSource(Color.class)
+    void setPlayerAsWinnerIfWon(Color playerColor) throws GameNotEndedException {
+        Player winnerPlayerToSet = null;
+        switch (playerColor) {
+            case BLACK -> winnerPlayerToSet = blackPlayer;
+            case WHITE -> winnerPlayerToSet = whitePlayer;
+            default -> fail(new IllegalArgumentException("Not a valid color"));
+        }
+        disputeGameAndMakeThePlayerToWin(game, winnerPlayerToSet);
+        assertEquals(winnerPlayerToSet, game.getWinner());
     }
 
     @Test
-    void testWinnerGetterIfWhitePlayerWon() throws GameNotEndedException {
-        disputeGameAndPlayerWin(game, whitePlayer);
-        assertEquals(whitePlayer, game.getWinner());
-    }
-
-    @Test
-    void testWinnerGetterIfGameEndedWithDraw() throws GameNotEndedException {
+    void dontSetWinnerIfGameEndedWithDraw() throws GameNotEndedException {
         disputeGameAndDraw(game);
         assertNull(game.getWinner());
     }
-    //endregion Test Getters
+    //endregion Test Getters / Setters
 
     @Test
     void checkCurrentPlayerAfterStart() {
@@ -219,19 +219,19 @@ class GameTest {
 
     @Test
     void setWinnerIfIsTheWinMoveBlack() throws GameNotEndedException {
-        disputeGameAndPlayerWin(game, blackPlayer);
+        disputeGameAndMakeThePlayerToWin(game, blackPlayer);
         assertEquals(blackPlayer, game.getWinner());
     }
 
     @Test
     void setWinnerIfIsTheWinMoveWhite() throws GameNotEndedException {
-        disputeGameAndPlayerWin(game, whitePlayer);
+        disputeGameAndMakeThePlayerToWin(game, whitePlayer);
         assertEquals(whitePlayer, game.getWinner());
     }
 
     @Test
     void setGameStatusIfGameEndedWhenPlaceStone() {
-        disputeGameAndPlayerWin(game, blackPlayer);
+        disputeGameAndMakeThePlayerToWin(game, blackPlayer);
         assertEquals(Game.Status.ENDED, game.getGameStatusProperty().getPropertyValue());
     }
 
@@ -248,7 +248,7 @@ class GameTest {
 
     @Test
     void checkIsEndedIfBlackWinner() {
-        disputeGameAndPlayerWin(game, blackPlayer);
+        disputeGameAndMakeThePlayerToWin(game, blackPlayer);
         assertTrue(game.isEnded());
     }
 
@@ -257,7 +257,6 @@ class GameTest {
         disputeGameAndDraw(game);
         assertTrue(game.isEnded());
     }
-
 
 
     @Test

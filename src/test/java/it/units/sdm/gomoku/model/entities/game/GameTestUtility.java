@@ -54,7 +54,7 @@ public class GameTestUtility {
         }
     }
 
-    public static void disputeGameAndPlayerWin(Game game, Player player) {
+    public static void disputeGameAndMakeThePlayerToWin(Game game, Player player) {
         placeTwoChainOfFourIn0And1Rows(game);
 
         if (player == game.getCurrentPlayerProperty().getPropertyValue()) {
