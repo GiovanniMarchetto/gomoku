@@ -95,6 +95,10 @@ public class Game implements Comparable<Game>, Observable {
         }
     }
 
+    private void setWinner(@NotNull final Player winner) {
+        this.winner = Objects.requireNonNull(winner);
+    }
+
     public boolean isBoardEmpty() {
         return board.isEmpty();
     }
@@ -135,10 +139,6 @@ public class Game implements Comparable<Game>, Observable {
         return board.isCoordinatesBelongingToChainOfNStones(lastMove, NUMBER_OF_CONSECUTIVE_STONE_FOR_WINNING);
     }
 
-    private void setWinner(@NotNull final Player winner) {
-        this.winner = Objects.requireNonNull(winner);
-    }
-
     private void changeTurn() {
         currentPlayerProperty.setPropertyValue(currentPlayerProperty.getPropertyValue() == blackPlayer ? whitePlayer : blackPlayer);
     }
@@ -150,11 +150,11 @@ public class Game implements Comparable<Game>, Observable {
 
     @Override
     public String toString() {
-        return "Game started at " + creationTime.atZone(ZoneId.systemDefault()) + "\n" +
-                blackPlayer + " -> BLACK, " +
-                whitePlayer + " -> WHITE" + "\n" +
-                "Winner: " + winner + "\n" +
-                board;
+        String lineSeparator = System.lineSeparator();
+        return "Game started at " + creationTime.atZone(ZoneId.systemDefault()) +
+                lineSeparator + blackPlayer + " -> BLACK, " + whitePlayer + " -> WHITE" +
+                lineSeparator + "Winner: " + winner +
+                lineSeparator + board;
     }
 
     public boolean isCellAtCoordinatesEmpty(@NotNull final Coordinates proposedMove)
