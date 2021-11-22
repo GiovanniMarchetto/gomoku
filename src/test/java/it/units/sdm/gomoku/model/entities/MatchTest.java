@@ -414,12 +414,12 @@ class MatchTest {
         assertTrue(match.isEnded());
     }
 
-    @Test
-    void isEndedAfterAGame() {
-        if (SAMPLE_NUMBER_OF_GAMES != 1) {
-            startGameAndDraw();
-            assertFalse(match.isEnded());
-        }
+    @ParameterizedTest
+    @MethodSource("getIntStreamFrom0IncludedToTotalNumberOfGamesExcluded")
+    void testIfMatchIsEnded(int gameIndex) {
+        int numberOfGamesToDispute = gameIndex + 1;
+        initializeAndDisputeNGameAndEndThemWithDrawAndGetLastInitializedGame(numberOfGamesToDispute, match);
+        assertEquals(numberOfGamesToDispute == SAMPLE_NUMBER_OF_GAMES, match.isEnded());
     }
 
 
