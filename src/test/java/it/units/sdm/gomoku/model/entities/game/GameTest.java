@@ -263,18 +263,6 @@ class GameTest {
     }
 
     @Test
-    void dontPlaceStoneIfGameNotStarted()
-            throws CellOutOfBoardException, BoardIsFullException, GameEndedException, CellAlreadyOccupiedException, GameNotStartedException {
-
-        try {
-            game = createNewGameWithDefaultParams();
-            game.placeStoneAndChangeTurn(coordinatesForFirstMove);
-        } catch (NullPointerException e) {
-            assertTrue(isEmptyCellAtCoordinatesForFirstMove());
-        }
-    }
-
-    @Test
     void placeStoneAfterGameStarted()
             throws CellOutOfBoardException, BoardIsFullException, GameEndedException, CellAlreadyOccupiedException, GameNotStartedException {
 
@@ -288,6 +276,18 @@ class GameTest {
         game.placeStoneAndChangeTurn(coordinatesForFirstMove);
         final Player currentPlayerAfterTheMoveIsDone = game.getCurrentPlayerProperty().getPropertyValue();
         assertNotEquals(currentPlayerForTheMove, currentPlayerAfterTheMoveIsDone);
+    }
+
+    @Test
+    void dontPlaceStoneIfGameNotStarted()
+            throws CellOutOfBoardException, BoardIsFullException, GameEndedException, CellAlreadyOccupiedException, GameNotStartedException {
+
+        try {
+            game = createNewGameWithDefaultParams();
+            game.placeStoneAndChangeTurn(coordinatesForFirstMove);
+        } catch (GameNotStartedException e) {
+            assertTrue(isEmptyCellAtCoordinatesForFirstMove());
+        }
     }
 
     @Test
