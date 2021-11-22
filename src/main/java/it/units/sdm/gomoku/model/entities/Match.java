@@ -5,7 +5,6 @@ import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.exceptions.GameNotEndedException;
 import it.units.sdm.gomoku.model.exceptions.MatchEndedException;
 import it.units.sdm.gomoku.model.exceptions.MatchNotEndedException;
-import it.units.sdm.gomoku.model.exceptions.NullGameException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,23 +43,20 @@ public class Match {
         numberOfGames.incrementAndGet();
     }
 
-
     @NotNull
     public Game initializeNewGame() throws MatchEndedException, GameNotEndedException {
-        try {
-            if (!isCurrentGameEnded()) {
-                throw new GameNotEndedException();
-            }
-        } catch (NullGameException ignored) {
-        }
-
         if (isEnded()) {
             throw new MatchEndedException();
+        }
+
+        if (isCurrentGameOngoing()) {
+            throw new GameNotEndedException();
         }
 
         if (gameList.size() > 0) {
             invertCurrentPlayersColors();
         }
+
         Game newGame = new Game(boardSize, currentBlackPlayer, currentWhitePlayer);
         gameList.add(newGame);
         Stream.of(currentBlackPlayer, currentWhitePlayer)
@@ -133,20 +129,12 @@ public class Match {
     }
 
     public boolean isEnded() {
-        try {
-            return isCurrentGameEnded()
-                    && gameList.size() >= getNumberOfGames();
-        } catch (NullGameException e) {
-            return false;
-        }
+        return !isCurrentGameOngoing() && gameList.size() >= getNumberOfGames();
     }
 
-    private boolean isCurrentGameEnded() throws NullGameException {
+    private boolean isCurrentGameOngoing() {
         final Game currentGame = getCurrentGame();
-        if (currentGame == null) {
-            throw new NullGameException();
-        }
-        return currentGame.isEnded();
+        return currentGame != null && !currentGame.isEnded();
     }
 
     @Nullable
