@@ -239,46 +239,28 @@ class GameTest {
     }
 
     @Test
-    void setWinnerIfIsTheWinMoveBlack() throws GameNotEndedException {
-        disputeGameAndMakeThePlayerToWin(game, blackPlayer);
-        assertEquals(blackPlayer, game.getWinner());
+    void testIsEndedToReturnFalseIfGameNotEnded() {
+        assertFalse(game.isEnded());    // game is just started
     }
 
-    @Test
-    void setWinnerIfIsTheWinMoveWhite() throws GameNotEndedException {
-        disputeGameAndMakeThePlayerToWin(game, whitePlayer);
-        assertEquals(whitePlayer, game.getWinner());
-    }
-
-    @Test
-    void setGameStatusIfGameEndedWhenPlaceStone() {
-        disputeGameAndMakeThePlayerToWin(game, blackPlayer);
-        assertEquals(Game.Status.ENDED, game.getGameStatusProperty().getPropertyValue());
-    }
-
-    @Test
-    void setGameStatusIfGameNotEnded() {
-        placeTwoChainOfFourIn0And1Rows(game);
-        assertNotEquals(Game.Status.ENDED, game.getGameStatusProperty().getPropertyValue());
-    }
-
-    @Test
-    void checkIsEndedInNormalExecution() {
-        assertFalse(game.isEnded());
-    }
-
-    @Test
-    void checkIsEndedIfBlackWinner() {
-        disputeGameAndMakeThePlayerToWin(game, blackPlayer);
+    @ParameterizedTest
+    @EnumSource(Color.class)
+    void testIsEndedToReturnTrueIfAPlayerWon(Color playerColor) throws GameNotEndedException {
+        Player winnerPlayerToSet = null;
+        switch (playerColor) {
+            case BLACK -> winnerPlayerToSet = blackPlayer;
+            case WHITE -> winnerPlayerToSet = whitePlayer;
+            default -> fail(new IllegalArgumentException("Not a valid color"));
+        }
+        disputeGameAndMakeThePlayerToWin(game, winnerPlayerToSet);
         assertTrue(game.isEnded());
     }
 
     @Test
-    void checkIsEndedIfDraw() { //i.e. board is full but no winner
+    void tesdtIsEndedToReturnTrueIfGameEndedWithADraw() { //i.e. board is full but no winner
         disputeGameAndDraw(game);
         assertTrue(game.isEnded());
     }
-
 
     @Test
     void testCompareTo() {
