@@ -288,8 +288,23 @@ class GameTest {
     }
 
     @Test
+    void dontStartGameIfAlreadyStarted() {
+        game = createNewGameWithDefaultParams();
+        try {
+            game.start();
+        } catch (Exception e) {
+            fail("Unexpected exception: a new game must be started");
+        }
+        try {
+            game.start();
+        } catch (Exception e) {
+            assertTrue(e instanceof GameAlreadyStartedException);/*game can be started only once*/
+        }
+    }
+
+    @Test
     void dontPlaceStoneIfGameNotStarted()
-            throws CellOutOfBoardException, BoardIsFullException, GameEndedException, CellAlreadyOccupiedException, GameNotStartedException {
+            throws CellOutOfBoardException, BoardIsFullException, GameEndedException, CellAlreadyOccupiedException {
 
         try {
             game = createNewGameWithDefaultParams();
