@@ -124,7 +124,7 @@ public class Board implements Observable, Serializable {
     public synchronized void occupyPosition(@NotNull Color stoneColor, @NotNull Coordinates coordinates)
             throws BoardIsFullException, CellAlreadyOccupiedException, CellOutOfBoardException {
         if (isThereAnyEmptyCell()) {
-            if (isCellEmpty(Objects.requireNonNull(coordinates))) {
+            if (isCellEmptyAtCoordinates(Objects.requireNonNull(coordinates))) {
                 setStoneAtCoordinates(coordinates, Objects.requireNonNull(stoneColor));
                 numberOfFilledPositions++;
                 lastMoveCoordinatesProperty.setPropertyValue(coordinates);
@@ -136,7 +136,7 @@ public class Board implements Observable, Serializable {
         }
     }
 
-    private boolean isCellEmpty(@NotNull final Coordinates coordinates) throws CellOutOfBoardException {
+    public boolean isCellEmptyAtCoordinates(@NotNull final Coordinates coordinates) throws CellOutOfBoardException {
         return getCellAtCoordinates(Objects.requireNonNull(coordinates)).isEmpty();
     }
 
@@ -148,7 +148,6 @@ public class Board implements Observable, Serializable {
             throw new CellOutOfBoardException(coordinates);
         }
     }
-
 
     public boolean isCoordinatesBelongingToChainOfNStones(@NotNull final Coordinates coords,
                                                           @NotNull final NonNegativeInteger N) {
@@ -246,7 +245,7 @@ public class Board implements Observable, Serializable {
     }
 
     @NotNull
-    public Stream<Coordinates> getStreamOfEmptyCoordinates() {  // Todo: test
+    public Stream<Coordinates> getStreamOfEmptyCoordinates() {
         return IntStream.range(0, getSize()).boxed()
                 .unordered().parallel()
                 .flatMap(x -> IntStream.range(0, getSize())
@@ -279,9 +278,4 @@ public class Board implements Observable, Serializable {
         result = 31 * result + lastMoveCoordinatesProperty.hashCode();
         return result;
     }
-
-    public boolean isEmptyCellAtCoordinates(@NotNull final Coordinates coordinate) throws CellOutOfBoardException {   // TODO: test
-        return getCellAtCoordinates(Objects.requireNonNull(coordinate)).isEmpty();
-    }
-
 }
