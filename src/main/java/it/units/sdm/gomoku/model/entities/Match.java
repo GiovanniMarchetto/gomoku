@@ -5,7 +5,6 @@ import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.exceptions.GameNotEndedException;
 import it.units.sdm.gomoku.model.exceptions.MatchEndedException;
 import it.units.sdm.gomoku.model.exceptions.MatchNotEndedException;
-import it.units.sdm.gomoku.utils.Length;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,8 +16,6 @@ import static it.units.sdm.gomoku.model.custom_types.PositiveInteger.PositiveInt
 public class Match {
 
     @NotNull
-    private final static PositiveInteger DEFAULT_MAXIMUM_GAMES = new PositiveInteger(1);
-    @NotNull
     private final List<Game> gameList;
     @NotNull
     private final PositiveInteger boardSize;
@@ -29,14 +26,6 @@ public class Match {
     @NotNull
     private Player currentWhitePlayer;
 
-    // TODO : ctor may take Setup instance as input param?
-    public Match(@NotNull final PositiveInteger boardSize, @NotNull final PositiveInteger numberOfGames,
-                 @NotNull @Length(length = 2) final Player... players) {
-        // TODO : consider to use a builder instead of a constructor with so many params
-        this(Objects.requireNonNull(boardSize), Objects.requireNonNull(numberOfGames),
-                validatePlayersFromVarargs(players)[0], players[1]);
-    }
-
     public Match(@NotNull final PositiveInteger boardSize, @NotNull final PositiveInteger numberOfGames,
                  @NotNull final Player player1, @NotNull final Player player2) {
         this.currentBlackPlayer = Objects.requireNonNull(player1);
@@ -46,26 +35,8 @@ public class Match {
         this.numberOfGames = Objects.requireNonNull(numberOfGames);
     }
 
-    public Match(@PositiveIntegerType int boardSize, @PositiveIntegerType int numberOfGames,
-                 @NotNull final Player player1, @NotNull final Player player2) {
-        this(new PositiveInteger(boardSize), new PositiveInteger(numberOfGames), player1, player2);
-    }
-
-    public Match(@PositiveIntegerType int boardSize, @NotNull final Player player1, @NotNull final Player player2) {
-        this(boardSize, DEFAULT_MAXIMUM_GAMES.intValue(), player1, player2);
-    }
-
     public Match(@NotNull final Setup setup) {  // TODO: test
         this(Objects.requireNonNull(setup).boardSize(), setup.numberOfGames(), setup.player1(), setup.player2());
-    }
-
-    @NotNull
-    @Length(length = 2)
-    private static Player[] validatePlayersFromVarargs(@NotNull final Player[] players) {
-        if (Objects.requireNonNull(players).length != 2) {
-            throw new IllegalArgumentException("2 players expected but " + players.length + " found.");
-        }
-        return players;
     }
 
     public void addAnExtraGame() {

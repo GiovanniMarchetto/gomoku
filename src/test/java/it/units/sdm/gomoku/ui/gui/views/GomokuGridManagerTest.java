@@ -1,5 +1,6 @@
 package it.units.sdm.gomoku.ui.gui.views;
 
+import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
 import it.units.sdm.gomoku.model.entities.Match;
 import it.units.sdm.gomoku.ui.MainViewmodel;
@@ -24,7 +25,8 @@ class GomokuGridManagerTest {
         vm = new GUIMainViewmodel();
         CPUPlayer p1 = new CPUPlayer("First");
         CPUPlayer p2 = new CPUPlayer("Second");
-        int boardSize = 19, numberOfGames = 3;
+        PositiveInteger boardSize = new PositiveInteger(19);
+        PositiveInteger numberOfGames = new PositiveInteger(3);
 
         try {
             // TODO : refactor method to test MainViewmodel

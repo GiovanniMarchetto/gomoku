@@ -148,7 +148,8 @@ public class CPUPlayerTest {
     }
 
     @Test
-    void throwExceptionWhenChoosingSmartlyNextCoordinatesIfTheBoardIsFull() {
+    void throwExceptionWhenChoosingSmartlyNextCoordinatesIfTheBoardIsFull()
+            throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
         try {
             GameTestUtility.disputeGameAndDraw(game);
             Coordinates findCoordinates = cpuPlayerSmart.chooseEmptyCoordinatesSmartly();

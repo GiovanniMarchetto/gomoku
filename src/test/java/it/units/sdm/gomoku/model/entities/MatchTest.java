@@ -1,10 +1,8 @@
 package it.units.sdm.gomoku.model.entities;
 
+import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.game.GameTestUtility;
-import it.units.sdm.gomoku.model.exceptions.GameAlreadyStartedException;
-import it.units.sdm.gomoku.model.exceptions.GameNotEndedException;
-import it.units.sdm.gomoku.model.exceptions.MatchEndedException;
-import it.units.sdm.gomoku.model.exceptions.MatchNotEndedException;
+import it.units.sdm.gomoku.model.exceptions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +13,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class MatchTest {
 
-    private final int boardSizeTest = 5;
     private final CPUPlayer cpu1 = new CPUPlayer();
     private final CPUPlayer cpu2 = new CPUPlayer();
     private final int NUMBER_OF_GAMES = 3;
@@ -50,7 +47,8 @@ class MatchTest {
 
     @BeforeEach
     void setup() {
-        match = new Match(boardSizeTest, NUMBER_OF_GAMES, cpu1, cpu2);
+        final PositiveInteger boardSizeTest = new PositiveInteger(5);
+        match = new Match(boardSizeTest, new PositiveInteger(NUMBER_OF_GAMES), cpu1, cpu2);
     }
 
     @Test
@@ -134,39 +132,27 @@ class MatchTest {
     }
 
     @Test
-    void getWinnerWithADraw() {
-        try {
-            for (int i = 0; i < NUMBER_OF_GAMES; i++) {
-                startGameAndDraw();
-            }
-            assertNull(match.getWinner());
-        } catch (MatchNotEndedException e) {
-            fail(e);
+    void getWinnerWithADraw() throws MatchNotEndedException {
+        for (int i = 0; i < NUMBER_OF_GAMES; i++) {
+            startGameAndDraw();
         }
+        assertNull(match.getWinner());
     }
 
     @Test
-    void getWinnerWithCPU1Win() {
-        try {
-            for (int i = 0; i < NUMBER_OF_GAMES; i++) {
-                startGameAndPlayerWin(cpu1);
-            }
-            assertEquals(cpu1, match.getWinner());
-        } catch (MatchNotEndedException e) {
-            fail(e);
+    void getWinnerWithCPU1Win() throws MatchNotEndedException {
+        for (int i = 0; i < NUMBER_OF_GAMES; i++) {
+            startGameAndPlayerWin(cpu1);
         }
+        assertEquals(cpu1, match.getWinner());
     }
 
     @Test
-    void getWinnerWithCPU2Win() {
-        try {
-            for (int i = 0; i < NUMBER_OF_GAMES; i++) {
-                startGameAndPlayerWin(cpu2);
-            }
-            assertEquals(cpu2, match.getWinner());
-        } catch (MatchNotEndedException e) {
-            fail(e);
+    void getWinnerWithCPU2Win() throws MatchNotEndedException {
+        for (int i = 0; i < NUMBER_OF_GAMES; i++) {
+            startGameAndPlayerWin(cpu2);
         }
+        assertEquals(cpu2, match.getWinner());
     }
 
     @Test
@@ -208,21 +194,21 @@ class MatchTest {
     }
 
     @Test
-    void isEndedNormalFlow() {
+    void isEndedNormalFlow() throws GameNotStartedException {
         isEndedAfterStartLastGame();
         GameTestUtility.disputeGameWithSmartAlgorithm(currentGame);
         assertTrue(match.isEnded());
     }
 
     @Test
-    void isEndedAfterAddExtraGame() {
+    void isEndedAfterAddExtraGame() throws GameNotStartedException {
         isEndedNormalFlow();
         match.addAnExtraGame();
         assertFalse(match.isEnded());
     }
 
     @Test
-    void isEndedAfterEndExtraGame() {
+    void isEndedAfterEndExtraGame() throws GameNotStartedException {
         isEndedAfterAddExtraGame();
         startGameAndDraw();
         assertTrue(match.isEnded());
@@ -250,16 +236,12 @@ class MatchTest {
     }
 
     @Test
-    void isNotADraw() {
+    void isNotADraw() throws MatchNotEndedException {
         startGameAndPlayerWin(cpu1);
         for (int i = 1; i < NUMBER_OF_GAMES; i++) {
             startGameAndDraw();
         }
-        try {
-            assertFalse(match.isADraw());
-        } catch (MatchNotEndedException e) {
-            fail(e);
-        }
+        assertFalse(match.isADraw());
     }
 
 }
