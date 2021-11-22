@@ -192,7 +192,7 @@ public class CLIProgramFluxTest {
 
             assertEquals(setup.player1(), this.match.getCurrentBlackPlayer());
             assertEquals(setup.player2(), this.match.getCurrentWhitePlayer());
-            assertEquals(setup.numberOfGames(), new PositiveInteger(this.match.getNumberOfGames()));
+            assertEquals(setup.numberOfGames(), new PositiveInteger(this.match.getTotalNumberOfGames()));
             assertEquals(setup.boardSize(), TestUtility.getFieldValue("boardSize", this.match));
 
             gameListOfTheMatch = (List<?>) Objects.requireNonNull(TestUtility.getFieldValue("gameList", this.match));

@@ -38,6 +38,21 @@ class MatchTest {
         return IntStream.range(0, SAMPLE_NUMBER_OF_GAMES).mapToObj(Arguments::of);
     }
 
+    private static void disputeNGamesOfMatchAndMakeGivenPlayerToWinAllTheGamesInMatch(
+            int nGamesToDispute, @NotNull final Player winner, @NotNull final Match match) {
+
+        assert nGamesToDispute <= SAMPLE_NUMBER_OF_GAMES;
+        IntStream.range(0, nGamesToDispute).sequential().forEach(i -> {
+            try {
+                Game currentGame = match.initializeNewGame();
+                currentGame.start();
+                GameTestUtility.disputeGameAndMakeThePlayerToWin(currentGame, winner);
+            } catch (GameAlreadyStartedException | MatchEndedException | GameNotEndedException e) {
+                fail(e);
+            }
+        });
+    }
+
     //region Support Methods    // todo : TRY NOT TO USE THIS REGION
     private void assertCpusScore(int n1, int n2) {
         assertEquals(n1, match.getScore().get(SAMPLE_PLAYER_1).intValue());
@@ -187,7 +202,7 @@ class MatchTest {
     //region test getters
     @Test
     void testGetNumberOfGames() {
-        assertEquals(SAMPLE_NUMBER_OF_GAMES, match.getNumberOfGames());
+        assertEquals(SAMPLE_NUMBER_OF_GAMES, match.getTotalNumberOfGames());
     }
 
     @Test
@@ -239,7 +254,7 @@ class MatchTest {
         {
             expectedScore = new HashMap<>(2);
             expectedScore.put(SAMPLE_PLAYER_1, new NonNegativeInteger(numberOfGamesWonByFirstPlayer));
-            expectedScore.put(SAMPLE_PLAYER_2, new NonNegativeInteger(match.getNumberOfGames() - numberOfGamesWonByFirstPlayer));
+            expectedScore.put(SAMPLE_PLAYER_2, new NonNegativeInteger(match.getTotalNumberOfGames() - numberOfGamesWonByFirstPlayer));
         }
         assertEquals(expectedScore, match.getScore());
     }
@@ -293,21 +308,6 @@ class MatchTest {
     }
     //endregion test scores
 
-    private static void disputeNGamesOfMatchAndMakeGivenPlayerToWinAllTheGamesInMatch(
-            int nGamesToDispute, @NotNull final Player winner, @NotNull final Match match) {
-
-        assert nGamesToDispute <= SAMPLE_NUMBER_OF_GAMES;
-        IntStream.range(0, nGamesToDispute).sequential().forEach(i -> {
-            try {
-                Game currentGame = match.initializeNewGame();
-                currentGame.start();
-                GameTestUtility.disputeGameAndMakeThePlayerToWin(currentGame, winner);
-            } catch (GameAlreadyStartedException | MatchEndedException | GameNotEndedException e) {
-                fail(e);
-            }
-        });
-    }
-
     @ParameterizedTest
     @MethodSource("getIntStreamFrom0IncludedToTotalNumberOfGamesExcluded")
     void invertColorsOfPlayersWhenNewGameIsCreated(int numberOfCurrentGame) {
@@ -333,6 +333,14 @@ class MatchTest {
             fail("Unknown player");
         }
     }
+
+    @Test
+    void testIncrementTotalNumberOfGames() {
+        int initialValue = match.getTotalNumberOfGames();
+        match.incrementTotalNumberOfGames();
+        assertEquals(initialValue + 1, match.getTotalNumberOfGames());
+    }
+
 
     @Test
     void addFirstGameOfTheMatchToGameList() throws MatchEndedException, NoSuchFieldException, IllegalAccessException, GameNotEndedException {

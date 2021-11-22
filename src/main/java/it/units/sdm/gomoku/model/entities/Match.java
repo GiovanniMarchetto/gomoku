@@ -20,7 +20,7 @@ public class Match {
     @NotNull
     private final PositiveInteger boardSize;
     @NotNull
-    private final PositiveInteger numberOfGames;
+    private final PositiveInteger totalNumberOfGames;
     @NotNull
     private Player currentBlackPlayer;
     @NotNull
@@ -31,7 +31,7 @@ public class Match {
         this.currentWhitePlayer = Objects.requireNonNull(player2);
         this.gameList = new ArrayList<>();
         this.boardSize = Objects.requireNonNull(boardSize);
-        this.numberOfGames = Objects.requireNonNull(numberOfGames);
+        this.totalNumberOfGames = Objects.requireNonNull(numberOfGames);
     }
 
     public Match(@NotNull final Setup setup) {  // TODO: test
@@ -39,7 +39,7 @@ public class Match {
     }
 
     public void incrementTotalNumberOfGames() {
-        numberOfGames.incrementAndGet();
+        totalNumberOfGames.incrementAndGet();
     }
 
     @NotNull
@@ -104,8 +104,8 @@ public class Match {
     }
 
     @PositiveIntegerType
-    public int getNumberOfGames() {
-        return numberOfGames.intValue();
+    public int getTotalNumberOfGames() {
+        return totalNumberOfGames.intValue();
     }
 
     @NotNull
@@ -131,7 +131,7 @@ public class Match {
     }
 
     public boolean isEnded() {
-        return !isCurrentGameOngoing() && gameList.size() >= getNumberOfGames();
+        return !isCurrentGameOngoing() && gameList.size() >= getTotalNumberOfGames();
     }
 
     public boolean isADraw() throws MatchNotEndedException {
@@ -150,13 +150,13 @@ public class Match {
         Match match = (Match) o;
         if (!gameList.equals(match.gameList)) return false;
         if (!boardSize.equals(match.boardSize)) return false;
-        if (!numberOfGames.equals(match.numberOfGames)) return false;
+        if (!totalNumberOfGames.equals(match.totalNumberOfGames)) return false;
         if (!currentBlackPlayer.equals(match.currentBlackPlayer)) return false;
         return currentWhitePlayer.equals(match.currentWhitePlayer);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(gameList, boardSize, numberOfGames, currentBlackPlayer, currentWhitePlayer);
+        return Objects.hash(gameList, boardSize, totalNumberOfGames, currentBlackPlayer, currentWhitePlayer);
     }
 }
