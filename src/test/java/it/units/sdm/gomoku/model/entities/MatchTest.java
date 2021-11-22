@@ -373,11 +373,12 @@ class MatchTest {
     }
 
     @Test
-    void getWinnerIfMatchNotEnded() {
+    void dontSetMatchOfWinnerIfMatchNotEnded() {
         try {
             match.getWinner();
             fail("Match not ended");
-        } catch (MatchNotEndedException ignored) {
+        } catch (Exception e) {
+            assertTrue(e instanceof MatchNotEndedException);
         }
     }
 
