@@ -4,7 +4,6 @@ import it.units.sdm.gomoku.model.custom_types.Color;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.exceptions.*;
-import it.units.sdm.gomoku.mvvm_library.Observable;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservableProperty;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyProxy;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertySettable;
@@ -24,7 +23,7 @@ import java.util.logging.Level;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-public class Game implements Comparable<Game>, Observable {
+public class Game implements Comparable<Game> {
 
     @NotNull
     public static final PositiveInteger NUMBER_OF_CONSECUTIVE_STONE_FOR_WINNING = new PositiveInteger(5);
