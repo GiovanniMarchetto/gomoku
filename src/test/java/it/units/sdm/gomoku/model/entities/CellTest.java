@@ -21,7 +21,7 @@ class CellTest {
     private static final Cell emptyCell = new Cell();
     private static final Cell blackCell = new Cell();
     private static final Cell whiteCell = new Cell();
-    private static final List<Cell> cellList = Arrays.asList(
+    private static final List<Cell> cellListWithChainOfTwoBlackAndChainOfFiveWhite = Arrays.asList(
             emptyCell, emptyCell, blackCell, blackCell, whiteCell, blackCell, blackCell,
             whiteCell, whiteCell, whiteCell, whiteCell, whiteCell, emptyCell, emptyCell);
     private Cell cell;
@@ -76,22 +76,24 @@ class CellTest {
 
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 3, 4, 5})
-        // TODO:re see this (don't simply delete todo please!)
-    void testIfCellBelongsToChainOfTwo(int N) throws NoSuchFieldException, IllegalAccessException {
-        final int SIZE_OF_DESIRED_CHAIN = 2;
-        NonNegativeInteger n = new NonNegativeInteger(N);
+    void testIfCellBelongsToChainOfNWhenTheMaximumChainIsOfTwo(int N) throws NoSuchFieldException, IllegalAccessException {
+        final int SIZE_OF_MAXIMUM_CHAIN = 2;
         TestUtility.setFieldValue("stone", blackStone, cell);
-        assertEquals(N <= SIZE_OF_DESIRED_CHAIN, cell.isBelongingToChainOfNCellsInList(n, cellList));
+        boolean isAChainLongMaximumN = N <= SIZE_OF_MAXIMUM_CHAIN;
+
+        assertEquals(isAChainLongMaximumN,
+                cell.isBelongingToChainOfNCellsInList(new NonNegativeInteger(N), cellListWithChainOfTwoBlackAndChainOfFiveWhite));
     }
 
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 3, 4, 5, 6, 7, 8})
-        // TODO:re see this (don't simply delete todo please!)
-    void testIfCellBelongsToChainOfFive(int N) throws NoSuchFieldException, IllegalAccessException {
-        final int SIZE_OF_DESIRED_CHAIN = 5;
-        NonNegativeInteger n = new NonNegativeInteger(N);
+    void testIfCellBelongsToChainOfNWhenTheMaximumChainIsOfFive(int N) throws NoSuchFieldException, IllegalAccessException {
+        final int SIZE_OF_MAXIMUM_CHAIN = 5;
         TestUtility.setFieldValue("stone", whiteStone, cell);
-        assertEquals(N <= SIZE_OF_DESIRED_CHAIN, cell.isBelongingToChainOfNCellsInList(n, cellList));
+        boolean isAChainLongMaximumN = N <= SIZE_OF_MAXIMUM_CHAIN;
+
+        assertEquals(isAChainLongMaximumN,
+                cell.isBelongingToChainOfNCellsInList(new NonNegativeInteger(N), cellListWithChainOfTwoBlackAndChainOfFiveWhite));
     }
 
     //region toString
