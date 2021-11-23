@@ -27,15 +27,15 @@ import java.util.stream.Stream;
 public abstract class MainViewmodel extends Viewmodel {
 
     @NotNull
-    private ObservablePropertySettable<Player> currentPlayerProperty;
-    @NotNull
-    private ObservablePropertySettable<Game.Status> currentGameStatusProperty;
-    @NotNull
-    private ObservablePropertySettable<Boolean> userMustPlaceNewStoneProperty;
-    @NotNull
-    private ObservablePropertySettable<Coordinates> lastMoveCoordinatesProperty;
-    @NotNull
     private final List<PropertyObserver<?>> modelPropertyObservers;
+    @Nullable
+    private ObservablePropertySettable<Player> currentPlayerProperty;
+    @Nullable
+    private ObservablePropertySettable<Game.Status> currentGameStatusProperty;
+    @Nullable
+    private ObservablePropertySettable<Boolean> userMustPlaceNewStoneProperty;
+    @Nullable
+    private ObservablePropertySettable<Coordinates> lastMoveCoordinatesProperty;
     @Nullable
     private Match match;
     @Nullable
@@ -44,11 +44,15 @@ public abstract class MainViewmodel extends Viewmodel {
     private Board currentBoard;
 
     public MainViewmodel() {
+        this.modelPropertyObservers = new ArrayList<>();
+        initializeProperties();
+    }
+
+    private void initializeProperties() {
         this.currentPlayerProperty = new ObservablePropertySettable<>();
         this.currentGameStatusProperty = new ObservablePropertySettable<>();
         this.userMustPlaceNewStoneProperty = new ObservablePropertySettable<>();
         this.lastMoveCoordinatesProperty = new ObservablePropertySettable<>();
-        this.modelPropertyObservers = new ArrayList<>();
     }
 
     private <ObservedPropertyValueType> void addObservedProperty(
@@ -70,7 +74,7 @@ public abstract class MainViewmodel extends Viewmodel {
         addObservedProperty(
                 currentGame.getCurrentPlayerProperty(),
                 evt -> {
-                    currentPlayerProperty.setPropertyValue((Player) evt.getNewValue());
+                    Objects.requireNonNull(currentPlayerProperty).setPropertyValue((Player) evt.getNewValue());
                     if (!isCurrentGameEnded()) {
                         new Thread(() -> {
                             try {
@@ -89,7 +93,7 @@ public abstract class MainViewmodel extends Viewmodel {
         addObservedProperty(
                 currentGame.getGameStatusProperty(),
                 evt -> {
-                    currentGameStatusProperty.setPropertyValue((Game.Status) evt.getNewValue());
+                    Objects.requireNonNull(currentGameStatusProperty).setPropertyValue((Game.Status) evt.getNewValue());
                     if (evt.getNewValue().equals(Game.Status.ENDED)) {
                         endGame();
                     }
@@ -98,14 +102,14 @@ public abstract class MainViewmodel extends Viewmodel {
         assert currentBoard != null;
         addObservedProperty(
                 currentBoard.getLastMoveCoordinatesProperty(),
-                evt -> lastMoveCoordinatesProperty.setPropertyValue(
+                evt -> Objects.requireNonNull(lastMoveCoordinatesProperty).setPropertyValue(
                         (Coordinates) evt.getNewValue()));
 
         Stream.of(getCurrentBlackPlayer(), getCurrentWhitePlayer())
                 .forEach(player ->
                         addObservedProperty(
                                 player.getCoordinatesRequiredToContinueProperty(),
-                                evt -> userMustPlaceNewStoneProperty.setPropertyValue((boolean) evt.getNewValue())));
+                                evt -> Objects.requireNonNull(userMustPlaceNewStoneProperty).setPropertyValue((boolean) evt.getNewValue())));
 
     }
 
@@ -125,10 +129,7 @@ public abstract class MainViewmodel extends Viewmodel {
     public void createMatchFromSetupAndInitializeNewGame(Setup setup) {
         setMatch(new Match(setup));
         // TODO: code duplication (ctor)
-        this.currentPlayerProperty = new ObservablePropertySettable<>();
-        this.currentGameStatusProperty = new ObservablePropertySettable<>();
-        this.userMustPlaceNewStoneProperty = new ObservablePropertySettable<>();
-        this.lastMoveCoordinatesProperty = new ObservablePropertySettable<>();
+        initializeProperties();
         initializeNewGame();
     }
 
@@ -181,7 +182,7 @@ public abstract class MainViewmodel extends Viewmodel {
 
     public void placeStoneFromUser(@NotNull final Coordinates coordinates)
             throws CellAlreadyOccupiedException, GameEndedException, CellOutOfBoardException {
-        if (Boolean.TRUE.equals(userMustPlaceNewStoneProperty.getPropertyValue())) {
+        if (Boolean.TRUE.equals(Objects.requireNonNull(userMustPlaceNewStoneProperty).getPropertyValue())) {
             Objects.requireNonNull(getCurrentPlayer())
                     .setMoveToBeMade(Objects.requireNonNull(coordinates));
         }
@@ -224,22 +225,22 @@ public abstract class MainViewmodel extends Viewmodel {
 
     @NotNull
     public ObservableProperty<Player> getCurrentPlayerProperty() {
-        return new ObservablePropertyProxy<>(currentPlayerProperty);
+        return new ObservablePropertyProxy<>(Objects.requireNonNull(currentPlayerProperty));
     }
 
     @NotNull
     public ObservableProperty<Game.Status> getCurrentGameStatusProperty() {
-        return new ObservablePropertyProxy<>(currentGameStatusProperty);
+        return new ObservablePropertyProxy<>(Objects.requireNonNull(currentGameStatusProperty));
     }
 
     @NotNull
     public ObservableProperty<Boolean> getUserMustPlaceNewStoneProperty() {
-        return new ObservablePropertyProxy<>(userMustPlaceNewStoneProperty);
+        return new ObservablePropertyProxy<>(Objects.requireNonNull(userMustPlaceNewStoneProperty));
     }
 
     @NotNull
     public ObservableProperty<Coordinates> getLastMoveCoordinatesProperty() {
-        return new ObservablePropertyProxy<>(lastMoveCoordinatesProperty);
+        return new ObservablePropertyProxy<>(Objects.requireNonNull(lastMoveCoordinatesProperty));
     }
 
     @NotNull
