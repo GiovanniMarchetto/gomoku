@@ -26,12 +26,12 @@ public class Cell implements Cloneable {
         return stone;
     }
 
-    public synchronized void setStoneFromColor(@NotNull Color color) {
-        setStone(new Stone(Objects.requireNonNull(color)));
-    }
-
     private synchronized void setStone(@Nullable Stone stone) {
         this.stone = stone;
+    }
+
+    public synchronized void setStoneFromColor(@NotNull Color color) {
+        setStone(new Stone(Objects.requireNonNull(color)));
     }
 
     public synchronized boolean isEmpty() {

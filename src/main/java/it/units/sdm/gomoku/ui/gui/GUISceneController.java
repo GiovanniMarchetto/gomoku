@@ -29,12 +29,12 @@ public class GUISceneController {
 
     private static GUISceneController singleInstance;
     private static Boolean javaFxRunning = null;
+    @Nullable
+    private static View<?> currentView;
     private final Map<ViewName, Supplier<Scene>> scenes;
     private final Stage stage;
     private double sceneWidth = 0;
     private double sceneHeight = 0;
-    @Nullable
-    private static View<?> currentView;
 
     @SafeVarargs
     private GUISceneController(@NotNull final Stage stage, @NotNull final String firstStageTitle,

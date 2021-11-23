@@ -37,11 +37,6 @@ public abstract class ObservableProperty<PropertyValueType> implements Observabl
     }
 
     @NotNull
-    protected String getPropertyName() {
-        return propertyName;
-    }
-
-    @NotNull
     protected synchronized ObservableProperty<PropertyValueType> setPropertyValue(
             @Nullable final PropertyValueType newPropertyValue) {
         PropertyValueType oldValue = getPropertyValue();
@@ -50,6 +45,11 @@ public abstract class ObservableProperty<PropertyValueType> implements Observabl
             firePropertyChange(propertyName, oldValue, getPropertyValue());
         }
         return this;
+    }
+
+    @NotNull
+    protected String getPropertyName() {
+        return propertyName;
     }
 
     @Override

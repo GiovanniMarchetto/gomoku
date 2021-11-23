@@ -29,35 +29,19 @@ import static it.units.sdm.gomoku.model.custom_types.PositiveInteger.PositiveInt
 
 public class Board implements Serializable {
 
-    private int numberOfFilledPositions;
     @NotNull
     private final PositiveInteger size;
     @NotNull
     private final Cell[][] matrix;
-    @NotNull
-    private final ObservablePropertySettable<Coordinates> lastMoveCoordinatesProperty;
-
     @NotNull
     public final Function<Stream<Stream<Coordinates>>, Stream<Stream<Cell>>> mapCoordStreamStreamToCellStreamStream =
             streamStream -> streamStream
                     .map(coordStream -> coordStream
                             .map(this::getCellAtCoordinatesOrNullIfInvalid)
                             .filter(Objects::nonNull));
-
     @NotNull
-    public static IntStream groupCellStreamStreamByStoneToIntStreamOfMaxNumberOfSameColorStones(
-            @NotNull final Stream<Stream<Cell>> streamStream) {
-        return streamStream
-                .map(cellStream -> cellStream
-                        .filter(cell -> !cell.isEmpty())
-                        .collect(Collectors.groupingBy(Cell::getStone, Collectors.counting())))
-                .filter(map -> map.size() > 0)
-                .map(map -> map.values().stream()
-                        .mapToInt(Math::toIntExact)
-                        .max()
-                        .orElseThrow(IllegalStateException::new))
-                .mapToInt(i -> i);
-    }
+    private final ObservablePropertySettable<Coordinates> lastMoveCoordinatesProperty;
+    private int numberOfFilledPositions;
 
     public Board(@NotNull PositiveInteger size) {
         this.size = size;
@@ -73,6 +57,21 @@ public class Board implements Serializable {
         this.numberOfFilledPositions = board.numberOfFilledPositions;
         this.matrix = board.getBoardMatrixCopy();
         this.lastMoveCoordinatesProperty = board.lastMoveCoordinatesProperty.clone();
+    }
+
+    @NotNull
+    public static IntStream groupCellStreamStreamByStoneToIntStreamOfMaxNumberOfSameColorStones(
+            @NotNull final Stream<Stream<Cell>> streamStream) {
+        return streamStream
+                .map(cellStream -> cellStream
+                        .filter(cell -> !cell.isEmpty())
+                        .collect(Collectors.groupingBy(Cell::getStone, Collectors.counting())))
+                .filter(map -> map.size() > 0)
+                .map(map -> map.values().stream()
+                        .mapToInt(Math::toIntExact)
+                        .max()
+                        .orElseThrow(IllegalStateException::new))
+                .mapToInt(i -> i);
     }
 
     @PositiveIntegerType
