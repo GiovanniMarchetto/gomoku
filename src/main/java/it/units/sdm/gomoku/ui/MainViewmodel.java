@@ -71,7 +71,7 @@ public abstract class MainViewmodel extends Viewmodel {
                 evt -> {
                     currentPlayerProperty.setPropertyValue((Player) evt.getNewValue());
                     if (!isCurrentGameEnded()) {
-                        Utility.runOnSeparateThread(() -> {
+                        new Thread(() -> {
                             try {
                                 Objects.requireNonNull(currentPlayerProperty.getPropertyValue()).makeMove();
                             } catch (GameEndedException e) {

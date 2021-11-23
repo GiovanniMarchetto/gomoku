@@ -93,30 +93,33 @@ public class CLIStartView extends View<StartViewmodel> {// TODO : refactor this 
         switch (askAndGetNumberOfPlayers()) {   // TODO : all tests are missing (see GUIStartViewTest)
             // TODO : refactor
             case CPU_VS_CPU -> {
-                getViewmodelAssociatedWithView().setPlayer1Name("CPU1");
-                getViewmodelAssociatedWithView().setPlayer1CPUSkillFactor(askAndGetCPUPlayerSkillFactor(1));
-                getViewmodelAssociatedWithView().setPlayer2Name("CPU2");
-                getViewmodelAssociatedWithView().setPlayer2CPUSkillFactor(askAndGetCPUPlayerSkillFactor(2));
-                getViewmodelAssociatedWithView().setPlayer1CPU(true);
-                getViewmodelAssociatedWithView().setPlayer2CPU(true);
+                getViewmodelAssociatedWithView()
+                        .setPlayer1Name("CPU1")
+                        .setPlayer1CPUSkillFactor(askAndGetCPUPlayerSkillFactor(1))
+                        .setPlayer2Name("CPU2")
+                        .setPlayer2CPUSkillFactor(askAndGetCPUPlayerSkillFactor(2))
+                        .setPlayer1CPU(true)
+                        .setPlayer2CPU(true);
             }
             case PERSON_VS_CPU -> {
-                getViewmodelAssociatedWithView().setPlayer1Name(askAndGetPlayerName(1));
-                getViewmodelAssociatedWithView().setPlayer2Name("CPU");
-                getViewmodelAssociatedWithView().setPlayer2CPUSkillFactor(askAndGetCPUPlayerSkillFactor(2));
-                getViewmodelAssociatedWithView().setPlayer1CPU(false);
-                getViewmodelAssociatedWithView().setPlayer2CPU(true);
+                getViewmodelAssociatedWithView()
+                        .setPlayer1Name(askAndGetPlayerName(1))
+                        .setPlayer2Name("CPU")
+                        .setPlayer2CPUSkillFactor(askAndGetCPUPlayerSkillFactor(2))
+                        .setPlayer1CPU(false)
+                        .setPlayer2CPU(true);
             }
             case PERSON_VS_PERSON -> {
-                getViewmodelAssociatedWithView().setPlayer1Name(askAndGetPlayerName(1));
-                getViewmodelAssociatedWithView().setPlayer2Name(askAndGetPlayerName(2));
-                getViewmodelAssociatedWithView().setPlayer1CPU(false);
-                getViewmodelAssociatedWithView().setPlayer2CPU(false);
+                getViewmodelAssociatedWithView()
+                        .setPlayer1Name(askAndGetPlayerName(1))
+                        .setPlayer2Name(askAndGetPlayerName(2))
+                        .setPlayer1CPU(false)
+                        .setPlayer2CPU(false);
             }
         }
-        getViewmodelAssociatedWithView().setSelectedBoardSize(askAndGetBoardSize());
-        getViewmodelAssociatedWithView().setNumberOfGames(askAndGetNumberOfGames());
-
-        getViewmodelAssociatedWithView().createAndStartMatch();
+        getViewmodelAssociatedWithView()
+                .setSelectedBoardSize(askAndGetBoardSize())
+                .setNumberOfGames(askAndGetNumberOfGames())
+                .createAndStartMatch();
     }
 }
