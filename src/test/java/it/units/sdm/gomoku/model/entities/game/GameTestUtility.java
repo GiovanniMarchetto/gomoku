@@ -73,13 +73,13 @@ public class GameTestUtility {
                 game.placeStoneAndChangeTurn(new Coordinates(2, 0));
                 game.placeStoneAndChangeTurn(new Coordinates(1, 4));
             }
-        } catch (BoardIsFullException | GameEndedException | CellOutOfBoardException | CellAlreadyOccupiedException | GameNotStartedException e) {
+        } catch (GameEndedException | CellOutOfBoardException | CellAlreadyOccupiedException | GameNotStartedException e) {
             Assertions.fail("During disputeGameAndMakeThePlayerToWin throw: " + e);
         }
     }
 
     static void placeTwoChainOfFourIn0And1Rows(Game game)
-            throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException, GameNotStartedException {
+            throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException, GameNotStartedException {
 
         for (int i = 0; i < 4; i++) {
             game.placeStoneAndChangeTurn(new Coordinates(0, i));
