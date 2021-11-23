@@ -21,7 +21,7 @@ public class GameTestBasedOnCsv {
     @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfMoveControlRecordFields")
     void disputeGameAndCalculateIfThePlayerWonWithLastMove(
             Cell[][] matrix, Coordinates coordinatesToControl, boolean expectedResultOfAlgorithm)
-            throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException,
+            throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException,
             NoSuchMethodException, InvocationTargetException, IllegalAccessException, GameNotStartedException, GameAlreadyStartedException {
 
         game = GameTestUtility.createAndDisputeGameFromCsv(matrix, coordinatesToControl);
@@ -35,7 +35,7 @@ public class GameTestBasedOnCsv {
     @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfMoveControlRecordFields")
     void setEndedIfThereIsAWinnerOrBoardIsFull(Cell[][] matrix, Coordinates coordinatesToControl,
                                                @SuppressWarnings("unused") boolean ignored, boolean finishedGame)
-            throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException, GameNotStartedException, GameAlreadyStartedException {
+            throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException, GameNotStartedException, GameAlreadyStartedException {
 
         game = GameTestUtility.createAndDisputeGameFromCsv(matrix, coordinatesToControl);
         assertEquals(finishedGame, game.isEnded());
@@ -45,7 +45,7 @@ public class GameTestBasedOnCsv {
     @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfMoveControlRecordFields")
     void disputeGameAndThrowGameNotEndedExceptionWhenGetWinnerIfGameNotEnded(
             Cell[][] matrix, Coordinates coordinatesToControl, @SuppressWarnings("unused") boolean ignoredParam, boolean finishedGame)
-            throws BoardIsFullException, GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException, GameNotStartedException, GameAlreadyStartedException {
+            throws GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException, GameNotStartedException, GameAlreadyStartedException {
 
         if (!finishedGame) {
             game = GameTestUtility.createAndDisputeGameFromCsv(matrix, coordinatesToControl);
@@ -61,7 +61,7 @@ public class GameTestBasedOnCsv {
     @MethodSource("it.units.sdm.gomoku.utils.TestUtility#getStreamOfMoveControlRecordFields")
     void disputeCompleteGameAndSetWinnerIfThereIsAWinner(Cell[][] matrix, Coordinates coordinatesToControl,
                                                          boolean isThereAWinner, boolean finishedGame)
-            throws GameNotEndedException, BoardIsFullException, GameEndedException,
+            throws GameNotEndedException, GameEndedException,
             CellOutOfBoardException, CellAlreadyOccupiedException, GameNotStartedException, GameAlreadyStartedException {
 
         if (finishedGame) {

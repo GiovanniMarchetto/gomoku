@@ -8,6 +8,7 @@ import java.beans.PropertyChangeEvent;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+@SuppressWarnings("ClassCanBeRecord")
 public class PropertyObserver<ObservedPropertyValueType> implements Observer {
 
     @NotNull

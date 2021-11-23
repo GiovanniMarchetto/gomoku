@@ -62,18 +62,17 @@ class GUIStartViewTest {
 
     @AfterAll
     static void tearDown() {
-        try {
-            tearDownJavaFXRuntime();
-        } catch (InterruptedException e) {
-            fail(e);
-        }
+        tearDownJavaFXRuntime();
     }
 
-    private static void setUpJavaFXRuntime() throws InterruptedException {
+    private static void setUpJavaFXRuntime() {
         if (!isJavaFxRunning.get()) {
             isJavaFxRunning.set(true);
             Platform.startup(() -> {
-                while (isJavaFxRunning.get()) {
+                while (true) {
+                    if (!isJavaFxRunning.get()) {
+                        break;
+                    }
                 }
             });
         }
@@ -89,7 +88,7 @@ class GUIStartViewTest {
 //        // TODO : assert the correct view is shown with correct input field values and same values saved in Viewmodel
 //    }
 
-    private static void tearDownJavaFXRuntime() throws InterruptedException {
+    private static void tearDownJavaFXRuntime() {
         isJavaFxRunning.set(false);
         Platform.setImplicitExit(false);
     }
@@ -149,7 +148,7 @@ class GUIStartViewTest {
             sceneCreatorMethod.invoke(null, fxmlLoader, 0, 0);
             guiStartView = fxmlLoader.getController();
             guiStartViewmodel = guiStartView.getViewmodelAssociatedWithView();
-        } catch (InterruptedException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             fail(e);
         }
     }

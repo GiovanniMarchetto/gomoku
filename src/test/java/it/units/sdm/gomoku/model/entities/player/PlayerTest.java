@@ -67,7 +67,7 @@ class PlayerTest {
 
     @Test
     void dontMakeMoveIfGameNotSet()
-            throws NoSuchFieldException, IllegalAccessException, BoardIsFullException,
+            throws NoSuchFieldException, IllegalAccessException,
             GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
 
         Player playerWithNoGameSet = new FakePlayer(SAMPLE_NAME);
@@ -84,7 +84,7 @@ class PlayerTest {
     @Test
     void makeMoveIfValid()
             throws NoSuchFieldException, IllegalAccessException, CellOutOfBoardException,
-            BoardIsFullException, GameEndedException, CellAlreadyOccupiedException {
+            GameEndedException, CellAlreadyOccupiedException {
 
         insertCoordinatesInBufferOfPlayerIfBufferIsEmpty(SAMPLE_VALID_COORDINATES, blackPlayer);
         Color currentPlayerColor = game.getColorOfPlayer(blackPlayer);
@@ -199,7 +199,7 @@ class PlayerTest {
     @Test
     void dontRequireMoveToFirstPlayerAfterHasJustDoneTheFirstMove()
             throws NoSuchFieldException, IllegalAccessException,
-            GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException, BoardIsFullException {
+            GameEndedException, CellOutOfBoardException, CellAlreadyOccupiedException {
 
         makeMoveIfValid();
 
