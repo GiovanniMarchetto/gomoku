@@ -13,17 +13,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.function.Supplier;
-import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class CLIStartViewTest {
-    //TODO : missing tests
-
     private final static String ERROR_STRING = "ERROR";
     private static final ByteArrayOutputStream fakeStdOut = new ByteArrayOutputStream();
-    private final static Logger loggerThisClass = Logger.getLogger(CLIStartViewTest.class.getCanonicalName());
     private final CLIStartView cliStartView = new CLIStartView(new StartViewmodel(new CLIMainViewmodel()));
 
     @BeforeAll
@@ -46,7 +42,7 @@ class CLIStartViewTest {
             try {
                 MatchTypes matchTypeAccordingToInputInsertedByTheUser =
                         (MatchTypes) TestUtility
-                                .getMethodAlreadyMadeAccessible(cliStartView.getClass(), "askAndGetNumberOfPlayers", new Class[0])
+                                .getMethodAlreadyMadeAccessible(cliStartView.getClass(), "askAndGetNumberOfPlayers")
                                 .invoke(null);
                 assertEquals(MatchTypes.valueOf(matchTypeOrError), matchTypeAccordingToInputInsertedByTheUser);
             } catch (InvocationTargetException invalidInputInsertedCausedException) {
