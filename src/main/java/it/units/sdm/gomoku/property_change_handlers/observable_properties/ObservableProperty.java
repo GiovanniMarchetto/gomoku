@@ -8,7 +8,6 @@ import java.util.Objects;
 
 public abstract class ObservableProperty<PropertyValueType> implements Observable {
 
-    // TODO : test all events to work properly
 
     private static int numberOfDistinctCreatedInstances = Integer.MIN_VALUE;
 

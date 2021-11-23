@@ -9,7 +9,6 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 public class PropertyObserver<ObservedPropertyValueType> implements Observer {
-    // TODO : to be tested
 
     @NotNull
     private final ObservableProperty<ObservedPropertyValueType> observedProperty;
