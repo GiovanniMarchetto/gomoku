@@ -21,16 +21,18 @@ public class GomokuGridManager {
     @NotNull
     private final ObservablePropertySettable<Double> gomokuStoneRadiusProperty;
 
-    //TODO : add nullable/notnull annotations
-
+    @NotNull
     private final GUIMainViewmodel vm;
     private final int boardSize;
+    @NotNull
     private final GridPane gridPane;
+    @NotNull
     private final Pane parentPane;
     private final double discardWidth;
     private final double discardHeight;
 
-    public GomokuGridManager(GUIMainViewmodel vm, Pane parentPane, double discardWidth, double discardHeight) {
+    public GomokuGridManager(@NotNull GUIMainViewmodel vm, @NotNull Pane parentPane,
+                             double discardWidth, double discardHeight) {
         this.vm = vm;
         this.boardSize = vm.getBoardSize();
         this.parentPane = parentPane;
@@ -94,6 +96,7 @@ public class GomokuGridManager {
         gomokuStoneRadiusProperty.setPropertyValue(newRadiusValue);
     }
 
+    @NotNull
     public GridPane getGridPane() {
         return gridPane;
     }
