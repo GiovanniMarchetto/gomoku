@@ -8,6 +8,7 @@ import it.units.sdm.gomoku.model.exceptions.GameEndedException;
 import it.units.sdm.gomoku.mvvm_library.View;
 import it.units.sdm.gomoku.ui.cli.IOUtility;
 import it.units.sdm.gomoku.ui.cli.viewmodels.CLIMainViewmodel;
+import it.units.sdm.gomoku.utils.Utility;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.logging.Level;
@@ -22,23 +23,24 @@ public class CLIMainView extends View<CLIMainViewmodel> {
                 System.out.println("\n\nNew game!");
             }
         });
+
         addObservedPropertyOfViewmodel(cliMainViewmodel.getUserMustPlaceNewStoneProperty(), evt -> {
             if ((boolean) evt.getNewValue()) {
                 try {
                     waitForAMoveOfAPlayer();
                 } catch (GameEndedException e) {
-                    // TODO : handle exception
-                    System.err.println("Game terminated due to an unexpected exception: ");
-                    e.printStackTrace();    // TODO : use logger
-                    System.exit(1);     // TODO : correct?
+                    Utility.getLoggerOfClass(getClass()).log(Level.SEVERE, "Game is ended but should not", e);
+                    throw new IllegalStateException(e);
                 }
             }
         });
-        addObservedPropertyOfViewmodel(cliMainViewmodel.getLastMoveCoordinatesProperty(), evt -> {
-            // TODO : update the view according to the last move?
-        });
+
+        addObservedPropertyOfViewmodel(cliMainViewmodel.getLastMoveCoordinatesProperty(), evt ->
+                System.out.println("Move just done: " + evt.getNewValue() + System.lineSeparator()));
+
         addObservedPropertyOfViewmodel(cliMainViewmodel.getCurrentPlayerProperty(), evt -> {
-            // TODO : update the view, e.g.: "Turn of ${currentPlayer}"
+            System.out.println(cliMainViewmodel.getCurrentBoardAsString());
+            System.out.println("Turn of " + evt.getNewValue());
         });
     }
 
@@ -54,11 +56,8 @@ public class CLIMainView extends View<CLIMainViewmodel> {
         stopObservingAllViewModelProperties();
     }
 
-    private void waitForAMoveOfAPlayer() throws GameEndedException {  // TODO : not tested
+    private void waitForAMoveOfAPlayer() throws GameEndedException {
         CLIMainViewmodel viewmodel = getViewmodelAssociatedWithView();
-
-        System.out.println(viewmodel.getCurrentBoardAsString());
-        System.out.println("Turn of " + viewmodel.getCurrentPlayer());   // TODO : not showed for CPU player
 
         System.out.println("Insert next move:");
         Coordinates coordInsertedByTheUser = null;
