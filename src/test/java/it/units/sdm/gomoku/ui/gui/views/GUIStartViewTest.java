@@ -10,7 +10,7 @@ import it.units.sdm.gomoku.ui.MainViewmodel;
 import it.units.sdm.gomoku.ui.StartViewmodel;
 import it.units.sdm.gomoku.ui.exceptions.SceneControllerNotInstantiatedException;
 import it.units.sdm.gomoku.ui.gui.GUIMain;
-import it.units.sdm.gomoku.ui.gui.SceneController;
+import it.units.sdm.gomoku.ui.gui.GUISceneController;
 import it.units.sdm.gomoku.ui.support.BoardSizes;
 import it.units.sdm.gomoku.utils.TestUtility;
 import it.units.sdm.gomoku.utils.ThrowingRunnable;
@@ -142,7 +142,7 @@ class GUIStartViewTest {
     void setUp() {
         try {
             setUpJavaFXRuntime();
-            Method sceneCreatorMethod = SceneController.class.getDeclaredMethod(
+            Method sceneCreatorMethod = GUISceneController.class.getDeclaredMethod(
                     "createScene", FXMLLoader.class, double.class, double.class);
             sceneCreatorMethod.setAccessible(true);
             FXMLLoader fxmlLoader = new FXMLLoader(GUIStartView.class.getResource(GUIMain.START_VIEW_FXML_FILE_NAME));
@@ -275,7 +275,7 @@ class GUIStartViewTest {
             @NotNull Consumer<T> propertyValueSetterInView)
             throws NoSuchFieldException, IllegalAccessException {
         TestUtility.setFieldValue(Objects.requireNonNull(fieldNameInViewmodel), oldValue, Objects.requireNonNull(guiStartViewmodel));
-        assert TestUtility.getFieldValue(fieldNameInViewmodel, guiStartViewmodel).equals(oldValue);
+        assert Objects.equals(TestUtility.getFieldValue(fieldNameInViewmodel, guiStartViewmodel), oldValue);
         Objects.requireNonNull(propertyValueSetterInView).accept(oldValue); // set old state before firing property change
         propertyValueSetterInView.accept(newValue);
     }

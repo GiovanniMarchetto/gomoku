@@ -12,4 +12,5 @@ class UtilityTest {
     void isEvenNumber(int numberToTest, boolean isEven) {
         assertEquals(isEven, Utility.isEvenNumber(numberToTest));
     }
+
 }
