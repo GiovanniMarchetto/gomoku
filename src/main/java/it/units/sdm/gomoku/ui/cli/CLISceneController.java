@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class CLISceneController {
+public class CLISceneController {   // TODO: abstract super class "SceneController"
     @Nullable
     private static CLISceneController singleInstance;
     @Nullable

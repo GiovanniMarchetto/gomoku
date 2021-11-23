@@ -16,11 +16,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.beans.PropertyChangeEvent;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public abstract class MainViewmodel extends Viewmodel {
@@ -53,7 +54,7 @@ public abstract class MainViewmodel extends Viewmodel {
     private <ObservedPropertyValueType> void addObservedProperty(
             @NotNull final ObservableProperty<ObservedPropertyValueType> observableProperty,
             @NotNull final Consumer<PropertyChangeEvent> actionOnPropertyChange) {
-        // TODO : test and improve logic: e.g. the same property cannot be observed more than once
+
         Objects.requireNonNull(modelPropertyObservers)
                 .add(new PropertyObserver<>(
                         Objects.requireNonNull(observableProperty), Objects.requireNonNull(actionOnPropertyChange)));
@@ -115,7 +116,9 @@ public abstract class MainViewmodel extends Viewmodel {
         try {
             currentGame.start();
         } catch (GameAlreadyStartedException e) {
-            throw new IllegalStateException(e); // TODO: correctly handled?
+            Utility.getLoggerOfClass(getClass())
+                    .log(Level.SEVERE, "Cannot invoke this method if a game is already started", e);
+            throw new IllegalStateException(e);
         }
     }
 
@@ -137,8 +140,14 @@ public abstract class MainViewmodel extends Viewmodel {
             currentBoard = currentGame.getBoard();
             observePropertiesOfModel();
 
-        } catch (MatchEndedException | GameNotEndedException e) {
-            e.printStackTrace();    // TODO : handle this exception
+        } catch (MatchEndedException e) {
+            Utility.getLoggerOfClass(getClass())
+                    .log(Level.SEVERE, "Cannot invoke this method if the match is ended", e);
+            throw new IllegalStateException(e);
+        } catch (GameNotEndedException e) {
+            Utility.getLoggerOfClass(getClass())
+                    .log(Level.SEVERE, "Cannot invoke this method if the previous game is not ended", e);
+            throw new IllegalStateException(e);
         }
     }
 
@@ -197,12 +206,8 @@ public abstract class MainViewmodel extends Viewmodel {
         try {
             return Objects.requireNonNull(currentBoard).getSize();
         } catch (NullPointerException e) {
-            //TODO: only for this the logger?
-            Logger.getLogger(getClass().getCanonicalName())
-                    .severe("The board is null but should not.\n\t" +
-                            Arrays.stream(e.getStackTrace())
-                                    .map(StackTraceElement::toString)
-                                    .collect(Collectors.joining("\n\t")));
+            Utility.getLoggerOfClass(getClass())
+                    .log(Level.SEVERE, "The board is null but should not.", e);
             throw e;
         }
     }

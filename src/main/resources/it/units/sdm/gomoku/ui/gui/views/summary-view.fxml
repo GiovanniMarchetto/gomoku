@@ -18,8 +18,6 @@
         <Label fx:id="winnerOfMatchLabel" style="-fx-font-weight: bold"/>
     </VBox>
 
-    <!--TODO find a method to have a "class" for the same style properties-->
-
     <VBox GridPane.rowIndex="1" GridPane.columnIndex="0">
         <Label text="GAME ENDED" alignment="CENTER"
                GridPane.columnSpan="3" GridPane.halignment="CENTER"
