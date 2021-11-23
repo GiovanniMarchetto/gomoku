@@ -66,7 +66,7 @@ public abstract class MainViewmodel extends Viewmodel {
 
     private void observePropertiesOfModel() {
 
-        modelPropertyObservers.forEach(PropertyObserver::stopObserving); //TODO: this should stay here? Refactor!
+        modelPropertyObservers.forEach(PropertyObserver::stopObserving);
 
         modelPropertyObservers.clear();
 
@@ -79,12 +79,10 @@ public abstract class MainViewmodel extends Viewmodel {
                         new Thread(() -> {
                             try {
                                 Objects.requireNonNull(currentPlayerProperty.getPropertyValue()).makeMove();
-                            } catch (GameEndedException e) {
+                            } catch (GameEndedException | CellOutOfBoardException | CellAlreadyOccupiedException e) {
                                 Utility.getLoggerOfClass(getClass())
                                         .log(Level.SEVERE, "Error with current player property: " + e.getMessage(), e);
                                 throw new IllegalStateException(e);
-                            } catch (CellOutOfBoardException | CellAlreadyOccupiedException e) {
-                                //TODO: notify the user and re-request coordinates
                             }
                         }).start();
                     }
@@ -128,7 +126,6 @@ public abstract class MainViewmodel extends Viewmodel {
 
     public void createMatchFromSetupAndInitializeNewGame(Setup setup) {
         setMatch(new Match(setup));
-        // TODO: code duplication (ctor)
         initializeProperties();
         initializeNewGame();
     }
