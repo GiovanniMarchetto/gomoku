@@ -6,7 +6,6 @@ import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.entities.*;
 import it.units.sdm.gomoku.model.exceptions.*;
 import it.units.sdm.gomoku.mvvm_library.Viewmodel;
-import it.units.sdm.gomoku.property_change_handlers.PropertyObserver;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservableProperty;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyProxy;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertySettable;
@@ -14,20 +13,14 @@ import it.units.sdm.gomoku.utils.Utility;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.beans.PropertyChangeEvent;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.stream.Stream;
 
 public abstract class MainViewmodel extends Viewmodel {
 
-    @NotNull
-    private final List<PropertyObserver<?>> modelPropertyObservers;
     @Nullable
     private ObservablePropertySettable<Player> currentPlayerProperty;
     @Nullable
@@ -44,7 +37,6 @@ public abstract class MainViewmodel extends Viewmodel {
     private Board currentBoard;
 
     public MainViewmodel() {
-        this.modelPropertyObservers = new ArrayList<>();
         initializeProperties();
     }
 
@@ -55,21 +47,7 @@ public abstract class MainViewmodel extends Viewmodel {
         this.lastMoveCoordinatesProperty = new ObservablePropertySettable<>();
     }
 
-    private <ObservedPropertyValueType> void addObservedProperty(
-            @NotNull final ObservableProperty<ObservedPropertyValueType> observableProperty,
-            @NotNull final Consumer<PropertyChangeEvent> actionOnPropertyChange) {
-
-        Objects.requireNonNull(modelPropertyObservers)
-                .add(new PropertyObserver<>(
-                        Objects.requireNonNull(observableProperty), Objects.requireNonNull(actionOnPropertyChange)));
-    }
-
     private void observePropertiesOfModel() {
-
-        modelPropertyObservers.forEach(PropertyObserver::stopObserving);
-
-        modelPropertyObservers.clear();
-
         assert currentGame != null;
         addObservedProperty(
                 currentGame.getCurrentPlayerProperty(),
@@ -175,7 +153,9 @@ public abstract class MainViewmodel extends Viewmodel {
         this.match = Objects.requireNonNull(match);
     }
 
-    public abstract void endGame();
+    public void endGame() {
+        stopObservingAllProperties();
+    }
 
     public void placeStoneFromUser(@NotNull final Coordinates coordinates)
             throws CellAlreadyOccupiedException, GameEndedException, CellOutOfBoardException {

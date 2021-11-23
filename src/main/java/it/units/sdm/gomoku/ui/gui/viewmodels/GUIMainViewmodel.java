@@ -8,8 +8,8 @@ import static it.units.sdm.gomoku.ui.gui.GUISceneController.ViewName.*;
 public class GUIMainViewmodel extends MainViewmodel {
 
     @Override
-    public void endGame() {
-        GUISceneController.fadeOutSceneIfIsGUIRunningOrDoNothing(SUMMARY_VIEW, 1500);
+    public void startNewMatch() {
+        GUISceneController.passToNewSceneIfIsGUIRunningOrDoNothing(START_VIEW);
     }
 
     @Override
@@ -19,7 +19,8 @@ public class GUIMainViewmodel extends MainViewmodel {
     }
 
     @Override
-    public void startNewMatch() {
-        GUISceneController.passToNewSceneIfIsGUIRunningOrDoNothing(START_VIEW);
+    public void endGame() {
+        super.endGame();
+        GUISceneController.fadeOutSceneIfIsGUIRunningOrDoNothing(SUMMARY_VIEW, 1500);
     }
 }
