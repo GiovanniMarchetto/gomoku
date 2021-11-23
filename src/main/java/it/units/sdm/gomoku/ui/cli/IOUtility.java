@@ -28,10 +28,8 @@ public class IOUtility {
     }
 
     public static int getAIntFromStdIn() {
-        // TODO : refactor to use method above
         Scanner fromUser = SettableScannerSingleton
                 .createNewScannerForSystemInIfAllowedOrUseTheDefaultAndGet();
-        if (fromUser == null) return 0;
         int aInt = 0;
         boolean validInputInserted = false;
         do {
@@ -55,8 +53,8 @@ public class IOUtility {
     }
 
     public static char getLowercaseCharWhenValidCaseInsensitiveOrCycle(char... validChars) {
-        char aChar = 0;
-        boolean validInputInserted = false;
+        char aChar;
+        boolean validInputInserted;
         do {
             aChar = getLowercaseCharIfValidCaseInsensitiveOr0(validChars);
             validInputInserted = aChar != 0;
@@ -79,11 +77,7 @@ public class IOUtility {
         boolean isValidInput = false;
         while (!isValidInput) {
             try {
-                if (fromUser != null) {
-                    inputValue = fromUser.nextLine();
-                } else {
-                    return "\0";
-                }
+                inputValue = fromUser.nextLine();
             } catch (InputMismatchException ignored) {
             } catch (Exception e) {
                 if (!throwable.isAssignableFrom(e.getClass())) {
@@ -109,30 +103,9 @@ public class IOUtility {
                 IllegalArgumentException.class);
     }
 
-    public static class SettableScannerSingleton {  // TODO : test and move in separate class
-
-        @SuppressWarnings("FieldMayBeFinal")
-        // for debugging purposes, access with reflection // TODO: correct? To be discussed
-        private static boolean scannerCanBeModified = true;
-        @Nullable
-        private static Scanner scannerSingleInstance;
-
-        private SettableScannerSingleton() {
-        }
-
-        public static Scanner createNewScannerForSystemInIfAllowedOrUseTheDefaultAndGet() {
-            if (scannerCanBeModified) {
-                scannerSingleInstance = new Scanner(System.in);
-            }
-            return scannerSingleInstance;
-        }
-
-    }
-
     public static boolean isYesFromStdin() {
         return getLowercaseCharWhenValidCaseInsensitiveOrCycle('y', 'n') == 'y';
     }
-
 
     public static boolean isInteger(String s) {
         try {
@@ -141,5 +114,18 @@ public class IOUtility {
         } catch (NumberFormatException e) {
             return false;
         }
+    }
+
+    public static class SettableScannerSingleton {
+
+        private SettableScannerSingleton() {
+        }
+
+        public static Scanner createNewScannerForSystemInIfAllowedOrUseTheDefaultAndGet() {
+            // for debugging purposes, access with reflection
+            @Nullable Scanner scannerSingleInstance = new Scanner(System.in);
+            return scannerSingleInstance;
+        }
+
     }
 }

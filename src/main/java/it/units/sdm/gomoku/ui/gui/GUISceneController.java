@@ -25,7 +25,7 @@ import java.util.function.Supplier;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-public class GUISceneController {  // todo : TEST
+public class GUISceneController {
 
     private static GUISceneController singleInstance;
     private static Boolean javaFxRunning = null;
@@ -37,7 +37,7 @@ public class GUISceneController {  // todo : TEST
     private static View<?> currentView;
 
     @SafeVarargs
-    private GUISceneController(@NotNull final Stage stage, @NotNull final String firstStageTitle,  // TODO: should pass a setup objects instead of so many parameters?
+    private GUISceneController(@NotNull final Stage stage, @NotNull final String firstStageTitle,
                                double initialSceneWidth, double initialSceneHeight,
                                double stageMinWidth, double stageMinHeight,
                                @NotNull final Pair<@NotNull ViewName, @NotNull String>... fxmlFilePaths) {

@@ -1,5 +1,6 @@
 package it.units.sdm.gomoku.ui;
 
+import it.units.sdm.gomoku.EnvVariables;
 import it.units.sdm.gomoku.model.custom_types.Color;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.entities.*;
@@ -78,49 +79,6 @@ class MainViewmodelTest {
 
     }
 
-//    @Test  //TODO: to fix
-//    void startNewGame() throws GameAlreadyStartedException {
-//        mainViewmodel.createMatchFromSetupAndInitializeNewGame(setup);
-//        Game first = mainViewmodel.getCurrentGame();
-//        first.start();
-//        GameTestUtility.disputeGameAndDraw(first);
-//        mainViewmodel.initializeNewGame();
-//        assertNotEquals(first, mainViewmodel.getCurrentGame());
-//    }
-
-//    @Test
-//    void initializeNewGameAfterEndMatch() {
-    //TODO: the initializeNewGame must pass the exception?
-//        mainViewmodel.startNewMatch();
-//        for (int i = 1; i < setup.numberOfGames().intValue(); i++) {
-//            mainViewmodel.initializeNewGame();
-//        }
-//        Game oldGame = mainViewmodel.getCurrentGame();
-//        mainViewmodel.initializeNewGame();
-//        Game  newGame = mainViewmodel.getCurrentGame();
-//        assertEquals(oldGame, newGame);
-//    }
-
-//    @Test //TODO: to fix
-//    void initializeExtraGame() throws GameAlreadyStartedException {
-//        mainViewmodel.startNewMatch();
-//        Game oldGame = mainViewmodel.getCurrentGame();
-//        oldGame.start();
-//        GameTestUtility.disputeGameAndDraw(oldGame);
-//
-//        for (int i = 1; i < setup.numberOfGames().intValue(); i++) {
-//            mainViewmodel.initializeNewGame();
-//            oldGame = mainViewmodel.getCurrentGame();
-//            oldGame.start();
-//            GameTestUtility.disputeGameAndDraw(oldGame);
-//            System.out.println(i+" - "+oldGame.isEnded());
-//        }
-//
-//        mainViewmodel.startExtraGame();
-//        Game newGame = mainViewmodel.getCurrentGame();
-//        assertNotEquals(oldGame, newGame);
-//    }
-
     @Test
     void incrementTotalNumberOfGamesOfThisMatch() {
         mainViewmodel.startNewMatch();
@@ -133,14 +91,6 @@ class MainViewmodelTest {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             fail(e);
         }
-    }
-
-    @Test
-    void checkNullElementsReturnExceptionBeforeCreateTheFirstMatch() {
-        //TODO: this is the only test with sense for getters
-        // (the others are already tested in the model)
-        //if require match must be call setMatch()
-        //if require currentGame must be call initializeNewGame
     }
 
     @Test
@@ -265,7 +215,7 @@ class MainViewmodelTest {
             }
         });
         separateThreadWhichWaitForCurrentGameToBeSet.start();
-        TestUtility.interruptThreadAfterDelayIfNotAlreadyJoined(    // TODO: re-see this
+        TestUtility.interruptThreadAfterDelayIfNotAlreadyJoined(
                 separateThreadWhichWaitForCurrentGameToBeSet,
                 REASONABLE_TIME_AFTER_WHICH_THREAD_WILL_BE_INTERRUPTED_IN_MILLIS);
 
@@ -280,7 +230,7 @@ class MainViewmodelTest {
                 Objects.requireNonNull(TestUtility.getFieldValue("propertyValueContainer", userMustPlaceNewStoneProperty)));
         Coordinates coordinates = new Coordinates(0, 0);
         mainViewmodel.placeStoneFromUser(coordinates);
-        Thread.sleep(100);  // TODO: rethink about the architecture_ here we have to wait for another thread (who knows which one) to update the model: is this correct?
-//            assertFalse(mainViewmodel.getCellAtCoordinatesInCurrentBoard(coordinates).isEmpty());//TODO: re-do
+        Thread.sleep(EnvVariables.REASONABLE_MILLISECS_TO_PERMIT_THREAD_TO_START);
+        assertFalse(mainViewmodel.getCellAtCoordinatesInCurrentBoard(coordinates).isEmpty());
     }
 }
