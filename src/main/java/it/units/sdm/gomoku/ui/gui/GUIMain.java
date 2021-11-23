@@ -5,7 +5,7 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
-import static it.units.sdm.gomoku.ui.gui.SceneController.ViewName.*;
+import static it.units.sdm.gomoku.ui.gui.GUISceneController.ViewName.*;
 
 public class GUIMain extends Application {
 
@@ -27,7 +27,7 @@ public class GUIMain extends Application {
 
     @Override
     public void start(Stage stage) {
-        SceneController.initialize(stage, stageTitle, initialSceneWidthInPx, initialSceneHeightInPx,
+        GUISceneController.initialize(stage, stageTitle, initialSceneWidthInPx, initialSceneHeightInPx,
                 stageMinWidth, stageMinHeight,
                 new Pair<>(START_VIEW, FXML_LOCATION_PATH + START_VIEW_FXML_FILE_NAME),
                 new Pair<>(MAIN_VIEW, FXML_LOCATION_PATH + MAIN_VIEW_FXML_FILE_NAME),

@@ -25,9 +25,9 @@ import java.util.function.Supplier;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-public class SceneController {  // todo : TEST
+public class GUISceneController {  // todo : TEST
 
-    private static SceneController singleInstance;
+    private static GUISceneController singleInstance;
     private static Boolean javaFxRunning = null;
     private final Map<ViewName, Supplier<Scene>> scenes;
     private final Stage stage;
@@ -37,10 +37,10 @@ public class SceneController {  // todo : TEST
     private static View<?> currentView;
 
     @SafeVarargs
-    private SceneController(@NotNull final Stage stage, @NotNull final String firstStageTitle,  // TODO: should pass a setup objects instead of so many parameters?
-                            double initialSceneWidth, double initialSceneHeight,
-                            double stageMinWidth, double stageMinHeight,
-                            @NotNull final Pair<@NotNull ViewName, @NotNull String>... fxmlFilePaths) {
+    private GUISceneController(@NotNull final Stage stage, @NotNull final String firstStageTitle,  // TODO: should pass a setup objects instead of so many parameters?
+                               double initialSceneWidth, double initialSceneHeight,
+                               double stageMinWidth, double stageMinHeight,
+                               @NotNull final Pair<@NotNull ViewName, @NotNull String>... fxmlFilePaths) {
         this.stage = Objects.requireNonNull(stage);
         this.scenes = Arrays.stream(Objects.requireNonNull(fxmlFilePaths))
                 .map(pair -> {
@@ -97,9 +97,9 @@ public class SceneController {  // todo : TEST
                                   @NotNull final Pair<@NotNull ViewName, @NotNull String>... fxmlFilePaths) {
         if (!isJavaFxRunning()) return;
         if (wasAlreadyInstantiated()) {
-            throw new SceneControllerAlreadyInstantiatedException(SceneController.class.getCanonicalName() + " already instantiated.");
+            throw new SceneControllerAlreadyInstantiatedException(GUISceneController.class.getCanonicalName() + " already instantiated.");
         } else {
-            singleInstance = new SceneController(
+            singleInstance = new GUISceneController(
                     Objects.requireNonNull(stage),
                     Objects.requireNonNull(firstStageTitle),
                     initialSceneWidthInPx, initialSceneHeightInPx,
@@ -109,11 +109,11 @@ public class SceneController {  // todo : TEST
         }
     }
 
-    private static SceneController getInstance() {
+    private static GUISceneController getInstance() {
         if (wasAlreadyInstantiated()) {
             return singleInstance;
         } else {
-            throw new SceneControllerNotInstantiatedException(SceneController.class.getCanonicalName() + " not instantiated.");
+            throw new SceneControllerNotInstantiatedException(GUISceneController.class.getCanonicalName() + " not instantiated.");
         }
     }
 
@@ -121,12 +121,12 @@ public class SceneController {  // todo : TEST
         return singleInstance != null;
     }
 
-    public static void passToNewSceneIfIsGUIRunningOrDoNothing(@NotNull final SceneController.ViewName viewEnum) {
+    public static void passToNewSceneIfIsGUIRunningOrDoNothing(@NotNull final GUISceneController.ViewName viewEnum) {
         if (!isJavaFxRunning()) return;
         getInstance().passToNewScene(Objects.requireNonNull(viewEnum));
     }
 
-    public static void fadeOutSceneIfIsGUIRunningOrDoNothing(@NotNull final SceneController.ViewName viewEnum, final int fadeDurationMillis) {
+    public static void fadeOutSceneIfIsGUIRunningOrDoNothing(@NotNull final GUISceneController.ViewName viewEnum, final int fadeDurationMillis) {
         if (!isJavaFxRunning()) return;
         getInstance().fadeToNewScene(Objects.requireNonNull(viewEnum), fadeDurationMillis);
     }
@@ -156,11 +156,11 @@ public class SceneController {  // todo : TEST
         }
     }
 
-    private void passToNewScene(@NotNull final SceneController.ViewName viewEnum) {
+    private void passToNewScene(@NotNull final GUISceneController.ViewName viewEnum) {
         executeOnJavaFxUiThread(() -> stage.setScene(scenes.get(Objects.requireNonNull(viewEnum)).get()));
     }
 
-    private void fadeToNewScene(@NotNull final SceneController.ViewName viewEnum, int fadeDurationMillis) {
+    private void fadeToNewScene(@NotNull final GUISceneController.ViewName viewEnum, int fadeDurationMillis) {
         Scene oldScene = stage.getScene();
         if (oldScene != null) {
             executeOnJavaFxUiThread(() -> {

@@ -2,7 +2,7 @@ package it.units.sdm.gomoku.ui.gui.views;
 
 import it.units.sdm.gomoku.mvvm_library.View;
 import it.units.sdm.gomoku.ui.gui.GUIMain;
-import it.units.sdm.gomoku.ui.gui.SceneController;
+import it.units.sdm.gomoku.ui.gui.GUISceneController;
 import it.units.sdm.gomoku.ui.gui.viewmodels.GUIMainViewmodel;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -48,7 +48,7 @@ public class GUIMainView extends View<GUIMainViewmodel> {
 
         addObservedPropertyOfViewmodel(
                 vm.getCurrentPlayerProperty(), evt ->
-                        SceneController.executeOnJavaFxUiThread(() -> {
+                        GUISceneController.executeOnJavaFxUiThread(() -> {
                             currentPlayerLabel.setText(evt.getNewValue().toString());
                             currentPlayerCircle.setFill(
                                     getViewmodelAssociatedWithView().getColorOfCurrentPlayer() == it.units.sdm.gomoku.model.custom_types.Color.BLACK

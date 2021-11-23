@@ -1,25 +1,25 @@
 package it.units.sdm.gomoku.ui.gui.viewmodels;
 
 import it.units.sdm.gomoku.ui.MainViewmodel;
-import it.units.sdm.gomoku.ui.gui.SceneController;
+import it.units.sdm.gomoku.ui.gui.GUISceneController;
 
-import static it.units.sdm.gomoku.ui.gui.SceneController.ViewName.*;
+import static it.units.sdm.gomoku.ui.gui.GUISceneController.ViewName.*;
 
 public class GUIMainViewmodel extends MainViewmodel {
 
     @Override
     public void endGame() {
-        SceneController.fadeOutSceneIfIsGUIRunningOrDoNothing(SUMMARY_VIEW, 1500);
+        GUISceneController.fadeOutSceneIfIsGUIRunningOrDoNothing(SUMMARY_VIEW, 1500);
     }
 
     @Override
     public void initializeNewGame() {
         super.initializeNewGame();
-        SceneController.passToNewSceneIfIsGUIRunningOrDoNothing(MAIN_VIEW);
+        GUISceneController.passToNewSceneIfIsGUIRunningOrDoNothing(MAIN_VIEW);
     }
 
     @Override
     public void startNewMatch() {
-        SceneController.passToNewSceneIfIsGUIRunningOrDoNothing(START_VIEW);
+        GUISceneController.passToNewSceneIfIsGUIRunningOrDoNothing(START_VIEW);
     }
 }

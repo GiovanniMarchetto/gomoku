@@ -62,19 +62,19 @@ public class CLISceneController {   // TODO : refactor (common things with GUI)
     }
 
     public static void initialize() {
-        // TODO : very similar to SceneController.initialize()
+        // TODO : very similar to GUISceneController.initialize()
         if (wasAlreadyInstantiated()) {
-            throw new SceneControllerNotInstantiatedException(CLISceneController.class.getCanonicalName() + " not instantiated."); // TODO: not too correct to throw an exception of SceneController (another class)
+            throw new SceneControllerNotInstantiatedException(CLISceneController.class.getCanonicalName() + " not instantiated."); // TODO: not too correct to throw an exception of GUISceneController (another class)
         } else {
             singleInstance = new CLISceneController();
         }
     }
 
-    private static CLISceneController getInstance() {  // TODO : code duplication with SceneController
+    private static CLISceneController getInstance() {  // TODO : code duplication with GUISceneController
         if (wasAlreadyInstantiated()) {
             return singleInstance;
         } else {
-            throw new SceneControllerNotInstantiatedException(CLISceneController.class.getCanonicalName() + " not instantiated."); // TODO: not too correct to throw an exception of SceneController (another class)
+            throw new SceneControllerNotInstantiatedException(CLISceneController.class.getCanonicalName() + " not instantiated."); // TODO: not too correct to throw an exception of GUISceneController (another class)
         }
     }
 
