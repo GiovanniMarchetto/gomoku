@@ -11,7 +11,7 @@ import java.io.PrintStream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-class IOUtilityTest { // TODO: a class with a similar name is present in src/test/java/it/units/sdm/gomoku/model/utils
+class IOUtilityTest {
 
     @ParameterizedTest
     @CsvSource({"a, a, a", "_, a, b", "a, a, A", "a, a, b#a#c", "a, a, b#A#c", "_, a, b#d#c"})

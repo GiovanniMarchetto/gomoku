@@ -62,20 +62,4 @@ public class GomokuCellFirstCellTest {
             fail(e.getMessage());
         }
     }
-
-//    @Test // TODO : test radius property
-//    void radiusPropertyChange() {
-//        int randomOldValue = 3;
-//        double expectedNewValue = 5;
-//        PropertyChangeEvent evt = new PropertyChangeEvent(
-//                new Object(), "radius", randomOldValue, expectedNewValue);
-//        gomokuCell.propertyChange(evt);
-//        try {
-//            Field radiusField = GomokuCell.class.getDeclaredField("radius");
-//            radiusField.setAccessible(true);
-//            assertEquals(expectedNewValue, radiusField.get(gomokuCell));
-//        } catch (NoSuchFieldException | IllegalAccessException e) {
-//            fail(e.getMessage());
-//        }
-//    }
 }
