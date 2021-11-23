@@ -121,6 +121,7 @@ public abstract class MainViewmodel extends Viewmodel {
 
     public void createMatchFromSetupAndInitializeNewGame(Setup setup) {
         setMatch(new Match(setup));
+        // TODO: code duplication (ctor)
         this.currentPlayerProperty = new ObservablePropertySettable<>();
         this.currentGameStatusProperty = new ObservablePropertySettable<>();
         this.userMustPlaceNewStoneProperty = new ObservablePropertySettable<>();
