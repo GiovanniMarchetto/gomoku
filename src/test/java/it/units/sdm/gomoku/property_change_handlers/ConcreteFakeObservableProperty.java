@@ -24,6 +24,10 @@ class ConcreteFakeObservableProperty<T> extends ObservableProperty<T> {
         super(observableProperty);
     }
 
+    public ConcreteFakeObservableProperty(T sampleValue) {
+        super(sampleValue);
+    }
+
     public static int getTotalNumberOfExistingDistinctInstances() {
         try {
             return (int) TestUtility

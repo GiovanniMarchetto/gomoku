@@ -129,7 +129,4 @@ class ObservablePropertyTest {
         assertEquals(expectedEqual, one.equals(other));
     }
 
-    // TODO: test hashcode + hashCode-equals contract
-
-
 }

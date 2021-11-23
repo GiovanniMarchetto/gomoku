@@ -27,14 +27,14 @@ public class ObservablePropertySettable<PropertyValueType> extends ObservablePro
 
     @Override
     @NotNull
-    public ObservableProperty<PropertyValueType> setPropertyValue(
-            @Nullable final PropertyValueType newPropertyValue) {   // TODO : synchronized needed?
+    public synchronized ObservableProperty<PropertyValueType> setPropertyValue(
+            @Nullable final PropertyValueType newPropertyValue) {
         return super.setPropertyValue(newPropertyValue);
     }
 
     @SuppressWarnings("MethodDoesntCallSuperMethod")
     @Override
-    public ObservablePropertySettable<PropertyValueType> clone() {
+    public synchronized ObservablePropertySettable<PropertyValueType> clone() {
         return new ObservablePropertySettable<>(this);
     }
 

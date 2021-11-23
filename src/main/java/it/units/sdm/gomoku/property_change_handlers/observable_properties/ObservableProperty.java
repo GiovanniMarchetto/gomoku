@@ -6,9 +6,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public abstract class ObservableProperty<PropertyValueType> implements Observable {  // TODO : to be tested
+public abstract class ObservableProperty<PropertyValueType> implements Observable {
 
-    // TODO : test all events to work properly
 
     private static int numberOfDistinctCreatedInstances = Integer.MIN_VALUE;
 
@@ -18,7 +17,7 @@ public abstract class ObservableProperty<PropertyValueType> implements Observabl
     private final ObservableProperty.PropertyValueContainer<PropertyValueType> propertyValueContainer;
 
     protected ObservableProperty() {
-        this.propertyValueContainer = new PropertyValueContainer<>(); // TODO: class needed to avoid reference to change: is this correct?
+        this.propertyValueContainer = new PropertyValueContainer<>();
         this.propertyName = String.valueOf(numberOfDistinctCreatedInstances++);
     }
 
@@ -44,7 +43,7 @@ public abstract class ObservableProperty<PropertyValueType> implements Observabl
 
     @NotNull
     protected synchronized ObservableProperty<PropertyValueType> setPropertyValue(
-            @Nullable final PropertyValueType newPropertyValue) {   // TODO : synchronized needed?
+            @Nullable final PropertyValueType newPropertyValue) {
         PropertyValueType oldValue = getPropertyValue();
         if (!Objects.equals(oldValue, newPropertyValue)) {
             this.propertyValueContainer.setValue(newPropertyValue);
@@ -54,9 +53,9 @@ public abstract class ObservableProperty<PropertyValueType> implements Observabl
     }
 
     @Override
-    public boolean equals(Object o) {   //  todo: test
+    public boolean equals(Object o) {
         if (this == o)
-            return true; // todo: replace all reference comparison with a method "isSameReference" instead of == ? It may be an interface like "ReferenceComparable" with only one mehod "compareRef(Object other)" with a default implementation: in this way classes should simply declare to implement the interface without implementing any method
+            return true;
         if (!(o instanceof ObservableProperty<?> that)) return false;
         return Objects.equals(propertyName, that.propertyName)
                 && Objects.equals(propertyValueContainer, that.propertyValueContainer);
@@ -67,11 +66,11 @@ public abstract class ObservableProperty<PropertyValueType> implements Observabl
     }
 
     @Override
-    public int hashCode() {   // TODO : test
+    public int hashCode() {
         return propertyName.hashCode();
     }
 
-    private static class PropertyValueContainer<ValueType> {    // TODO : to be tested
+    private static class PropertyValueContainer<ValueType> {
         @Nullable
         private ValueType value;
 
