@@ -115,7 +115,9 @@ public abstract class MainViewmodel extends Viewmodel {
         try {
             currentGame.start();
         } catch (GameAlreadyStartedException e) {
-            throw new IllegalStateException(e); // TODO: correctly handled?
+            Utility.getLoggerOfClass(getClass())
+                    .log(Level.SEVERE, "Cannot invoke this method if a game is already started", e);
+            throw new IllegalStateException(e);
         }
     }
 
@@ -137,8 +139,14 @@ public abstract class MainViewmodel extends Viewmodel {
             currentBoard = currentGame.getBoard();
             observePropertiesOfModel();
 
-        } catch (MatchEndedException | GameNotEndedException e) {
-            e.printStackTrace();    // TODO : handle this exception
+        } catch (MatchEndedException e) {
+            Utility.getLoggerOfClass(getClass())
+                    .log(Level.SEVERE, "Cannot invoke this method if the match is ended", e);
+            throw new IllegalStateException(e);
+        } catch (GameNotEndedException e) {
+            Utility.getLoggerOfClass(getClass())
+                    .log(Level.SEVERE, "Cannot invoke this method if the previous game is not ended", e);
+            throw new IllegalStateException(e);
         }
     }
 

@@ -112,20 +112,15 @@ public class GUIStartView extends View<StartViewmodel> {
     }
 
     private void allowOnlyNumberInNumberOfGamesTextField() {
-        try {
-            numberOfGamesTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-                if (!newValue.matches("\\d*")) {
-                    numberOfGamesTextField.setText(newValue.replaceAll("[^\\d]", ""));
-                }
-                disableStartMatchButtonIfInvalidInputFieldValues();
-            });
-        } catch (NumberFormatException ignored) {
-            // TODO : handle this exception? / test method opportunely ?
-        }
+        numberOfGamesTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                numberOfGamesTextField.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+            disableStartMatchButtonIfInvalidInputFieldValues();
+        });
     }
 
     private void disableStartMatchButtonIfInvalidInputFieldValues() {
-        // TODO : test
         boolean invalidNumberOfGamesValue;
         try {
             invalidNumberOfGamesValue = Integer.parseInt(numberOfGamesTextField.getText()) == 0;
