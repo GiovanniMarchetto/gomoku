@@ -8,6 +8,7 @@ import it.units.sdm.gomoku.model.entities.Setup;
 import it.units.sdm.gomoku.mvvm_library.Viewmodel;
 import it.units.sdm.gomoku.ui.support.BoardSizes;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -15,24 +16,28 @@ import java.util.Objects;
 
 public class StartViewmodel extends Viewmodel {
 
-    // TODO : add nullable/notnull annotations and final to method params and test
-
+    @NotNull
     public static final List<String> boardSizes = Arrays.stream(BoardSizes.values())
             .map(BoardSizes::toString)
             .toList();
 
+    @NotNull
     private final MainViewmodel mainViewmodel;
 
+    @Nullable
     private String player1Name;
+    @Nullable
     private String player2Name;
     private boolean player1CPU;
     private double player1CPUSkillFactor;
     private boolean player2CPU;
     private double player2CPUSkillFactor;
+    @Nullable
     private String selectedBoardSize;
+    @Nullable
     private String numberOfGames;
 
-    public StartViewmodel(MainViewmodel mainViewmodel) {
+    public StartViewmodel(@NotNull final MainViewmodel mainViewmodel) {
         this.mainViewmodel = mainViewmodel;
     }
 
@@ -40,13 +45,20 @@ public class StartViewmodel extends Viewmodel {
         mainViewmodel.createMatchFromSetupAndInitializeNewGame(createSetup());
     }
 
+    @NotNull
     private Setup createSetup() {
-        Player player1 = isPlayer1CPU() ? new CPUPlayer(getPlayer1Name(), player1CPUSkillFactor) : new HumanPlayer(getPlayer1Name());
-        Player player2 = isPlayer2CPU() ? new CPUPlayer(getPlayer2Name(), player2CPUSkillFactor) : new HumanPlayer(getPlayer2Name());
-        return new Setup(player1, player2, new PositiveInteger(Integer.parseInt(getNumberOfGames())), getSelectedBoardSizeValue());
+        Player player1 = isPlayer1CPU() ? new CPUPlayer(Objects.requireNonNull(getPlayer1Name()), getPlayer1CPUSkillFactor())
+                : new HumanPlayer(Objects.requireNonNull(getPlayer1Name()));
+        Player player2 = isPlayer2CPU() ? new CPUPlayer(Objects.requireNonNull(getPlayer2Name()), getPlayer2CPUSkillFactor())
+                : new HumanPlayer(Objects.requireNonNull(getPlayer2Name()));
+        return new Setup(
+                player1, player2,
+                new PositiveInteger(Integer.parseInt(Objects.requireNonNull(getNumberOfGames()))),
+                getSelectedBoardSizeValue());
     }
 
     //region Getters and Setters
+    @Nullable
     public String getPlayer1Name() {
         return player1Name;
     }
@@ -55,6 +67,7 @@ public class StartViewmodel extends Viewmodel {
         this.player1Name = Objects.requireNonNull(player1Name);
     }
 
+    @Nullable
     public String getPlayer2Name() {
         return player2Name;
     }
@@ -103,6 +116,7 @@ public class StartViewmodel extends Viewmodel {
         this.player2CPUSkillFactor = player2CPUSkillFactor;
     }
 
+    @Nullable
     public String getSelectedBoardSize() {
         return selectedBoardSize;
     }
@@ -111,28 +125,18 @@ public class StartViewmodel extends Viewmodel {
         this.selectedBoardSize = Objects.requireNonNull(selectedBoardSize);
     }
 
+    @NotNull
     public PositiveInteger getSelectedBoardSizeValue() {
-        return BoardSizes.fromString(getSelectedBoardSize()).getBoardSize();
+        return BoardSizes.fromString(Objects.requireNonNull(getSelectedBoardSize())).getBoardSize();
     }
 
+    @Nullable
     public String getNumberOfGames() {
         return numberOfGames;
     }
 
     public void setNumberOfGames(@NotNull final String numberOfGames) {
         this.numberOfGames = Objects.requireNonNull(numberOfGames);
-    }
-
-    private void setFieldValuesFromSetupWithoutSetters(@NotNull final Setup setup) {    // TODO : test
-        // TODO : needed?
-        player1Name = setup.player1().getName();
-        player2Name = setup.player2().getName();
-        player1CPU = setup.player1() instanceof CPUPlayer;
-        player2CPU = setup.player2() instanceof CPUPlayer;
-        selectedBoardSize = BoardSizes.fromBoardSizeValue(setup.boardSize())
-                .orElseThrow(IllegalArgumentException::new)
-                .toString();
-        numberOfGames = setup.numberOfGames().toString();
     }
     //endregion
 }
