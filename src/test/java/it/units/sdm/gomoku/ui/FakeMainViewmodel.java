@@ -18,8 +18,4 @@ public class FakeMainViewmodel extends MainViewmodel {
         createMatchFromSetupAndInitializeNewGame(setup);
     }
 
-    @Override
-    public void endGame() {
-        super.endGame();
-    }
 }
