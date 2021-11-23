@@ -98,12 +98,8 @@ public class Game implements Comparable<Game> {
         }
     }
 
-    private void setWinner(@NotNull final Player winner) throws GameNotEndedException {
-        if (isEnded()) {
-            this.winner = Objects.requireNonNull(winner);
-        } else {
-            throw new GameNotEndedException();
-        }
+    private void setWinner(@NotNull final Player winner) {
+        this.winner = Objects.requireNonNull(winner);
     }
 
     public boolean isBoardEmpty() {
@@ -160,13 +156,8 @@ public class Game implements Comparable<Game> {
         }
 
         if (hasThePlayerWonWithLastMove(coordinates)) {
+            setWinner(player);
             gameStatusProperty.setPropertyValue(Status.ENDED);
-            try {
-                setWinner(player);
-            } catch (GameNotEndedException e) {
-                Utility.getLoggerOfClass(getClass()).log(Level.SEVERE, "Trying to set winner but game not ended", e);
-                throw new IllegalStateException(e);
-            }
         } else if (!board.isThereAnyEmptyCell()) {
             gameStatusProperty.setPropertyValue(Status.ENDED);
         } else {
@@ -244,8 +235,5 @@ public class Game implements Comparable<Game> {
         return board.getStreamOfEmptyCoordinates();
     }
 
-    // TODO: equals and hashcode?
-
     public enum Status {NOT_STARTED, STARTED, ENDED}
-
 }

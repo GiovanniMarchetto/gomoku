@@ -25,9 +25,10 @@ import java.util.logging.Level;
 
 public class GomokuCell {
 
-    // TODO : add nullable/notnull annotations and final params in methods
     private final int boardSize;
+    @NotNull
     private final GUIMainViewmodel guiMainViewmodel;
+    @NotNull
     private final Coordinates coordinates;
 
     private Cell cell;
@@ -40,7 +41,7 @@ public class GomokuCell {
 
     private Group group;
 
-    public GomokuCell(GUIMainViewmodel guiMainViewmodel, Coordinates coordinates,
+    public GomokuCell(@NotNull GUIMainViewmodel guiMainViewmodel, @NotNull Coordinates coordinates,
                       @NotNull final ObservableProperty<Double> stoneRadiusProperty, int boardSize) {
         this.guiMainViewmodel = guiMainViewmodel;
         this.coordinates = coordinates;

@@ -35,7 +35,7 @@ public class Match {
         this.totalNumberOfGames = Objects.requireNonNull(numberOfGames);
     }
 
-    public Match(@NotNull final Setup setup) {  // TODO: test
+    public Match(@NotNull final Setup setup) {
         this(setup.player1(), setup.player2(), setup.numberOfGames(), Objects.requireNonNull(setup).boardSize());
     }
 
