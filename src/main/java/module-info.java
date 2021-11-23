@@ -3,6 +3,7 @@ module it.units.sdm.gomoku {
     requires javafx.fxml;
     requires org.jetbrains.annotations;
     requires java.logging;
+    //noinspection Java9RedundantRequiresStatement //needed
     requires org.json;
     requires java.desktop;
 

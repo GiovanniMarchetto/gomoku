@@ -105,6 +105,7 @@ public class GUIStartView extends View<StartViewmodel> {
         });
     }
 
+    @SuppressWarnings("unused")//parameter is needed
     public void startMatchButtonOnMouseClicked(MouseEvent e) {
         getViewmodelAssociatedWithView().createAndStartMatch();
     }

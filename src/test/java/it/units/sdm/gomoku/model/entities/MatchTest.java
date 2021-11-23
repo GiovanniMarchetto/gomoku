@@ -39,18 +39,14 @@ class MatchTest {
     private Match match;
     private Game currentGame;
 
-    @BeforeEach
-    void setup() {
-        match = createNewMatchWithDefaultParameterAndGet();
-    }
-
     //region Support Methods
     public static Stream<Arguments> getIntStreamFrom0IncludedToTotalNumberOfGamesExcluded() {
         return IntStream.range(0, SAMPLE_NUMBER_OF_GAMES).mapToObj(Arguments::of);
     }
 
     private static void disputeNGamesOfMatchAndMakeGivenPlayerToWinAllTheGamesInMatch(
-            int nGamesToDispute, @NotNull final Player winner, @NotNull final Match match) {
+            int nGamesToDispute, @SuppressWarnings("SameParameterValue") @NotNull final Player winner,
+            @NotNull final Match match) {
 
         assert nGamesToDispute <= SAMPLE_NUMBER_OF_GAMES;
         IntStream.range(0, nGamesToDispute).sequential().forEach(i -> {
@@ -70,7 +66,7 @@ class MatchTest {
         return (Game) TestUtility.invokeMethodOnObject(match, "getCurrentGame");
     }
 
-    @SuppressWarnings("unchecked")  // casting due to use of reflection
+    @SuppressWarnings({"unchecked", "ConstantConditions"})  // casting due to use of reflection // verbose assertions
     private static void endMatchWithADraw(@NotNull final Match match) {
         assert match != null;
         int numberOfGamesThatEachPlayerHasToWinToHaveADraw = SAMPLE_NUMBER_OF_GAMES / 2;
@@ -80,8 +76,7 @@ class MatchTest {
         if (!Utility.isEvenNumber(SAMPLE_NUMBER_OF_GAMES)) {
             Runnable changeLastGameToEndTheMatchWithADraw = () -> {
                 try {
-                    List<Game> gameList = null;
-                    gameList = (List<Game>) TestUtility.getFieldValue("gameList", match);
+                    List<Game> gameList = (List<Game>) TestUtility.getFieldValue("gameList", match);
                     assert SAMPLE_NUMBER_OF_GAMES > 0;
                     assert gameList != null;
                     gameList.remove(gameList.size() - 1);
@@ -133,11 +128,28 @@ class MatchTest {
         });
     }
 
+    //region test scores
+    private static void testGetScoreOfPlayer(
+            int numberOfGameWon, @NotNull final Player winnerPlayer, @NotNull final Player loserPlayer, @NotNull final Match match)
+            throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+
+        assert numberOfGameWon <= SAMPLE_NUMBER_OF_GAMES;
+        makeGivenPlayerToWinNGamesInMatchAndTheOtherPlayerToWinTheRemainingGames(winnerPlayer, loserPlayer, numberOfGameWon, match);
+        Method scoreOfPlayerGetter = match.getClass().getDeclaredMethod("getScoreOfPlayer", Player.class);
+        scoreOfPlayerGetter.setAccessible(true);
+        assertEquals(numberOfGameWon, ((NonNegativeInteger) scoreOfPlayerGetter.invoke(match, winnerPlayer)).intValue());
+    }
+
+    @BeforeEach
+    void setup() {
+        match = createNewMatchWithDefaultParameterAndGet();
+    }
+    //endregion Support Methods
+
     @NotNull
     private Match createNewMatchWithDefaultParameterAndGet() {
         return new Match(SAMPLE_PLAYER_1, SAMPLE_PLAYER_2, new PositiveInteger(SAMPLE_NUMBER_OF_GAMES), SAMPLE_BOARD_SIZE);
     }
-    //endregion Support Methods
 
     //region test constructors
     @Test
@@ -157,12 +169,12 @@ class MatchTest {
 
         assertEquals(match, matchFromSetup);
     }
+    //endregion
 
     @Test
     void dontConsiderMatchEndedImmediatelyAfterItsCreation() {
         assertFalse(match.isEnded());
     }
-    //endregion
 
     //region test equals
     @Test
@@ -240,6 +252,7 @@ class MatchTest {
         assert match.equals(anotherMatch);
         assertEquals(match.hashCode(), anotherMatch.hashCode());
     }
+    //endregion test equals
 
     @Test
     void notEqualIfDifferentHashCode() {
@@ -252,7 +265,6 @@ class MatchTest {
         assert match.hashCode() != anotherMatchWithDifferentHashCode.hashCode();
         assertNotEquals(match, anotherMatchWithDifferentHashCode);
     }
-    //endregion test equals
 
     //region test getters
     @Test
@@ -269,24 +281,12 @@ class MatchTest {
     void testGetCurrentWhitePlayer() {
         assertEquals(SAMPLE_PLAYER_2, match.getCurrentWhitePlayer());
     }
+    //endregion test getters
 
     @Test
     void testGetCurrentGame() throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, MatchEndedException, GameNotEndedException {
         currentGame = match.initializeNewGame();
         assertEquals(currentGame, getCurrentGameOfMatch(match));
-    }
-    //endregion test getters
-
-    //region test scores
-    private static void testGetScoreOfPlayer(
-            int numberOfGameWon, @NotNull final Player winnerPlayer, @NotNull final Player loserPlayer, @NotNull final Match match)
-            throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-
-        assert numberOfGameWon <= SAMPLE_NUMBER_OF_GAMES;
-        makeGivenPlayerToWinNGamesInMatchAndTheOtherPlayerToWinTheRemainingGames(winnerPlayer, loserPlayer, numberOfGameWon, match);
-        Method scoreOfPlayerGetter = match.getClass().getDeclaredMethod("getScoreOfPlayer", Player.class);
-        scoreOfPlayerGetter.setAccessible(true);
-        assertEquals(numberOfGameWon, ((NonNegativeInteger) scoreOfPlayerGetter.invoke(match, winnerPlayer)).intValue());
     }
 
     @ParameterizedTest
@@ -346,6 +346,7 @@ class MatchTest {
             throws MatchEndedException, GameNotEndedException, NoSuchFieldException, InvocationTargetException, IllegalAccessException {
         match.initializeNewGame();
         currentGame = getCurrentGameOfMatch(match);
+        assert currentGame != null;
         assert !currentGame.isEnded();
         try {
             match.initializeNewGame();
@@ -517,6 +518,7 @@ class MatchTest {
     @Test
     void dontConsiderCurrentGameIsOngoingIfCurrentGameIsEnded() throws NoSuchFieldException, InvocationTargetException, IllegalAccessException {
         match = createNewMatchWithDefaultParameterAndGet();
+        //noinspection ConstantConditions // verbose assertions
         assert SAMPLE_NUMBER_OF_GAMES >= 1;
         initializeAndDisputeNGameAndEndThemWithDrawAndGetLastInitializedGame(1, match);
         currentGame = getCurrentGameOfMatch(match);

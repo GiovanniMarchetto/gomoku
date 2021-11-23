@@ -29,18 +29,6 @@ public class GameTestUtility {
         return new Game(BOARD_SIZE, blackPlayer, whitePlayer);
     }
 
-    public static void disputeGameWithSmartAlgorithm(Game game) throws GameNotStartedException {
-        final CPUPlayer cpuPlayer = new CPUPlayer();
-        cpuPlayer.setCurrentGame(game);
-        while (!game.isEnded()) {
-            try {
-                game.placeStoneAndChangeTurn(cpuPlayer.chooseEmptyCoordinatesSmartly());
-            } catch (CellAlreadyOccupiedException | GameEndedException | CellOutOfBoardException e) {
-                Assertions.fail("During disputeGameWithSmartAlgorithm throw: " + e);
-            }
-        }
-    }
-
     public static void disputeGameAndDraw(Game game) {
         try {
             List<Coordinates> remainCoordinates = new ArrayList<>();

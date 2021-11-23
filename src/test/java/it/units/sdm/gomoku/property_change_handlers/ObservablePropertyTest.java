@@ -78,7 +78,6 @@ class ObservablePropertyTest {
     void fireEventsWhenSetPropertyValueIfPropertyValueChangesAndShouldNotify(
             String oldValue, String newValue, boolean shouldNotify) {
         observable.setPropertyValueUsingReflection(oldValue);
-        boolean x;
         AtomicReference<Boolean> observedPropertyHasNotified = new AtomicReference<>(false);
         AtomicReference<String> observedPropertyAfterSetterInvocation = new AtomicReference<>();
         new PropertyObserver<>(observable, evt -> {

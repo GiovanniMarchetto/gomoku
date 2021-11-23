@@ -26,7 +26,6 @@ class PlayerTest {
     private final static String SAMPLE_NAME = "player";
     private final static Coordinates SAMPLE_VALID_COORDINATES = new Coordinates(0, 0);
     private Player blackPlayer;
-    private Player whitePlayer;
     private Game game;
 
     @SuppressWarnings("unchecked") // buffer for moves contains coordinates
@@ -58,7 +57,7 @@ class PlayerTest {
     @BeforeEach
     void setup() throws GameAlreadyStartedException {
         blackPlayer = new FakePlayer(SAMPLE_NAME);
-        whitePlayer = new FakePlayer(SAMPLE_NAME);
+        Player whitePlayer = new FakePlayer(SAMPLE_NAME);
         game = new Game(new PositiveInteger(BOARD_SIZE), blackPlayer, whitePlayer);
         blackPlayer.setCurrentGame(game);
         whitePlayer.setCurrentGame(game);
@@ -222,6 +221,7 @@ class PlayerTest {
         assertNotEquals(blackPlayer, null);
     }
 
+    @SuppressWarnings("AssertBetweenInconvertibleTypes")//test equals
     @Test
     void testNotEqualIfNotInstanceOf() {
         assertNotEquals(blackPlayer, "");

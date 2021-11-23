@@ -284,7 +284,7 @@ public class TestUtility {
     public static void interruptThreadAfterDelayIfNotAlreadyJoined(
             @NotNull final Thread threadToBeEventuallyInterrupted, int delayInMilliseconds) {
         Executors.newScheduledThreadPool(1)
-                .schedule(threadToBeEventuallyInterrupted::stop, delayInMilliseconds, TimeUnit.MILLISECONDS);
+                .schedule(threadToBeEventuallyInterrupted::interrupt, delayInMilliseconds, TimeUnit.MILLISECONDS);
     }
 
     public static String[][] readFromCsvToStringMatrix(@NotNull final String resourceFilePath)

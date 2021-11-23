@@ -1,1 +1,0 @@
-Error in server status: replace "Waiting for completing setup" with "Waiting for completing setup"

@@ -78,14 +78,17 @@ public class GUISummaryView extends View<GUIMainViewmodel> {
         }
     }
 
+    @SuppressWarnings("unused")//parameter is needed
     public void continueButtonOnMouseClicked(MouseEvent e) {
         getViewmodelAssociatedWithView().initializeNewGame();
     }
 
+    @SuppressWarnings("unused")//parameter is needed
     public void extraGameButtonOnMouseClicked(MouseEvent e) {
         getViewmodelAssociatedWithView().startExtraGame();
     }
 
+    @SuppressWarnings("unused")//parameter is needed
     public void newMatchButtonOnMouseClicked(MouseEvent e) {
         getViewmodelAssociatedWithView().startNewMatch();
     }

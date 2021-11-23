@@ -97,7 +97,8 @@ class BufferTest {
 
     @NotNull
     private static Thread createAndSetNameAndScheduleItsInterruptionAndStartAndGetThread(
-            int delayAfterWhichThreadMustBeInterrupted, @NotNull final Runnable action, @NotNull final String threadName) {
+            @SuppressWarnings("SameParameterValue") int delayAfterWhichThreadMustBeInterrupted,
+            @NotNull final Runnable action, @NotNull final String threadName) {
         Thread thread = new Thread(Objects.requireNonNull(action));
         thread.setName(threadName);
         TestUtility.interruptThreadAfterDelayIfNotAlreadyJoined(thread, delayAfterWhichThreadMustBeInterrupted);
