@@ -21,8 +21,6 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
@@ -227,19 +225,6 @@ class GameTest {
     void dontSetWinnerIfGameEndedWithDraw() throws GameNotEndedException {
         disputeGameAndDraw(game);
         assertNull(game.getWinner());
-    }
-
-    @Test
-    void dontSetWinnerIfGameNotEnded() throws NoSuchMethodException, IllegalAccessException {
-        assert !game.isEnded();
-        try {
-            Method winnerSetter = game.getClass().getDeclaredMethod("setWinner", Player.class);
-            winnerSetter.setAccessible(true);
-            winnerSetter.invoke(game, blackPlayer);
-            fail("Setting the winner should not be allowed if game not ended, but was.");
-        } catch (InvocationTargetException e) {
-            assertTrue(e.getTargetException() instanceof GameNotEndedException);
-        }
     }
     //endregion Test Getters / Setters
 
