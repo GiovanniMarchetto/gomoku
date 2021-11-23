@@ -81,7 +81,7 @@ public abstract class MainViewmodel extends Viewmodel {
                             } catch (CellOutOfBoardException | CellAlreadyOccupiedException e) {
                                 //TODO: notify the user and re-request coordinates
                             }
-                        });
+                        }).start();
                     }
                 });
 
