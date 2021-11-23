@@ -8,11 +8,6 @@ import static it.units.sdm.gomoku.ui.cli.CLISceneController.CLIViewName.*;
 public class CLIMainViewmodel extends MainViewmodel {
 
     @Override
-    public void endGame() {
-        CLISceneController.passToNewView(CLI_SUMMARY_VIEW);
-    }
-
-    @Override
     public void startNewMatch() {
         CLISceneController.passToNewView(CLI_START_VIEW);
     }
@@ -21,5 +16,11 @@ public class CLIMainViewmodel extends MainViewmodel {
     public void initializeNewGame() {
         super.initializeNewGame();
         CLISceneController.passToNewView(CLI_MAIN_VIEW);
+    }
+
+    @Override
+    public void endGame() {
+        super.endGame();
+        CLISceneController.passToNewView(CLI_SUMMARY_VIEW);
     }
 }

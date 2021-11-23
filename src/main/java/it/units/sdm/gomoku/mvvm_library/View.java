@@ -40,5 +40,6 @@ public abstract class View<T extends Viewmodel> {
 
     protected void stopObservingAllViewModelProperties() {
         propertiesObservedInViewModel.forEach(PropertyObserver::stopObserving);
+        propertiesObservedInViewModel.clear();
     }
 }

@@ -20,5 +20,6 @@ public class FakeMainViewmodel extends MainViewmodel {
 
     @Override
     public void endGame() {
+        super.endGame();
     }
 }
