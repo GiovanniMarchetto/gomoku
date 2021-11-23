@@ -7,8 +7,6 @@
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="mainAnchorPane" xmlns="http://javafx.com/javafx/11.0.2"
             fx:controller="it.units.sdm.gomoku.ui.gui.views.GUIMainView">
 
-    <!--TODO: CHANGE COLORS-->
-
     <GridPane alignment="CENTER"
               AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
               AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">

@@ -63,9 +63,6 @@ public class GomokuGridManager {
                 .forEach(row -> IntStream.range(0, boardSize)
                         .forEach(col -> addCell(row, col)));
 
-
-        //TODO: move these props? (css or not)
-//        gridPane.getStyleClass().add("grid");
         gridPane.setStyle("-fx-background-color: peru;");
         gridPane.setAlignment(Pos.CENTER);
     }
