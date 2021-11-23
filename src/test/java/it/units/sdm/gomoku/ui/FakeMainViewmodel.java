@@ -11,8 +11,7 @@ public class FakeMainViewmodel extends MainViewmodel {
     public static final Player player2 = new FakePlayer();
     public static final PositiveInteger numberOfGames = new PositiveInteger(3);
     public static final PositiveInteger boardSize = new PositiveInteger(5);
-    public static final Setup setup = new Setup(player1, player2,
-            numberOfGames, boardSize);  // TODO : tests should cover any combination of setups
+    public static final Setup setup = new Setup(player1, player2, numberOfGames, boardSize);
 
     @Override
     public void startNewMatch() {
@@ -21,6 +20,5 @@ public class FakeMainViewmodel extends MainViewmodel {
 
     @Override
     public void endGame() {
-
     }
 }

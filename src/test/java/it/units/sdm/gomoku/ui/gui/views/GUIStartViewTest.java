@@ -4,6 +4,7 @@ import it.units.sdm.gomoku.EnvVariables;
 import it.units.sdm.gomoku.model.custom_types.NonNegativeInteger;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.entities.CPUPlayer;
+import it.units.sdm.gomoku.model.entities.HumanPlayer;
 import it.units.sdm.gomoku.model.entities.Match;
 import it.units.sdm.gomoku.model.entities.Setup;
 import it.units.sdm.gomoku.ui.MainViewmodel;
@@ -52,9 +53,6 @@ import static it.units.sdm.gomoku.ui.StartViewmodel.boardSizes;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GUIStartViewTest {
-
-    // TODO : missing tests + very long class code smell
-
     private static final AtomicBoolean isJavaFxRunning = new AtomicBoolean(false);
     private static final Logger loggerThisTest = Logger.getLogger(GUIStartView.class.getCanonicalName());
     private GUIStartView guiStartView;
@@ -78,19 +76,21 @@ class GUIStartViewTest {
         }
     }
 
-//    @Test
-//    void startMatchButtonOnMouseClicked() {
-//        // TODO: all input fields must be valid and already set in viewmodel and view must change
-//    }
-//
-//    @Test
-//    void initialize() {
-//        // TODO : assert the correct view is shown with correct input field values and same values saved in Viewmodel
-//    }
-
     private static void tearDownJavaFXRuntime() {
         isJavaFxRunning.set(false);
         Platform.setImplicitExit(false);
+    }
+
+    @NotNull
+    public static Stream<Arguments> setupsSupplierAndFlagIfValid() {
+        return Stream.of(
+                Arguments.of(
+                        new Setup(
+                                new HumanPlayer("One"),
+                                new HumanPlayer("Two"),
+                                new PositiveInteger(1),
+                                BoardSizes.NORMAL.getBoardSize()),
+                        true));
     }
 
     @NotNull
@@ -202,7 +202,6 @@ class GUIStartViewTest {
                                 " Negative old value (should never happen):" +
                                 " oldValue=" + oldNumberOfGamesAlreadySet +
                                 ", newValue=" + newNumberOfGamesInsertedByUser);
-                // TODO : inconsistent state (old value should never be negative)
             }
         } catch (IllegalAccessException | NoSuchFieldException e) {
             fail(e);
@@ -237,7 +236,7 @@ class GUIStartViewTest {
             "true, false, player1CPUCheckBox, player1CPU",
             "false, true, player1CPUCheckBox, player1CPU",
             "false, false, player1CPUCheckBox, player1CPU",
-            "true, true, player2CPUCheckBox, player2CPU",       // TODO : refactor with @MethodSource?
+            "true, true, player2CPUCheckBox, player2CPU",
             "true, false, player2CPUCheckBox, player2CPU",
             "false, true, player2CPUCheckBox, player2CPU",
             "false, false, player2CPUCheckBox, player2CPU"
@@ -296,7 +295,7 @@ class GUIStartViewTest {
     @NotNull
     private ChoiceBox<String> getBoardSizeChoiceBox() throws IllegalAccessException, NoSuchFieldException {
         final String choiceboxNameInView = "boardSizeChoiceBox";
-        @SuppressWarnings("unchecked")  // this choiceBox has string values // TODO : can be generalized?
+        @SuppressWarnings("unchecked")  // this choiceBox has string values
         ChoiceBox<String> boardSizeChoiceBox =
                 (ChoiceBox<String>) TestUtility
                         .getFieldAlreadyMadeAccessible(guiStartView.getClass(), choiceboxNameInView)
@@ -305,9 +304,9 @@ class GUIStartViewTest {
     }
 
     @ParameterizedTest
-    @MethodSource("it.units.sdm.gomoku.ui.UIUtility#setupsSupplierAndFlagIfValid")
+    @MethodSource("setupsSupplierAndFlagIfValid")
     void createMatchWhenClickButtonIfValidFields(Setup setup, boolean validSetup) {
-        AtomicReference<ReflectiveOperationException> eventuallyThrownException = new AtomicReference<>();  // TODO: create interface "SupplierThatThrows" to avoid this mechanism and replace all occurrences of this "pattern"
+        AtomicReference<ReflectiveOperationException> eventuallyThrownException = new AtomicReference<>();
         eventuallyThrownException.set(null);
         ThrowingRunnable<ReflectiveOperationException> throwIfExceptionWasThrown = () -> {
             if (eventuallyThrownException.get() != null) {
@@ -330,7 +329,7 @@ class GUIStartViewTest {
             assert matchBeforeUserConfirmFieldsInStartView == null;
             setFieldsInViewFromSetup(setup);
             try {
-                guiStartView.startMatchButtonOnMouseClicked(null);// whatever ("null" or "Foo" included) parameter is ok  // TODO: re-see this
+                guiStartView.startMatchButtonOnMouseClicked(null);// whatever ("null" or "Foo" included) parameter is ok
             } catch (SceneControllerNotInstantiatedException ignored) {
             }
             Match matchAfterUserConfirmFieldsInStartView = getCurrentMatchOrNullIfExceptionThrown.apply(mainViewmodel);
@@ -342,8 +341,8 @@ class GUIStartViewTest {
 
                 assertEquals(setup, setupFromMatch);
 
-                // TODO : move in separate test: after starting new game, gamelist has exactly 1 (the first just started) game
-                assertEquals(1, ((List<?>) Objects.requireNonNull(
+                final int numberOfGamesInitialized = 1;
+                assertEquals(numberOfGamesInitialized, ((List<?>) Objects.requireNonNull(
                         TestUtility.getFieldValue("gameList", matchAfterUserConfirmFieldsInStartView))).size());
             } else {
                 assertNull(matchAfterUserConfirmFieldsInStartView);
@@ -366,7 +365,6 @@ class GUIStartViewTest {
     }
 
     private void setFieldsInViewFromSetup(Setup setup) throws NoSuchFieldException, IllegalAccessException {
-        // TODO : refactor may needed
         getTextField("player1NameTextField").textProperty().set(setup.player1().getName());
         getTextField("player2NameTextField").textProperty().set(setup.player2().getName());
         getIsCPUCheckBox("player1CPUCheckBox").setSelected(setup.player1() instanceof CPUPlayer);

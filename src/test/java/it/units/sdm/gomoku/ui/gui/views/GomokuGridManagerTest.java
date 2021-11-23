@@ -29,7 +29,6 @@ class GomokuGridManagerTest {
         PositiveInteger numberOfGames = new PositiveInteger(3);
 
         try {
-            // TODO : refactor method to test MainViewmodel
             Field matchField = MainViewmodel.class.getDeclaredField("match");
             matchField.setAccessible(true);
             matchField.set(vm, new Match(p1, p2, numberOfGames, boardSize));

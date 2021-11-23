@@ -38,15 +38,10 @@ import static it.units.sdm.gomoku.utils.Predicates.isNonEmptyString;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class TestUtility {
-
-    // TODO : re-see tests of this class
-
     public final static String END_GAMES = "/endGames.json";
     public final static String CSV_SEPARATOR = ",";
     public final static String CSV_NEW_LINE = "\n";
     private final static char CSV_COMMENTED_LINE_INDICATOR = '#';
-
-    // TODO : BoardTestUtility class may needed to contain all the method to support BoardTest
 
     @NotNull
     public static Board createBoardFromCellMatrix(Cell[][] cellMatrix) {
@@ -58,7 +53,7 @@ public class TestUtility {
                         .forEach(y -> {
                             try {
                                 //noinspection ConstantConditions // just filtered out
-                                board.occupyPosition(cellMatrix[x][y].getStone().getColor(), new Coordinates(x, y));    // TODO: message chain
+                                board.occupyPosition(cellMatrix[x][y].getStone().getColor(), new Coordinates(x, y));
                             } catch (BoardIsFullException | CellAlreadyOccupiedException | CellOutOfBoardException e) {
                                 fail(e);
                             }
@@ -240,7 +235,7 @@ public class TestUtility {
 
     @Nullable
     public static <T> Object getFieldValue(@NotNull final String fieldName, @NotNull final T objectInstance)
-            throws NoSuchFieldException, IllegalAccessException {   // TODO : test
+            throws NoSuchFieldException, IllegalAccessException {
         return getFieldAlreadyMadeAccessible(
                 Objects.requireNonNull(objectInstance).getClass(), Objects.requireNonNull(fieldName))
                 .get(objectInstance);
@@ -248,7 +243,7 @@ public class TestUtility {
 
     public static <T, S> void setFieldValue(
             @NotNull final String fieldName, @Nullable final S newValue, @NotNull final T objectInstance)
-            throws NoSuchFieldException, IllegalAccessException {   // TODO : test
+            throws NoSuchFieldException, IllegalAccessException {
         getFieldAlreadyMadeAccessible(
                 Objects.requireNonNull(objectInstance).getClass(), Objects.requireNonNull(fieldName))
                 .set(objectInstance, newValue);
@@ -256,7 +251,7 @@ public class TestUtility {
 
     public static <T> Object invokeMethodOnObject(
             @NotNull final T targetObject, @NotNull final String methodName, @Nullable Object... paramsToMethod)
-            throws NoSuchFieldException, InvocationTargetException, IllegalAccessException {  // TODO : test
+            throws NoSuchFieldException, InvocationTargetException, IllegalAccessException {
         Class<?>[] paramTypes =
                 Arrays.stream(paramsToMethod).sequential()
                         .filter(Objects::nonNull)
@@ -268,7 +263,7 @@ public class TestUtility {
     //endregion Reflection Utils
 
     public static <T> long getNumberOfNullFieldsOfObjectWhichNameIsNotInList(
-            @NotNull final List<String> listOfNamesOfNullableFields, @NotNull final T targetObject) {   // TODO: test
+            @NotNull final List<String> listOfNamesOfNullableFields, @NotNull final T targetObject) {
         Objects.requireNonNull(listOfNamesOfNullableFields);
         Objects.requireNonNull(targetObject);
         return Arrays.stream(targetObject.getClass().getDeclaredFields())

@@ -18,12 +18,12 @@ public class GomokuCellFirstCellTest {
 
     private final Coordinates coordinatesFirstCell = new Coordinates(0, 0);
     private final double radius = 10;
-    private final int boardSize = 19;
     private GomokuCell gomokuCell;
 
     @BeforeEach
     void setUp() {
         var stoneRadiusProperty = new ObservablePropertySettable<>(radius);
+        int boardSize = 19;
         gomokuCell = new GomokuCell(new GUIMainViewmodel(), coordinatesFirstCell, stoneRadiusProperty, boardSize);
     }
 

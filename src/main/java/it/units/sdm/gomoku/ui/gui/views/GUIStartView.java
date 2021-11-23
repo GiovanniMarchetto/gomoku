@@ -45,7 +45,7 @@ public class GUIStartView extends View<StartViewmodel> {
     }
 
     @FXML
-    private void initialize() {// TODO : refactor this method
+    private void initialize() {
         boardSizeChoiceBox.getItems().addAll(boardSizes);
         boardSizeChoiceBox.setValue(boardSizes.get(boardSizes.size() / 2));
         player1CPUSkillVBox.managedProperty().bind(player1CPUSkillVBox.visibleProperty());
@@ -59,7 +59,6 @@ public class GUIStartView extends View<StartViewmodel> {
     }
 
     private void addControlsPropertiesListeners() {
-        // TODO : maybe refactor needed
         addTextPropertyListener(player1NameTextField, getViewmodelAssociatedWithView()::setPlayer1Name);
         addTextPropertyListener(player2NameTextField, getViewmodelAssociatedWithView()::setPlayer2Name);
         addSelectedPropertyListener(player1CPUCheckBox, getViewmodelAssociatedWithView()::setPlayer1CPU);
@@ -73,15 +72,14 @@ public class GUIStartView extends View<StartViewmodel> {
     }
 
     private void setDefaultValuesInViewmodel() {
-        // TODO : maybe refactor needed
-        getViewmodelAssociatedWithView().setPlayer1Name(player1NameTextField.getText());
-        getViewmodelAssociatedWithView().setPlayer2Name(player2NameTextField.getText());
-        getViewmodelAssociatedWithView().setPlayer1CPU(player1CPUCheckBox.isSelected());
-        getViewmodelAssociatedWithView().setPlayer2CPU(player2CPUCheckBox.isSelected());
-        getViewmodelAssociatedWithView().setPlayer1CPUSkillFactor(player1CPUSkillSlider.getValue() / 100);
-        getViewmodelAssociatedWithView().setPlayer2CPUSkillFactor(player2CPUSkillSlider.getValue() / 100);
-        getViewmodelAssociatedWithView().setSelectedBoardSize(boardSizeChoiceBox.getValue());
-        getViewmodelAssociatedWithView().setNumberOfGames(numberOfGamesTextField.getText());
+        getViewmodelAssociatedWithView().setPlayer1Name(player1NameTextField.getText())
+                .setPlayer2Name(player2NameTextField.getText())
+                .setPlayer1CPU(player1CPUCheckBox.isSelected())
+                .setPlayer2CPU(player2CPUCheckBox.isSelected())
+                .setPlayer1CPUSkillFactor(player1CPUSkillSlider.getValue() / 100)
+                .setPlayer2CPUSkillFactor(player2CPUSkillSlider.getValue() / 100)
+                .setSelectedBoardSize(boardSizeChoiceBox.getValue())
+                .setNumberOfGames(numberOfGamesTextField.getText());
     }
 
     private void addTextPropertyListener(TextField textField, Consumer<String> actionOnChange) {
@@ -107,7 +105,7 @@ public class GUIStartView extends View<StartViewmodel> {
         });
     }
 
-    public void startMatchButtonOnMouseClicked(MouseEvent e) {  // TODO : to test
+    public void startMatchButtonOnMouseClicked(MouseEvent e) {
         getViewmodelAssociatedWithView().createAndStartMatch();
     }
 
