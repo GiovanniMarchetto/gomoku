@@ -122,12 +122,12 @@ class MainViewmodelTest {
 //    }
 
     @Test
-    void addAnExtraGameToThisMatch() {
+    void incrementTotalNumberOfGamesOfThisMatch() {
         mainViewmodel.startNewMatch();
         try {
             Match match = (Match) Objects.requireNonNull(TestUtility.getFieldValue("match", mainViewmodel));
             int expected = match.getTotalNumberOfGames() + 1;
-            mainViewmodel.addAnExtraGameToThisMatch();
+            mainViewmodel.incrementTotalNumberOfGamesOfThisMatch();
             int actual = match.getTotalNumberOfGames();
             assertEquals(expected, actual);
         } catch (NoSuchFieldException | IllegalAccessException e) {

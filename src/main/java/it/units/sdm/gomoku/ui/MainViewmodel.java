@@ -152,11 +152,11 @@ public abstract class MainViewmodel extends Viewmodel {
     }
 
     public void startExtraGame() {
-        addAnExtraGameToThisMatch();
+        incrementTotalNumberOfGamesOfThisMatch();
         initializeNewGame();
     }
 
-    protected void addAnExtraGameToThisMatch() {
+    protected void incrementTotalNumberOfGamesOfThisMatch() {
         Objects.requireNonNull(match).incrementTotalNumberOfGames();
     }
 
