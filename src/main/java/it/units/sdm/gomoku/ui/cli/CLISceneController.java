@@ -16,9 +16,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class CLISceneController {   // TODO : refactor (common things with GUI)
-    // TODO : test
-
+public class CLISceneController {
     @Nullable
     private static CLISceneController singleInstance;
     @Nullable
@@ -45,7 +43,7 @@ public class CLISceneController {   // TODO : refactor (common things with GUI)
         views = new ConcurrentHashMap<>();
 
         views.put(CLIViewName.CLI_START_VIEW, () -> {
-            startViewmodelAtomicReference.set(new StartViewmodel(cliMainViewmodel));    // TODO : refactor (similar operations for both the views)
+            startViewmodelAtomicReference.set(new StartViewmodel(cliMainViewmodel));
             return addViewToHistoryAndGet(
                     CLIViewName.CLI_START_VIEW, new CLIStartView(startViewmodelAtomicReference.get()));
         });
@@ -55,26 +53,21 @@ public class CLISceneController {   // TODO : refactor (common things with GUI)
                 addViewToHistoryAndGet(CLIViewName.CLI_SUMMARY_VIEW, new CLISummaryView(cliMainViewmodel)));
     }
 
-    private View<?> addViewToHistoryAndGet(@NotNull final CLIViewName cliViewName, @NotNull final View<?> newView) {
-        historyOfCreatedViews.get(Objects.requireNonNull(cliViewName))
-                .add(Objects.requireNonNull(newView));
-        return newView;
-    }
-
     public static void initialize() {
-        // TODO : very similar to SceneController.initialize()
         if (wasAlreadyInstantiated()) {
-            throw new SceneControllerNotInstantiatedException(CLISceneController.class.getCanonicalName() + " not instantiated."); // TODO: not too correct to throw an exception of SceneController (another class)
+            throw new SceneControllerNotInstantiatedException(
+                    CLISceneController.class.getCanonicalName() + " not instantiated.");
         } else {
             singleInstance = new CLISceneController();
         }
     }
 
-    private static CLISceneController getInstance() {  // TODO : code duplication with SceneController
+    private static CLISceneController getInstance() {
         if (wasAlreadyInstantiated()) {
             return singleInstance;
         } else {
-            throw new SceneControllerNotInstantiatedException(CLISceneController.class.getCanonicalName() + " not instantiated."); // TODO: not too correct to throw an exception of SceneController (another class)
+            throw new SceneControllerNotInstantiatedException(
+                    CLISceneController.class.getCanonicalName() + " not instantiated.");
         }
     }
 
@@ -88,6 +81,12 @@ public class CLISceneController {   // TODO : refactor (common things with GUI)
         }
         currentView = getInstance().getView(Objects.requireNonNull(viewName));
         currentView.onViewInitialized();
+    }
+
+    private View<?> addViewToHistoryAndGet(@NotNull final CLIViewName cliViewName, @NotNull final View<?> newView) {
+        historyOfCreatedViews.get(Objects.requireNonNull(cliViewName))
+                .add(Objects.requireNonNull(newView));
+        return newView;
     }
 
     private View<?> getView(@NotNull final CLIViewName viewName) {

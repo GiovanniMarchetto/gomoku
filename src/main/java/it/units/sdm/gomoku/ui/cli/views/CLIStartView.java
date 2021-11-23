@@ -13,13 +13,13 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-public class CLIStartView extends View<StartViewmodel> {// TODO : refactor this class and test
+public class CLIStartView extends View<StartViewmodel> {
 
     public CLIStartView(StartViewmodel startViewmodel) {
         super(startViewmodel);
     }
 
-    private static String askAndGetCPUPlayerSkillFactor(int playerNumber) { //TODO: test
+    private static String askAndGetCPUPlayerSkillFactor(int playerNumber) {
         Predicate<String> isValidSkillFactorFromString = value -> {
             try {
                 return CPUPlayer.isValidSkillFactor(Double.parseDouble(value));
@@ -38,7 +38,7 @@ public class CLIStartView extends View<StartViewmodel> {// TODO : refactor this 
     }
 
     @NotNull
-    private static MatchTypes askAndGetNumberOfPlayers() {  // TODO : refactor this method
+    private static MatchTypes askAndGetNumberOfPlayers() {
         String msgWithPossibleChoices = "Choose " + ExposedEnum.getEnumDescriptionOf(MatchTypes.class) + ": ";
         System.out.print("How many players? " + msgWithPossibleChoices);
         return Objects.requireNonNull(
@@ -90,32 +90,25 @@ public class CLIStartView extends View<StartViewmodel> {// TODO : refactor this 
     public void onViewInitialized() {
         super.onViewInitialized();
 
-        switch (askAndGetNumberOfPlayers()) {   // TODO : all tests are missing (see GUIStartViewTest)
-            // TODO : refactor
-            case CPU_VS_CPU -> {
-                getViewmodelAssociatedWithView()
-                        .setPlayer1Name("CPU1")
-                        .setPlayer1CPUSkillFactor(askAndGetCPUPlayerSkillFactor(1))
-                        .setPlayer2Name("CPU2")
-                        .setPlayer2CPUSkillFactor(askAndGetCPUPlayerSkillFactor(2))
-                        .setPlayer1CPU(true)
-                        .setPlayer2CPU(true);
-            }
-            case PERSON_VS_CPU -> {
-                getViewmodelAssociatedWithView()
-                        .setPlayer1Name(askAndGetPlayerName(1))
-                        .setPlayer2Name("CPU")
-                        .setPlayer2CPUSkillFactor(askAndGetCPUPlayerSkillFactor(2))
-                        .setPlayer1CPU(false)
-                        .setPlayer2CPU(true);
-            }
-            case PERSON_VS_PERSON -> {
-                getViewmodelAssociatedWithView()
-                        .setPlayer1Name(askAndGetPlayerName(1))
-                        .setPlayer2Name(askAndGetPlayerName(2))
-                        .setPlayer1CPU(false)
-                        .setPlayer2CPU(false);
-            }
+        switch (askAndGetNumberOfPlayers()) {
+            case CPU_VS_CPU -> getViewmodelAssociatedWithView()
+                    .setPlayer1Name("CPU1")
+                    .setPlayer1CPUSkillFactor(askAndGetCPUPlayerSkillFactor(1))
+                    .setPlayer2Name("CPU2")
+                    .setPlayer2CPUSkillFactor(askAndGetCPUPlayerSkillFactor(2))
+                    .setPlayer1CPU(true)
+                    .setPlayer2CPU(true);
+            case PERSON_VS_CPU -> getViewmodelAssociatedWithView()
+                    .setPlayer1Name(askAndGetPlayerName(1))
+                    .setPlayer2Name("CPU")
+                    .setPlayer2CPUSkillFactor(askAndGetCPUPlayerSkillFactor(2))
+                    .setPlayer1CPU(false)
+                    .setPlayer2CPU(true);
+            case PERSON_VS_PERSON -> getViewmodelAssociatedWithView()
+                    .setPlayer1Name(askAndGetPlayerName(1))
+                    .setPlayer2Name(askAndGetPlayerName(2))
+                    .setPlayer1CPU(false)
+                    .setPlayer2CPU(false);
         }
         getViewmodelAssociatedWithView()
                 .setSelectedBoardSize(askAndGetBoardSize())
