@@ -9,7 +9,6 @@ import it.units.sdm.gomoku.mvvm_library.Viewmodel;
 import it.units.sdm.gomoku.ui.support.BoardSizes;
 import org.jetbrains.annotations.NotNull;
 
-import java.beans.PropertyChangeEvent;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -136,8 +135,4 @@ public class StartViewmodel extends Viewmodel {
         numberOfGames = setup.numberOfGames().toString();
     }
     //endregion
-
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-    }
 }

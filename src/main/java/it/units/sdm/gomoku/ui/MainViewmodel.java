@@ -34,7 +34,7 @@ public abstract class MainViewmodel extends Viewmodel {
     @NotNull
     private ObservablePropertySettable<Coordinates> lastMoveCoordinatesProperty;
     @NotNull
-    private List<PropertyObserver<?>> modelPropertyObservers;
+    private final List<PropertyObserver<?>> modelPropertyObservers;
     @Nullable
     private Match match;
     @Nullable
@@ -108,10 +108,6 @@ public abstract class MainViewmodel extends Viewmodel {
 
     }
 
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-    }
-
     public void triggerFirstMove() {
         if (currentGame == null) {
             throw new NullPointerException("Cannot invoke this method before starting the game (current game is null)");
@@ -129,7 +125,6 @@ public abstract class MainViewmodel extends Viewmodel {
         this.currentGameStatusProperty = new ObservablePropertySettable<>();
         this.userMustPlaceNewStoneProperty = new ObservablePropertySettable<>();
         this.lastMoveCoordinatesProperty = new ObservablePropertySettable<>();
-        this.modelPropertyObservers = new ArrayList<>();
         initializeNewGame();
     }
 
