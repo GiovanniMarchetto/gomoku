@@ -4,7 +4,6 @@ import it.units.sdm.gomoku.model.custom_types.Color;
 import it.units.sdm.gomoku.model.custom_types.Coordinates;
 import it.units.sdm.gomoku.model.custom_types.PositiveInteger;
 import it.units.sdm.gomoku.model.exceptions.*;
-import it.units.sdm.gomoku.mvvm_library.Observable;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservableProperty;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertyProxy;
 import it.units.sdm.gomoku.property_change_handlers.observable_properties.ObservablePropertySettable;
@@ -24,7 +23,7 @@ import java.util.logging.Level;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-public class Game implements Comparable<Game>, Observable {
+public class Game implements Comparable<Game> {
 
     @NotNull
     public static final PositiveInteger NUMBER_OF_CONSECUTIVE_STONE_FOR_WINNING = new PositiveInteger(5);
@@ -99,12 +98,8 @@ public class Game implements Comparable<Game>, Observable {
         }
     }
 
-    private void setWinner(@NotNull final Player winner) throws GameNotEndedException {
-        if (isEnded()) {
-            this.winner = Objects.requireNonNull(winner);
-        } else {
-            throw new GameNotEndedException();
-        }
+    private void setWinner(@NotNull final Player winner) {
+        this.winner = Objects.requireNonNull(winner);
     }
 
     public boolean isBoardEmpty() {
@@ -161,13 +156,8 @@ public class Game implements Comparable<Game>, Observable {
         }
 
         if (hasThePlayerWonWithLastMove(coordinates)) {
+            setWinner(player);
             gameStatusProperty.setPropertyValue(Status.ENDED);
-            try {
-                setWinner(player);
-            } catch (GameNotEndedException e) {
-                Utility.getLoggerOfClass(getClass()).log(Level.SEVERE, "Trying to set winner but game not ended", e);
-                throw new IllegalStateException(e);
-            }
         } else if (!board.isThereAnyEmptyCell()) {
             gameStatusProperty.setPropertyValue(Status.ENDED);
         } else {
@@ -246,5 +236,4 @@ public class Game implements Comparable<Game>, Observable {
     }
 
     public enum Status {NOT_STARTED, STARTED, ENDED}
-
 }

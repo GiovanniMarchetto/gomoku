@@ -245,5 +245,4 @@ class PlayerTest {
     void testHashCode() {
         assertEquals(SAMPLE_NAME.hashCode(), blackPlayer.hashCode());
     }
-
 }

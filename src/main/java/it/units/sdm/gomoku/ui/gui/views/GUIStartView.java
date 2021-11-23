@@ -25,8 +25,6 @@ public class GUIStartView extends View<StartViewmodel> {
     @FXML
     private Slider player2CPUSkillSlider;
 
-    // TODO : add notnull / nullable annotations and final in method params
-
     @FXML
     private Button startMatchButton;
     @FXML

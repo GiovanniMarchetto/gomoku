@@ -5,7 +5,7 @@ import it.units.sdm.gomoku.ui.cli.CLISceneController;
 
 import static it.units.sdm.gomoku.ui.cli.CLISceneController.CLIViewName.*;
 
-public class CLIMainViewmodel extends MainViewmodel {   // TODO : test
+public class CLIMainViewmodel extends MainViewmodel {
 
     @Override
     public void endGame() {
