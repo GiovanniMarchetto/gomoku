@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>C:/Users/matte/Desktop/GitHub-repos/sdm_exam_gomoku/gomoku/src/main/java/it/units/sdm/gomoku/model/entities</OriginalElement>
+  <nodes>
+    <node x="318.5" y="243.0">it.units.sdm.gomoku.model.entities.Match</node>
+    <node x="21.0" y="411.0">it.units.sdm.gomoku.model.entities.HumanPlayer</node>
+    <node x="181.0" y="411.0">it.units.sdm.gomoku.model.entities.CPUPlayer</node>
+    <node x="320.0" y="411.0">it.units.sdm.gomoku.model.entities.Setup</node>
+    <node x="132.25" y="81.0">it.units.sdm.gomoku.model.entities.Cell</node>
+    <node x="119.75000000000001" y="326.0">it.units.sdm.gomoku.model.entities.Player</node>
+    <node x="125.25000000000001" y="243.0">it.units.sdm.gomoku.model.entities.Game</node>
+    <node x="124.75000000000001" y="162.0">it.units.sdm.gomoku.model.entities.Board</node>
+    <node x="125.75000000000001" y="0.0">it.units.sdm.gomoku.model.entities.Stone</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="it.units.sdm.gomoku.model.entities.Player" target="it.units.sdm.gomoku.model.entities.Game" relationship="DEPENDENCY">
+      <point x="15.862883629520127" y="-13.268020465076233" />
+      <point x="179.24000227358795" y="328.23197953492377" />
+      <point x="8.490002273587947" y="13.121810043398455" />
+    </edge>
+    <edge source="it.units.sdm.gomoku.model.entities.Game" target="it.units.sdm.gomoku.model.entities.Player" relationship="DEPENDENCY">
+      <point x="0.0" y="15.5" />
+      <point x="170.75" y="266.0" />
+      <point x="199.68220338983053" y="266.0" />
+      <point x="199.68220338983053" y="326.0" />
+      <point x="23.0" y="-15.5" />
+    </edge>
+    <edge source="it.units.sdm.gomoku.model.entities.Match" target="it.units.sdm.gomoku.model.entities.Game" relationship="TO_MANY">
+      <point x="-48.74695121951265" y="-10.541811846689967" />
+      <point x="267.1890243902437" y="247.95818815331003" />
+      <point x="267.1890243902437" y="247.95818815331003" />
+      <point x="44.878048780487575" y="-10.541811846689967" />
+    </edge>
+    <edge source="it.units.sdm.gomoku.model.entities.Board" target="it.units.sdm.gomoku.model.entities.Cell" relationship="TO_ONE">
+      <point x="-23.0" y="-15.5" />
+      <point x="147.75" y="155.42696629213484" />
+      <point x="147.90566037735846" y="155.42696629213484" />
+      <point x="-22.84433962264154" y="12.34905660377359" />
+    </edge>
+    <edge source="it.units.sdm.gomoku.model.entities.HumanPlayer" target="it.units.sdm.gomoku.model.entities.Player" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.5" />
+      <point x="91.0" y="389.0" />
+      <point x="165.65934065934027" y="389.0" />
+      <point x="-0.0906593406597267" y="13.126373626373152" />
+    </edge>
+    <edge source="it.units.sdm.gomoku.model.entities.Match" target="it.units.sdm.gomoku.model.entities.Player" relationship="TO_ONE">
+      <point x="-30.0" y="15.5" />
+      <point x="335.0" y="330.2631578947368" />
+      <point x="203.75" y="330.2631578947368" />
+      <point x="38.0" y="-15.5" />
+    </edge>
+    <edge source="it.units.sdm.gomoku.model.entities.Board" target="it.units.sdm.gomoku.model.entities.Cell" relationship="CREATE">
+      <point x="19.797169811320714" y="-15.820754716981128" />
+      <point x="190.5471698113207" y="137.0" />
+      <point x="190.0" y="137.0" />
+      <point x="19.25" y="15.5" />
+    </edge>
+    <edge source="it.units.sdm.gomoku.model.entities.Match" target="it.units.sdm.gomoku.model.entities.Game" relationship="CREATE">
+      <point x="0.0" y="-15.5" />
+      <point x="365.0" y="266.0" />
+      <point x="208.66037735849054" y="266.0" />
+      <point x="37.910377358490535" y="-14.330188679245282" />
+    </edge>
+    <edge source="it.units.sdm.gomoku.model.entities.Match" target="it.units.sdm.gomoku.model.entities.Player" relationship="DEPENDENCY">
+      <point x="0.0" y="15.5" />
+      <point x="365.0" y="341.5" />
+      <point x="46.0" y="0.0" />
+    </edge>
+    <edge source="it.units.sdm.gomoku.model.entities.Game" target="it.units.sdm.gomoku.model.entities.Board" relationship="TO_ONE">
+      <point x="22.75" y="-15.5" />
+      <point x="23.0" y="15.5" />
+    </edge>
+    <edge source="it.units.sdm.gomoku.model.entities.Cell" target="it.units.sdm.gomoku.model.entities.Stone" relationship="TO_ONE">
+      <point x="-23.388831945780794" y="-9.256097560975633" />
+      <point x="147.3611680542192" y="29.301454694737043" />
+      <point x="-22.47665456806959" y="13.801454694737043" />
+    </edge>
+    <edge source="it.units.sdm.gomoku.model.entities.Cell" target="it.units.sdm.gomoku.model.entities.Stone" relationship="CREATE">
+      <point x="19.25" y="-15.5" />
+      <point x="190.0" y="56.0" />
+      <point x="189.79245283018864" y="56.0" />
+      <point x="19.042452830188637" y="15.254716981132074" />
+    </edge>
+    <edge source="it.units.sdm.gomoku.model.entities.Player" target="it.units.sdm.gomoku.model.entities.Game" relationship="TO_ONE">
+      <point x="-37.78787884204249" y="-17.01503213767353" />
+      <point x="127.96212115795751" y="316.9377980510057" />
+      <point x="128.33947964852356" y="316.9377980510057" />
+      <point x="-42.410520351476436" y="14.28685465477929" />
+    </edge>
+    <edge source="it.units.sdm.gomoku.model.entities.Game" target="it.units.sdm.gomoku.model.entities.Player" relationship="TO_ONE">
+      <point x="-27.31618072883495" y="12.022703711383087" />
+      <point x="151.55" y="270.5227037113831" />
+      <point x="151.55" y="329.2910346444993" />
+      <point x="142.75" y="329.2910346444993" />
+      <point x="-23.0" y="-15.5" />
+    </edge>
+    <edge source="it.units.sdm.gomoku.model.entities.Game" target="it.units.sdm.gomoku.model.entities.Board" relationship="CREATE">
+      <point x="-22.75" y="-15.5" />
+      <point x="-23.0" y="15.5" />
+    </edge>
+    <edge source="it.units.sdm.gomoku.model.entities.Match" target="it.units.sdm.gomoku.model.entities.Setup" relationship="DEPENDENCY">
+      <point x="-15.0" y="15.5" />
+      <point x="350.0" y="267.0714285714286" />
+      <point x="395.2857142857143" y="267.0714285714286" />
+      <point x="395.2857142857143" y="416.1428571428571" />
+      <point x="350.0" y="416.1428571428571" />
+      <point x="-15.0" y="-15.5" />
+    </edge>
+    <edge source="it.units.sdm.gomoku.model.entities.Setup" target="it.units.sdm.gomoku.model.entities.Player" relationship="DEPENDENCY">
+      <point x="-16.000000000000057" y="-15.5" />
+      <point x="348.99999999999994" y="354.2631578947368" />
+      <point x="196.41666666666669" y="354.2631578947368" />
+      <point x="30.666666666666686" y="15.5" />
+    </edge>
+    <edge source="it.units.sdm.gomoku.model.entities.CPUPlayer" target="it.units.sdm.gomoku.model.entities.Player" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.5" />
+      <point x="240.5" y="389.0" />
+      <point x="165.65934065934027" y="389.0" />
+      <point x="-0.0906593406597267" y="13.895604395603925" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic" zoom="1.0000000000000053" showDependencies="true" x="245.94078454216583" y="214.07692307692204" />
+  <SelectedNodes />
+  <Categories />
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
