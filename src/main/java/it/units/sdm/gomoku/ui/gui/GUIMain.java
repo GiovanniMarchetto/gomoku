@@ -33,6 +33,7 @@ public class GUIMain extends Application {
                 new Pair<>(MAIN_VIEW, FXML_LOCATION_PATH + MAIN_VIEW_FXML_FILE_NAME),
                 new Pair<>(SUMMARY_VIEW, FXML_LOCATION_PATH + SUMMARY_VIEW_FXML_FILE_NAME)
         );
+        stage.setOnCloseRequest(event -> System.exit(0));
         stage.show();
     }
 }
