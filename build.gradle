@@ -54,5 +54,32 @@ gradle.projectsEvaluated {
 
 run {
     standardInput = System.in   // set standard input
-//        args 'cli-passedFromGradle'
+}
+
+startScripts {
+    doLast {
+        String file_noext = DEFAULT_BUILD_DIR_NAME + "/scripts/" + rootProject.getName()
+        String file = file_noext + ".bat"
+        String file2 = file_noext + "2.bat"
+        new File(file2).withWriter {
+            w ->
+                {
+                    new File(file).withReader {
+                        r ->
+                            w << "@if \"%DEBUG%\" == \"\" @echo off" << System.lineSeparator()
+                                    << "set CMD_LINE_ARGS=%1" << System.lineSeparator() << r
+                    }
+                }
+        }
+        delete(file)
+        new File(file).withWriter {
+            w ->
+                {
+                    new File(file2).withReader {
+                        r -> w << r
+                    }
+                }
+        }
+        delete(file2)
+    }
 }
