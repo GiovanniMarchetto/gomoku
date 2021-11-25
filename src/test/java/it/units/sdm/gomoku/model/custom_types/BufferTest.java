@@ -277,6 +277,6 @@ class BufferTest {
         List<?> listUsedByTheBuffer = getActualBuffer(bufferOfIntegerUsedInTests);
         assert listUsedByTheBuffer != null;
         assert listUsedByTheBuffer.isEmpty();
-        assertTrue(isBufferEmpty(bufferOfIntegerUsedInTests));
+        assertTrue(bufferOfIntegerUsedInTests.isEmpty());
     }
 }
