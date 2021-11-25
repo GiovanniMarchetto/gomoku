@@ -25,23 +25,27 @@
                   AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"
                   GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 
-        <VBox fx:id="rightGridPane" style="-fx-background-color: peru; -fx-border-color: black;"
+        <VBox fx:id="rightGridPane"
+              style="-fx-background-color: peru; -fx-border-color: black; -fx-padding: 10 0 0 5; -fx-border-radius: 10 0 0 0"
               GridPane.columnIndex="2" GridPane.hgrow="NEVER"
               GridPane.rowIndex="1" GridPane.vgrow="NEVER"
               prefWidth="100" spacing="10">
-            <padding>
-                <Insets left="5"/>
-            </padding>
             <HBox alignment="CENTER_LEFT" spacing="5">
+                <padding>
+                    <Insets left="5"/>
+                </padding>
                 <Circle fill="black" radius="7"/>
                 <Label fx:id="blackPlayerLabel" wrapText="true"/>
             </HBox>
             <HBox alignment="CENTER_LEFT" spacing="5">
+                <padding>
+                    <Insets left="5"/>
+                </padding>
                 <Circle fill="white" radius="7"/>
                 <Label fx:id="whitePlayerLabel" wrapText="true"/>
             </HBox>
 
-            <VBox style="-fx-background-color: orange">
+            <VBox style="-fx-background-color: #ffb56c; -fx-background-radius: 10 0 0 10; -fx-padding: 2 0 2 5;">
                 <Label text="Turn of:"/>
                 <HBox alignment="CENTER_LEFT" spacing="5">
                     <Circle fx:id="currentPlayerCircle" radius="7"/>
@@ -52,6 +56,7 @@
             <VBox>
                 <padding>
                     <Insets top="10"/>
+                    <Insets left="5"/>
                 </padding>
                 <Label fx:id="startTime"/>
             </VBox>
