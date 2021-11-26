@@ -36,4 +36,4 @@ Summarizes the result of the last game.
 
 ### Demo
 Example of a CPU vs CPU game.
-https://user-images.githubusercontent.com/74369390/143583560-fa5c1f00-7c3d-459a-aacb-864e3272107b.mp4
+![cpu-vs-cpu](https://user-images.githubusercontent.com/74369390/143584274-bea7e5a8-a474-4304-9443-047f2a33a967.gif)
