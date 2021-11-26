@@ -20,3 +20,20 @@ The main packages:
 	- _cli_, command line interface package
 	- _gui_, graphical user interface package
 	- _support_, some support classes that are used in both cli and gui
+
+## Screenshots from the GUI
+### Start view
+Where users can setup the match.
+![startView](https://user-images.githubusercontent.com/74369390/143583304-3dd942fb-517f-449c-9f74-65b0cf1278a2.png)
+
+### Main view
+During the execution of a game.
+![mainView](https://user-images.githubusercontent.com/74369390/143583367-05f43f84-90e9-46c6-bd86-51a267f421de.png)
+
+### Summary view
+Summarizes the result of the last game.
+![summaryView](https://user-images.githubusercontent.com/74369390/143583483-7be82b00-54f9-4c71-adab-440892ef4604.png)
+
+### Demo
+Example of a CPU vs CPU game.
+https://user-images.githubusercontent.com/74369390/143583560-fa5c1f00-7c3d-459a-aacb-864e3272107b.mp4
